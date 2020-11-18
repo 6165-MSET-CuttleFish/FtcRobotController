@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import java.util.ArrayList;
 
-import static org.firstinspires.ftc.teamcode.MathFunctions.*;
+import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 
 /**
