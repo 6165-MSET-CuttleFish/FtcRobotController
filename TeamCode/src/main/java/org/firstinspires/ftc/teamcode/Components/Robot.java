@@ -36,7 +36,7 @@ public class Robot {
     public double movement_y;
     public double movement_turn;
 
-    private boolean auto;
+    public boolean auto;
     public double ninja = 1;
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotLength, double robotWidth) {
         auto = true;
@@ -117,8 +117,9 @@ public class Robot {
     private String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-
-
+    public void aimAt(Coordinate target){
+        launcher.findAngle(position.x, position.y, target.x, target.y);
+    }
     public double getHeading() {//for overall
         return position.returnOrientation();
     }
