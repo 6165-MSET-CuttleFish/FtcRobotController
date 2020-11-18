@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Coordinate;
-import org.firstinspires.ftc.teamcode.CurvePoint;
-import org.firstinspires.ftc.teamcode.MathFunctions;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.PurePursuit.CurvePoint;
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import java.util.ArrayList;
 

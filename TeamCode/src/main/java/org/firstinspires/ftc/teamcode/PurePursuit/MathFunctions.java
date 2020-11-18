@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.Odometry;
-
-import org.firstinspires.ftc.teamcode.Coordinate;
+package org.firstinspires.ftc.teamcode.PurePursuit;
 
 import java.util.ArrayList;
 

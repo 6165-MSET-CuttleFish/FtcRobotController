@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PurePursuit;
 
 public class CurvePoint extends Coordinate {
     public double moveSpeed;

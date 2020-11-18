@@ -1,17 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PurePursuit;
 
-import android.graphics.Point;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.*;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
 public class Path{
     ArrayList<Coordinate> list = new ArrayList<Coordinate>();
     double slope;
