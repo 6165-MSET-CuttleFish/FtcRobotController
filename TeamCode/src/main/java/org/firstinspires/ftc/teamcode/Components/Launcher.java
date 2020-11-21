@@ -6,14 +6,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Launcher {
-    final static double V = 50; // random value rn
-    final static double g = -9.81;
+    final double V = 50; // random value rn
+    final double g = -9.81;
 
     public Servo angle;
     public DcMotor launchWheel;
-    public static double launcherHeight = 0;
-    public static double goalHeight = 0;
-    public static double theta;
+    public double launcherHeight = 0;
+    public double goalHeight = 0;
+    public double theta;
 
     HardwareMap map;
     DcMotor.RunMode newRun;
@@ -32,15 +32,11 @@ public class Launcher {
     }
 
 
-    public static void findAngle(double x, double y, double goalX, double goalY){
+    public void findAngle(double x, double y, double goalX, double goalY){
         double h = goalHeight - launcherHeight;
         double d = Math.hypot(Math.abs(x-goalX), Math.abs(y-goalY));
         theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        System.out.println(theta);
     }
 
-    public static void main(String[] args){
-        findAngle(0, 100, 0, 0);
-    }
 
 }
