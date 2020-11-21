@@ -9,7 +9,7 @@ public class Launcher {
     final double V = 50; // random value rn
     final double g = -9.81;
 
-    public Servo angle;
+    public Servo flap;
     public DcMotor launchWheel;
     public double launcherHeight = 0;
     public double goalHeight = 0;
@@ -24,7 +24,7 @@ public class Launcher {
         this.launcherHeight = launcherHeight;
 
         launchWheel = map.dcMotor.get("launchWheel");
-        angle = map.servo.get("angle");
+        flap = map.servo.get("flap");
 
         launchWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         launchWheel.setMode(newRun);
@@ -32,11 +32,15 @@ public class Launcher {
     }
 
 
-    public void findAngle(double x, double y, double goalX, double goalY){
+    public double findAngle(double x, double y, double goalX, double goalY){
         double h = goalHeight - launcherHeight;
         double d = Math.hypot(Math.abs(x-goalX), Math.abs(y-goalY));
-        theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
+        return Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
     }
 
+    public void setAngle(double theta){
+        double servoPos = -0.1*theta*theta + 3*theta;
+        flap.setPosition(servoPos);
+    }
 
 }
