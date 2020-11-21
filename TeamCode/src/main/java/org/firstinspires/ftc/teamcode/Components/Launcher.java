@@ -35,12 +35,12 @@ public class Launcher {
     public static void findAngle(double x, double y, double goalX, double goalY){
         double h = goalHeight - launcherHeight;
         double d = Math.hypot(Math.abs(x-goalX), Math.abs(y-goalY));
-        theta = (Math.acos((g*d*d/V*V - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2;
+        theta = (Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2;
         System.out.println(theta);
     }
 
     public static void main(String[] args){
-        //findAngle(0, 2, 0, 0);
+        findAngle(0, 2, 0, 0);
     }
 
 }
