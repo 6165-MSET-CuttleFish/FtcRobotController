@@ -21,11 +21,13 @@ public class FinalTele extends LinearOpMode {
     public boolean flapUp = false, armUp = false;
     public OdometryGlobalCoordinatePosition position;
     public void runOpMode() throws InterruptedException {
-        position = new OdometryGlobalCoordinatePosition(fr, bl, br, 768, 75, 0, 0);
+
         initialize();
-        waitForStart();
+        position = new OdometryGlobalCoordinatePosition(fr, bl, br, 768, 75, 0, 0);
         Thread positionThread = new Thread(position);
         positionThread.start();
+        waitForStart();
+
         while(opModeIsActive()){
             drive();
             wobbleArm();
