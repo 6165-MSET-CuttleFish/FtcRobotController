@@ -29,6 +29,7 @@ public class testAutoImplement extends LinearOpMode{
             telemetry.addData("first",imu.getAngularOrientation().firstAngle);
             telemetry.addData("second",imu.getAngularOrientation().secondAngle);
             telemetry.addData("third",imu.getAngularOrientation().thirdAngle);
+            telemetry.update();
         }
     }
 }
