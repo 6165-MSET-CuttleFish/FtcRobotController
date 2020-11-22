@@ -25,6 +25,7 @@ public class testAutoImplement extends LinearOpMode{
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
+        waitForStart();
         while(opModeIsActive()){
             telemetry.addData("first",imu.getAngularOrientation().firstAngle);
             telemetry.addData("second",imu.getAngularOrientation().secondAngle);
