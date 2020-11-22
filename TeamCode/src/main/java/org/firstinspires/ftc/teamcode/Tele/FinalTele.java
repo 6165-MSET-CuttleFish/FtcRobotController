@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.*;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpFinal", group = "LinearOpMode")
 public class FinalTele extends LinearOpMode {
 
-    public DcMotor fl, fr, bl,br;
+    public DcMotor fl, fr, bl,br;//matthew is fat
     public DcMotor intakeR, intakeL;
     public DcMotor flywheel, flywheel1;
     public Servo mag, flap, tilt;
