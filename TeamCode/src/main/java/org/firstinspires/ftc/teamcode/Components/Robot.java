@@ -79,6 +79,7 @@ public class Robot {
         }
         distance = Math.hypot(pt.x - position.x, pt.y - position.y);
         //double absAngleToTarget = Math.atan2(y - worldAngle_rad, x - worldAngle_rad);
+        //double absAngleToTarget = Math.atan2(y - worldAngle_rad, x - worldAngle_rad);
         double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
         //System.out.println("Abs " + absAngleToTarget);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.robotOrientationRadians + Math.toRadians(90));
