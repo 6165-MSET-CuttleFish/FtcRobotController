@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.*;
+
+import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
+
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpFinal", group = "LinearOpMode")
 public class FinalTele extends LinearOpMode {
 
@@ -16,18 +19,22 @@ public class FinalTele extends LinearOpMode {
     public double multiplier = 1;
     public double lastTime = System.currentTimeMillis();
     public boolean flapUp = false, armUp = false;
-
+    public OdometryGlobalCoordinatePosition position;
     public void runOpMode() throws InterruptedException {
-
+        position = new OdometryGlobalCoordinatePosition(fr, bl, br, 768, 75, 0, 0);
         initialize();
         waitForStart();
-
+        Thread positionThread = new Thread(position);
+        positionThread.start();
         while(opModeIsActive()){
-
             drive();
             wobbleArm();
             intake();
             shooter();
+            telemetry.addData("X Position", position.getX() / 768);
+            telemetry.addData("Y Position", position.getY() / 768);
+            telemetry.addData("Orientation (Degrees)", position.returnOrientation());
+            telemetry.addData("Thread Active", positionThread.isAlive());
 
             telemetry.update();
         }
