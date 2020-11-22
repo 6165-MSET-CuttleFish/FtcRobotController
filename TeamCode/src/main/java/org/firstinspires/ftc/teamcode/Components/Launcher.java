@@ -39,6 +39,7 @@ public class Launcher {
     }
 
     public void setAngle(double theta){
+        theta -= 25;
         double servoPos = -0.1*theta*theta + 3*theta;
         flap.setPosition(servoPos);
     }
