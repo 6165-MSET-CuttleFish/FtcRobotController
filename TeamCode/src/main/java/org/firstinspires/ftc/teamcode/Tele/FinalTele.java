@@ -38,6 +38,7 @@ public class FinalTele extends LinearOpMode {
 
             telemetry.update();
         }
+        position.stop();
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
