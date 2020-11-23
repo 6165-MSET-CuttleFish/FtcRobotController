@@ -15,11 +15,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import java.util.List;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 public class Robot {
-    public OdometryGlobalCoordinatePosition position;
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
+    private int discs;
+
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+
+    public static OdometryGlobalCoordinatePosition position;
     public DcMotor topLeft;
     public DcMotor topRight;
     public DcMotor botLeft;
@@ -32,9 +47,6 @@ public class Robot {
     DcMotor.RunMode newRun;
     HardwareMap map;
 
-    public double movement_x;
-    public double movement_y;
-    public double movement_turn;
 
     public boolean auto;
     public double ninja = 1;
@@ -70,7 +82,6 @@ public class Robot {
     }
     public static int index = 0;
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
-
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
         if(distance < 5) {
             setMovement(0, 0, 0);
@@ -91,16 +102,13 @@ public class Robot {
 //        double relativeTurnAngle = relAngleToPoint - Math.toRadians(180) + preferredAngle;
 //        double movementTurn = Range.clip(relativeTurnAngle/Math.toRadians(30),-1,1)*turnSpeed;
 
-        movement_x = movementXPower * power;
-        movement_y = movementYPower * power;
+        double movement_x = movementXPower * power;
+        double movement_y = movementYPower * power;
         double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-        movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+        double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
         setMovement(movement_x, movement_y, movement_turn);
     }
     public void setMovement(double lx, double ly, double rx){
-        movement_x = lx;
-        movement_y = ly;
-        movement_turn = rx;
         topLeft.setPower(Range.clip(ninja * ly + lx + rx, -1, 1));//1.1   ; -.9
         topRight.setPower(Range.clip(ninja * ly - lx - rx, -1, 1));//-1.1  ; .9
         botLeft.setPower(Range.clip(ninja * ly - lx + rx, -1, 1));//-.9   ; 1.1
@@ -110,6 +118,28 @@ public class Robot {
     public void init(){
        Thread newThread = new Thread(position);
        newThread.start();
+    }
+    public void autoInit(){
+        init();
+        initVuforia();
+        initTfod();
+        tfod.activate();
+    }
+    public void scan(){
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        if (updatedRecognitions != null) {
+            for (Recognition recognition : updatedRecognitions) {
+                if(recognition.getLabel() == LABEL_FIRST_ELEMENT){
+                    discs = 4;
+                }
+                else if(recognition.getLabel() == LABEL_SECOND_ELEMENT){
+                    discs = 1;
+                }
+                else{
+                    discs = 0;
+                }
+            }
+        }
     }
     private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
@@ -139,5 +169,32 @@ public class Robot {
         backward,
         left,
         right
+    }
+
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = map.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", map.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }
