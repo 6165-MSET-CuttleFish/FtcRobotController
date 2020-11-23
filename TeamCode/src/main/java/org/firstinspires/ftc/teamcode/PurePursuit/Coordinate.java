@@ -23,10 +23,6 @@ public class Coordinate {
         this.x = point.getX();
         this.y = point.getY();
     }
-    public Coordinate clone() {
-        return new Coordinate(x, y);
-    }
-
     public double dot(Coordinate p) {
         return x * p.x + y * p.y;
     }
@@ -116,14 +112,14 @@ public class Coordinate {
         double y = C.getY() - getY();
         return y/Math.sin(Math.toRadians(heading));
     }
-    public double xCovered(double angle, double distance) {
+    public static double xCovered(double angle, double distance) {
         return Math.cos(Math.toRadians(angle)) * distance;
     }
 
-    public double yCovered(double angle, double distance) {
+    public static double yCovered(double angle, double distance) {
         return Math.sin(Math.toRadians(angle)) * distance;
     }
-    public Coordinate toPoint(Coordinate pt){
+    public static Coordinate toPoint(Coordinate pt){
         return new Coordinate(pt.x, pt.y);
     }
 }

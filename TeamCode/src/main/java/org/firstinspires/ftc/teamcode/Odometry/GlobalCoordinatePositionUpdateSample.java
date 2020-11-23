@@ -16,7 +16,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
 
     //The amount of encoder ticks for each inch the robot moves. This will change for each robot and needs to be changed here
     //final double COUNTS_PER_INCH = 307.699557;
-    final double COUNTS_PER_INCH = 768;
+    final double COUNTS_PER_INCH = 3072;
 
     //Hardware map names for the encoder wheels. Again, these will change for each robot and need to be updated below
     String verticalLeftEncoderName = "fr", verticalRightEncoderName = "bl", horizontalEncoderName = "br";

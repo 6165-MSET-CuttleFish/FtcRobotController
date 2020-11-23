@@ -77,7 +77,7 @@ public class Robot {
         botRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //bot = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 560, 760, x, y);
-        position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 307.699557, 760, x, y);
+        position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, x, y);
 
     }
     public static int index = 0;
