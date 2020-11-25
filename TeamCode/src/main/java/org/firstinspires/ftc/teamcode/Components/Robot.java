@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.Locale;
@@ -40,6 +41,8 @@ public class Robot {
     public DcMotor botLeft;
     public DcMotor botRight;
 
+    public Servo flap;
+
     public Launcher launcher;
     Orientation orientation = new Orientation();
     Orientation lastAngles = new Orientation();
@@ -59,6 +62,7 @@ public class Robot {
         botLeft = map.dcMotor.get("botLeft");
         botRight = map.dcMotor.get("botRight");
 
+        flap = map.servo.get("flap");
 
         topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -148,9 +152,10 @@ public class Robot {
     private String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-    public void aimAt(Coordinate target){
-        launcher.findAngle(position.x, position.y, target.x, target.y);
-    }
+//    public void aimAt(Launcher.targets t){
+//        double d = position.distanceTo(target);
+//        launcher.findAngle(d, flap);
+//    }
     public double getHeading() {//for overall
         return position.returnOrientation();
     }

@@ -60,4 +60,7 @@ public class MathFunctions {
         }
         return allCoordinates;
     }
+    public static double inchesToMeters(double inches){
+        return 0.0025*inches;
+    }
 }
