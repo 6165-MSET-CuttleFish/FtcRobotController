@@ -20,10 +20,11 @@ public class FinalTele extends LinearOpMode {
     public double lastTime = System.currentTimeMillis();
     public boolean flapUp = false, armUp = false;
     public OdometryGlobalCoordinatePosition position;
+    public final double COUNTS_PER_INCH = 3072;
     public void runOpMode() throws InterruptedException {
 
         initialize();
-        position = new OdometryGlobalCoordinatePosition(fr, bl, br, 768, 75, 0, 0);
+        position = new OdometryGlobalCoordinatePosition(fr, bl, br, COUNTS_PER_INCH, 75, 0, 0);
         Thread positionThread = new Thread(position);
         positionThread.start();
         waitForStart();
@@ -33,8 +34,8 @@ public class FinalTele extends LinearOpMode {
             wobbleArm();
             intake();
             shooter();
-            telemetry.addData("X Position", position.getX() / 768);
-            telemetry.addData("Y Position", position.getY() / 768);
+            telemetry.addData("X Position", position.getX() / COUNTS_PER_INCH);
+            telemetry.addData("Y Position", position.getY() / COUNTS_PER_INCH);
             telemetry.addData("left encoder", fr.getCurrentPosition());
             telemetry.addData("right encoder", bl.getCurrentPosition());
             telemetry.addData("horizontal encoder", br.getCurrentPosition());
