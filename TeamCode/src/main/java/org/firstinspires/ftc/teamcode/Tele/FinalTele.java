@@ -35,6 +35,9 @@ public class FinalTele extends LinearOpMode {
             shooter();
             telemetry.addData("X Position", position.getX() / 768);
             telemetry.addData("Y Position", position.getY() / 768);
+            telemetry.addData("left encoder", fr.getCurrentPosition());
+            telemetry.addData("right encoder", bl.getCurrentPosition());
+            telemetry.addData("horizontal encoder", br.getCurrentPosition());
             telemetry.addData("Orientation (Degrees)", position.returnOrientation());
             telemetry.addData("Thread Active", positionThread.isAlive());
 

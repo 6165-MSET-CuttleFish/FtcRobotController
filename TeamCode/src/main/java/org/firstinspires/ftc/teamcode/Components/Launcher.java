@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Launcher {
-    final double V = 50; // random value rn
+    final double V = 8.99; // 354 in/s random value rn
     final double g = -9.81;
 
     public Servo flap;
