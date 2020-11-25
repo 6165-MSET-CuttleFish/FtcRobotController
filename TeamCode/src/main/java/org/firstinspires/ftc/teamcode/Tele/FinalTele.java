@@ -177,8 +177,8 @@ public class FinalTele extends LinearOpMode {
         }
 
         if(gamepad2.right_bumper==true){
-            mag.setPosition(0.32);
-            sleep(400);
+            mag.setPosition(0.318);
+            sleep(150);
             mag.setPosition(0);
         }
         if(gamepad2.left_trigger >=0.1){
@@ -197,9 +197,9 @@ public class FinalTele extends LinearOpMode {
             while(i<3){
 
                 mag.setPosition(0.32);
-                sleep(400);
-                mag.setPosition(0);
-                sleep(400);
+                sleep(150);
+                mag.setPosition(.5);
+                sleep(150);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();
