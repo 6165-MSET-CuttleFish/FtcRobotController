@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
-    boolean reverse, ninja, armUp;
+    boolean reverse, ninja, armUp, flapUp;
     double lastTime = System.currentTimeMillis();
     double multiplier = 1;
     @Override
@@ -21,6 +21,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.setMovement(gamepad1.left_stick_x * multiplier, gamepad1.left_stick_y * multiplier, gamepad1.right_stick_x * multiplier);
             wobble();
             robot.intake(-gamepad2.right_stick_y);
+            shooter();
         }
     }
     private void setMultiplier(){
@@ -60,6 +61,32 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.x == true && robot.grabber.getPosition()<0.7){
             robot.release();
+        }
+    }
+    public void shooter(){
+        if(gamepad2.y&& !flapUp){
+            robot.launcher.flapUp();
+            sleep(50);
+            flapUp = true;
+        }
+        else if(gamepad2.y && flapUp){
+            robot.launcher.flapDown();
+            sleep(50);
+            flapUp = false;
+        }
+
+        if(gamepad2.right_bumper){
+            robot.launcher.singleRound();
+        }
+        if(gamepad2.left_trigger >=0.1){
+            robot.launcher.setFlyWheel(1);
+        }
+        else{
+            robot.launcher.setFlyWheel(0);
+
+        }
+        if(gamepad2.right_trigger >= 0.1){
+            robot.launcher.magazineShoot();
         }
     }
     @Override

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
-public class Launcher implements Runnable{
+public class Launcher{
     static final double V = 8.85; // 354 in/s
     static final double g = -9.81;
     public DcMotor flywheel, flywheel1;
@@ -58,7 +58,12 @@ public class Launcher implements Runnable{
         return -0.1*theta*theta + 3*theta;
     }
     public void setFlyWheel(double pwr){
-        tilt.setPosition(0.31);
+        if(pwr == 0) {
+            tilt.setPosition(0.15);
+        }
+        else {
+            tilt.setPosition(0.31);
+        }
         flywheel.setPower(-pwr);
         flywheel1.setPower(-pwr);
         sleep(400);
@@ -71,8 +76,19 @@ public class Launcher implements Runnable{
             sleep(150);
         }
     }
+    public void singleRound(){
+        mag.setPosition(0.318);
+        sleep(150);
+        mag.setPosition(0);
+    }
     public void setTilt(double angle){
         tilt.setPosition(12);
+    }
+    public void flapUp(){
+        flap.setPosition(0.06);
+    }
+    public void flapDown(){
+        flap.setPosition(0);
     }
     public static void main(String[] args){
         findAngle(2, targets.highGoal);
@@ -88,10 +104,6 @@ public class Launcher implements Runnable{
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-    @Override
-    public void run(){
-
     }
 }
 
