@@ -69,9 +69,9 @@ public class OdometryCalibration extends LinearOpMode {
         //Odometry System Calibration Init Complete
         telemetry.addData("Odometry System Calibration Status", "Init Complete");
         telemetry.update();
-        initialAngle = imu.getAngularOrientation().firstAngle;
-        waitForStart();
 
+        waitForStart();
+        initialAngle = imu.getAngularOrientation().firstAngle;
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
         while(getZAngle() < 90 && opModeIsActive()){
             right_front.setPower(-PIVOT_SPEED);
@@ -187,7 +187,13 @@ public class OdometryCalibration extends LinearOpMode {
      * @return the angle of the robot
      */
     private double getZAngle(){
-        return (-imu.getAngularOrientation().firstAngle) - initialAngle;
+        double val =  (-imu.getAngularOrientation().firstAngle) + initialAngle;
+        if (val > 180) {
+            val -= 360;
+        } else if (val < -180) {
+            val += 360;
+        }
+        return val;
     }
 
     /**

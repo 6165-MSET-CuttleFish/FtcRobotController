@@ -124,7 +124,7 @@ public class Robot {
 
         double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
 
-        double relAngleToPoint = AngleWrap(absAngleToTarget - position.robotOrientationRadians + Math.toRadians(90));
+        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
         //System.out.println("Rel " + relAngleToPoint);
         double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
         double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
