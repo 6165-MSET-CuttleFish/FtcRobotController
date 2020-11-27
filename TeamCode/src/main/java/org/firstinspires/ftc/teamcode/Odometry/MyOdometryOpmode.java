@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Odometry;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
  * Created by Sarthak on 10/4/2019.
  */
 @TeleOp(name = "My Odometry OpMode")
+@Disabled
 public class MyOdometryOpmode extends LinearOpMode {
     //Drive motors
     DcMotor topRight, botRight, topLeft, botLeft;
@@ -48,7 +50,7 @@ public class MyOdometryOpmode extends LinearOpMode {
         waitForStart();
 
         //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions
-        globalPositionUpdate = new OdometryGlobalCoordinatePosition(verticalLeft, verticalRight, horizontal, COUNTS_PER_INCH, 75, 0, 0);
+        globalPositionUpdate = new OdometryGlobalCoordinatePosition(verticalLeft, verticalRight, horizontal, COUNTS_PER_INCH, 75, 0, 0, 0);
         Thread positionThread = new Thread(globalPositionUpdate);
         positionThread.start();
         globalPositionUpdate.reverseLeftEncoder();

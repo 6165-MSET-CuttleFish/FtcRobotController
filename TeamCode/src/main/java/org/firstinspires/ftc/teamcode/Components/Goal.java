@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Components;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 public class Goal extends Coordinate {
-    double height;
+    public double height;
     public Goal(Coordinate c, double height) {
         super(c);
         this.height = height;

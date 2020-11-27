@@ -81,11 +81,12 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
 
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;
-
+        double dX = p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians);
+        double dY = p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians);
         //Calculate and update the position values
         //robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
         //robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
-        add(p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians), p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
+        add(dX, dY);
         previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
         previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
         prevNormalEncoderWheelPosition = normalEncoderWheelPosition;

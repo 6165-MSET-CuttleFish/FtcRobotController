@@ -45,8 +45,7 @@ public class Robot {
     public DcMotor botRight;
 
     public DcMotor intakeR, intakeL;
-    public DcMotor flywheel, flywheel1;
-    public Servo mag, flap, tilt;
+
     public Servo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber;
@@ -62,7 +61,6 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
         position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, x, y, robotOrientation);
-
     }
     public void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         this.robotWidth = robotWidth;
@@ -74,20 +72,14 @@ public class Robot {
         botLeft = map.dcMotor.get("bl");
         botRight = map.dcMotor.get("br");
 
-        flap = map.servo.get("flap");
+
 
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.get(Servo.class, "in1");
         in2 = map.get(Servo.class, "in2");
 
-        flywheel = map.get(DcMotor.class, "fw");
-        flywheel1 = map.get(DcMotor.class, "fw1");
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.REVERSE);
-        mag = map.get(Servo.class, "mag");
-        flap = map.get(Servo.class, "flap");
-        tilt = map.get(Servo.class, "tilt");
+
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
         arm1.setDirection( Servo.Direction.REVERSE);
@@ -96,9 +88,7 @@ public class Robot {
         grabber = map.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
 
-        mag.setPosition(0);
-        tilt.setPosition(0.13);
-        flap.setPosition(0);
+        launcher = new Launcher(map);
 
         topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -118,6 +108,9 @@ public class Robot {
     }
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
+        if(position == null){
+            position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, 0, 0, 0);
+        }
     }
     public static int index = 0;
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
@@ -232,6 +225,7 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
+
     enum heading{
         forward,
         backward,

@@ -45,9 +45,6 @@ public class Coordinate {
     public double getY() {
         return y;
     }
-    public double getVerticalAngleTo(Goal goal){
-        return 1;
-    }
     @Override
     public String toString() {
         return "[" + x + ", " + y + "]";
@@ -63,20 +60,27 @@ public class Coordinate {
         addX(x);
         addY(y);
     }
-
+    public double distanceTo(Goal g, double height){
+        double x = distanceTo(Coordinate.toPoint(g));
+        double y = g.height - height;
+        return Math.hypot(x, y);
+    }
+    public double verticalAngleTo(Goal g, double height){//some work needed
+        double x = distanceTo(Coordinate.toPoint(g));
+        double y = g.height - height;
+        Coordinate c = new Coordinate(x, y);
+        return angleTo(c);
+    }
     public double distanceTo(Coordinate B) {
         return Math.sqrt(Math.pow(B.getX() - getX(), 2) + Math.pow(B.getY() - getY(), 2));
     }
     public void polarAdd(double angle, double distance){
         add(xCovered(angle, distance), yCovered(angle, distance));
     }
-    public double angleTo(Coordinate desired, boolean facing) {
+    public double angleTo(Coordinate desired) {
         double x = desired.getX() - getX();
         double y = desired.getY() - getY();
         double angle = Math.toDegrees(Math.atan2(y, x));
-        if (!facing) {
-            angle -= 180;
-        }
         if(angle > 180){
             angle -= 360;
         }
