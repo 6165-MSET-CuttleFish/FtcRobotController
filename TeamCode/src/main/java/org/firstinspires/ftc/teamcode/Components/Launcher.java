@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
-public class Launcher{
+public class Launcher {
     static final double V = 8.85; // 354 in/s
     static final double g = -9.81;
     public DcMotor flywheel, flywheel1;

@@ -25,41 +25,41 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
     }
     private void setMultiplier(){
-        if(ninja == false && gamepad1.left_bumper == true && System.currentTimeMillis() >= lastTime + 300){
+        if(!ninja && gamepad1.left_bumper && System.currentTimeMillis() >= lastTime + 300){
             ninja = true;
             multiplier /= 3;
             lastTime = System.currentTimeMillis();
         }
-        else if(ninja == true && gamepad1.left_bumper == true && System.currentTimeMillis() >= lastTime + 300){
+        else if(ninja && gamepad1.left_bumper && System.currentTimeMillis() >= lastTime + 300){
             ninja = false;
             multiplier /= 3;
             lastTime = System.currentTimeMillis();
         }
-        if(reverse == false && gamepad1.right_bumper == true && System.currentTimeMillis() >= lastTime + 300){
+        if(!reverse && gamepad1.right_bumper && System.currentTimeMillis() >= lastTime + 300){
             reverse = true;
             multiplier = -multiplier;
             lastTime = System.currentTimeMillis();
         }
-        else if(reverse == true && gamepad1.right_bumper == true && System.currentTimeMillis() >= lastTime + 300){
+        else if(reverse && gamepad1.right_bumper && System.currentTimeMillis() >= lastTime + 300){
             reverse = false;
             multiplier = -multiplier;
             lastTime = System.currentTimeMillis();
         }
     }
     private void wobble(){
-        if(gamepad2.a == true && armUp == false){
+        if(gamepad2.a && !armUp){
             robot.wobbleArmUp();
             armUp = true;
         }
-        else if(gamepad2.a == true && armUp == true){
+        else if(gamepad2.a && armUp){
             robot.wobbleArmDown();
             armUp = false;
         }
 
-        if(gamepad2.x == true && robot.grabber.getPosition()>0.7){
+        if(gamepad2.x && robot.grabber.getPosition()>0.7){
             robot.grab();
         }
-        else if(gamepad2.x == true && robot.grabber.getPosition()<0.7){
+        else if(gamepad2.x && robot.grabber.getPosition()<0.7){
             robot.release();
         }
     }

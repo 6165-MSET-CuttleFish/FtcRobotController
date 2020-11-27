@@ -25,4 +25,11 @@ public class TourneyAuto extends LinearOpMode {
         }
         robot.position.stop();
     }
+    public void case1(){
+
+    }
+    public void case2(){
+
+    }
+    
 }
