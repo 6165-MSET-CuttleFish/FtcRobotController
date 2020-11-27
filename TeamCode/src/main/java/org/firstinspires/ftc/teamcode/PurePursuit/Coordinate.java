@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
+import org.firstinspires.ftc.teamcode.Components.Goal;
+
 public class Coordinate {
     public double x;
     public double y;
@@ -23,9 +25,6 @@ public class Coordinate {
         this.x = point.getX();
         this.y = point.getY();
     }
-    public double dot(Coordinate p) {
-        return x * p.x + y * p.y;
-    }
     public void setX(double x) {
         this.x = x;
     }
@@ -46,7 +45,9 @@ public class Coordinate {
     public double getY() {
         return y;
     }
-
+    public double getVerticalAngleTo(Goal goal){
+        return 1;
+    }
     @Override
     public String toString() {
         return "[" + x + ", " + y + "]";
@@ -55,11 +56,9 @@ public class Coordinate {
     public void addX(double x) {
         this.x += x;
     }
-
     public void addY(double y) {
         this.y += y;
     }
-
     public void add(double x, double y) {
         addX(x);
         addY(y);
