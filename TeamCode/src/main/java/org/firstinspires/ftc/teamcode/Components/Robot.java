@@ -50,6 +50,12 @@ public class Robot {
     public Servo arm1, arm2;
     public Servo grabber;
 
+    public static Goal hiGoal = new Goal(144, 37.5, 35.5);//142.75
+    public static Goal loGoal = new Goal(144, 37.5, 17);
+    public static Goal[] pwrShots = new Goal[3];
+    public static Coordinate A = new Coordinate(96, 12);
+    public static Coordinate B = new Coordinate(120, 36);
+    public static Coordinate C = new Coordinate(120, 12);
 
     public Launcher launcher;
     Orientation orientation = new Orientation();
@@ -63,6 +69,9 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, x, y, robotOrientation);
     }
     public void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
+        pwrShots[0] = new Goal(144, 68.25, 23.5);
+        pwrShots[1] = new Goal(144, 60.75, 23.5);
+        pwrShots[2] = new Goal(144, 53.25, 23.5);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;

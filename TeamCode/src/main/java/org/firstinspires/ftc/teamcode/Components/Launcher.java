@@ -11,12 +11,13 @@ import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 public class Launcher {
+    static final double launcherHeight = 0.2032;
     static final double V = 8.85; // 354 in/s
     static final double g = -9.81;
     public DcMotor flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public static Goal position;
-    static double launcherHeight = 0.2032;
+
 
     public Launcher(HardwareMap map){
         flywheel = map.get(DcMotor.class, "fw");
@@ -43,14 +44,13 @@ public class Launcher {
         //System.out.println(theta);
         flap.setPosition(setAngle(theta));
     }
-    public static void findAngle(Goal goal){
-        double goalHeight = goal.height - position.height;
-        double d = 1;
-        goalHeight = inchesToMeters(goalHeight);
+    public static double findAngle(Goal goal, Coordinate position){
+        double d = goal.x - position.x;//position.distanceTo(goal);
+        double goalHeight = inchesToMeters(goal.height);
         double theta;
         double h = goalHeight - launcherHeight;
         theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        System.out.println(theta);
+        return theta;
     }
 
     public static double setAngle(double theta){
