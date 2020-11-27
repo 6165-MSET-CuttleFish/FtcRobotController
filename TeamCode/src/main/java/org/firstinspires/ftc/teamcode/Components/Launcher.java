@@ -90,9 +90,9 @@ public class Launcher{
     public void flapDown(){
         flap.setPosition(0);
     }
-    public static void main(String[] args){
-        findAngle(2, targets.highGoal);
-    }
+//    public static void main(String[] args){
+//        findAngle(2, targets.highGoal);
+//    }
     enum targets{
         highGoal,
         lowGoal,
