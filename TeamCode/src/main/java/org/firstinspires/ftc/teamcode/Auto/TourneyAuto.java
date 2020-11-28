@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+
 @Autonomous
 public class TourneyAuto extends LinearOpMode {
     Robot robot;
@@ -26,7 +28,10 @@ public class TourneyAuto extends LinearOpMode {
 //        else{
 //            case0();
 //        }
-        case4();
+        //case4();
+        foo();
+        telemetry.addData("Done", "");
+        telemetry.update();
         robot.position.stop();
     }
     public void case0(){
@@ -37,5 +42,9 @@ public class TourneyAuto extends LinearOpMode {
     }
     public void case4(){
         robot.goToPosition(Robot.A, 0.4, 0, 2);
+    }
+    public void foo(){
+        robot.goToPosition(new Coordinate(28, 24), 0.4, 0, 2);
+
     }
 }
