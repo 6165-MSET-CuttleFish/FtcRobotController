@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 public class Launcher {
     static final double launcherHeight = 0.2032;
     static final double V = 8.85; // 354 in/s
-    static final double g = -9.81;
+    static final double g = -9.08711677875;
     public DcMotor flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public static Goal position;
