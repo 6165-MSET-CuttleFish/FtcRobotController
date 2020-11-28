@@ -144,7 +144,7 @@ public class Robot {
         }
         setMovement(0, 0, 0);
     }
-        public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
+    public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
         double distanceToX = pt.x - position.getX();
         double distanceToY = pt.y - position.getY();
         double distance = Math.hypot(distanceToX, distanceToY);
@@ -153,9 +153,9 @@ public class Robot {
             distanceToY = pt.y - position.getY();
             distance = Math.hypot(distanceToX, distanceToY);
             double robotMovementAngle = Math.toDegrees(Math.atan2(distanceToX, distanceToY));
-            double ly = calculateY(robotMovementAngle, power);
-            double lx = calculateX(robotMovementAngle, power);
-            double rx = desiredOrientation - position.returnOrientation();
+            double lx = calculateY(robotMovementAngle, power);
+            double ly = calculateX(robotMovementAngle, power);
+            double rx = -(desiredOrientation - position.returnOrientation());
             topLeft.setPower(Range.clip(ly + lx + rx, -power, power));
             topRight.setPower(Range.clip(ly - lx - rx, -power, power));
             botLeft.setPower(Range.clip(ly - lx + rx, -power, power));
@@ -166,7 +166,6 @@ public class Robot {
     private double calculateX(double desiredAngle, double speed) {
         return Math.sin(Math.toRadians(desiredAngle)) * speed;
     }
-
     /**
      * Calculate the power in the y direction
      * @param desiredAngle angle on the y axis
