@@ -190,17 +190,17 @@ public class FinalTele extends LinearOpMode {
         }
 
         if(gamepad2.right_bumper==true){
-            mag.setPosition(0.318);
+            mag.setPosition(0.32);
             sleep(150);
-            mag.setPosition(0);
+            mag.setPosition(.47);
         }
         if(gamepad2.left_trigger >=0.1){
-            tilt.setPosition(0.31);
+            tilt.setPosition(0.297);
             flywheel.setPower(-1);
             flywheel1.setPower(-1);
         }
         else{
-            tilt.setPosition(0.15);
+            tilt.setPosition(0.13);
             flywheel.setPower(0);
             flywheel1.setPower(0);
 
@@ -210,9 +210,9 @@ public class FinalTele extends LinearOpMode {
             while(i<3){
 
                 mag.setPosition(0.32);
-                sleep(150);
+                sleep(350);
                 mag.setPosition(.47);
-                sleep(150);
+                sleep(350);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();

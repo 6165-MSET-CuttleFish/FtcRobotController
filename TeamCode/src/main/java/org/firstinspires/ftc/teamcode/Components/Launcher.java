@@ -59,7 +59,7 @@ public class Launcher {
     }
     public void setFlyWheel(double pwr){
         if(pwr == 0) {
-            tilt.setPosition(0.15);
+            tilt.setPosition(0.14);
         }
         else {
             tilt.setPosition(0.31);
@@ -68,6 +68,7 @@ public class Launcher {
         flywheel1.setPower(-pwr);
         sleep(400);
     }
+
     public void magazineShoot(){
         for(int i = 0; i < 3; i++){
             mag.setPosition(0.32);
@@ -79,7 +80,7 @@ public class Launcher {
     public void singleRound(){
         mag.setPosition(0.318);
         sleep(150);
-        mag.setPosition(0);
+        mag.setPosition(0.47);
     }
     public void setTilt(double angle){
         tilt.setPosition(12);
