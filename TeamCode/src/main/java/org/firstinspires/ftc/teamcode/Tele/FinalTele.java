@@ -90,7 +90,7 @@ public class FinalTele extends LinearOpMode {
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
         //0.25, 0.5, x
-        mag.setPosition(0);
+        mag.setPosition(0.47);
         tilt.setPosition(0.13);
         flap.setPosition(0);
         telemetry.addData("Status", "Initialized");
@@ -211,7 +211,7 @@ public class FinalTele extends LinearOpMode {
 
                 mag.setPosition(0.32);
                 sleep(150);
-                mag.setPosition(.5);
+                mag.setPosition(.47);
                 sleep(150);
                 i++;
                 telemetry.addData("i", i);

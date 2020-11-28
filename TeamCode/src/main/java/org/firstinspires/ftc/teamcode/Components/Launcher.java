@@ -27,7 +27,7 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
-        mag.setPosition(0);
+        mag.setPosition(.47);
         tilt.setPosition(0.13);
         flap.setPosition(0);
     }
@@ -72,7 +72,7 @@ public class Launcher {
         for(int i = 0; i < 3; i++){
             mag.setPosition(0.32);
             sleep(150);
-            mag.setPosition(.5);
+            mag.setPosition(.47);
             sleep(150);
         }
     }
