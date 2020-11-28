@@ -11,6 +11,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     boolean reverse, ninja, armUp, flapUp;
     double lastTime = System.currentTimeMillis();
     double multiplier = 1;
+    public final double COUNTS_PER_INCH = 3072;
     @Override
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18);
@@ -22,6 +23,13 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wobble();
             robot.intake(-gamepad2.right_stick_y);
             shooter();
+            telemetry.addData("X Position", robot.position.getX() / COUNTS_PER_INCH);
+            telemetry.addData("Y Position", robot.position.getY() / COUNTS_PER_INCH);
+
+            telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
+
+
+            telemetry.update();
         }
     }
     private void setMultiplier(){
