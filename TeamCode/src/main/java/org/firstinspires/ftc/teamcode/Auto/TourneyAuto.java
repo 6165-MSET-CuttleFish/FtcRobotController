@@ -36,6 +36,6 @@ public class TourneyAuto extends LinearOpMode {
 
     }
     public void case4(){
-        robot.goTo(Robot.A, 0.4, 0, 0.3);
+        robot.goToPosition(Robot.A, 0.4, 0, 2);
     }
 }
