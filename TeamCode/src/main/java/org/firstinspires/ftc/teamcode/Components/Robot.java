@@ -124,27 +124,45 @@ public class Robot {
     public static int index = 0;
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        if(distance < 5) {
-            setMovement(0, 0, 0);
-            index ++;
-            return;
+        while(distance > 2) {
+            distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+
+            double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+
+            double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+            //System.out.println("Rel " + relAngleToPoint);
+            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+
+            double movement_x = movementXPower * power;
+            double movement_y = movementYPower * power;
+            double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
+            double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            setMovement(movement_x, movement_y, movement_turn);
         }
-        distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+        setMovement(0, 0, 0);
+    }
+    public void linearGoTo(Coordinate pt, double power){
+        double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
+        while(distance > 2) {
+            distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
-        double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+            double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
 
-        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
-        //System.out.println("Rel " + relAngleToPoint);
-        double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
-        double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
-        double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-        double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+            double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+            //System.out.println("Rel " + relAngleToPoint);
+            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
 
-        double movement_x = movementXPower * power;
-        double movement_y = movementYPower * power;
-        double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-        double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-        setMovement(movement_x, movement_y, movement_turn);
+            double movement_x = movementXPower * power;
+            double movement_y = movementYPower * power;
+            setMovement(movement_x, movement_y, 0);
+        }
+        setMovement(0, 0, 0);
     }
     public void setMovement(double lx, double ly, double rx){
         topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
