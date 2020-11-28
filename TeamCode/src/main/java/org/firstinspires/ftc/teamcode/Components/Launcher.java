@@ -12,7 +12,7 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 public class Launcher {
     static final double launcherHeight = 0.2032;
-    static final double V = 8.85; // 354 in/s
+    static final double V = 9.9059;
     static final double g = -9.08711677875;
     public DcMotor flywheel, flywheel1;
     public Servo mag, flap, tilt;
@@ -32,7 +32,7 @@ public class Launcher {
         flap.setPosition(0);
     }
 
-    public static void findAngle(double d, targets t, Servo flap){
+    public static void findAngle(double d, targets t/*, Servo flap*/){
         double goalHeight = 0;
         if(t == targets.highGoal) goalHeight = 35.5;
         else if(t == targets.lowGoal) goalHeight = 17;
@@ -41,8 +41,8 @@ public class Launcher {
         double theta;
         double h = goalHeight - launcherHeight;
         theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        //System.out.println(theta);
-        flap.setPosition(setAngle(theta));
+        System.out.println(theta);
+        //flap.setPosition(setAngle(theta));
     }
     public static double findAngle(Goal goal, Coordinate position){
         double d = goal.x - position.x;//position.distanceTo(goal);
@@ -91,9 +91,9 @@ public class Launcher {
     public void flapDown(){
         flap.setPosition(0);
     }
-//    public static void main(String[] args){
-//        findAngle(2, targets.highGoal);
-//    }
+    public static void main(String[] args){
+        findAngle(inchesToMeters(36), targets.highGoal);
+    }
     enum targets{
         highGoal,
         lowGoal,
