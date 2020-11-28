@@ -161,6 +161,7 @@ public class Robot {
             botLeft.setPower(Range.clip(ly - lx + rx, -power, power));
             botRight.setPower(Range.clip(ly + lx - rx, -power, power));
         }
+        setMovement(0, 0, 0);
     }
     private double calculateX(double desiredAngle, double speed) {
         return Math.sin(Math.toRadians(desiredAngle)) * speed;
