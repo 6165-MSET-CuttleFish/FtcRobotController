@@ -21,10 +21,14 @@ public class FinalTele extends LinearOpMode {
     public boolean flapUp = false, armUp = false;
     public OdometryGlobalCoordinatePosition position;
     public final double COUNTS_PER_INCH = 3072;
+    public DcMotor verticalLeft, verticalRight, horizontal;
     public void runOpMode() throws InterruptedException {
 
         initialize();
-        position = new OdometryGlobalCoordinatePosition(fr, bl, br, COUNTS_PER_INCH, 75, 0, 0);
+        //position = new OdometryGlobalCoordinatePosition(fr, br, bl, COUNTS_PER_INCH, 75, 0, 0);
+        position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 75, 0, 0, 0);
+        //position = new OdometryGlobalCoordinatePosition(br, bl, fr, COUNTS_PER_INCH, 75, 0, 0);
+
         Thread positionThread = new Thread(position);
         positionThread.start();
         waitForStart();
@@ -36,9 +40,9 @@ public class FinalTele extends LinearOpMode {
             shooter();
             telemetry.addData("X Position", position.getX() / COUNTS_PER_INCH);
             telemetry.addData("Y Position", position.getY() / COUNTS_PER_INCH);
-            telemetry.addData("left encoder", fr.getCurrentPosition());
-            telemetry.addData("right encoder", bl.getCurrentPosition());
-            telemetry.addData("horizontal encoder", br.getCurrentPosition());
+            telemetry.addData("left encoder", bl.getCurrentPosition());
+            telemetry.addData("right encoder", br.getCurrentPosition());
+            telemetry.addData("horizontal encoder", fr.getCurrentPosition());
             telemetry.addData("Orientation (Degrees)", position.returnOrientation());
             telemetry.addData("Thread Active", positionThread.isAlive());
 
@@ -58,6 +62,15 @@ public class FinalTele extends LinearOpMode {
 
         intakeR.setDirection( DcMotorSimple.Direction.FORWARD);
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
+        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -77,7 +90,7 @@ public class FinalTele extends LinearOpMode {
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
         //0.25, 0.5, x
-        mag.setPosition(0);
+        mag.setPosition(0.47);
         tilt.setPosition(0.13);
         flap.setPosition(0);
         telemetry.addData("Status", "Initialized");
@@ -177,17 +190,17 @@ public class FinalTele extends LinearOpMode {
         }
 
         if(gamepad2.right_bumper==true){
-            mag.setPosition(0.318);
+            mag.setPosition(0.32);
             sleep(150);
-            mag.setPosition(0);
+            mag.setPosition(.47);
         }
         if(gamepad2.left_trigger >=0.1){
-            tilt.setPosition(0.31);
+            tilt.setPosition(0.297);
             flywheel.setPower(-1);
             flywheel1.setPower(-1);
         }
         else{
-            tilt.setPosition(0.15);
+            tilt.setPosition(0.13);
             flywheel.setPower(0);
             flywheel1.setPower(0);
 
@@ -197,9 +210,9 @@ public class FinalTele extends LinearOpMode {
             while(i<3){
 
                 mag.setPosition(0.32);
-                sleep(150);
-                mag.setPosition(.5);
-                sleep(150);
+                sleep(350);
+                mag.setPosition(.47);
+                sleep(350);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();

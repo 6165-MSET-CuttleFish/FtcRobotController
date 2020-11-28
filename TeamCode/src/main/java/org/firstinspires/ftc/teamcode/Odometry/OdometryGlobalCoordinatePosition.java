@@ -20,8 +20,7 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
 
     //Position variables used for storage and calculations
     double verticalRightEncoderWheelPosition = 0, verticalLeftEncoderWheelPosition = 0, normalEncoderWheelPosition = 0,  changeInRobotOrientation = 0;
-    public double robotGlobalXCoordinatePosition = 0, robotGlobalYCoordinatePosition = 0;
-    public double robotOrientationRadians = 0;
+    private double robotOrientationRadians = 0;
     private double previousVerticalRightEncoderWheelPosition = 0, previousVerticalLeftEncoderWheelPosition = 0, prevNormalEncoderWheelPosition = 0;
 
     //Algorithm constants
@@ -47,15 +46,19 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
      * @param horizontalEncoder horizontal odometry encoder, perpendicular to the other two odometry encoder wheels
      * @param threadSleepDelay delay in milliseconds for the GlobalPositionUpdate thread (50-75 milliseconds is suggested)
      */
-    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay, double x, double y){
+    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay, double x, double y, double orientation){
+        super(x, y);
         this.verticalEncoderLeft = verticalEncoderLeft;
         this.verticalEncoderRight = verticalEncoderRight;
         this.horizontalEncoder = horizontalEncoder;
         sleepTime = threadSleepDelay;
-
+        this.robotOrientationRadians = 0;
+        robotOrientationRadians = orientation;
         robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
         this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
         this.COUNTS_PER_INCH = COUNTS_PER_INCH;
+        reverseLeftEncoder();
+        reverseRightEncoder();
     }
 
     /**
@@ -80,11 +83,12 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
 
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;
-
+        double dY = p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians);
+        double dX = p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians);
         //Calculate and update the position values
         //robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
         //robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
-        add(p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians), p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
+        add(dX, -dY);
         previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
         previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
         prevNormalEncoderWheelPosition = normalEncoderWheelPosition;
@@ -106,8 +110,8 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
      * Returns the robot's global orientation
      * @return global orientation, in degrees
      */
-    public double returnOrientation(){ return Math.toDegrees(robotOrientationRadians) % 360; }
-
+    public double returnOrientation(){ return -Math.toDegrees(robotOrientationRadians) % 360; }
+    public double radians(){ return -robotOrientationRadians; }
     /**
      * Stops the position update thread
      */

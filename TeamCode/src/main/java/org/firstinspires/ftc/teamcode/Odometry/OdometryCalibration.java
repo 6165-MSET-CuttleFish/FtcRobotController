@@ -30,14 +30,14 @@ public class OdometryCalibration extends LinearOpMode {
 
     //Hardware Map Names for drive motors and odometry wheels. THIS WILL CHANGE ON EACH ROBOT, YOU NEED TO UPDATE THESE VALUES ACCORDINGLY
     String rfName = "fr", rbName = "br", lfName = "fl", lbName = "bl";
-    String verticalLeftEncoderName = rfName, verticalRightEncoderName = lbName, horizontalEncoderName = rbName;
+    String verticalLeftEncoderName = lbName, verticalRightEncoderName = rbName, horizontalEncoderName = rfName;
 
     final double PIVOT_SPEED = 0.3;
 
     //The amount of encoder ticks for each inch the robot moves. THIS WILL CHANGE FOR EACH ROBOT AND NEEDS TO BE UPDATED HERE
     final double COUNTS_PER_INCH = 3072;
     //307.699557;
-
+    double initialAngle;
     ElapsedTime timer = new ElapsedTime();
 
     double horizontalTickOffset = 0;
@@ -71,7 +71,7 @@ public class OdometryCalibration extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-
+        initialAngle = imu.getAngularOrientation().firstAngle;
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
         while(getZAngle() < 90 && opModeIsActive()){
             right_front.setPower(-PIVOT_SPEED);
@@ -169,8 +169,12 @@ public class OdometryCalibration extends LinearOpMode {
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        right_back.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+        left_back.setDirection(DcMotorSimple.Direction.REVERSE);
+        //right_front.setDirection(DcMotorSimple.Direction.REVERSE);
+        //right_back.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         telemetry.addData("Status", "Hardware Map Init Complete");
@@ -183,7 +187,13 @@ public class OdometryCalibration extends LinearOpMode {
      * @return the angle of the robot
      */
     private double getZAngle(){
-        return (-imu.getAngularOrientation().firstAngle);
+        double val =  (-imu.getAngularOrientation().firstAngle) + initialAngle;
+        if (val > 180) {
+            val -= 360;
+        } else if (val < -180) {
+            val += 360;
+        }
+        return val;
     }
 
     /**
