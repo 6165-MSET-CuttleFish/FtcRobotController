@@ -34,7 +34,7 @@ public class Launcher {
     }
 
     public static void main(String[] args){
-        findAngle(inchesToMeters(36), targets.highGoal);
+        findAngle(2, targets.highGoal);
     }
     enum targets{
         highGoal,
