@@ -38,8 +38,8 @@ public class FinalTele extends LinearOpMode {
             wobbleArm();
             intake();
             shooter();
-            telemetry.addData("X Position", position.getX() / COUNTS_PER_INCH);
-            telemetry.addData("Y Position", position.getY() / COUNTS_PER_INCH);
+            telemetry.addData("X Position", position.getX() );
+            telemetry.addData("Y Position", position.getY() );
             telemetry.addData("left encoder", bl.getCurrentPosition());
             telemetry.addData("right encoder", br.getCurrentPosition());
             telemetry.addData("horizontal encoder", fr.getCurrentPosition());
