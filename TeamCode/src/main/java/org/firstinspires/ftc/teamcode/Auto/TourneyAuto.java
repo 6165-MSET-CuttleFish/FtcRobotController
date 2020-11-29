@@ -18,10 +18,10 @@ public class TourneyAuto extends LinearOpMode {
         robot.scan();
         robot.unlockIntake();
         robot.launcher.findAngle(robot.hiGoal, robot.position);
-        robot.launcher.setFlyWheel(1);
+        //robot.launcher.setFlyWheel(1);
         sleep(500);
         //robot.launcher.magazineShoot();
-        robot.lockIntake();
+        //robot.lockIntake();
         if(robot.discs == 4){
             case4();
         }
