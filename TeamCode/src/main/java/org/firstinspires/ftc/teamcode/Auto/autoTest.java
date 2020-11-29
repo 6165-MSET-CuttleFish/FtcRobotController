@@ -59,13 +59,15 @@ public class autoTest extends LinearOpMode {
         robot.setMovement(0, 0, 0);
     }
     public void soo(){
-        goTo(new Coordinate(28, 24), 0.4, 0, 0.2);
-        goTo(new Coordinate(28, 30), 0.4, 0, 0.2);
+        goTo(new Coordinate(28, 24), 0.4, 0, 0);
+        sleep(1000);
+        goTo(new Coordinate(40, 12), 0.4, 0, 0.5);
+        sleep(1000);
         goTo(new Coordinate(14, 24), 0.4, 0, 0.2);
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - robot.position.getX(), pt.y - robot.position.y);
-        while(distance > 2) {
+        while(distance > 4) {
             distance = Math.hypot(pt.x - robot.position.x, pt.y - robot.position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - robot.position.y, pt.x - robot.position.x);

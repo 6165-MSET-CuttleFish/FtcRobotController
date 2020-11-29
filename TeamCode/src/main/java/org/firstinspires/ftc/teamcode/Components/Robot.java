@@ -66,7 +66,7 @@ public class Robot {
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
-        position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, x, y, robotOrientation);
     }
     public void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pwrShots[0] = new Goal(144, 68.25, 23.5);
@@ -118,13 +118,13 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(topLeft, topRight, botLeft, 3072, 760, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, 0, 0, 0);
         }
     }
     public static int index = 0;
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(distance > 2) {
+        while(distance > 5) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);

@@ -14,11 +14,11 @@ public class TourneyAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
         robot.autoInit();
-        telemetry.addData("orient", robot.position.returnOrientation());
         waitForStart();
         robot.scan();
         robot.launcher.findAngle(robot.hiGoal, robot.position);
         robot.launcher.setFlyWheel(1);
+        sleep(500);
         robot.launcher.magazineShoot();
         if(robot.discs == 4){
             case4();

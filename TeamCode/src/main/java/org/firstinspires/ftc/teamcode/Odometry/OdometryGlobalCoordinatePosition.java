@@ -59,6 +59,7 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         this.COUNTS_PER_INCH = COUNTS_PER_INCH;
         reverseLeftEncoder();
         reverseRightEncoder();
+        //reverseNormalEncoder();
     }
 
     /**
@@ -84,12 +85,12 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;
         //temp swap
-        double dX = p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians);
-        double dY = p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians);
+        double dY = p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians);
+        double dX = p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians);
         //Calculate and update the position values
         //robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
         //robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
-        add(-dX/COUNTS_PER_INCH, dY/COUNTS_PER_INCH);
+        add(1.73*dX/COUNTS_PER_INCH, -1.73*dY/COUNTS_PER_INCH);
         previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
         previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
         prevNormalEncoderWheelPosition = normalEncoderWheelPosition;
