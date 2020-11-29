@@ -96,6 +96,8 @@ public class Robot {
         arm2.setPosition (0.92);
         grabber = map.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
+        //0.25, 0.5, x
+
 
         launcher = new Launcher(map);
 

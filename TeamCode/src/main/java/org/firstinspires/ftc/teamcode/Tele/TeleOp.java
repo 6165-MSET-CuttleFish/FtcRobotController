@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
-    boolean reverse, ninja, armUp, flapUp;
+    boolean ninja, armUp, flapUp;
     double lastTime = System.currentTimeMillis();
     double multiplier = 1;
     public final double COUNTS_PER_INCH = 3072;
@@ -20,11 +20,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
         while(opModeIsActive()){
             setMultiplier();
             robot.setMovement(gamepad1.left_stick_x * multiplier, gamepad1.left_stick_y * multiplier, gamepad1.right_stick_x * multiplier);
-
             wobble();
             robot.intake(-gamepad2.right_stick_y);
             shooter();
-
             telemetry.addData("X Position", robot.position.getX() / COUNTS_PER_INCH);
             telemetry.addData("Y Position", robot.position.getY() / COUNTS_PER_INCH);
             telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
@@ -40,16 +38,10 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(ninja && gamepad1.left_bumper && System.currentTimeMillis() >= lastTime + 300){
             ninja = false;
-            multiplier /= 3;
+            multiplier *= 3;
             lastTime = System.currentTimeMillis();
         }
-        if(!reverse && gamepad1.right_bumper && System.currentTimeMillis() >= lastTime + 300){
-            reverse = true;
-            multiplier = -multiplier;
-            lastTime = System.currentTimeMillis();
-        }
-        else if(reverse && gamepad1.right_bumper && System.currentTimeMillis() >= lastTime + 300){
-            reverse = false;
+        if(gamepad1.right_bumper && System.currentTimeMillis() >= lastTime + 300){
             multiplier = -multiplier;
             lastTime = System.currentTimeMillis();
         }
