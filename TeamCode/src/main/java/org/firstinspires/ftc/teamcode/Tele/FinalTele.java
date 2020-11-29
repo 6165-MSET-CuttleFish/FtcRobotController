@@ -84,12 +84,11 @@ public class FinalTele extends LinearOpMode {
         tilt = hardwareMap.get(Servo.class, "tilt");
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
-        arm1.setDirection( Servo.Direction.REVERSE);
-        arm1.setPosition(0.92);
-        arm2.setPosition (0.92);
+
+        arm1.setPosition(0.07);
+        arm2.setPosition (0.93);
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
-        //0.25, 0.5, x
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
         flap.setPosition(0);
@@ -138,22 +137,25 @@ public class FinalTele extends LinearOpMode {
     }
     public void wobbleArm(){
         if(gamepad2.a == true && armUp == false){
-            arm1.setPosition(0.92);
-            arm2.setPosition (0.92);
+            arm1.setPosition(0.45);
+            arm2.setPosition (0.52);
             armUp = true;
-        }
-        else if(gamepad2.a == true && armUp == true){
-            arm1.setPosition(0.13);
-            arm2.setPosition (0.13);
-            armUp = false;
-        }
-
-        if(gamepad2.x == true && grabber.getPosition()>0.7){
-            grabber.setPosition(0.5);
             sleep(100);
         }
-        else if(gamepad2.x == true && grabber.getPosition()<0.7){
-            grabber.setPosition(0.92);
+        else if(gamepad2.a == true && armUp == true){
+            //0.07 init
+            arm1.setPosition(0.91);
+            arm2.setPosition (0.07);
+            armUp = false;
+            sleep(100);
+        }
+
+        if(gamepad2.x == true && grabber.getPosition()>0.3){
+            grabber.setPosition(0.15);
+            sleep(100);
+        }
+        else if(gamepad2.x == true && grabber.getPosition()<0.3){
+            grabber.setPosition(0.43);
             sleep(100);
         }
     }
