@@ -22,7 +22,7 @@ public class autoTest extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        foo();
+        soo();
         //sleep(500);
         //boo();
         telemetry.addData("Done", "");
@@ -44,6 +44,8 @@ public class autoTest extends LinearOpMode {
     }
     public void soo(){
         goTo(new Coordinate(28, 24), 0.4, 0, 0.2);
+        goTo(new Coordinate(28, 30), 0.4, 0, 0.2);
+        goTo(new Coordinate(14, 24), 0.4, 0, 0.2);
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - robot.position.getX(), pt.y - robot.position.y);
