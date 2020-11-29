@@ -56,9 +56,7 @@ public class FinalTele extends LinearOpMode {
         if(gamepad1.x==true){
             leftIntakeHolder.setPosition(0.5);
             rightIntakeHolder.setPosition(1);
-            sleep(200);
-            leftIntakeHolder.setPosition(0.78);
-            rightIntakeHolder.setPosition(0.81);
+
         }
 
     }
@@ -108,8 +106,8 @@ public class FinalTele extends LinearOpMode {
         leftIntakeHolder.setPosition(0.5);
         rightIntakeHolder.setPosition(1);
         sleep(200);
-        leftIntakeHolder.setPosition(0.78);
-        rightIntakeHolder.setPosition(0.81);
+        //leftIntakeHolder.setPosition(0.78);
+        //rightIntakeHolder.setPosition(0.81);
         telemetry.addData("Status", "Initialized");
     }
     public void drive(){
