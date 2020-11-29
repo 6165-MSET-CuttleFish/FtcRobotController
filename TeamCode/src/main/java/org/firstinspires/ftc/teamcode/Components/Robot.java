@@ -144,25 +144,6 @@ public class Robot {
         }
         setMovement(0, 0, 0);
     }
-    public static void goTo(double x, double y, double power, double preferredAngle, double turnSpeed){
-        double distance = Math.hypot(x - position.x, y - position.y);
-
-        //double absAngleToTarget = Math.atan2(y - worldAngle_rad, x - worldAngle_rad);
-        double absAngleToTarget = Math.atan2(y - position.y, x - position.x);
-        //System.out.println("Abs " + absAngleToTarget);
-        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
-        //System.out.println("Rel " + relAngleToPoint);
-        double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
-        double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
-        double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-        double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-//        double relativeTurnAngle = relAngleToPoint - Math.toRadians(180) + preferredAngle;
-//        double movementTurn = Range.clip(relativeTurnAngle/Math.toRadians(30),-1,1)*turnSpeed;
-        double movement_x = movementXPower * power;
-        double movement_y = movementYPower * power;
-        double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-        double movement_turn = distance > 10 ? Range.clip(relTurnAngle/Math.toRadians(30), -1, 1) * turnSpeed : 0;
-    }
     public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
         double distanceToX = pt.x - position.getX();
         double distanceToY = pt.y - position.getY();
@@ -172,8 +153,8 @@ public class Robot {
             distanceToY = pt.y - position.getY();
             distance = Math.hypot(distanceToX, distanceToY);
             double robotMovementAngle = Math.toDegrees(Math.atan2(distanceToX, distanceToY));
-            double ly = calculateY(robotMovementAngle, power);
-            double lx = calculateX(robotMovementAngle, power);
+            double lx = calculateY(robotMovementAngle, power);
+            double ly = calculateX(robotMovementAngle, power);
             double rx = -(desiredOrientation - position.returnOrientation());
             topLeft.setPower(Range.clip(ly + lx + rx, -power, power));
             topRight.setPower(Range.clip(ly - lx - rx, -power, power));
