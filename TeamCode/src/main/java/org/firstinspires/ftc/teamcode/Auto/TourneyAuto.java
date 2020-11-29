@@ -34,13 +34,13 @@ public class TourneyAuto extends LinearOpMode {
         robot.position.stop();
     }
     public void case0(){
-        robot.goToPosition(Robot.A, 0.4, 0, 2);
+        robot.goTo(Robot.A, 0.4, 0, 1);
     }
     public void case1(){
-        robot.goToPosition(Robot.B, 0.4, 0, 2);
+        robot.goTo(Robot.B, 0.4, 0, 1);
     }
     public void case4(){
-        robot.goToPosition(Robot.C, 0.4, 0, 2);
+        robot.goTo(Robot.C, 0.4, 0, 1);
 
     }
 }
