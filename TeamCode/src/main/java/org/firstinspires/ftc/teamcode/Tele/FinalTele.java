@@ -39,6 +39,7 @@ public class FinalTele extends LinearOpMode {
             wobbleArm();
             intake();
             shooter();
+            dropIntake ();
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
             telemetry.addData("left encoder", bl.getCurrentPosition());
@@ -104,6 +105,11 @@ public class FinalTele extends LinearOpMode {
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
         flap.setPosition(0.3);
+        leftIntakeHolder.setPosition(0.5);
+        rightIntakeHolder.setPosition(1);
+        sleep(200);
+        leftIntakeHolder.setPosition(0.78);
+        rightIntakeHolder.setPosition(0.81);
         telemetry.addData("Status", "Initialized");
     }
     public void drive(){
