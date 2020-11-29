@@ -15,7 +15,10 @@ public class TourneyAuto extends LinearOpMode {
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
         robot.autoInit();
         telemetry.addData("orient", robot.position.returnOrientation());
+        robot.grab();
+        robot.wobbleArmUp();
         waitForStart();
+
         robot.scan();
         robot.launcher.findAngle(robot.hiGoal, robot.position);
         robot.launcher.setFlyWheel(1);
@@ -29,16 +32,22 @@ public class TourneyAuto extends LinearOpMode {
         else{
             case0();
         }
+        robot.wobbleArmDown();
+        sleep(300);
+        robot.release();
+        sleep(300);
+        robot.wobbleArmUp();
+        robot.goTo(Robot.C, 0.4, 0, 1);
         robot.position.stop();
     }
     public void case0(){
-        robot.goToPosition(Robot.A, 0.4, 0, 2);
+        robot.goTo(Robot.A, 0.4, 0, 2);
     }
     public void case1(){
-        robot.goToPosition(Robot.B, 0.4, 0, 2);
+        robot.goTo(Robot.B, 0.4, 0, 2);
     }
     public void case4(){
-        robot.goToPosition(Robot.C, 0.4, 0, 2);
+        robot.goTo(Robot.C, 0.4, 0, 2);
 
     }
 }

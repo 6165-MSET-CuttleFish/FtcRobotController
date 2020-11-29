@@ -16,20 +16,6 @@ public class autoTest extends LinearOpMode {
         robot.autoInit();
         telemetry.addData("orient", robot.position.returnOrientation());
         waitForStart();
-        //robot.scan();
-        //robot.launcher.findAngle(robot.hiGoal, robot.position);
-//        robot.launcher.setFlyWheel(1);
-//        robot.launcher.magazineShoot();
-//        if(robot.discs == 4){
-//            case4();
-//        }
-//        else if(robot.discs == 1){
-//            case1();
-//        }
-//        else{
-//            case0();
-//        }
-        //case4();
         foo();
         telemetry.addData("Done", "");
         telemetry.update();
