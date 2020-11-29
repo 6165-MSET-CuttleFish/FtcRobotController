@@ -22,11 +22,10 @@ public class autoTest extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-<<<<<<< HEAD
+
         soo();
         //sleep(500);
         //boo();
-=======
         //robot.scan();
         //robot.launcher.findAngle(robot.hiGoal, robot.position);
 //        robot.launcher.setFlyWheel(1);
@@ -41,8 +40,7 @@ public class autoTest extends LinearOpMode {
 //            case0();
 //        }
         //case4();
-        foo();
->>>>>>> parent of 8832c67... l
+        //foo();
         telemetry.addData("Done", "");
         telemetry.update();
         robot.position.stop();
