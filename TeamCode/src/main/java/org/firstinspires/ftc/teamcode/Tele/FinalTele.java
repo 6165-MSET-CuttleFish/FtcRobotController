@@ -45,7 +45,7 @@ public class FinalTele extends LinearOpMode {
             telemetry.addData("horizontal encoder", fr.getCurrentPosition());
             telemetry.addData("Orientation (Degrees)", position.returnOrientation());
             telemetry.addData("Thread Active", positionThread.isAlive());
-
+            telemetry.addData("flap pos:", flap.getPosition ());
             telemetry.update();
         }
         position.stop();
@@ -91,7 +91,7 @@ public class FinalTele extends LinearOpMode {
         grabber.setPosition(0.92);
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
-        flap.setPosition(0);
+        flap.setPosition(0.3);
         telemetry.addData("Status", "Initialized");
     }
     public void drive(){
