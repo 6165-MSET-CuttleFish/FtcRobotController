@@ -98,8 +98,8 @@ public class Robot {
         grabber = map.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
 
-//        leftIntakeHolder = map.servo.get("liServo");
-//        rightIntakeHolder = map.servo.get("riServo");
+        leftIntakeHolder = map.servo.get("liServo");
+        rightIntakeHolder = map.servo.get("riServo");
         lockIntake();
 
 

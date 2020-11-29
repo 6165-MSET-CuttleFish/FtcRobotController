@@ -22,6 +22,7 @@ public class FinalTele extends LinearOpMode {
     public OdometryGlobalCoordinatePosition position;
     public final double COUNTS_PER_INCH = 3072;
     public DcMotor verticalLeft, verticalRight, horizontal;
+    public Servo rightIntakeHolder, leftIntakeHolder;
     public void runOpMode() throws InterruptedException {
 
         initialize();
@@ -49,6 +50,16 @@ public class FinalTele extends LinearOpMode {
             telemetry.update();
         }
         position.stop();
+    }
+    public void dropIntake(){
+        if(gamepad1.x==true){
+            leftIntakeHolder.setPosition(0.5);
+            rightIntakeHolder.setPosition(1);
+            sleep(200);
+            leftIntakeHolder.setPosition(0.78);
+            rightIntakeHolder.setPosition(0.81);
+        }
+
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
@@ -84,7 +95,8 @@ public class FinalTele extends LinearOpMode {
         tilt = hardwareMap.get(Servo.class, "tilt");
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
-
+        leftIntakeHolder = hardwareMap.get(Servo.class,"liServo");
+        rightIntakeHolder = hardwareMap.get(Servo.class,"riServo");
         arm1.setPosition(0.07);
         arm2.setPosition (0.93);
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
