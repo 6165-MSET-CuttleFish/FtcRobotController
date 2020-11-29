@@ -61,7 +61,7 @@ public class autoTest extends LinearOpMode {
     public void soo(){
         goTo(new Coordinate(28, 24), 0.4, 0, 0);
         sleep(1000);
-        goTo(new Coordinate(40, 12), 0.4, 0, 0.5);
+        goTo(new Coordinate(40, 12), 0.4, Math.toRadians(50), 0.5);
         sleep(1000);
         goTo(new Coordinate(14, 24), 0.4, 0, 0.2);
     }
@@ -87,7 +87,7 @@ public class autoTest extends LinearOpMode {
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            robot.setMovement(movement_x, movement_y, 0);
+            robot.setMovement(movement_x, movement_y, -movement_turn);
         }
         robot.setMovement(0, 0, 0);
     }

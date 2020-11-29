@@ -49,6 +49,7 @@ public class Robot {
     public Servo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber;
+    public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Goal hiGoal = new Goal(144, 37.5, 35.5);//142.75
     public static Goal loGoal = new Goal(144, 37.5, 17);
@@ -96,7 +97,10 @@ public class Robot {
         arm2.setPosition (0.92);
         grabber = map.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
-        //0.25, 0.5, x
+
+//        leftIntakeHolder = map.servo.get("liServo");
+//        rightIntakeHolder = map.servo.get("riServo");
+        lockIntake();
 
 
         launcher = new Launcher(map);
@@ -145,6 +149,14 @@ public class Robot {
             setMovement(movement_x, movement_y, movement_turn);
         }
         setMovement(0, 0, 0);
+    }
+    public void lockIntake(){
+        leftIntakeHolder.setPosition(0.78);
+        rightIntakeHolder.setPosition(0.81);
+    }
+    public void unlockIntake(){
+        leftIntakeHolder.setPosition(0.5);
+        rightIntakeHolder.setPosition(1);
     }
     public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
         double distanceToX = pt.x - position.getX();
