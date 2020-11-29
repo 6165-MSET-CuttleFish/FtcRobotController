@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 
 @Autonomous
 public class testAutoImplement extends LinearOpMode{
-    //Robot robot;
     BNO055IMU imu;
     public void runOpMode() throws InterruptedException{
         //robot = new Robot(DcMotor.RunMode.RUN_USING_ENCODER, hardwareMap, 0, 0, 18, 18);

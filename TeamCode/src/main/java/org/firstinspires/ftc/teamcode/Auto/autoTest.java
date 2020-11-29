@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 @Autonomous
-public class TourneyAuto extends LinearOpMode {
+public class autoTest extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
@@ -16,29 +16,27 @@ public class TourneyAuto extends LinearOpMode {
         robot.autoInit();
         telemetry.addData("orient", robot.position.returnOrientation());
         waitForStart();
-        robot.scan();
-        robot.launcher.findAngle(robot.hiGoal, robot.position);
-        robot.launcher.setFlyWheel(1);
-        robot.launcher.magazineShoot();
-        if(robot.discs == 4){
-            case4();
-        }
-        else if(robot.discs == 1){
-            case1();
-        }
-        else{
-            case0();
-        }
+        //robot.scan();
+        //robot.launcher.findAngle(robot.hiGoal, robot.position);
+//        robot.launcher.setFlyWheel(1);
+//        robot.launcher.magazineShoot();
+//        if(robot.discs == 4){
+//            case4();
+//        }
+//        else if(robot.discs == 1){
+//            case1();
+//        }
+//        else{
+//            case0();
+//        }
+        //case4();
+        foo();
+        telemetry.addData("Done", "");
+        telemetry.update();
         robot.position.stop();
     }
-    public void case0(){
-        robot.goToPosition(Robot.A, 0.4, 0, 2);
-    }
-    public void case1(){
-        robot.goToPosition(Robot.B, 0.4, 0, 2);
-    }
-    public void case4(){
-        robot.goToPosition(Robot.C, 0.4, 0, 2);
+    public void foo(){
+        robot.goToPosition(new Coordinate(28, 24), 0.4, 0, 2);
 
     }
 }
