@@ -54,6 +54,9 @@ public class Robot {
     public static Goal hiGoal = new Goal(144, 37.5, 35.5);//142.75
     public static Goal loGoal = new Goal(144, 37.5, 17);
     public static Goal[] pwrShots = new Goal[3];
+
+    public static Coordinate[] pwrShotLocals = new Coordinate[3];
+
     public static Coordinate A = new Coordinate(96, 12);
     public static Coordinate B = new Coordinate(120, 36);
     public static Coordinate C = new Coordinate(120, 12);
@@ -69,10 +72,14 @@ public class Robot {
         construct(runMode, imported, robotLength, robotWidth);
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, x, y, robotOrientation);
     }
-    public void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
+    private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
+
+        pwrShotLocals[0] = new Coordinate(60, 68.25);
+        pwrShotLocals[1] = new Coordinate(60, 60.75);
+        pwrShotLocals[2] = new Coordinate(60, 53.25);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;
@@ -278,12 +285,6 @@ public class Robot {
         }
     }
 
-    enum heading{
-        forward,
-        backward,
-        left,
-        right
-    }
 
     private void initVuforia() {
         /*

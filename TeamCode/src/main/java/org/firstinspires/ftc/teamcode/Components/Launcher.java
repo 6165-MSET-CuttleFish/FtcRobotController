@@ -31,7 +31,9 @@ public class Launcher {
         tilt.setPosition(0.13);
         flap.setPosition(0);
     }
-
+    public void aimAt(Goal g, Coordinate p){
+        double angle = findAngle(g, p);
+    }
     public static void findAngle(double d, targets t, Servo flap){
         double goalHeight = 0;
         if(t == targets.highGoal) goalHeight = 35.5;
@@ -79,11 +81,8 @@ public class Launcher {
     }
     public void singleRound(){
         mag.setPosition(0.318);
-        sleep(150);
+        sleep(300);
         mag.setPosition(0.47);
-    }
-    public void setTilt(double angle){
-        tilt.setPosition(12);
     }
     public void flapUp(){
         flap.setPosition(0.06);
