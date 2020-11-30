@@ -23,6 +23,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(500);
         //robot.launcher.magazineShoot();
         //robot.lockIntake();
+        robot.discs = 0;
         if(robot.discs == 4){
             case4();
         }

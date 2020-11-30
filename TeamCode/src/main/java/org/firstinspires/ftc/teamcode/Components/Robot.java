@@ -146,7 +146,8 @@ public class Robot {
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            setMovement(movement_x, movement_y, -movement_turn);
+            //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            setMovement(movement_x, movement_y, 0);
         }
         setMovement(0, 0, 0);
     }
