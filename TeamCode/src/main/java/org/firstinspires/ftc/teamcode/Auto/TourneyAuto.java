@@ -14,6 +14,7 @@ public class TourneyAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
         robot.autoInit();
+        Coordinate homePos = new Coordinate(robot.position);
         waitForStart();
         robot.scan();
         robot.unlockIntake();
@@ -31,6 +32,7 @@ public class TourneyAuto extends LinearOpMode {
         else{
             case0();
         }
+        robot.goTo(homePos, 0.5, 0, 0.5);
         robot.position.stop();
     }
     public void case0(){
@@ -40,7 +42,6 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(Robot.B, 0.4, 0, 1);
     }
     public void case4(){
-        robot.goTo(Robot.C, 0.4, 0, 1);
-
+        robot.goTo(Robot.C, 0.4, -90, 0.5);
     }
 }
