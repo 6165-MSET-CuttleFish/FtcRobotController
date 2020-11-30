@@ -63,8 +63,9 @@ public class Robot {
 
     public Launcher launcher;
     Orientation orientation = new Orientation();
-    Orientation lastAngles = new Orientation();
     PIDController pidRotate, pidDrive, pidStrafe, pidCurve, pidCorrection;
+    double globalAngle, power = .30, correction, rotation, lastAngles;
+
     DcMotor.RunMode newRun;
     HardwareMap map;
 
@@ -73,6 +74,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
+        pidRotate = new PIDController(.003, .00003, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
@@ -232,16 +234,17 @@ public class Robot {
     private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
-
     private String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-//    public void aimAt(Launcher.targets t){
-//        double d = position.distanceTo(target);
-//        launcher.findAngle(d, flap);
-//    }
     public double getHeading() {//for overall
         return position.returnOrientation();
+    }
+    private void resetAngle()
+    {
+        lastAngles =  position.returnOrientation();
+
+        globalAngle = 0;
     }
     public final void idle() {
         Thread.yield();
@@ -285,8 +288,103 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
+    public void rotate(double degrees, double pwr){
+        while(Math.abs(Math.toDegrees(position.radians()) - degrees) > 2) {
+            double deg = Math.toDegrees(position.radians());
+            setMovement(0, 0 , deg > degrees ? pwr : -pwr);
+        }
+        setMovement(0, 0, 0);
+    }
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
+        double angles = position.returnOrientation();
 
+        double deltaAngle = angles - lastAngles;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+    public void pidRotate(int degrees, double power)
+    {
+        // restart imu angle tracking.
+        resetAngle();
+
+        // if degrees > 359 we cap at 359 with same sign as original degrees.
+        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
+
+        // start pid controller. PID controller will monitor the turn angle with respect to the
+        // target angle and reduce power as we approach the target angle. This is to prevent the
+        // robots momentum from overshooting the turn after we turn off the power. The PID controller
+        // reports onTarget() = true when the difference between turn angle and target angle is within
+        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
+        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
+        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
+        // turning the robot back toward the setpoint value.
+
+        pidRotate.reset();
+        pidRotate.setSetpoint(degrees);
+        pidRotate.setInputRange(0, degrees);
+        pidRotate.setOutputRange(0, power);
+        pidRotate.setTolerance(1);
+        pidRotate.enable();
+
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+
+        // rotate until turn is completed.
+
+        if (degrees < 0)
+        {
+            // On right turn we have to get off zero first.
+            while (getAngle() == 0)
+            {
+                setMovement(0, 0 , power);
+//                leftMotor.setPower(power);
+//                rightMotor.setPower(-power);
+                sleep(100);
+            }
+
+            do
+            {
+                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+//                leftMotor.setPower(-power);
+//                rightMotor.setPower(power);
+                setMovement(0, 0, -power);
+            } while (!pidRotate.onTarget());
+        }
+        else    // left turn.
+            do
+            {
+                power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+//                leftMotor.setPower(-power);
+//                rightMotor.setPower(power);
+                setMovement(0, 0, -power);
+            } while (!pidRotate.onTarget());
+
+        // turn the motors off.
+        setMovement(0, 0 ,0);
+
+        rotation = getAngle();
+
+        // wait for rotation to stop.
+        sleep(500);
+
+        // reset angle tracking on new heading.
+        resetAngle();
+    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
