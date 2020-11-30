@@ -4,11 +4,11 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import java.util.ArrayList;
 
-public class Path{
+public class Line {
     ArrayList<Coordinate> list = new ArrayList<Coordinate>();
     double slope;
     double constant;
-    public Path(Coordinate start, Coordinate end){
+    public Line(Coordinate start, Coordinate end){
         list.add(start);
         list.add(end);
     }
@@ -19,12 +19,7 @@ public class Path{
       return (y- constant)/slope;
     }
 
-    /**
-     * returns coordinate of closest proximity on the line
-     * @param curr
-     * @return
-     */
-    public Coordinate getDesiredCoordinate(Coordinate curr){
+    public Coordinate getClosestPt(Coordinate curr){
         return list.get(1);
     }
     public void addPoint(Coordinate n){
