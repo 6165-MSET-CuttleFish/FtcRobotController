@@ -102,10 +102,10 @@ public class FinalTele extends LinearOpMode {
         grabber.setPosition(0.92);
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
-        flap.setPosition(0.3);
-        leftIntakeHolder.setPosition(0.5);
-        rightIntakeHolder.setPosition(1);
-        sleep(200);
+        flap.setPosition(0.1);
+        leftIntakeHolder.setPosition(0.1);
+        rightIntakeHolder.setPosition(0.7);
+        //sleep(200);
         //leftIntakeHolder.setPosition(0.78);
         //rightIntakeHolder.setPosition(0.81);
         telemetry.addData("Status", "Initialized");
