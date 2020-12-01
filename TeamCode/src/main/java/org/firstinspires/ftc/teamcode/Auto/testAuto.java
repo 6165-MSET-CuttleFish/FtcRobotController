@@ -22,13 +22,33 @@ public class testAuto extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        while(opModeIsActive()){
-            telemetry.addData("Orientation", robot.position.returnOrientation());
-            telemetry.addData("Radians", robot.position.radians());
-            telemetry.addData("x",robot.position.x);
-            telemetry.addData("y", robot.position.y);
-            telemetry.update();
-        }
+        robot.goTo(new Coordinate(30, 24), 0.3, Math.toRadians(180), 0.5);
         robot.position.stop();
+    }
+    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
+        double distance = Math.hypot(pt.x - robot.position.getX(), pt.y - robot.position.y);
+        while(distance > 5) {
+            distance = Math.hypot(pt.x - robot.position.x, pt.y - robot.position.y);
+
+            double absAngleToTarget = Math.atan2(pt.y - robot.position.y, pt.x - robot.position.x);
+
+            double relAngleToPoint = AngleWrap(absAngleToTarget - robot.position.radians());
+            //System.out.println("Rel " + relAngleToPoint);
+            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+
+            double movement_x = movementXPower * power;
+            double movement_y = movementYPower * power;
+            double relTurnAngle = relAngleToPoint + preferredAngle;
+            telemetry.addData("RelAngleToPt", relAngleToPoint);
+            telemetry.addData("TurnAngle", relTurnAngle);
+            telemetry.update();
+            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            robot.setMovement(movement_x, movement_y, -movement_turn);
+        }
+        robot.setMovement(0, 0, 0);
     }
 }

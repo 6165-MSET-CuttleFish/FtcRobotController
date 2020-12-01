@@ -23,8 +23,8 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wobble();
             robot.intake(-gamepad2.right_stick_y);
             shooter();
-            telemetry.addData("X Position", robot.position.getX() / COUNTS_PER_INCH);
-            telemetry.addData("Y Position", robot.position.getY() / COUNTS_PER_INCH);
+            telemetry.addData("X Position", robot.position.getX());
+            telemetry.addData("Y Position", robot.position.getY());
             telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
             telemetry.update();
 

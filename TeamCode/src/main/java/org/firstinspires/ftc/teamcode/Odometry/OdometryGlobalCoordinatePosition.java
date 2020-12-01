@@ -112,7 +112,16 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
      * Returns the robot's global orientation
      * @return global orientation, in degrees
      */
-    public double returnOrientation(){ return -Math.toDegrees(robotOrientationRadians) % 360; }
+    public double returnOrientation(){
+        double angle =  -Math.toDegrees(robotOrientationRadians);
+        if(angle > 180){
+            angle -= 360;
+        }
+        else if(angle < -180){
+            angle += 360;
+        }
+        return angle;
+    }
     public double radians(){ return -robotOrientationRadians; }
     /**
      * Stops the position update thread

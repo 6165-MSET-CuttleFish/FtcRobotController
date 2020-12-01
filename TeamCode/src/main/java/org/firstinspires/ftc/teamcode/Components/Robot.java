@@ -102,10 +102,10 @@ public class Robot {
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
         arm1.setDirection( Servo.Direction.REVERSE);
-        arm1.setPosition(0.92);
-        arm2.setPosition (0.92);
+//        arm1.setPosition(0.92);
+//        arm2.setPosition (0.92);
         grabber = map.get(Servo.class, "wobbleGrabber");
-        grabber.setPosition(0.92);
+        //grabber.setPosition(0.92);
 
         leftIntakeHolder = map.servo.get("liServo");
         rightIntakeHolder = map.servo.get("riServo");
@@ -156,7 +156,7 @@ public class Robot {
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
             //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            setMovement(movement_x, movement_y, 0);
+            setMovement(movement_x, movement_y, -movement_turn);
         }
         setMovement(0, 0, 0);
     }
