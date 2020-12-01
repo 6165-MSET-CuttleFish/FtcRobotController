@@ -52,7 +52,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(Robot.B, 0.5, 0, 0);
     }
     public void case4(){
-        robot.goTo(Robot.C, 0.5, 180, 0.1);
+        robot.goTo(Robot.C, 0.5, Math.toRadians(180), 0.5);
     }
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 34);
