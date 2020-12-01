@@ -62,7 +62,7 @@ public class Robot {
     public static Coordinate C = new Coordinate(120, 12);
 
     public static Coordinate leftWobble = new Coordinate(14, 48);
-    public static Coordinate lrightWobble = new Coordinate(14, 24);
+    public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
     Orientation orientation = new Orientation();
@@ -157,7 +157,7 @@ public class Robot {
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
+            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(10), -1, 1);
             //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
             setMovement(movement_x, movement_y, -movement_turn);
         }

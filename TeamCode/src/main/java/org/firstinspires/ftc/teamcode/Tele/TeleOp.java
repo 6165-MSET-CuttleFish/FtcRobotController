@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
+@Disabled
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
     boolean ninja, armUp, flapUp;

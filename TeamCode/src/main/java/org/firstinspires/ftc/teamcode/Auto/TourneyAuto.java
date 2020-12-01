@@ -24,23 +24,21 @@ public class TourneyAuto extends LinearOpMode {
         //robot.launcher.magazineShoot();
         //robot.lockIntake();
         robot.discs = 4;
-        if(robot.discs == 4){
-            case4();
+        dumpWobble();
+        robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0.7);
+        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
+            robot.launcher.setFlyWheel(1);
+            robot.launcher.flapUp();
+            robot.turnTo(Robot.pwrShotLocals[i], 0.5);
+            robot.launcher.singleRound();
         }
-        else if(robot.discs == 1){
-            case1();
-        }
-        else{
-            case0();
-        }
-//        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
-//            robot.launcher.setFlyWheel(1);
-//            robot.goTo(Robot.pwrShotLocals[i], 0.5, 0, 0.7);
-//            //robot.launcher.aimAt(Robot.pwrShots[i], Robot.position);
-//            robot.launcher.flapUp();
-//            robot.launcher.singleRound();
-//        }
-//        robot.launcher.setFlyWheel(0);
+        robot.launcher.setFlyWheel(0);
+        robot.goTo(Robot.leftWobble, 0.5, 0, 0.3);
+        robot.wobbleArmDown();
+        sleep(400);
+        robot.grab();
+        robot.wobbleArmUp();
+        dumpWobble();
         Coordinate homePos = new Coordinate(80, robot.position.y);
         robot.goTo(homePos, 0.5, 0, 0);
         robot.position.stop();
@@ -54,10 +52,26 @@ public class TourneyAuto extends LinearOpMode {
     public void case4(){
         robot.goTo(Robot.C, 0.5, Math.toRadians(180), 0.5);
     }
+    public void dumpWobble(){
+        if(robot.discs == 4){
+            case4();
+        }
+        else if(robot.discs == 1){
+            case1();
+        }
+        else{
+            case0();
+        }
+        robot.wobbleArmDown();
+        sleep(300);
+        robot.release();
+        robot.wobbleArmUp();
+    }
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 34);
         robot.intake(1);
-        robot.goTo(rings, 0.5, Robot.position.angleTo(rings), 0.8);
+        robot.goTo(rings, 0.5, Math.toRadians(Robot.position.angleTo(rings)), 0.8);
+        robot.intake(0);
         robot.launcher.setFlyWheel(1);
         sleep(1000);
         robot.launcher.magazineShoot();

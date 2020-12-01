@@ -66,9 +66,9 @@ public class Launcher {
         else {
             tilt.setPosition(0.31);
         }
-        flywheel.setPower(-pwr);
-        flywheel1.setPower(-pwr);
-        sleep(400);
+        //flywheel.setPower(-pwr);
+        //flywheel1.setPower(-pwr);
+        //sleep(400);
     }
 
     public void magazineShoot(){
@@ -83,6 +83,14 @@ public class Launcher {
         mag.setPosition(0.318);
         sleep(300);
         mag.setPosition(0.47);
+    }
+    public void shoot(double rounds){
+        for(int i = 0; i < rounds; i++){
+            mag.setPosition(0.32);
+            sleep(150);
+            mag.setPosition(.47);
+            if(i != rounds - 1) sleep(150);
+        }
     }
     public void flapUp(){
         flap.setPosition(0.06);
