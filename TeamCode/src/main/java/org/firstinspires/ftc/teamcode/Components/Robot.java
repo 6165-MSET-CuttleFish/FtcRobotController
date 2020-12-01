@@ -61,6 +61,9 @@ public class Robot {
     public static Coordinate B = new Coordinate(120, 36);
     public static Coordinate C = new Coordinate(120, 12);
 
+    public static Coordinate leftWobble = new Coordinate(14, 48);
+    public static Coordinate lrightWobble = new Coordinate(14, 24);
+
     public Launcher launcher;
     Orientation orientation = new Orientation();
     PIDController pidRotate, pidDrive, pidStrafe, pidCurve, pidCorrection;
@@ -74,7 +77,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.003, .00003, 0);
+        pidRotate = new PIDController(.009, .00003, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
@@ -317,8 +320,10 @@ public class Robot {
 
         return globalAngle;
     }
-    public void pidRotate(int degrees, double power)
-    {
+    public void turnTo(Coordinate pt, double pwr){
+        pidRotate(position.angleTo(pt), pwr);
+    }
+    public void pidRotate(double degrees, double power) {
         // restart imu angle tracking.
         resetAngle();
 

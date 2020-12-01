@@ -8,22 +8,32 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 @Autonomous
-public class TourneyAuto extends LinearOpMode {
+public class TourneyAuto2 extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 48, 0,18, 18);
         robot.autoInit();
 
         waitForStart();
         robot.scan();
-        robot.unlockIntake();
+        //robot.unlockIntake();
         robot.launcher.findAngle(robot.hiGoal, robot.position);
         //robot.launcher.setFlyWheel(1);
         sleep(500);
         //robot.launcher.magazineShoot();
         //robot.lockIntake();
-        robot.discs = 1;
+
+        robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0);
+        robot.launcher.setFlyWheel(1);
+        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
+            robot.turnTo(Robot.pwrShots[i], 0.5);
+            //robot.goTo(Robot.pwrShotLocals[i], 0.5, 0, 0.7);
+            //robot.launcher.aimAt(Robot.pwrShots[i], Robot.position);
+            robot.launcher.flapUp();
+            robot.launcher.singleRound();
+        }
+        robot.launcher.setFlyWheel(0);
         if(robot.discs == 4){
             case4();
         }
@@ -33,17 +43,9 @@ public class TourneyAuto extends LinearOpMode {
         else{
             case0();
         }
-//        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
-//            robot.launcher.setFlyWheel(1);
-//            robot.goTo(Robot.pwrShotLocals[i], 0.5, 0, 0.7);
-//            //robot.launcher.aimAt(Robot.pwrShots[i], Robot.position);
-//            robot.launcher.flapUp();
-//            robot.launcher.singleRound();
-//        }
-//        robot.launcher.setFlyWheel(0);
-//        Coordinate homePos = new Coordinate(80, robot.position.y);
-//        robot.goTo(homePos, 0.5, 0, 0.5);
-//        robot.position.stop();
+        Coordinate homePos = new Coordinate(80, robot.position.y);
+        robot.goTo(homePos, 0.5, robot.position.radians(), 0.5);
+        robot.position.stop();
     }
     public void case0(){
         robot.goTo(Robot.A, 0.5, 0, 1);
