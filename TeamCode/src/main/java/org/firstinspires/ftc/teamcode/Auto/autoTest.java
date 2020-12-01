@@ -22,7 +22,7 @@ public class autoTest extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        robot.pidRotate(90, 0.5);
+        robot.pidRotate(90, 0.3);
         telemetry.addData("Done", "");
         telemetry.update();
         robot.position.stop();

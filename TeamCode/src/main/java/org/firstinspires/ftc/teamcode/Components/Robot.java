@@ -74,10 +74,10 @@ public class Robot {
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 100, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.009, .00003, 0);
+        pidRotate = new PIDController(.04, .00003, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
@@ -136,13 +136,12 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 760, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 100, 0, 0, 0);
         }
     }
-    public static int index = 0;
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(distance > 5) {
+        while(distance > 2) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -158,8 +157,9 @@ public class Robot {
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(60), -1, 1);
             //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            setMovement(movement_x, movement_y, -movement_turn);
+            setMovement(movement_x, movement_y, rx);
         }
         setMovement(0, 0, 0);
     }
@@ -182,11 +182,8 @@ public class Robot {
             double robotMovementAngle = Math.toDegrees(Math.atan2(distanceToX, distanceToY));
             double lx = calculateY(robotMovementAngle, power);
             double ly = calculateX(robotMovementAngle, power);
-            double rx = -(desiredOrientation - position.returnOrientation());
-            topLeft.setPower(Range.clip(ly + lx + rx, -power, power));
-            topRight.setPower(Range.clip(ly - lx - rx, -power, power));
-            botLeft.setPower(Range.clip(ly - lx + rx, -power, power));
-            botRight.setPower(Range.clip(ly + lx - rx, -power, power));
+            double rx = Range.clip((desiredOrientation - position.returnOrientation())/30, -1, 1);
+            setMovement(lx, ly, -rx);
         }
         setMovement(0, 0, 0);
     }

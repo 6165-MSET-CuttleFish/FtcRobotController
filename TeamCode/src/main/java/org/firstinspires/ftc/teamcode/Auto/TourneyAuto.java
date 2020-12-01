@@ -23,7 +23,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(500);
         //robot.launcher.magazineShoot();
         //robot.lockIntake();
-        robot.discs = 1;
+        robot.discs = 4;
         if(robot.discs == 4){
             case4();
         }
@@ -41,18 +41,18 @@ public class TourneyAuto extends LinearOpMode {
 //            robot.launcher.singleRound();
 //        }
 //        robot.launcher.setFlyWheel(0);
-//        Coordinate homePos = new Coordinate(80, robot.position.y);
-//        robot.goTo(homePos, 0.5, 0, 0.5);
-//        robot.position.stop();
+        Coordinate homePos = new Coordinate(80, robot.position.y);
+        robot.goTo(homePos, 0.5, 0, 0);
+        robot.position.stop();
     }
     public void case0(){
-        robot.goTo(Robot.A, 0.5, 0, 1);
+        robot.goTo(Robot.A, 0.5, 0, 0);
     }
     public void case1(){
-        robot.goTo(Robot.B, 0.5, 0, 1);
+        robot.goTo(Robot.B, 0.5, 0, 0);
     }
     public void case4(){
-        robot.goTo(Robot.C, 0.5, 180, 0.5);
+        robot.goTo(Robot.C, 0.5, 180, 0.1);
     }
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 34);

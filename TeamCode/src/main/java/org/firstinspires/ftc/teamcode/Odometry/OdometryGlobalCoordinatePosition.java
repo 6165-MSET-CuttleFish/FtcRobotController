@@ -90,7 +90,7 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         //Calculate and update the position values
         //robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
         //robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
-        add(1.73*dX/COUNTS_PER_INCH, -1.73*dY/COUNTS_PER_INCH);
+        add(1.7675*dX/COUNTS_PER_INCH, -1.7675*dY/COUNTS_PER_INCH);
         previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
         previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
         prevNormalEncoderWheelPosition = normalEncoderWheelPosition;
