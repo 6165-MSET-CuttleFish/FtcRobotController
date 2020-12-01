@@ -17,12 +17,7 @@ public class TourneyAuto extends LinearOpMode {
 
         waitForStart();
         robot.scan();
-        robot.unlockIntake();
-        robot.launcher.findAngle(robot.hiGoal, robot.position);
-        //robot.launcher.setFlyWheel(1);
-        sleep(500);
-        //robot.launcher.magazineShoot();
-        //robot.lockIntake();
+        //robot.unlockIntake();
         robot.discs = 4;
         dumpWobble();
         robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0.7);
@@ -39,6 +34,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.grab();
         robot.wobbleArmUp();
         dumpWobble();
+        robot.unlockIntake();
         Coordinate homePos = new Coordinate(80, robot.position.y);
         robot.goTo(homePos, 0.5, 0, 0);
         robot.position.stop();
