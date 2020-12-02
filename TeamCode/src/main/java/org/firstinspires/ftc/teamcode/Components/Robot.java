@@ -219,14 +219,14 @@ public class Robot {
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         if (updatedRecognitions != null) {
             for (Recognition recognition : updatedRecognitions) {
-                if(recognition.getLabel() == LABEL_FIRST_ELEMENT){
-                    discs = 4;
-                }
-                else if(recognition.getLabel() == LABEL_SECOND_ELEMENT){
-                    discs = 1;
-                }
-                else{
-                    discs = 0;
+                if(recognition.getHeight() < 130) {
+                    if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
+                        discs = 4;
+                    } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
+                        discs = 1;
+                    } else {
+                        discs = 0;
+                    }
                 }
             }
         }
