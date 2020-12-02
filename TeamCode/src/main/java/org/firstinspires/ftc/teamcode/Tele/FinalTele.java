@@ -109,7 +109,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
         grabber.setPosition(0.92);
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
-        flap.setPosition(0.1);
+        flap.setPosition(0);
         leftIntakeHolder.setPosition(0.1);
         rightIntakeHolder.setPosition(0.7);
         //sleep(200);
@@ -220,7 +220,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
             mag.setPosition(.47);
         }
         if(gamepad2.left_trigger >=0.1){
-            tilt.setPosition(0.305);
+            tilt.setPosition(0.29);
             flywheel.setPower(-1);
             flywheel1.setPower(-1);
         }
