@@ -59,7 +59,7 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(96, 12);
     public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(112, 12);
+    public static Coordinate C = new Coordinate(120, 12);
 
     public static Coordinate leftWobble = new Coordinate(39, 47);
     public static Coordinate rightWobble = new Coordinate(14, 24);
@@ -77,7 +77,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(0.005, 0.005, 0.005);
+        pidRotate = new PIDController(0.0004, 0.005, 0.005);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
@@ -142,7 +142,7 @@ public class Robot {
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(distance > 2) {
+        while(distance > 5) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -220,7 +220,7 @@ public class Robot {
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         if (updatedRecognitions != null) {
             for (Recognition recognition : updatedRecognitions) {
-                if(recognition.getHeight() < 130) {
+                if(recognition.getHeight() < 200) {
                     if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
                         discs = 4;
                     } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {

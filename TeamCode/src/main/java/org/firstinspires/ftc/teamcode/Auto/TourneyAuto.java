@@ -71,10 +71,10 @@ public class TourneyAuto extends LinearOpMode {
     public void case4(){
         robot.goTo(Robot.C, 0.7, Math.toRadians(180), 0.5);
         robot.wobbleArmDown();
-        sleep(1000);
+        sleep(800);
         robot.release();
-        sleep(200);
-        //robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 0.7, 0, 0);
+        sleep(300);
+        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 0.7, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
