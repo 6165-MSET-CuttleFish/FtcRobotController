@@ -68,7 +68,6 @@ public class Launcher {
         }
         //flywheel.setPower(-pwr);
         //flywheel1.setPower(-pwr);
-        //sleep(400);
     }
 
     public void magazineShoot(){
@@ -93,7 +92,7 @@ public class Launcher {
         }
     }
     public void flapUp(){
-        flap.setPosition(0.06);
+        flap.setPosition(0.07);
     }
     public void flapDown(){
         flap.setPosition(0);

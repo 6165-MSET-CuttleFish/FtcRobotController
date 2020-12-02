@@ -21,9 +21,9 @@ public class TourneyAuto extends LinearOpMode {
         dumpWobble();
         robot.unlockIntake();
         robot.goTo(Robot.pwrShotLocals[1], 0.5, 180, 0.5);
+        robot.launcher.setFlyWheel(1);
         for(int i = 0; i < Robot.pwrShots.length; i++){
-            robot.launcher.setFlyWheel(1);
-            robot.launcher.flapUp();
+            robot.launcher.flapDown();
             robot.turnTo(Robot.pwrShots[i], 0.5);
             robot.launcher.singleRound();
         }

@@ -288,13 +288,6 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
-    public void rotate(double degrees, double pwr){
-        while(Math.abs(Math.toDegrees(position.radians()) - degrees) > 2) {
-            double deg = Math.toDegrees(position.radians());
-            setMovement(0, 0 , deg > degrees ? pwr : -pwr);
-        }
-        setMovement(0, 0, 0);
-    }
     private double getAngle()
     {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
