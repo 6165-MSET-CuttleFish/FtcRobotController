@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
 
 @Autonomous
+@Disabled
 public class testAutoImplement extends LinearOpMode{
     BNO055IMU imu;
     public void runOpMode() throws InterruptedException{
