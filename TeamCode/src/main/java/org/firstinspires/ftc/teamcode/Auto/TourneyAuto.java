@@ -17,26 +17,30 @@ public class TourneyAuto extends LinearOpMode {
 
         waitForStart();
         robot.scan();
-        //robot.unlockIntake();
+        robot.unlockIntake();
         robot.discs = 4;
         dumpWobble();
-        robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0.3);
-        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
-            robot.launcher.setFlyWheel(1);
-            robot.launcher.flapUp();
-            robot.turnTo(Robot.pwrShotLocals[i], 0.5);
-            robot.launcher.singleRound();
-        }
-        robot.launcher.setFlyWheel(0);
-        robot.goTo(Robot.leftWobble, 0.5, 0, 0.3);
-        robot.wobbleArmDown();
-        sleep(400);
-        robot.grab();
-        robot.wobbleArmUp();
-        dumpWobble();
-        robot.unlockIntake();
-        Coordinate homePos = new Coordinate(80, robot.position.y);
-        robot.goTo(homePos, 0.5, 0, 0);
+        robot.goTo(Robot.pwrShotLocals[1], 0.5, 180, 0.5);
+//        for(int i = 0; i < Robot.pwrShotLocals.length; i++){
+//            robot.launcher.setFlyWheel(1);
+//            robot.launcher.flapUp();
+//            robot.turnTo(Robot.pwrShots[i], 0.5);
+//            robot.launcher.singleRound();
+//        }
+//        robot.launcher.setFlyWheel(0);
+//        robot.goTo(Robot.leftWobble, 0.5, 0, 0.3);
+//
+//        robot.wobbleArmDown();
+//        sleep(400);
+//        robot.grab();
+//        robot.wobbleArmUp();
+//        dumpWobble();
+//        robot.unlockIntake();
+//        Coordinate homePos = new Coordinate(80, robot.position.y);
+//        robot.goTo(homePos, 0.5, 0, 0);
+        telemetry.addData("angke", robot.position.angleTo(Robot.pwrShots[1]));
+        telemetry.update();
+        sleep(4000);
         robot.position.stop();
     }
     public void case0(){
@@ -59,7 +63,7 @@ public class TourneyAuto extends LinearOpMode {
             case0();
         }
         robot.wobbleArmDown();
-        sleep(300);
+        sleep(1000);
         robot.release();
         robot.wobbleArmUp();
     }

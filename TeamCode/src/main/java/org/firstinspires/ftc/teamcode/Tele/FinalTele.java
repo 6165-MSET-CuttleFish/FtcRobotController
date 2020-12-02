@@ -154,18 +154,20 @@ public class FinalTele extends LinearOpMode{
         br.setPower(v4);
     }
     public void wobbleArm(){
-        if(gamepad2.a == true && !armUp){
+        if(gamepad2.a == true && !armUp && lastTime > System.currentTimeMillis() + 100){
             arm1.setPosition(0.45);
             arm2.setPosition (0.52);
             armUp = true;
-            sleep(100);
+            //sleep(100);
+            lastTime = System.currentTimeMillis();
         }
-        else if(gamepad2.a == true && armUp == true){
+        else if(gamepad2.a == true && armUp == true && lastTime > System.currentTimeMillis() + 100){
             //0.07 init
             arm1.setPosition(0.91);
             arm2.setPosition (0.07);
             armUp = false;
-            sleep(100);
+            //sleep(100);
+            lastTime = System.currentTimeMillis();
         }
 
         if(gamepad2.x == true && grabber.getPosition()>0.3){
@@ -218,21 +220,33 @@ public class FinalTele extends LinearOpMode{
             tilt.setPosition(0.31);
             flywheel.setPower(-1);
             flywheel1.setPower(-1);
+            shooterOn = 0;
         }
-        else{
+        else if(shooterOn == 0){
             tilt.setPosition(0.13);
             flywheel.setPower(0);
             flywheel1.setPower(0);
-
+        }
+        if(gamepad2.left_bumper && shooterOn == 0){
+            flywheel.setPower(-1);
+            flywheel1.setPower(-1);
+            shooterOn = 1;
+            lastTime = System.currentTimeMillis();
+        }
+        else if(gamepad2.left_bumper && shooterOn == 1 && lastTime > System.currentTimeMillis() + 100){
+            flywheel.setPower(0);
+            flywheel1.setPower(0);
+            shooterOn = 0;
+            lastTime = System.currentTimeMillis();
         }
         if(gamepad2.right_trigger >= 0.1){
             int i = 0;
             while(i<3){
 
                 mag.setPosition(0.31);
-                sleep(350);
+                sleep(150);
                 mag.setPosition(.47);
-                sleep(350);
+                sleep(800);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();
@@ -240,4 +254,5 @@ public class FinalTele extends LinearOpMode{
             }
         }
     }
+    public int shooterOn = 0;
 }

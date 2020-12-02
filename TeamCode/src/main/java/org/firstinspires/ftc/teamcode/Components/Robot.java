@@ -59,7 +59,7 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(96, 12);
     public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(120, 12);
+    public static Coordinate C = new Coordinate(120, 18);
 
     public static Coordinate leftWobble = new Coordinate(14, 48);
     public static Coordinate rightWobble = new Coordinate(14, 24);
@@ -156,8 +156,8 @@ public class Robot {
             double movement_x = movementXPower * power;
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(10), -1, 1);
+            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
+            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
             //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
             setMovement(movement_x, movement_y, -movement_turn);
         }
@@ -168,8 +168,8 @@ public class Robot {
         rightIntakeHolder.setPosition(0.81);
     }
     public void unlockIntake(){
-        leftIntakeHolder.setPosition(0.5);
-        rightIntakeHolder.setPosition(1);
+        leftIntakeHolder.setPosition(0.1);
+        rightIntakeHolder.setPosition(0.7);
     }
     public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
         double distanceToX = pt.x - position.getX();
