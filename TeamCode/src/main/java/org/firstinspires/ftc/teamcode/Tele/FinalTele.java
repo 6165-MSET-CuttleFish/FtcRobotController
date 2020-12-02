@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpFinal", group = "LinearOpMode")
-public class FinalTele extends LinearOpMode implements Runnable{
+public class FinalTele extends LinearOpMode{
 
     public DcMotor fl, fr, bl,br;//matthew is fat
     public DcMotor intakeR, intakeL;
@@ -36,6 +36,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
 
         while(opModeIsActive()){
             //drive();
+            drive();
             wobbleArm();
             intake();
             shooter();
@@ -52,12 +53,6 @@ public class FinalTele extends LinearOpMode implements Runnable{
             idle();
         }
         position.stop();
-    }
-    @Override
-    public void run(){
-        while(opModeIsActive()){
-            drive();
-        }
     }
     public void dropIntake(){
         if(gamepad1.x==true){
