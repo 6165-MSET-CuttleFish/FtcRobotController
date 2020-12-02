@@ -22,7 +22,16 @@ public class testAuto extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        robot.goTo(new Coordinate(80, 24), 0.2, Math.toRadians(180), 0.2);
+        while(opModeIsActive()){
+            robot.pidRotate(2, 0.5);
+            telemetry.addData("2 degrees","");
+            telemetry.update();
+            sleep(1000);
+            robot.pidRotate(90, 0.5);
+            telemetry.addData("2 degrees","");
+            telemetry.update();
+            sleep(1000);
+        }
         robot.position.stop();
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
