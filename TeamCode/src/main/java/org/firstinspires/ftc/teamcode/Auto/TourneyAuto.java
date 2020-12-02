@@ -20,12 +20,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 8), 0.7, 0, 0);
         dumpWobble();
         robot.unlockIntake();
-        //if(robot.discs != 4) {
         robot.goTo(Robot.pwrShotLocals[1], 0.7,0, 0.5);
-        //}
-//        else{
-//            robot.goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(180), 0.5);
-//        }
         robot.launcher.setFlyWheel(1);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
@@ -95,7 +90,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(rings, 0.5, Math.toRadians(Robot.position.angleTo(rings)), 0.8);
         robot.intake(0);
         robot.launcher.setFlyWheel(1);
-        sleep(1000);
+        robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.5, 0, 0);
         robot.launcher.magazineShoot();
         robot.launcher.setFlyWheel(0);
     }
