@@ -17,10 +17,11 @@ public class TourneyAuto extends LinearOpMode {
         waitForStart();
         robot.scan();
         robot.discs = 4;
+        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 8), 0.7, 0, 0);
         dumpWobble();
         robot.unlockIntake();
         //if(robot.discs != 4) {
-        robot.goTo(Robot.pwrShotLocals[1], 0.7, 0, 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.7,0, 0.5);
         //}
 //        else{
 //            robot.goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(180), 0.5);
@@ -36,7 +37,7 @@ public class TourneyAuto extends LinearOpMode {
         //sleep(5000);
 
         robot.launcher.setFlyWheel(0);
-        robot.orient(0, 0.5);
+        //robot.orient(0, 0.5);
         robot.goTo(Robot.leftWobble, 0.5, 0, 0);
         robot.wobbleArmDown();
         sleep(1000);
@@ -51,14 +52,29 @@ public class TourneyAuto extends LinearOpMode {
     }
     public void case0(){
         robot.goTo(Robot.A, 0.7, 0, 0);
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
+        robot.wobbleArmDown();
+        sleep(1000);
+        robot.release();
+        sleep(200);
+        robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y), 0.7, 0, 0);
+        //robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
+
     }
     public void case1(){
         robot.goTo(Robot.B, 0.7, 0, 0);
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
+        robot.wobbleArmDown();
+        sleep(1000);
+        robot.release();
+        sleep(200);
+        robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y), 0.7, 0, 0);
     }
     public void case4(){
         robot.goTo(Robot.C, 0.7, Math.toRadians(180), 0.5);
+        robot.wobbleArmDown();
+        sleep(1000);
+        robot.release();
+        sleep(200);
+        //robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 0.7, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
@@ -70,11 +86,8 @@ public class TourneyAuto extends LinearOpMode {
         else{
             case0();
         }
-        robot.wobbleArmDown();
-        sleep(1000);
-        robot.release();
-        sleep(400);
-        robot.wobbleArmUp();
+
+        //robot.wobbleArmUp();
     }
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 34);
