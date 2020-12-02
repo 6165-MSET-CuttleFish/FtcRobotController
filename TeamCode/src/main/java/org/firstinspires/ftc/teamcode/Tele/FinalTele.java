@@ -159,7 +159,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
         br.setPower(v4);
     }
     public void wobbleArm(){
-        if(gamepad2.a == true && armUp == false){
+        if(gamepad2.a == true && !armUp){
             arm1.setPosition(0.45);
             arm2.setPosition (0.52);
             armUp = true;
