@@ -199,7 +199,7 @@ public class FinalTele extends LinearOpMode{
     }
     public void shooter(){
         if(gamepad2.y==true && flapUp == false){
-            flap.setPosition(0.06);
+            flap.setPosition(0.07);
             sleep(50);
             flapUp = true;
         }
@@ -210,16 +210,12 @@ public class FinalTele extends LinearOpMode{
         }
 
         if(gamepad2.right_bumper==true){
-<<<<<<< HEAD
-            mag.setPosition(0.32);
-=======
-            mag.setPosition(0.3);
->>>>>>> 66aaf6b1e184d9d2b21e32092d6ba563ac2bc2ba
+            mag.setPosition(0.31);
             sleep(150);
             mag.setPosition(.47);
         }
         if(gamepad2.left_trigger >=0.1){
-            tilt.setPosition(0.29);
+            tilt.setPosition(0.31);
             flywheel.setPower(-1);
             flywheel1.setPower(-1);
         }
@@ -233,7 +229,7 @@ public class FinalTele extends LinearOpMode{
             int i = 0;
             while(i<3){
 
-                mag.setPosition(0.32);
+                mag.setPosition(0.31);
                 sleep(350);
                 mag.setPosition(.47);
                 sleep(350);
