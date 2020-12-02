@@ -210,7 +210,7 @@ public class FinalTele extends LinearOpMode{
         }
 
         if(gamepad2.right_bumper==true){
-            mag.setPosition(0.29);
+            mag.setPosition(0.32);
             sleep(150);
             mag.setPosition(.47);
         }
@@ -229,7 +229,7 @@ public class FinalTele extends LinearOpMode{
             int i = 0;
             while(i<3){
 
-                mag.setPosition(0.28);
+                mag.setPosition(0.32);
                 sleep(350);
                 mag.setPosition(.47);
                 sleep(350);
