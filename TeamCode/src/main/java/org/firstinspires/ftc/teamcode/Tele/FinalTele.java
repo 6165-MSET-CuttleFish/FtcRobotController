@@ -98,8 +98,9 @@ public class FinalTele extends LinearOpMode{
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
         leftIntakeHolder = hardwareMap.get(Servo.class,"liServo");
         rightIntakeHolder = hardwareMap.get(Servo.class,"riServo");
-        arm1.setPosition(0.07);
-        arm2.setPosition (0.93);
+        arm1.setDirection( Servo.Direction.REVERSE);
+        arm1.setPosition(0.92);
+        arm2.setPosition (0.92);
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.92);
         mag.setPosition(0.47);
@@ -155,16 +156,16 @@ public class FinalTele extends LinearOpMode{
     }
     public void wobbleArm(){
         if(gamepad2.a == true && !armUp && lastTime > System.currentTimeMillis() + 100){
-            arm1.setPosition(0.45);
-            arm2.setPosition (0.52);
+            arm1.setPosition(0.92);
+            arm2.setPosition (0.92);
             armUp = true;
             //sleep(100);
             lastTime = System.currentTimeMillis();
         }
         else if(gamepad2.a == true && armUp == true && lastTime > System.currentTimeMillis() + 100){
             //0.07 init
-            arm1.setPosition(0.91);
-            arm2.setPosition (0.07);
+            arm1.setPosition(0.13);
+            arm2.setPosition (0.13);
             armUp = false;
             //sleep(100);
             lastTime = System.currentTimeMillis();
