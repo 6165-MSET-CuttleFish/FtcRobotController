@@ -317,8 +317,12 @@ public class Robot {
 
         return globalAngle;
     }
+    public void orient(double power, double angle) {
+        double closest = angle - position.returnOrientation();
+        pidRotate(power, closest);
+    }
     public void turnTo(Coordinate pt, double pwr){
-        pidRotate(position.angleTo(pt), pwr);
+        orient(position.angleTo(pt), pwr);
     }
     public void pidRotate(double degrees, double power) {
         // restart imu angle tracking.
