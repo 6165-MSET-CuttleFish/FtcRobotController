@@ -14,13 +14,12 @@ public class TourneyAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
         robot.autoInit();
-
         waitForStart();
         robot.scan();
         robot.discs = 4;
         dumpWobble();
         robot.unlockIntake();
-        robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.7, 0, 0.5);
         robot.launcher.setFlyWheel(1);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
@@ -45,13 +44,16 @@ public class TourneyAuto extends LinearOpMode {
         robot.position.stop();
     }
     public void case0(){
-        robot.goTo(Robot.A, 0.5, 0, 0);
+        robot.goTo(Robot.A, 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
     }
     public void case1(){
-        robot.goTo(Robot.B, 0.5, 0, 0);
+        robot.goTo(Robot.B, 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
     }
     public void case4(){
-        robot.goTo(Robot.C, 0.5, Math.toRadians(180), 0.5);
+        robot.goTo(Robot.C, 0.7, Math.toRadians(180), 0.5);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
@@ -66,7 +68,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.wobbleArmDown();
         sleep(1000);
         robot.release();
-        sleep(200);
+        sleep(400);
         robot.wobbleArmUp();
     }
     public void getMoreRings(){
