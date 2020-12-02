@@ -234,7 +234,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
             int i = 0;
             while(i<3){
 
-                mag.setPosition(0.32);
+                mag.setPosition(0.28);
                 sleep(350);
                 mag.setPosition(.47);
                 sleep(350);
