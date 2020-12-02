@@ -19,7 +19,12 @@ public class TourneyAuto extends LinearOpMode {
         robot.discs = 4;
         dumpWobble();
         robot.unlockIntake();
+        //if(robot.discs != 4) {
         robot.goTo(Robot.pwrShotLocals[1], 0.7, 0, 0.5);
+        //}
+//        else{
+//            robot.goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(180), 0.5);
+//        }
         robot.launcher.setFlyWheel(1);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
@@ -29,8 +34,9 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("WE MADE IT", "");
         telemetry.update();
         //sleep(5000);
-        robot.orient(0, 0.5);
+
         robot.launcher.setFlyWheel(0);
+        robot.orient(0, 0.5);
         robot.goTo(Robot.leftWobble, 0.5, 0, 0);
         robot.wobbleArmDown();
         sleep(1000);
@@ -53,7 +59,6 @@ public class TourneyAuto extends LinearOpMode {
     }
     public void case4(){
         robot.goTo(Robot.C, 0.7, Math.toRadians(180), 0.5);
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
