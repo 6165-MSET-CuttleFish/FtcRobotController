@@ -116,7 +116,7 @@ public class FinalTele extends LinearOpMode{
     public void drive(){
         double r = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
         double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
-        double rightX = gamepad1.right_stick_x*0.8;
+        double rightX = gamepad1.right_stick_x*0.7;
         double v1 = r * Math.cos(robotAngle)*multiplier + rightX;
         double v2 = r * Math.sin(robotAngle)*multiplier - rightX;
         double v3 = r * Math.sin(robotAngle)*multiplier + rightX;
@@ -219,8 +219,8 @@ public class FinalTele extends LinearOpMode{
             flywheel1.setPower(-1);
         }
         else if(gamepad2.left_bumper){
-            flywheel.setPower(-0.9);
-            flywheel1.setPower(-0.9);
+            flywheel.setPower(-0.7);
+            flywheel1.setPower(-0.7);
             tilt.setPosition(0.31);
         }
         else if(shooterOn == 0){
