@@ -17,29 +17,29 @@ public class TourneyAuto extends LinearOpMode {
         waitForStart();
         robot.scan();
         robot.discs = 4;
-        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 8), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 6), 0.7, 0, 0);
         dumpWobble();
         robot.unlockIntake();
         robot.goTo(Robot.pwrShotLocals[1], 0.7,0, 0.5);
-        robot.launcher.setFlyWheel(1);
+        robot.launcher.setFlyWheel(0.7);
+        sleep(300);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
-            robot.turnTo(Robot.pwrShots[i], 0.5);
+            robot.turnTo(Robot.pwrShots[i], 0.4);
             robot.launcher.singleRound();
         }
-        telemetry.addData("WE MADE IT", "");
-        telemetry.update();
         //sleep(5000);
 
         robot.launcher.setFlyWheel(0);
         //robot.orient(0, 0.5);
-        robot.goTo(Robot.leftWobble, 0.5, 0, 0);
+        robot.goTo(Robot.leftWobble, 0.5, 0, 0.4);
         robot.wobbleArmDown();
-        sleep(1000);
-        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.5, 0, 0);
+        sleep(800);
+        //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.5, 0, 0);
         robot.grab();
-        sleep(400);
+        sleep(500);
         robot.wobbleArmUp();
+        getMoreRings();
         dumpWobble();
         Coordinate homePos = new Coordinate(80, robot.position.y);
         robot.goTo(homePos, 0.5, 0, 0);
@@ -69,7 +69,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(800);
         robot.release();
         sleep(300);
-        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.7, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
@@ -87,10 +87,10 @@ public class TourneyAuto extends LinearOpMode {
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 34);
         robot.intake(1);
-        robot.goTo(rings, 0.5, Math.toRadians(Robot.position.angleTo(rings)), 0.8);
+        robot.goTo(rings, 1, 0, 0.6);
         robot.intake(0);
-        robot.launcher.setFlyWheel(1);
-        robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.5, 0, 0);
+        robot.launcher.setFlyWheel(0.8);
+        robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.4, 0, 0.6);
         robot.launcher.magazineShoot();
         robot.launcher.setFlyWheel(0);
     }
