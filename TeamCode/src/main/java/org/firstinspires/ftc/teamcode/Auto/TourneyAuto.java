@@ -20,19 +20,24 @@ public class TourneyAuto extends LinearOpMode {
         robot.discs = 4;
         dumpWobble();
         robot.unlockIntake();
-        robot.goTo(Robot.pwrShotLocals[1], 0.5, 180, 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.5, 0, 0.5);
         robot.launcher.setFlyWheel(1);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
             robot.turnTo(Robot.pwrShots[i], 0.5);
             robot.launcher.singleRound();
         }
+        telemetry.addData("WE MADE IT", "");
+        telemetry.update();
+        //sleep(5000);
+        robot.orient(0, 0.5);
         robot.launcher.setFlyWheel(0);
-        robot.goTo(Robot.leftWobble, 0.5, 0, 0.3);
+        robot.goTo(Robot.leftWobble, 0.5, 0, 0);
         robot.wobbleArmDown();
-        sleep(500);
+        sleep(1000);
+        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.5, 0, 0);
         robot.grab();
-        sleep(200);
+        sleep(400);
         robot.wobbleArmUp();
         dumpWobble();
         Coordinate homePos = new Coordinate(80, robot.position.y);
@@ -59,8 +64,9 @@ public class TourneyAuto extends LinearOpMode {
             case0();
         }
         robot.wobbleArmDown();
-        sleep(800);
+        sleep(1000);
         robot.release();
+        sleep(200);
         robot.wobbleArmUp();
     }
     public void getMoreRings(){

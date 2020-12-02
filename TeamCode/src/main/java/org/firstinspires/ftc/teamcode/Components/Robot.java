@@ -59,9 +59,9 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(96, 12);
     public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(120, 18);
+    public static Coordinate C = new Coordinate(105, 18);
 
-    public static Coordinate leftWobble = new Coordinate(14, 48);
+    public static Coordinate leftWobble = new Coordinate(37, 48);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -74,17 +74,18 @@ public class Robot {
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 100, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.04, .00003, 0);
+        pidRotate = new PIDController(.0003, .0003, 0);
+        //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
 
-        pwrShotLocals[0] = new Coordinate(60, 68.25);
-        pwrShotLocals[1] = new Coordinate(60, 60.75);
-        pwrShotLocals[2] = new Coordinate(60, 53.25);
+        pwrShotLocals[0] = new Coordinate(74, 68.25);
+        pwrShotLocals[1] = new Coordinate(74, 60.75);
+        pwrShotLocals[2] = new Coordinate(74, 53.25);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;
@@ -112,7 +113,7 @@ public class Robot {
 
         leftIntakeHolder = map.servo.get("liServo");
         rightIntakeHolder = map.servo.get("riServo");
-        lockIntake();
+//        lockIntake();
 
 
         launcher = new Launcher(map);
@@ -136,7 +137,7 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth) {
         construct(runMode, imported, robotLength, robotWidth);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 100, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, 0, 0, 0);
         }
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
@@ -265,11 +266,11 @@ public class Robot {
         arm2.setPosition (0.13);
     }
     public void grab(){
-        grabber.setPosition(0.5);
+        grabber.setPosition(0.43);
         sleep(100);
     }
     public void release(){
-        grabber.setPosition(0.92);
+        grabber.setPosition(0.15);
         sleep(100);
     }
     public void intake(double intakeSpeed){
@@ -310,12 +311,15 @@ public class Robot {
 
         return globalAngle;
     }
-    public void orient(double power, double angle) {
+    public void orient(double angle, double pwr) {
         double closest = angle - position.returnOrientation();
         pidRotate(power, closest);
     }
     public void turnTo(Coordinate pt, double pwr){
-        orient(position.angleTo(pt), pwr);
+        double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
+        //orient(position.angleTo(pt), pwr);
+        pidRotate(Math.toDegrees(relAngleToPoint), pwr);
     }
     public void pidRotate(double degrees, double power) {
         // restart imu angle tracking.
