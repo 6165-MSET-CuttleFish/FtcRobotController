@@ -215,7 +215,7 @@ public class FinalTele extends LinearOpMode implements Runnable{
         }
 
         if(gamepad2.right_bumper==true){
-            mag.setPosition(0.29);
+            mag.setPosition(0.3);
             sleep(150);
             mag.setPosition(.47);
         }
