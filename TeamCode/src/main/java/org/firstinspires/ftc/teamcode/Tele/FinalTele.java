@@ -201,15 +201,11 @@ public class FinalTele extends LinearOpMode{
         }
     }
     public void shooter(){
-        if(gamepad2.y==true && flapUp == false){
+        if(gamepad2.dpad_up==true){
             flap.setPosition(0.01);
-            sleep(50);
-            flapUp = true;
         }
-        else if(gamepad2.y==true && flapUp == true){
+        else if(gamepad2.dpad_down==true){
             flap.setPosition(0);
-            sleep(50);
-            flapUp = false;
         }
 
         if(gamepad2.right_bumper==true){
