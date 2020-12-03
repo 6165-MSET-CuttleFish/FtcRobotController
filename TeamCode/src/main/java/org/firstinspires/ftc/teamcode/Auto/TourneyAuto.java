@@ -14,6 +14,8 @@ public class TourneyAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
         robot.autoInit();
+        telemetry.addData("Initialization", "Complete");
+        telemetry.update();
         waitForStart();
         robot.scan();
         robot.discs = 4;
@@ -41,7 +43,7 @@ public class TourneyAuto extends LinearOpMode {
             getMoreRings();
         }
         dumpWobble();
-        Coordinate homePos = new Coordinate(84, robot.position.y);
+        Coordinate homePos = new Coordinate(88, robot.position.y);
         robot.goTo(homePos, 0.5, 0, 0);
         robot.position.stop();
     }
