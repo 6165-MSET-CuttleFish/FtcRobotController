@@ -23,14 +23,7 @@ public class testAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while(opModeIsActive()){
-            robot.pidRotate(2, 0.5);
-            telemetry.addData("2 degrees","");
-            telemetry.update();
-            sleep(1000);
-            robot.pidRotate(90, 0.5);
-            telemetry.addData("2 degrees","");
-            telemetry.update();
-            sleep(1000);
+            robot.intake(1);
         }
         robot.position.stop();
     }

@@ -59,9 +59,9 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(96, 12);
     public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(105, 14);
+    public static Coordinate C = new Coordinate(110, 14);
 
-    public static Coordinate leftWobble = new Coordinate(39, 49);
+    public static Coordinate leftWobble = new Coordinate(47, 47);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -77,7 +77,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.008, .0009, 0.0005);
+        pidRotate = new PIDController(.006, 0.00009, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 68.25, 23.5);
         pwrShots[1] = new Goal(144, 60.75, 23.5);
@@ -274,13 +274,13 @@ public class Robot {
         sleep(100);
     }
     public void intake(double intakeSpeed){
-        intakeL.setPower(intakeSpeed);
-        intakeR.setPower(intakeSpeed);
-        if(intakeSpeed<0){
+        intakeL.setPower(-intakeSpeed);
+        intakeR.setPower(-intakeSpeed);
+        if(intakeSpeed>0){
             in1.setPosition(1);
             in2.setPosition(0);
         }
-        else if(intakeSpeed>0){
+        else if(intakeSpeed<0){
             in1.setPosition(0);
             in2.setPosition(1);
         }
@@ -340,8 +340,8 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(3.5);
+        pidRotate.setOutputRange(0.2, power);
+        pidRotate.setTolerance(2);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

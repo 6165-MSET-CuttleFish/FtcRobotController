@@ -17,15 +17,15 @@ public class TourneyAuto extends LinearOpMode {
         waitForStart();
         robot.scan();
         robot.discs = 4;
-        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 6), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 2), 0.5, 0, 0);
         dumpWobble();
         robot.unlockIntake();
-        robot.goTo(Robot.pwrShotLocals[1], 0.7,0, 0.5);
-        robot.launcher.setFlyWheel(0.7);
+        robot.goTo(Robot.pwrShotLocals[1], 0.5,0, 0.5);
+        robot.launcher.setFlyWheel(0.8);
         sleep(300);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
-            robot.turnTo(Robot.pwrShots[i], 0.4);
+            robot.turnTo(Robot.pwrShots[i], 0.2);
             robot.launcher.singleRound();
         }
         //sleep(5000);
@@ -33,15 +33,15 @@ public class TourneyAuto extends LinearOpMode {
         robot.launcher.setFlyWheel(0);
         //robot.orient(0, 0.5);
         robot.goTo(Robot.leftWobble, 0.5, 0, 0.4);
-        robot.wobbleArmDown();
-        sleep(800);
-        //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.5, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y), 0.2, 0, 0);
         robot.grab();
         sleep(500);
         robot.wobbleArmUp();
-        getMoreRings();
+        if(robot.discs != 0) {
+            getMoreRings();
+        }
         dumpWobble();
-        Coordinate homePos = new Coordinate(80, robot.position.y);
+        Coordinate homePos = new Coordinate(84, robot.position.y);
         robot.goTo(homePos, 0.5, 0, 0);
         robot.position.stop();
     }
@@ -88,9 +88,12 @@ public class TourneyAuto extends LinearOpMode {
         Coordinate rings = new Coordinate(47, 34);
         robot.intake(1);
         robot.goTo(rings, 1, 0, 0.6);
-        robot.intake(0);
-        robot.launcher.setFlyWheel(0.8);
+
+
+        robot.launcher.setOnlyFlyWheel(0.8);
         robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.4, 0, 0.6);
+        sleep(800);
+        robot.intake(0);
         robot.launcher.magazineShoot();
         robot.launcher.setFlyWheel(0);
     }

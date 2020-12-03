@@ -61,16 +61,27 @@ public class Launcher {
     }
     public void setFlyWheel(double pwr){
         if(pwr == 0) {
-            tilt.setPosition(0.14);
+            tiltDown();
         }
         else {
-            tilt.setPosition(0.31);
+            tiltUp();
         }
         flywheel.setPower(-pwr);
         flywheel1.setPower(-pwr);
     }
+    public void setOnlyFlyWheel(double pwr){
+        flywheel.setPower(-pwr);
+        flywheel1.setPower(-pwr);
+    }
+    public void tiltUp(){
+        tilt.setPosition(0.31);
+    }
+    public void tiltDown(){
+        tilt.setPosition(0.14);
+    }
 
     public void magazineShoot(){
+        tiltUp();
         for(int i = 0; i < 3; i++){
             mag.setPosition(0.32);
             sleep(150);
