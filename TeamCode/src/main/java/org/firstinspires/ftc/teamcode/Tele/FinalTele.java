@@ -18,6 +18,8 @@ public class FinalTele extends LinearOpMode{
     public boolean ninja = false, reverse = false, magUp = false;
     public double multiplier = 1;
     public double lastTime = System.currentTimeMillis();
+    public double lastTimeWobble = System.currentTimeMillis();
+    public double lastTimeGrabber = System.currentTimeMillis();
     public boolean flapUp = false, armUp = false;
     public OdometryGlobalCoordinatePosition position;
     public final double COUNTS_PER_INCH = 3072;
@@ -41,19 +43,18 @@ public class FinalTele extends LinearOpMode{
             intake();
             shooter();
             dropIntake();
-            if(gamepad2.b == true && armUp == false){
+            if(gamepad2.b == true && armUp == false && lastTimeWobble + 300 > System.currentTimeMillis()){
                 arm1.setPosition(0.92);
                 arm2.setPosition (0.92);
                 armUp = true;
-                sleep(100);
-                //lastTime = System.currentTimeMillis();
+                lastTimeWobble = System.currentTimeMillis();
             }
-            else if(gamepad2.b == true && armUp == true){
+            else if(gamepad2.b == true && armUp == true && lastTimeWobble + 300 > System.currentTimeMillis()){
 
                 arm1.setPosition(0.13);
                 arm2.setPosition (0.13);
                 armUp = false;
-                sleep(100);
+                lastTimeWobble = System.currentTimeMillis();
                 //lastTime = System.currentTimeMillis();
             }
 
@@ -171,13 +172,13 @@ public class FinalTele extends LinearOpMode{
     }
     public void wobbleArm(){
 
-        if(gamepad2.x == true && grabber.getPosition()>0.3){
+        if(gamepad2.x == true && grabber.getPosition()>0.3 && System.currentTimeMillis() >= lastTimeGrabber + 300){
             grabber.setPosition(0.08);
-            sleep(100);
+            lastTimeGrabber = System.currentTimeMillis();
         }
-        else if(gamepad2.x == true && grabber.getPosition()<0.3){
+        else if(gamepad2.x == true && grabber.getPosition()<0.3 && System.currentTimeMillis() >= lastTimeGrabber + 300){
             grabber.setPosition(0.38);
-            sleep(100);
+            lastTimeGrabber = System.currentTimeMillis();
         }
     }
     public void intake(){
