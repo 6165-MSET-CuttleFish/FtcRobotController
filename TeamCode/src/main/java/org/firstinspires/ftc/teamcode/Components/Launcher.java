@@ -82,6 +82,7 @@ public class Launcher {
 
     public void magazineShoot(){
         tiltUp();
+        sleep(500);
         for(int i = 0; i < 3; i++){
             mag.setPosition(0.32);
             sleep(150);
