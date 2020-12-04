@@ -77,7 +77,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.006, 0.00009, 0);
+        pidRotate = new PIDController(.005, 0.00009, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 60, 23.5);
         pwrShots[1] = new Goal(144, 51, 23.5);
