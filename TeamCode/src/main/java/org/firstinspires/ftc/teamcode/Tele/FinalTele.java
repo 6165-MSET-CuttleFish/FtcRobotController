@@ -45,7 +45,7 @@ public class FinalTele extends LinearOpMode{
                 arm1.setPosition(0.92);
                 arm2.setPosition (0.92);
                 armUp = true;
-                wait(100);
+                sleep(100);
                 //lastTime = System.currentTimeMillis();
             }
             else if(gamepad2.b == true && armUp == true){
@@ -53,7 +53,7 @@ public class FinalTele extends LinearOpMode{
                 arm1.setPosition(0.13);
                 arm2.setPosition (0.13);
                 armUp = false;
-                wait(100);
+                sleep(100);
                 //lastTime = System.currentTimeMillis();
             }
 
