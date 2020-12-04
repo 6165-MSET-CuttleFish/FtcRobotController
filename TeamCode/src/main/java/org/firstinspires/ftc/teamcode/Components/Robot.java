@@ -57,9 +57,9 @@ public class Robot {
 
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
-    public static Coordinate A = new Coordinate(96, 12);
+    public static Coordinate A = new Coordinate(90, 16);
     public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(110, 14);
+    public static Coordinate C = new Coordinate(105, 16);
 
     public static Coordinate leftWobble = new Coordinate(47, 47);
     public static Coordinate rightWobble = new Coordinate(14, 24);
@@ -231,6 +231,7 @@ public class Robot {
                 }
             }
         }
+        tfod.shutdown();
     }
     private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
@@ -341,7 +342,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.2, power);
-        pidRotate.setTolerance(2);
+        pidRotate.setTolerance(1);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
