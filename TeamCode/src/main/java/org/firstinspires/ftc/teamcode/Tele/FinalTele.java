@@ -217,8 +217,8 @@ public class FinalTele extends LinearOpMode{
             flywheel1.setPower(-1);
         }
         else if(gamepad2.left_bumper){
-            flywheel.setPower(-0.7);
-            flywheel1.setPower(-0.7);
+            flywheel.setPower(-0.85);
+            flywheel1.setPower(-0.85);
             tilt.setPosition(0.31);
         }
         else if(shooterOn == 0){
