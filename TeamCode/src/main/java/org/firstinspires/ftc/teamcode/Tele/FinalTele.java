@@ -155,28 +155,26 @@ public class FinalTele extends LinearOpMode{
         br.setPower(v4);
     }
     public void wobbleArm(){
-        if(gamepad2.a == true && !armUp && lastTime > System.currentTimeMillis() + 300){
+        if(gamepad2.a == true && armUp == false && lastTime > System.currentTimeMillis() + 300){
             arm1.setPosition(0.92);
             arm2.setPosition (0.92);
             armUp = true;
-            //sleep(100);
             lastTime = System.currentTimeMillis();
         }
         else if(gamepad2.a == true && armUp == true && lastTime > System.currentTimeMillis() + 300){
-            //0.07 init
+
             arm1.setPosition(0.13);
             arm2.setPosition (0.13);
             armUp = false;
-            //sleep(100);
             lastTime = System.currentTimeMillis();
         }
 
         if(gamepad2.x == true && grabber.getPosition()>0.3){
-            grabber.setPosition(0.15);
+            grabber.setPosition(0.08);
             sleep(100);
         }
         else if(gamepad2.x == true && grabber.getPosition()<0.3){
-            grabber.setPosition(0.43);
+            grabber.setPosition(0.38);
             sleep(100);
         }
     }
