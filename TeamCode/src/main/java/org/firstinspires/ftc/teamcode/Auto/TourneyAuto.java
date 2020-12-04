@@ -93,7 +93,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.intake(1);
         robot.goTo(rings, 1, 0, 0.6);
         robot.launcher.setOnlyFlyWheel(1);
-        robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.7, 0, 0.6);
+        robot.goTo(new Coordinate(67, Robot.hiGoal.y), 0.7, 0, 0.6);
         sleep(2500);
         robot.intake(-1);
         sleep(100);
