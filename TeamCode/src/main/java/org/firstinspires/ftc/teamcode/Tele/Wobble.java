@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Wobble extends LinearOpMode {
 
     public Servo arm1, arm2;
-    public Boolean armUp;
+    public Boolean armUp = false;
     public void runOpMode() throws InterruptedException {
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
