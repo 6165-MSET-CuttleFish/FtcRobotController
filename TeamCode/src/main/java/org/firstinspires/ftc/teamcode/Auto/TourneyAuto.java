@@ -19,7 +19,7 @@ public class TourneyAuto extends LinearOpMode {
         waitForStart();
         robot.scan();
         robot.discs = 4;
-        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 2), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 1), 0.7, 0, 0);
         dumpWobble();
         robot.unlockIntake();
         robot.launcher.setFlyWheel(0.8);
