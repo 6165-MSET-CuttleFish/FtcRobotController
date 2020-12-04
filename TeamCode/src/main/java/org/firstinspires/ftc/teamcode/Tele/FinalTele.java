@@ -56,6 +56,10 @@ public class FinalTele extends LinearOpMode{
                 armUp = false;
                 sleep(400);
             }
+            else if(gamepad2.a == true){
+                arm1.setPosition(0.4);
+                arm2.setPosition(0.4);
+            }
 
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
