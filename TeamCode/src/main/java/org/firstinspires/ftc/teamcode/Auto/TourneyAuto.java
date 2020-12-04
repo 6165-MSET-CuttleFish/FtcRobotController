@@ -19,11 +19,11 @@ public class TourneyAuto extends LinearOpMode {
         waitForStart();
         robot.scan();
         robot.discs = 4;
-        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 2), 0.57, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 2), 0.7, 0, 0);
         dumpWobble();
         robot.unlockIntake();
         robot.launcher.setFlyWheel(0.8);
-        robot.goTo(Robot.pwrShotLocals[1], 0.5,0, 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.7,0, 0.5);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
             robot.turnTo(Robot.pwrShots[i], 0.2);
@@ -33,8 +33,8 @@ public class TourneyAuto extends LinearOpMode {
 
         robot.launcher.setFlyWheel(0);
         //robot.orient(0, 0.5);
-        robot.goTo(Robot.leftWobble, 0.7, 0, 0.4);
-        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.2, 0, 0);
+        robot.goTo(Robot.leftWobble, 0.6, 0, 0.4);
+        robot.goTo(new Coordinate(Robot.position.x - 6, Robot.position.y), 0.2, 0, 0);
         robot.grab();
         sleep(450);
         robot.wobbleArmUp();
@@ -73,7 +73,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(800);
         robot.release();
         sleep(300);
-        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
     }
     public void dumpWobble(){
         if(robot.discs == 4){
@@ -91,12 +91,12 @@ public class TourneyAuto extends LinearOpMode {
     public void getMoreRings(){
         Coordinate rings = new Coordinate(47, 32);
         robot.intake(1);
-        robot.goTo(rings, 0.8, 0, 0.6);
+        robot.goTo(rings, 1, 0, 0.6);
         robot.launcher.setOnlyFlyWheel(1);
         robot.goTo(new Coordinate(71, Robot.hiGoal.y), 0.7, 0, 0.6);
-        sleep(2000);
-
+        sleep(2500);
         robot.intake(-1);
+        sleep(100);
         robot.launcher.magazineShoot();
         robot.launcher.setFlyWheel(0);
         robot.intake(0);
