@@ -77,11 +77,11 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.005, 0.00009, 0);
+        pidRotate = new PIDController(.004, 0.00009, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 60, 23.5);
-        pwrShots[1] = new Goal(144, 53, 23.5);
-        pwrShots[2] = new Goal(144, 46, 23.5);
+        pwrShots[1] = new Goal(144, 52.5, 23.5);
+        pwrShots[2] = new Goal(144, 45.5, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 68.25);
         pwrShotLocals[1] = new Coordinate(70, 60.75);
