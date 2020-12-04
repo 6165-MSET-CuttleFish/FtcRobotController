@@ -172,11 +172,11 @@ public class FinalTele extends LinearOpMode{
         }
 
         if(gamepad2.x == true && grabber.getPosition()>0.3){
-            grabber.setPosition(0.15);
+            grabber.setPosition(0.08);
             sleep(100);
         }
         else if(gamepad2.x == true && grabber.getPosition()<0.3){
-            grabber.setPosition(0.43);
+            grabber.setPosition(0.38);
             sleep(100);
         }
     }
