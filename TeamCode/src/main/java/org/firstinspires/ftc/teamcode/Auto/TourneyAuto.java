@@ -34,7 +34,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.launcher.setFlyWheel(0);
         //robot.orient(0, 0.5);
         robot.goTo(Robot.leftWobble, 0.6, 0, 0.4);
-        robot.goTo(new Coordinate(Robot.position.x - 6, Robot.position.y), 0.2, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y), 0.2, 0, 0);
         robot.grab();
         sleep(350);
         robot.wobbleArmUp();
