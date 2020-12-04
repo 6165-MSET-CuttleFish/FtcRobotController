@@ -43,19 +43,18 @@ public class FinalTele extends LinearOpMode{
             intake();
             shooter();
             dropIntake();
-            if(gamepad2.b == true && armUp == false && lastTimeWobble + 300 > System.currentTimeMillis()){
+            if(gamepad2.b == true && armUp == false){
                 arm1.setPosition(0.92);
                 arm2.setPosition (0.92);
                 armUp = true;
-                lastTimeWobble = System.currentTimeMillis();
+                sleep(400);
             }
-            else if(gamepad2.b == true && armUp == true && lastTimeWobble + 300 > System.currentTimeMillis()){
+            else if(gamepad2.b == true && armUp == true){
 
                 arm1.setPosition(0.13);
                 arm2.setPosition (0.13);
                 armUp = false;
-                lastTimeWobble = System.currentTimeMillis();
-                //lastTime = System.currentTimeMillis();
+                sleep(400);
             }
 
             telemetry.addData("X Position", position.getX() );
@@ -172,13 +171,13 @@ public class FinalTele extends LinearOpMode{
     }
     public void wobbleArm(){
 
-        if(gamepad2.x == true && grabber.getPosition()>0.3 && System.currentTimeMillis() >= lastTimeGrabber + 300){
+        if(gamepad2.x == true && grabber.getPosition()>0.3){
             grabber.setPosition(0.08);
-            lastTimeGrabber = System.currentTimeMillis();
+            sleep(300);
         }
-        else if(gamepad2.x == true && grabber.getPosition()<0.3 && System.currentTimeMillis() >= lastTimeGrabber + 300){
+        else if(gamepad2.x == true && grabber.getPosition()<0.3){
             grabber.setPosition(0.38);
-            lastTimeGrabber = System.currentTimeMillis();
+            sleep(300);
         }
     }
     public void intake(){
