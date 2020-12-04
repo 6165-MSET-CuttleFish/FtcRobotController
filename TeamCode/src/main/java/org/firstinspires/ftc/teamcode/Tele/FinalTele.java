@@ -41,18 +41,20 @@ public class FinalTele extends LinearOpMode{
             intake();
             shooter();
             dropIntake();
-            if(gamepad2.b == true && armUp == false && lastTime > System.currentTimeMillis() + 300){
+            if(gamepad2.b == true && armUp == false){
                 arm1.setPosition(0.92);
                 arm2.setPosition (0.92);
                 armUp = true;
-                lastTime = System.currentTimeMillis();
+                wait(100);
+                //lastTime = System.currentTimeMillis();
             }
-            else if(gamepad2.b == true && armUp == true && lastTime > System.currentTimeMillis() + 300){
+            else if(gamepad2.b == true && armUp == true){
 
                 arm1.setPosition(0.13);
                 arm2.setPosition (0.13);
                 armUp = false;
-                lastTime = System.currentTimeMillis();
+                wait(100);
+                //lastTime = System.currentTimeMillis();
             }
 
             telemetry.addData("X Position", position.getX() );
