@@ -57,11 +57,13 @@ public class Robot {
 
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
-    public static Coordinate A = new Coordinate(90, 16);
-    public static Coordinate B = new Coordinate(120, 36);
-    public static Coordinate C = new Coordinate(107, 12);
+    public static Coordinate A = new Coordinate(92, 16);
+    public static Coordinate B = new Coordinate(105, 36);
+    public static Coordinate C = new Coordinate(108, 9);
 
-    public static Coordinate leftWobble = new Coordinate(49, 47);
+    public static Coordinate newC = new Coordinate(124, 29);
+
+    public static Coordinate leftWobble = new Coordinate(48, 51);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -77,11 +79,11 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.005, 0.00009, 0);
+        pidRotate = new PIDController(.0013, 0.00009, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
-        pwrShots[0] = new Goal(144, 60, 23.5);
-        pwrShots[1] = new Goal(144, 51, 23.5);
-        pwrShots[2] = new Goal(144, 45.5, 23.5);
+        pwrShots[0] = new Goal(144, 65.25, 23.5);
+        pwrShots[1] = new Goal(144, 60, 23.5);
+        pwrShots[2] = new Goal(144, 53.25, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 68.25);
         //pwrShotLocals[1] = new Coordinate(70, 60.75);
@@ -216,18 +218,29 @@ public class Robot {
         init();
         initVuforia();
         initTfod();
-        tfod.activate();
+        if(tfod != null) {
+            tfod.activate();
+        }
     }
     public void scan(){
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         if (updatedRecognitions != null) {
             for (Recognition recognition : updatedRecognitions) {
                 if(recognition.getHeight() < 200) {
-                    if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
+//                    if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
+//                        discs = 4;
+//                    } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
+//                        discs = 1;
+//                    } else {
+//                        discs = 0;
+//                    }
+                    if(recognition.getHeight() > 70){
                         discs = 4;
-                    } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
+                    }
+                    else if(recognition.getHeight() < 70 && recognition.getHeight() > 5){
                         discs = 1;
-                    } else {
+                    }
+                    else{
                         discs = 0;
                     }
                 }
@@ -343,8 +356,8 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.2, power);
-        pidRotate.setTolerance(0.8);
+        pidRotate.setOutputRange(0.18, power);
+        pidRotate.setTolerance(1.5);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
@@ -413,7 +426,7 @@ public class Robot {
         int tfodMonitorViewId = map.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", map.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.minResultConfidence = 0.5f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
