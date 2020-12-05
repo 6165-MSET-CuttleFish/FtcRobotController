@@ -80,7 +80,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.00141, 0.00014, 0);
+        pidRotate = new PIDController(.00077, 0.00014, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 65.25, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
@@ -237,9 +237,9 @@ public class Robot {
 //                    } else {
 //                        discs = 0;
 //                    }
-                        if (recognition.getHeight() >= 80) {
+                        if (recognition.getHeight() >= 90) {
                             discs = 4;
-                        } else if (recognition.getHeight() < 80 && recognition.getHeight() > 10) {
+                        } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
                             discs = 1;
                         } else {
                             discs = 0;
@@ -334,7 +334,7 @@ public class Robot {
     }
     public void orient(double angle, double pwr) {
         double closest = angle - position.returnOrientation();
-        pidRotate(power, closest);
+        pidRotate(closest, pwr);
     }
     public void turnTo(Coordinate pt, double pwr){
         double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -361,8 +361,8 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.18, power);
-        pidRotate.setTolerance(1.8);
+        pidRotate.setOutputRange(0.16, power);
+        pidRotate.setTolerance(2.3);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
