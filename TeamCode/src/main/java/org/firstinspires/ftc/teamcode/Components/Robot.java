@@ -57,13 +57,14 @@ public class Robot {
 
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
-    public static Coordinate A = new Coordinate(92, 16);
-    public static Coordinate B = new Coordinate(105, 36);
-    public static Coordinate C = new Coordinate(108, 9);
-
+    public static Coordinate A = new Coordinate(85, 16);
+    public static Coordinate B = new Coordinate(105, 38);
+    public static Coordinate C = new Coordinate(108, 10);
+    public static Coordinate newA = new Coordinate(85, 29);
+    public static Coordinate newB = new Coordinate(100, 55);
     public static Coordinate newC = new Coordinate(124, 29);
 
-    public static Coordinate leftWobble = new Coordinate(48, 51);
+    public static Coordinate leftWobble = new Coordinate(47, 53);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -79,7 +80,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.0013, 0.00009, 0);
+        pidRotate = new PIDController(.00141, 0.00014, 0);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 65.25, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
@@ -222,11 +223,13 @@ public class Robot {
             tfod.activate();
         }
     }
+    public double height;
     public void scan(){
-        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-        if (updatedRecognitions != null) {
-            for (Recognition recognition : updatedRecognitions) {
-                if(recognition.getHeight() < 200) {
+        if(tfod != null) {
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                for (Recognition recognition : updatedRecognitions) {
+                    if (recognition.getHeight() < 200) {
 //                    if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
 //                        discs = 4;
 //                    } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
@@ -234,19 +237,21 @@ public class Robot {
 //                    } else {
 //                        discs = 0;
 //                    }
-                    if(recognition.getHeight() > 70){
-                        discs = 4;
-                    }
-                    else if(recognition.getHeight() < 70 && recognition.getHeight() > 5){
-                        discs = 1;
-                    }
-                    else{
-                        discs = 0;
+                        if (recognition.getHeight() >= 80) {
+                            discs = 4;
+                        } else if (recognition.getHeight() < 80 && recognition.getHeight() > 10) {
+                            discs = 1;
+                        } else {
+                            discs = 0;
+                        }
+                        height = recognition.getHeight();
                     }
                 }
             }
         }
-        tfod.shutdown();
+        if(tfod != null) {
+            tfod.shutdown();
+        }
     }
     private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
@@ -357,7 +362,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.18, power);
-        pidRotate.setTolerance(1.5);
+        pidRotate.setTolerance(1.8);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

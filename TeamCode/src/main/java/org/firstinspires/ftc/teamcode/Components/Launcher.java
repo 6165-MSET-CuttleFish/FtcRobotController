@@ -66,12 +66,12 @@ public class Launcher {
         else {
             tiltUp();
         }
-        flywheel.setPower(-pwr);
-        flywheel1.setPower(-pwr);
+//        flywheel.setPower(-pwr);
+//        flywheel1.setPower(-pwr);
     }
     public void setOnlyFlyWheel(double pwr){
-        flywheel.setPower(-pwr);
-        flywheel1.setPower(-pwr);
+//        flywheel.setPower(-pwr);
+//        flywheel1.setPower(-pwr);
     }
     public void tiltUp(){
         tilt.setPosition(0.31);
@@ -91,6 +91,8 @@ public class Launcher {
         }
     }
     public void singleRound(){
+        tiltUp();
+        sleep(500);
         mag.setPosition(0.318);
         sleep(300);
         mag.setPosition(0.47);

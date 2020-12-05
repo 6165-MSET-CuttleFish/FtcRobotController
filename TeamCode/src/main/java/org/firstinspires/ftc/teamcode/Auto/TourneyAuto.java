@@ -10,49 +10,67 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 @Autonomous
 public class TourneyAuto extends LinearOpMode {
     Robot robot;
+    Coordinate targetPos;
+    Coordinate leftWob;
+    int rounds = 0;
     @Override
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 25, 0,18, 18);
         robot.autoInit();
+        sleep(1500);
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         waitForStart();
         robot.scan();
+        telemetry.addData("Stack Height", robot.height);
+        telemetry.addData("Discs", robot.discs);
+        telemetry.update();
         //robot.discs = 4;
-        robot.goTo(new Coordinate(Robot.position.x + 20, Robot.position.y - 1), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 35, Robot.position.y - 8.5), 0.7, 0, 0);
         dumpWobble();
+        rounds ++;
+        if(robot.discs == 4){
+            Robot.leftWobble.addY(2.5);
+            Robot.leftWobble.addX(1);
+            targetPos.addX(-6);
+        }
+        targetPos.addX(-6);
         robot.unlockIntake();
         robot.launcher.setFlyWheel(0.8);
-        robot.goTo(Robot.pwrShotLocals[1], 0.5,0, 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.6,0, 0.3);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
-            robot.turnTo(Robot.pwrShots[i], 0.2);
+            robot.turnTo(Robot.pwrShots[i], 0.21);
             robot.launcher.singleRound();
         }
         //sleep(5000);
 
         robot.launcher.setFlyWheel(0);
         //robot.orient(0, 0.5);
-        robot.goTo(Robot.leftWobble, 0.5, 0, 0.4);
-        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y), 0.2, 0, 0);
+        robot.goTo(Robot.leftWobble, 0.55, 0, 0.4);
+        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y), 0.23, 0, 0);
         robot.grab();
         sleep(350);
         robot.wobbleArmUp();
+
         if(robot.discs != 0) {
             getMoreRings();
         }
+//        if(robot.discs !=4){
+//            robot.goTo(new Coordinate(targetPos.x - 5, targetPos.y + 15),0.8, 0, 0.3);
+//        }
         dumpWobble();
         Coordinate homePos = new Coordinate(88, robot.position.y);
-        if(robot.discs != 4){
-            homePos.y = robot.position.y + 15;
-        }
-        robot.goTo(homePos, 0.5, 0, 0);
+//        if(robot.discs != 4){
+//            homePos.y = robot.position.y + 15;
+//        }
+        robot.goTo(homePos, 0.7, 0, 0);
         robot.position.stop();
     }
     public void case0(){
         robot.goTo(Robot.A, 0.6, 0, 0);
         robot.wobbleArmDown();
-        sleep(1000);
+        sleep(800);
         robot.release();
         sleep(200);
         robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, 0, 0);
@@ -64,17 +82,35 @@ public class TourneyAuto extends LinearOpMode {
     public void case1(){
         robot.goTo(Robot.B, 0.7, 0, 0);
         robot.wobbleArmDown();
-        sleep(1000);
-        robot.release();
-        sleep(200);
-        robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y), 0.7, 0, 0);
-    }
-    public void newcase4(){
-        robot.goTo(Robot.newC, 0.7, Math.toRadians(90), 0.4);
-        robot.wobbleArmDown();
         sleep(800);
         robot.release();
-        sleep(500);
+        sleep(200);
+        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x , Robot.position.y + 10), 1, 0, 0);
+
+    }
+    public void newcase0(){
+        robot.goTo(Robot.newA, 0.7, Math.toRadians(90), 0.4);
+        robot.wobbleArmDown();
+        sleep(750);
+        robot.release();
+        sleep(200);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
+    }
+    public void newcase1(){
+        robot.goTo(Robot.newB, 0.7, Math.toRadians(90), 0.4);
+        robot.wobbleArmDown();
+        sleep(750);
+        robot.release();
+        sleep(200);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
+    }
+    public void newcase4(){
+        robot.goTo(Robot.newC, 0.8, Math.toRadians(90), 0.4);
+        robot.wobbleArmDown();
+        sleep(750);
+        robot.release();
+        sleep(200);
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
     }
     public void case4(){
@@ -90,30 +126,45 @@ public class TourneyAuto extends LinearOpMode {
     }
     public void dumpWobble(){
         if(robot.discs == 4){
+            targetPos = Robot.C;
             newcase4();
         }
         else if(robot.discs == 1){
-            case1();
+            targetPos = Robot.B;
+            newcase1();
         }
         else{
-            case0();
+            targetPos = Robot.A;
+            newcase0();
         }
-
         //robot.wobbleArmUp();
     }
     public void getMoreRings(){
-        Coordinate rings = new Coordinate(44, 32);
-        Coordinate rings2 = new Coordinate(47, 32);
+        //Coordinate rings = new Coordinate(44, 32);
+        Coordinate rings2 = new Coordinate(47, 31.3);
         robot.intake(1);
-        robot.goTo(rings, 1, 0, 0.6);
-        robot.goTo(rings2, 0.7, 0, 0.6);
-
+        //robot.goTo(rings, 1, 0, 0.6);
+        robot.goTo(rings2, 1, 0, 0.6);
         robot.launcher.setOnlyFlyWheel(1);
         robot.goTo(new Coordinate(67, Robot.hiGoal.y), 0.7, 0, 0.6);
-        sleep(2500);
-        robot.intake(-1);
+        if(robot.discs == 4){
+            sleep(2300);
+        }
+        else{
+            sleep(1000);
+        }
+        if (robot.discs == 4) {
+            robot.intake(-1);
+        } else {
+            robot.intake(0);
+        }
         sleep(100);
-        robot.launcher.magazineShoot();
+        if(robot.discs == 4) {
+            robot.launcher.magazineShoot();
+        }
+        else{
+            robot.launcher.singleRound();
+        }
         robot.launcher.setFlyWheel(0);
         robot.intake(0);
     }
