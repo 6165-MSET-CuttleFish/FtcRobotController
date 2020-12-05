@@ -51,7 +51,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(Robot.leftWobble, 0.55, 0, 0.4);
         robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y), 0.23, 0, 0);
         robot.grab();
-        sleep(350);
+        sleep(320);
         robot.wobbleArmUp();
 
         if(robot.discs != 0) {
@@ -65,7 +65,7 @@ public class TourneyAuto extends LinearOpMode {
 //        if(robot.discs != 4){
 //            homePos.y = robot.position.y + 15;
 //        }
-        robot.goTo(homePos, 0.7, 0, 0);
+        robot.goTo(homePos, 1, 0, 0);
         robot.position.stop();
     }
     public void case0(){
