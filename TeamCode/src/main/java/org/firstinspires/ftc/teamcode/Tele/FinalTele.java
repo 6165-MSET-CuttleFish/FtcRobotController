@@ -119,8 +119,13 @@ public class FinalTele extends LinearOpMode{
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
         arm1.setDirection(Servo.Direction.REVERSE);
+
         //leftIntakeHolder = hardwareMap.get(Servo.class,"liServo");
         //rightIntakeHolder = hardwareMap.get(Servo.class,"riServo");
+
+        leftIntakeHolder = hardwareMap.get(Servo.class,"wallL");
+        rightIntakeHolder = hardwareMap.get(Servo.class,"wallR");
+
 
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber");
         grabber.setPosition(0.08);
