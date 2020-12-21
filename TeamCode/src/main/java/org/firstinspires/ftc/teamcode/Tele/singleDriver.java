@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpFinal", group = "LinearOpMode")
-public class FinalTele extends LinearOpMode{
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="SingleDriverTele", group = "LinearOpMode")
+public class singleDriver extends LinearOpMode {
 
     public DcMotor fl, fr, bl,br;//matthew is fat
     public DcMotor intakeR, intakeL;
@@ -26,8 +28,8 @@ public class FinalTele extends LinearOpMode{
     public DcMotor verticalLeft, verticalRight, horizontal;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public void runOpMode() throws InterruptedException {
-
         initialize();
+        waitForStart();
         //position = new OdometryGlobalCoordinatePosition(fr, br, bl, COUNTS_PER_INCH, 75, 0, 0);
         position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 75, 0, 0, 0);
         //position = new OdometryGlobalCoordinatePosition(br, bl, fr, COUNTS_PER_INCH, 75, 0, 0);
@@ -37,7 +39,7 @@ public class FinalTele extends LinearOpMode{
         waitForStart();
 
         while(opModeIsActive()){
-            //drive();
+
             drive();
             wobbleArm();
             intake();
@@ -57,15 +59,6 @@ public class FinalTele extends LinearOpMode{
             //idle();
         }
         position.stop();
-    }
-
-    public void dropIntake(){
-        if(gamepad1.x==true){
-
-            rightIntakeHolder.setPosition(0.4);
-
-        }
-
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
@@ -162,40 +155,59 @@ public class FinalTele extends LinearOpMode{
         br.setPower(v4);
     }
     public void wobbleArm(){
-        if(gamepad2.b == true && armUp == false){
+        if(gamepad1.a == true && armUp == false){
             arm1.setPosition(0.1);
             arm2.setPosition (0.88);
             armUp = true;
             sleep(400);
         }
-        else if(gamepad2.b == true && armUp == true){
+        else if(gamepad1.a == true && armUp == true){
 
             arm1.setPosition(0.93);
             arm2.setPosition (0.07);
             armUp = false;
             sleep(400);
         }
+        /*
         else if(gamepad2.a == true){
             arm1.setPosition(0.69);
             arm2.setPosition(0.3);
             armUp = false;
         }
-        if(gamepad2.x == true && grabber.getPosition()>0.3){
+
+         */
+        if(gamepad1.x == true && grabber.getPosition()>0.3){
             grabber.setPosition(0.13);
             grabber2.setPosition(0.83);
             sleep(300);
         }
-        else if(gamepad2.x == true && grabber.getPosition()<0.3){
+        else if(gamepad1.x == true && grabber.getPosition()<0.3){
             grabber.setPosition(0.63);
             grabber2.setPosition(0.29);
             sleep(300);
         }
     }
-    public void intake(){
-        double intakeSpeed = -gamepad2.right_stick_y;
-        intakeL.setPower(intakeSpeed);
-        intakeR.setPower(intakeSpeed);
-        if(intakeSpeed<0){
+    public void dropIntake(){
+        if(gamepad1.y==true){
+            rightIntakeHolder.setPosition(0.4);
+        }
+    }
+    public void intake() {
+        if (gamepad1.dpad_down == true) {
+            in1.setPosition(0);
+            in2.setPosition(1);
+            intakeL.setPower(1);
+            intakeR.setPower(1);
+        } else if (gamepad1.dpad_up == true) {
+            in1.setPosition(1);
+            in2.setPosition(0);
+            intakeL.setPower(-1);
+            intakeR.setPower(-1);
+        }
+        //double intakeSpeed = -gamepad2.right_stick_y;
+        //intakeL.setPower(intakeSpeed);
+        //intakeR.setPower(intakeSpeed);
+        /*if(intakeSpeed<0){
             in1.setPosition(1);
             in2.setPosition(0);
         }
@@ -209,50 +221,46 @@ public class FinalTele extends LinearOpMode{
         }
         if(intakeSpeed!=0){
             telemetry.addData ("Intake", "on");
-        }
-        if(gamepad2.dpad_left==true && leftIntakeHolder.getPosition()>0.5){
+        }*/
+        if (gamepad2.dpad_left == true && leftIntakeHolder.getPosition() > 0.5) {
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
             sleep(200);
-        }
-        else if(gamepad2.dpad_left==true && leftIntakeHolder.getPosition()<0.5){
+        } else if (gamepad2.dpad_left == true && leftIntakeHolder.getPosition() < 0.5) {
             leftIntakeHolder.setPosition(0.91);
             rightIntakeHolder.setPosition(0.18);
             sleep(200);
         }
     }
-    public void shooter(){
-        if(gamepad2.dpad_up==true){
+    public void shooter() {
+        if (gamepad2.dpad_up == true) {
             flap.setPosition(0.48);
-        }
-        else if(gamepad2.dpad_down==true){
+        } else if (gamepad2.dpad_down == true) {
             flap.setPosition(0.35);
         }
 
-        if(gamepad2.right_bumper==true){
+        if (gamepad1.b == true) {
             mag.setPosition(0.31);
             sleep(150);
             mag.setPosition(.5);
         }
-        if(gamepad2.left_trigger >=0.1){
+        if (gamepad1.left_trigger >= 0.1) {
             tilt.setPosition(0.75);
             flywheel.setPower(-0.95);
             flywheel1.setPower(-0.95);
-        }
-        else if(gamepad2.left_bumper){
+        } else if (gamepad1.dpad_left==true) {
             flywheel.setPower(-0.85);
             flywheel1.setPower(-0.85);
             tilt.setPosition(0.75);
-        }
-        else if(shooterOn == 0){
+        } else{
             tilt.setPosition(0.5);
             flywheel.setPower(0);
             flywheel1.setPower(0);
         }
 
-        if(gamepad2.right_trigger >= 0.1){
+        if (gamepad1.right_trigger >= 0.1) {
             int i = 0;
-            while(i<3){
+            while (i < 3) {
 
                 mag.setPosition(0.31);
                 sleep(150);
@@ -265,5 +273,4 @@ public class FinalTele extends LinearOpMode{
             }
         }
     }
-    public int shooterOn = 0;
 }
