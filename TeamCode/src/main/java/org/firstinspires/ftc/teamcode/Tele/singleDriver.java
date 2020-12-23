@@ -198,7 +198,7 @@ public class singleDriver extends LinearOpMode {
             in2.setPosition(1);
             intakeL.setPower(1);
             intakeR.setPower(1);
-        } else if (gamepad1.dpad_up == true) {
+        } else if (gamepad1.right_trigger >= 0.1) {
             in1.setPosition(1);
             in2.setPosition(0);
             intakeL.setPower(-1);
@@ -258,7 +258,7 @@ public class singleDriver extends LinearOpMode {
             flywheel1.setPower(0);
         }
 
-        if (gamepad1.right_trigger >= 0.1) {
+        if (gamepad1.dpad_up == true) {
             int i = 0;
             while (i < 3) {
 
