@@ -204,6 +204,12 @@ public class singleDriver extends LinearOpMode {
             intakeL.setPower(-1);
             intakeR.setPower(-1);
         }
+        else{
+            in1.setPosition(0.5);
+            in2.setPosition(0.5);
+            intakeL.setPower(0);
+            intakeR.setPower(0);
+        }
         //double intakeSpeed = -gamepad2.right_stick_y;
         //intakeL.setPower(intakeSpeed);
         //intakeR.setPower(intakeSpeed);
