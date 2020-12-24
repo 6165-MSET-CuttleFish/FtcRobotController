@@ -169,13 +169,8 @@ public class Robot {
         }
         setMovement(0, 0, 0);
     }
-    public void lockIntake(){
-        leftIntakeHolder.setPosition(0.78);
-        rightIntakeHolder.setPosition(0.81);
-    }
     public void unlockIntake(){
-        leftIntakeHolder.setPosition(0.1);
-        rightIntakeHolder.setPosition(0.7);
+        rightIntakeHolder.setPosition(0.4);
     }
     public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
         double distanceToX = pt.x - position.getX();
