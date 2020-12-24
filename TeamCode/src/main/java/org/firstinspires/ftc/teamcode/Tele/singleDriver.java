@@ -194,13 +194,13 @@ public class singleDriver extends LinearOpMode {
     }
     public void intake() {
         if (gamepad1.dpad_down == true) {
-            in1.setPosition(0);
-            in2.setPosition(1);
+            in1.setPosition(1);
+            in2.setPosition(0);
             intakeL.setPower(1);
             intakeR.setPower(1);
         } else if (gamepad1.right_trigger >= 0.1) {
-            in1.setPosition(1);
-            in2.setPosition(0);
+            in1.setPosition(0);
+            in2.setPosition(1);
             intakeL.setPower(-1);
             intakeR.setPower(-1);
         }
