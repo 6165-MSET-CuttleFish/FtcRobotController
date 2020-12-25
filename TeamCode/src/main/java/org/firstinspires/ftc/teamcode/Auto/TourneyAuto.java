@@ -13,7 +13,7 @@ public class TourneyAuto extends LinearOpMode {
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 25, 0,18, 18);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0,18, 18);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");

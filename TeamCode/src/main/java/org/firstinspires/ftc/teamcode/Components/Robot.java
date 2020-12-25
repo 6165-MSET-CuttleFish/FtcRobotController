@@ -48,7 +48,7 @@ public class Robot {
 
     public Servo in1, in2;
     public Servo arm1, arm2;
-    public Servo grabber;
+    public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Goal hiGoal = new Goal(144, 37.5, 35.5);//142.75
@@ -80,7 +80,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.00077, 0.00014, 0);
+        pidRotate = new PIDController(.074, 0.008, 0.001);
         //pidRotate = new PIDController(.00, .0000, 0);
         pwrShots[0] = new Goal(144, 65.25, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
@@ -113,11 +113,12 @@ public class Robot {
         arm1.setDirection( Servo.Direction.REVERSE);
 //        arm1.setPosition(0.92);
 //        arm2.setPosition (0.92);
-        grabber = map.get(Servo.class, "wobbleGrabber");
+        grabber = map.get(Servo.class, "wobbleGrabber1");
+        grabber2 = map.get(Servo.class, "wobbleGrabber2");
         //grabber.setPosition(0.92);
 
-        leftIntakeHolder = map.servo.get("liServo");
-        rightIntakeHolder = map.servo.get("riServo");
+        leftIntakeHolder = map.get(Servo.class,"wallL");
+        rightIntakeHolder = map.get(Servo.class,"wallR");
 //        lockIntake();
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -282,11 +283,13 @@ public class Robot {
         arm2.setPosition (0.13);
     }
     public void grab(){
-        grabber.setPosition(0.38);
+        grabber.setPosition(0.13);
+        grabber2.setPosition(0.83);
         sleep(100);
     }
     public void release(){
-        grabber.setPosition(0);
+        grabber.setPosition(0.63);
+        grabber2.setPosition(0.29);
         sleep(100);
     }
     public void intake(double intakeSpeed){
@@ -356,8 +359,8 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.16, power);
-        pidRotate.setTolerance(2.3);
+        pidRotate.setOutputRange(0.12, power);
+        pidRotate.setTolerance(1);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

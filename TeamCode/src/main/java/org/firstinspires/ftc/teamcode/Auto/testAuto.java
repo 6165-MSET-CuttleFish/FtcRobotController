@@ -15,7 +15,7 @@ public class testAuto extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 79, 56.5, 0,18, 18);
         robot.init();
         telemetry.addData("orient", robot.position.returnOrientation());
         telemetry.addData("x",robot.position.x);
@@ -25,5 +25,6 @@ public class testAuto extends LinearOpMode {
         for(int i = 0; i < 3; i++){
             robot.turnTo(Robot.pwrShots[i], 0.4);
         }
+        //robot.orient(0, 0.4);
     }
 }

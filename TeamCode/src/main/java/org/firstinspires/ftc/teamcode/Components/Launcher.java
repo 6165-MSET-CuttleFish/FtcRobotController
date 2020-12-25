@@ -29,7 +29,6 @@ public class Launcher {
         tilt = map.get(Servo.class, "tilt");
         mag.setPosition(0.47);
         tilt.setPosition(0.13);
-        flap.setPosition(0);
     }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
@@ -74,34 +73,34 @@ public class Launcher {
 //        flywheel1.setPower(-pwr);
     }
     public void tiltUp(){
-        tilt.setPosition(0.31);
+        tilt.setPosition(0.72);
     }
     public void tiltDown(){
-        tilt.setPosition(0.14);
+        tilt.setPosition(0.52);
     }
 
     public void magazineShoot(){
         tiltUp();
         sleep(500);
         for(int i = 0; i < 3; i++){
-            mag.setPosition(0.32);
+            mag.setPosition(0.35);
             sleep(150);
-            mag.setPosition(.47);
+            mag.setPosition(.5);
             sleep(800);
         }
     }
     public void singleRound(){
         tiltUp();
         sleep(500);
-        mag.setPosition(0.318);
+        mag.setPosition(0.35);
         sleep(300);
-        mag.setPosition(0.47);
+        mag.setPosition(0.5);
     }
     public void shoot(double rounds){
         for(int i = 0; i < rounds; i++){
-            mag.setPosition(0.32);
+            mag.setPosition(0.35);
             sleep(800);
-            mag.setPosition(.47);
+            mag.setPosition(.5);
             if(i != rounds - 1) sleep(150);
         }
     }
