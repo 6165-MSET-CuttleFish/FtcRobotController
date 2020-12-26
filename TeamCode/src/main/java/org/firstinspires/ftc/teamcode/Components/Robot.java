@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
@@ -338,6 +339,15 @@ public class Robot {
         double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         //orient(position.angleTo(pt), pwr);
+        pidRotate(Math.toDegrees(relAngleToPoint), pwr);
+    }
+    public void turnTo(Coordinate pt, double pwr, boolean forShots){
+        double dx = 6 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
+        double dy = 6 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
+        Coordinate shooter = position.toPoint();
+        shooter.polarAdd(position.radians() - Math.PI/2, 6);
+        double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
+        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);
     }
     public void pidRotate(double degrees, double power) {

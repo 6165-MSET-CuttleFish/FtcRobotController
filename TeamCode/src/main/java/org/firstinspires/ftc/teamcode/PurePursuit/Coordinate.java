@@ -20,7 +20,9 @@ public class Coordinate {
         this.x = x;
         this.y = y;
     }
-
+    public Coordinate toPoint(){
+        return new Coordinate(x, y);
+    }
     public void setPoint(Coordinate point) {
         this.x = point.getX();
         this.y = point.getY();
