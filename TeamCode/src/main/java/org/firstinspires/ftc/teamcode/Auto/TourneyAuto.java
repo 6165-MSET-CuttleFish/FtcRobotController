@@ -26,13 +26,13 @@ public class TourneyAuto extends LinearOpMode {
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x + 35, Robot.position.y), 0.7, 0, 0);
         if(robot.discs == 4){
-            targetPos = Robot.C;
+            targetPos = Robot.newC;
         }
         else if(robot.discs == 1){
-            targetPos = Robot.B;
+            targetPos = Robot.newB;
         }
         else{
-            targetPos = Robot.A;
+            targetPos = Robot.newA;
         }
         robot.goTo(targetPos, 0.7, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();

@@ -83,8 +83,11 @@ public class Robot {
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pidRotate = new PIDController(.074, 0.008, 0.001);
         //pidRotate = new PIDController(.00, .0000, 0);
-        pwrShots[0] = new Goal(144, 65.25, 23.5);
-        pwrShots[1] = new Goal(144, 60, 23.5);
+//        pwrShots[0] = new Goal(144, 65.25, 23.5);
+//        pwrShots[1] = new Goal(144, 60, 23.5);
+//        pwrShots[2] = new Goal(144, 53.25, 23.5);
+        pwrShots[0] = new Goal(144, 68.25, 23.5);
+        pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 68.25);
