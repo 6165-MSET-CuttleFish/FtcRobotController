@@ -81,7 +81,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.08, 0.008, 0.0013);
+        pidRotate = new PIDController(.077, 0.0087, 0.0018);
         //pidRotate = new PIDController(.00, .0000, 0);
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
@@ -352,10 +352,10 @@ public class Robot {
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);
     }
     public void launcherturnTo(Coordinate pt, double pwr){
-        double dx = 6 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
-        double dy = 6 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
+        double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
+        double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() - Math.PI/2, 6);
+        shooter.polarAdd(position.radians() - Math.PI/2, 4.5);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);

@@ -85,7 +85,7 @@ public class Launcher {
         for(int i = 0; i < 3; i++){
             mag.setPosition(0.32);
             sleep(150);
-            mag.setPosition(.5);
+            mag.setPosition(.55);
             sleep(800);
         }
     }
@@ -94,13 +94,13 @@ public class Launcher {
         sleep(500);
         mag.setPosition(0.32);
         sleep(300);
-        mag.setPosition(0.5);
+        mag.setPosition(0.55);
     }
     public void shoot(double rounds){
         for(int i = 0; i < rounds; i++){
             mag.setPosition(0.32);
             sleep(800);
-            mag.setPosition(.5);
+            mag.setPosition(.55);
             if(i != rounds - 1) sleep(150);
         }
     }

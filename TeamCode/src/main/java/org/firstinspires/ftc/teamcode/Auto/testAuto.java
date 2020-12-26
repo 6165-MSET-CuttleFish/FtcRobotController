@@ -23,7 +23,7 @@ public class testAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
         for(int i = 0; i < 3; i++){
-            robot.turnTo(Robot.pwrShots[i], 0.4);
+            robot.turnTo(Robot.pwrShots[i], 0.3);
         }
         //robot.orient(0, 0.4);
     }

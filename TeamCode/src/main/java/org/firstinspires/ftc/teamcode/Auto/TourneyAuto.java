@@ -70,7 +70,7 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.A;
             case0();
         }
-        Coordinate homePos = new Coordinate(88, robot.position.y);
+        Coordinate homePos = new Coordinate(95, robot.position.y);
 //        if(robot.discs != 4){
 //            homePos.y = robot.position.y + 15;
 //        }
@@ -99,7 +99,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(450);
         robot.release();
         sleep(200);
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
+        //robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
     }
     public void case0(){
         robot.goTo(Robot.A, 0.6, 0, 0);
@@ -115,13 +115,13 @@ public class TourneyAuto extends LinearOpMode {
     }
 
     public void case1(){
-        robot.goTo(Robot.B, 0.7, 0, 0);
+        robot.goTo(Robot.B, 0.7, Math.toRadians(-180), 0.5);
         robot.wobbleArmDown();
         sleep(800);
         robot.release();
         sleep(200);
-        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, 0, 0);
-        robot.goTo(new Coordinate(Robot.position.x , Robot.position.y + 10), 1, 0, 0);
+//        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, Math.toRadians(-180), 0);
+//        robot.goTo(new Coordinate(Robot.position.x , Robot.position.y + 10), 1, 0, 0);
 
     }
 
@@ -134,7 +134,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(Robot.C, 0.4, Math.toRadians(-180), 0.4);
         robot.release();
         sleep(500);
-        robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
+        //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
     }
     public void getMoreRings(){
             Coordinate rings2 = new Coordinate(47, 31.3);
