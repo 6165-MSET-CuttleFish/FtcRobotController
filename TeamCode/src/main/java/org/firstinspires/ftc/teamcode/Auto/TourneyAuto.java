@@ -23,8 +23,7 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        robot.unlockIntake();
-        robot.goTo(new Coordinate(Robot.position.x + 35, Robot.position.y + 10), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 40, Robot.position.y + 10), 0.7, 0, 0);
         if(robot.discs == 4){
             targetPos = Robot.newC;
         }
@@ -34,6 +33,7 @@ public class TourneyAuto extends LinearOpMode {
         else{
             targetPos = Robot.newA;
         }
+        robot.unlockIntake();
         robot.goTo(targetPos, 0.7, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
         sleep(550);
@@ -46,25 +46,18 @@ public class TourneyAuto extends LinearOpMode {
         robot.launcher.setFlyWheel(0.8);
         for(int i = 0; i < Robot.pwrShots.length; i++){
             robot.launcher.flapDown();
-            robot.launcherturnTo(Robot.pwrShots[i], 0.4);
+            robot.launcherturnTo(Robot.pwrShots[i], 0.3);
             robot.launcher.singleRound();
         }
-        //sleep(5000);
-
         robot.launcher.setFlyWheel(0);
-        //robot.orient(0, 0.5);
         robot.goTo(Robot.leftWobble, 0.55, 0, 0.4);
         robot.goTo(new Coordinate(Robot.position.x - 6, Robot.position.y), 0.23, 0, 0);
         robot.grab();
         sleep(320);
         robot.wobbleArmVertical();
-
         if(robot.discs != 0) {
             getMoreRings();
         }
-//        if(robot.discs !=4){
-//            robot.goTo(new Coordinate(targetPos.x - 5, targetPos.y + 15),0.8, 0, 0.3);
-//        }
         if(robot.discs == 4){
             targetPos = Robot.C;
             case4();
@@ -81,13 +74,13 @@ public class TourneyAuto extends LinearOpMode {
 //        if(robot.discs != 4){
 //            homePos.y = robot.position.y + 15;
 //        }
-        robot.goTo(homePos, 1, 0, 0);
+        robot.goTo(homePos, 0.6, 0, 0);
         robot.position.stop();
     }
     public void newcase0(){
         robot.goTo(Robot.newA, 0.7, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
-        sleep(550);
+        sleep(450);
         robot.release();
         sleep(200);
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
@@ -95,7 +88,7 @@ public class TourneyAuto extends LinearOpMode {
     public void newcase1(){
         robot.goTo(Robot.newB, 0.7, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
-        sleep(550);
+        sleep(450);
         robot.release();
         sleep(200);
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
@@ -103,7 +96,7 @@ public class TourneyAuto extends LinearOpMode {
     public void newcase4(){
         robot.goTo(Robot.newC, 0.8, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
-        sleep(550);
+        sleep(450);
         robot.release();
         sleep(200);
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
