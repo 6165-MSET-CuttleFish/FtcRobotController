@@ -58,14 +58,14 @@ public class Robot {
 
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
-    public static Coordinate A = new Coordinate(85, 16);
-    public static Coordinate B = new Coordinate(105, 38);
-    public static Coordinate C = new Coordinate(108, 10);
-    public static Coordinate newA = new Coordinate(85, 29);
-    public static Coordinate newB = new Coordinate(100, 55);
-    public static Coordinate newC = new Coordinate(124, 29);
+    public static Coordinate A = new Coordinate(65, 16);
+    public static Coordinate B = new Coordinate(88, 38);
+    public static Coordinate C = new Coordinate(112, 10);
+    public static Coordinate newA = new Coordinate(80, 29);
+    public static Coordinate newB = new Coordinate(95, 55);
+    public static Coordinate newC = new Coordinate(119, 29);
 
-    public static Coordinate leftWobble = new Coordinate(47, 53);
+    public static Coordinate leftWobble = new Coordinate(42, 53);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -81,7 +81,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.074, 0.008, 0.001);
+        pidRotate = new PIDController(.074, 0.008, 0.0004);
         //pidRotate = new PIDController(.00, .0000, 0);
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
@@ -90,11 +90,11 @@ public class Robot {
         pwrShots[1] = new Goal(144, 60.75, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
 
-        pwrShotLocals[0] = new Coordinate(70, 68.25);
+        pwrShotLocals[0] = new Coordinate(65, 68.25);
         //pwrShotLocals[1] = new Coordinate(70, 60.75);
-        pwrShotLocals[1] = new Coordinate(70, 60);
+        pwrShotLocals[1] = new Coordinate(65, 60);
 
-        pwrShotLocals[2] = new Coordinate(70, 53.25);
+        pwrShotLocals[2] = new Coordinate(65, 53.25);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;
@@ -114,7 +114,7 @@ public class Robot {
 
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
-        arm1.setDirection( Servo.Direction.REVERSE);
+        //arm1.setDirection( Servo.Direction.REVERSE);
 //        arm1.setPosition(0.92);
 //        arm2.setPosition (0.92);
         grabber = map.get(Servo.class, "wobbleGrabber1");
@@ -279,12 +279,16 @@ public class Robot {
         }
     }
     public void wobbleArmUp() {
-        arm1.setPosition(0.92);
-        arm2.setPosition (0.92);
+        arm1.setPosition(0.1);
+        arm2.setPosition (0.88);
     }
     public void wobbleArmDown() {
-        arm1.setPosition(0.13);
-        arm2.setPosition (0.13);
+        arm1.setPosition(0.93);
+        arm2.setPosition (0.07);
+    }
+    public void wobbleArmVertical(){
+        arm1.setPosition(0.69);
+        arm2.setPosition (0.3);
     }
     public void grab(){
         grabber.setPosition(0.13);
@@ -344,7 +348,7 @@ public class Robot {
         //orient(position.angleTo(pt), pwr);
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);
     }
-    public void turnTo(Coordinate pt, double pwr, boolean forShots){
+    public void launcherturnTo(Coordinate pt, double pwr){
         double dx = 6 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
         double dy = 6 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
@@ -372,7 +376,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.12, power);
+        pidRotate.setOutputRange(0.16, power);
         pidRotate.setTolerance(1);
         pidRotate.enable();
 

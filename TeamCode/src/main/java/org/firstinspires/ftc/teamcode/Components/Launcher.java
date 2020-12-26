@@ -27,8 +27,8 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
-        mag.setPosition(0.47);
-        tilt.setPosition(0.13);
+        mag.setPosition(0.5);
+        tilt.setPosition(0.52);
     }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
@@ -65,12 +65,12 @@ public class Launcher {
         else {
             tiltUp();
         }
-//        flywheel.setPower(-pwr);
-//        flywheel1.setPower(-pwr);
+        flywheel.setPower(-pwr);
+        flywheel1.setPower(-pwr);
     }
     public void setOnlyFlyWheel(double pwr){
-//        flywheel.setPower(-pwr);
-//        flywheel1.setPower(-pwr);
+        flywheel.setPower(-pwr);
+        flywheel1.setPower(-pwr);
     }
     public void tiltUp(){
         tilt.setPosition(0.72);
@@ -83,7 +83,7 @@ public class Launcher {
         tiltUp();
         sleep(500);
         for(int i = 0; i < 3; i++){
-            mag.setPosition(0.35);
+            mag.setPosition(0.32);
             sleep(150);
             mag.setPosition(.5);
             sleep(800);
@@ -92,13 +92,13 @@ public class Launcher {
     public void singleRound(){
         tiltUp();
         sleep(500);
-        mag.setPosition(0.35);
+        mag.setPosition(0.32);
         sleep(300);
         mag.setPosition(0.5);
     }
     public void shoot(double rounds){
         for(int i = 0; i < rounds; i++){
-            mag.setPosition(0.35);
+            mag.setPosition(0.32);
             sleep(800);
             mag.setPosition(.5);
             if(i != rounds - 1) sleep(150);
