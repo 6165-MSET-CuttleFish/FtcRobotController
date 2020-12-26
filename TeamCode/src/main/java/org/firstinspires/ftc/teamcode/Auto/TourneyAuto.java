@@ -23,7 +23,8 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        robot.goTo(new Coordinate(Robot.position.x + 40, Robot.position.y + 10), 0.7, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 45, Robot.position.y + 10), 1, 0, 0);
+        robot.goTo(new Coordinate(Robot.position.x + 5, Robot.position.y - 10), 1, 0, 0);
         if(robot.discs == 4){
             targetPos = Robot.newC;
         }
@@ -70,7 +71,7 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.A;
             case0();
         }
-        Coordinate homePos = new Coordinate(95, robot.position.y);
+        Coordinate homePos = new Coordinate(90, robot.position.y);
 //        if(robot.discs != 4){
 //            homePos.y = robot.position.y + 15;
 //        }
@@ -102,13 +103,13 @@ public class TourneyAuto extends LinearOpMode {
         //robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
     }
     public void case0(){
-        robot.goTo(Robot.A, 0.6, 0, 0);
+        robot.goTo(Robot.A, 0.6, Math.toRadians(-180), 0.5);
         robot.wobbleArmDown();
         sleep(800);
         robot.release();
         sleep(200);
-        robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, 0, 0);
-        robot.goTo(new Coordinate(Robot.position.x , Robot.position.y + 10), 1, 0, 0);
+        //robot.goTo(new Coordinate(Robot.position.x + 10, Robot.position.y), 1, 0, 0);
+        //robot.goTo(new Coordinate(Robot.position.x , Robot.position.y + 10), 1, 0, 0);
 
         //robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 15), 0.7, 0, 0);
 
