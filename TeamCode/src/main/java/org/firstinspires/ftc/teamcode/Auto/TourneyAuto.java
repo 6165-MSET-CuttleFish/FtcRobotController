@@ -137,7 +137,7 @@ public class TourneyAuto extends LinearOpMode {
         //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
     }
     public void getMoreRings(){
-            Coordinate rings2 = new Coordinate(47, 31.3);
+            Coordinate rings2 = new Coordinate(47, 33.3);
             robot.intake(1);
             //robot.goTo(rings, 1, 0, 0.6);
             robot.goTo(rings2, 1, 0, 0.6);
