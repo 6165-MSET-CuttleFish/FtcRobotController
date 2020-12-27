@@ -65,7 +65,7 @@ public class Robot {
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(119, 29);
 
-    public static Coordinate leftWobble = new Coordinate(40, 54);
+    public static Coordinate leftWobble = new Coordinate(40, 56);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -81,7 +81,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.08, 0.01, 0.002);
+        pidRotate = new PIDController(.077, 0.01, 0.004);
         //pidRotate = new PIDController(.00, .0000, 0);
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
@@ -377,7 +377,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.16, power);
+        pidRotate.setOutputRange(0.14, power);
         pidRotate.setTolerance(1);
         pidRotate.enable();
 
