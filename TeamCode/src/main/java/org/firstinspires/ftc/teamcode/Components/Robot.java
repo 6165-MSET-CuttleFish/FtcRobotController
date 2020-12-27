@@ -65,7 +65,7 @@ public class Robot {
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(119, 29);
 
-    public static Coordinate leftWobble = new Coordinate(41, 53);
+    public static Coordinate leftWobble = new Coordinate(40, 54);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -81,7 +81,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.077, 0.0087, 0.0018);
+        pidRotate = new PIDController(.08, 0.01, 0.002);
         //pidRotate = new PIDController(.00, .0000, 0);
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
@@ -115,10 +115,8 @@ public class Robot {
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
         //arm1.setDirection( Servo.Direction.REVERSE);
-//        arm1.setPosition(0.92);
-//        arm2.setPosition (0.92);
-        arm1.setPosition(0.93);
-        arm2.setPosition(0.07);
+//        arm1.setPosition(0.93);
+//        arm2.setPosition(0.07);
         grabber = map.get(Servo.class, "wobbleGrabber1");
         grabber2 = map.get(Servo.class, "wobbleGrabber2");
         //grabber.setPosition(0.92);
