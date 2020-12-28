@@ -6,8 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
-@Disabled
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TesterTeleOp", group = "LinearOpMode")
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
     boolean ninja, armUp, flapUp;
