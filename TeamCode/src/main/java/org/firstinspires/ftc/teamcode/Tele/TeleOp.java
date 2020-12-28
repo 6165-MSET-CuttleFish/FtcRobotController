@@ -5,21 +5,25 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TesterTeleOp", group = "LinearOpMode")
-public class TeleOp extends LinearOpMode implements Runnable{
+public class TeleOp extends LinearOpMode {
     Robot robot;
     boolean ninja, armUp, flapUp;
     double lastTime = System.currentTimeMillis();
     double multiplier = 1;
     public final double COUNTS_PER_INCH = 3072;
+    Coordinate shootingPosition;
+    double shootingAngle;
     @Override
     public void runOpMode() throws InterruptedException{
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18);
         robot.init();
         waitForStart();
         while(opModeIsActive()){
-            setMultiplier();
+            //setMultiplier();
             robot.setMovement(gamepad1.left_stick_x * multiplier, gamepad1.left_stick_y * multiplier, gamepad1.right_stick_x * multiplier);
 //            wobble();
 //            robot.intake(-gamepad2.right_stick_y);
@@ -64,6 +68,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.release();
         }
     }
+    private int i = 0;
+    private void autoPowerShots(){
+        robot.turnTo(Robot.pwrShots[i], 0.24);
+        i++;
+        if(i == 4){
+            i = 0;
+        }
+    }
     public void shooter(){
         if(gamepad2.y&& !flapUp){
             robot.launcher.flapUp();
@@ -78,6 +90,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
 
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
+            storeCoordinate();
         }
         if(gamepad2.left_trigger >=0.1){
             robot.launcher.setFlyWheel(1);
@@ -88,10 +101,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         if(gamepad2.right_trigger >= 0.1){
             robot.launcher.magazineShoot();
+            storeCoordinate();
         }
     }
-    @Override
-    public void run(){
-
+    private void storeCoordinate(){
+        shootingPosition = Robot.position.toPoint();
+        shootingAngle = Robot.position.radians();
+    }
+    private void goToLaunchZone(){
+        robot.goTo(shootingPosition, 0.5, shootingAngle, 0.5);
     }
 }
