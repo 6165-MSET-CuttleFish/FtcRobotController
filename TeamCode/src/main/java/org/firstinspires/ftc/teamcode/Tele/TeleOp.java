@@ -32,8 +32,8 @@ public class TeleOp extends LinearOpMode {
 //            telemetry.addData("Y Position", robot.position.getY());
 //            telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
 //            telemetry.update();
-
         }
+        Robot.position.stop();
     }
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper && System.currentTimeMillis() >= lastTime + 300){

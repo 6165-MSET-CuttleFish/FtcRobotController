@@ -71,10 +71,9 @@ public class TourneyAuto extends LinearOpMode {
             case0();
         }
         Coordinate homePos = new Coordinate(90, robot.position.y);
-//        if(robot.discs != 4){
-//            homePos.y = robot.position.y + 15;
-//        }
         robot.goTo(homePos, 0.6, 0, 0);
+        while(opModeIsActive()){
+        }
         robot.position.stop();
     }
     public void newcase0(){
