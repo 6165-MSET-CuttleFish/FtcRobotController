@@ -162,7 +162,5 @@ public class TourneyAuto extends LinearOpMode {
             }
             robot.launcher.setFlyWheel(0);
             robot.intake(0);
-
-
     }
 }
