@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+
+import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpFinal", group = "LinearOpMode")
 public class FinalTele extends LinearOpMode{
@@ -25,6 +29,8 @@ public class FinalTele extends LinearOpMode{
     public final double COUNTS_PER_INCH = 3072;
     public DcMotor verticalLeft, verticalRight, horizontal;
     public Servo rightIntakeHolder, leftIntakeHolder;
+    Coordinate shootingPos;
+    double shootingAngle;
     public void runOpMode() throws InterruptedException {
 
         initialize();
@@ -35,7 +41,7 @@ public class FinalTele extends LinearOpMode{
         Thread positionThread = new Thread(position);
         positionThread.start();
         waitForStart();
-
+        shootingPos = new Coordinate(position);
         while(opModeIsActive()){
             //drive();
             drive();
@@ -43,7 +49,9 @@ public class FinalTele extends LinearOpMode{
             intake();
             shooter();
             dropIntake();
-
+            if(gamepad1.a){
+                goTo(shootingPos, 0.7, shootingAngle, 0.5);
+            }
 
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
@@ -232,6 +240,8 @@ public class FinalTele extends LinearOpMode{
         if(gamepad2.right_bumper==true){
             mag.setPosition(0.31);
             sleep(150);
+            shootingPos = position.toPoint();
+            shootingAngle = position.radians();
             mag.setPosition(.5);
         }
         if(gamepad2.left_trigger >=0.1){
@@ -256,6 +266,8 @@ public class FinalTele extends LinearOpMode{
 
                 mag.setPosition(0.31);
                 sleep(150);
+                shootingPos = position.toPoint();
+                shootingAngle = position.radians();
                 mag.setPosition(.5);
                 sleep(800);
                 i++;
@@ -264,6 +276,36 @@ public class FinalTele extends LinearOpMode{
 
             }
         }
+    }
+    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
+        double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
+        while(opModeIsActive() && distance > 5 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+            distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+
+            double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+
+            double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+            //System.out.println("Rel " + relAngleToPoint);
+            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+
+            double movement_x = movementXPower * power;
+            double movement_y = movementYPower * power;
+            double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
+            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
+            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
+            //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+            setMovement(movement_x, movement_y, -rx);
+        }
+        setMovement(0, 0, 0);
+    }
+    public void setMovement(double lx, double ly, double rx){
+        fl.setPower(Range.clip(ly + lx + rx, -1, 1));
+        fr.setPower(Range.clip(ly - lx - rx, -1, 1));
+        bl.setPower(Range.clip(ly - lx + rx, -1, 1));
+        br.setPower(Range.clip(ly + lx - rx, -1, 1));
     }
     public int shooterOn = 0;
 }
