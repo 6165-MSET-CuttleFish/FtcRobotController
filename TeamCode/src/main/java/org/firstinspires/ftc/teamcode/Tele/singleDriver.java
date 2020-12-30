@@ -251,15 +251,15 @@ public class singleDriver extends LinearOpMode {
             mag.setPosition(.5);
         }
         if (gamepad1.left_trigger >= 0.1) {
-            tilt.setPosition(0.75);
+            tilt.setPosition(0.77);
             flywheel.setPower(-0.90);
             flywheel1.setPower(-0.90);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
         } else if (gamepad1.dpad_left==true) {
-            flywheel.setPower(-0.85);
-            flywheel1.setPower(-0.85);
-            tilt.setPosition(0.75);
+            flywheel.setPower(-0.75);
+            flywheel1.setPower(-0.75);
+            tilt.setPosition(0.77);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
         } else{
