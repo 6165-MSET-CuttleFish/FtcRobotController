@@ -34,12 +34,13 @@ public class TourneyAuto extends LinearOpMode {
         else{
             targetPos = Robot.newA;
         }
-        robot.unlockIntake();
+
         robot.goTo(targetPos, 0.7, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
         sleep(550);
         robot.release();
         sleep(200);
+        robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         robot.launcher.setFlyWheel(0.8);
         robot.goTo(Robot.pwrShotLocals[1], 0.6,0, 0.3);
