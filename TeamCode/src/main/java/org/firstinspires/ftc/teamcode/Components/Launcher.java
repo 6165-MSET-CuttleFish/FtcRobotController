@@ -27,7 +27,7 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
-        mag.setPosition(0.5);
+        //mag.setPosition(0.5);
         tilt.setPosition(0.52);
     }
     public void aimAt(Goal g, Coordinate p){
