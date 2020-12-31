@@ -94,8 +94,8 @@ public class singleDriver extends LinearOpMode {
         tilt = hardwareMap.get(Servo.class, "tilt");
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
-        arm1.setPosition(0.93);
-        arm2.setPosition(0.07);
+        arm1.setPosition(0.1);
+        arm2.setPosition (0.88);
 
         leftIntakeHolder = hardwareMap.get(Servo.class,"wallL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"wallR");
@@ -246,7 +246,7 @@ public class singleDriver extends LinearOpMode {
         }
 
         if (gamepad1.b == true) {
-            mag.setPosition(0.31);
+            mag.setPosition(0.35);
             sleep(150);
             mag.setPosition(.5);
         }
