@@ -266,7 +266,7 @@ public class singleDriver extends LinearOpMode {
             rightIntakeHolder.setPosition(.84);
         } else{
             flap.setPosition(0.35);
-            tilt.setPosition(0.5);
+            tilt.setPosition(0.55);
             flywheel.setPower(0);
             flywheel1.setPower(0);
             leftIntakeHolder.setPosition(0.91);
