@@ -53,7 +53,7 @@ public class singleDriver extends LinearOpMode {
             intake();
             shooter();
             if(gamepad1.y){
-                goTo(shootingPos, 0.7, shootingAngle, 0.5);
+                goTo(shootingPos, 0.6, shootingAngle, 0.4);
             }
 
             telemetry.addData("X Position", position.getX() );
@@ -245,7 +245,7 @@ public class singleDriver extends LinearOpMode {
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(opModeIsActive() && distance > 5 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+        while(opModeIsActive() && distance > 4 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -261,7 +261,7 @@ public class singleDriver extends LinearOpMode {
             double movement_y = movementYPower * power;
             double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
             double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
-            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
+            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(10), -1, 1);
             //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
             setMovement(movement_x, movement_y, -rx);
         }
