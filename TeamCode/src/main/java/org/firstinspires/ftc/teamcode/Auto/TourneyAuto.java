@@ -129,9 +129,9 @@ public class TourneyAuto extends LinearOpMode {
         Coordinate slowDownPt = new Coordinate(Robot.C);
         slowDownPt.addX(-20);
         slowDownPt.addY(10);
-        robot.goTo(slowDownPt, 0.7, Math.toRadians(-180), 0.5);
+        robot.goTo(slowDownPt, 0.7, Math.toRadians(180), 0.5);
         robot.wobbleArmDown();
-        robot.goTo(Robot.C, 0.5, Math.toRadians(-180), 0.4);
+        robot.goTo(Robot.C, 0.5, Math.toRadians(180), 0.4);
         robot.release();
         sleep(500);
         //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
@@ -157,6 +157,7 @@ public class TourneyAuto extends LinearOpMode {
 //            } else {
 //                robot.intake(0);
 //            }
+            robot.intake(0);
             robot.launcher.setFlyWheel(1);
             robot.launcher.flapUp();
             sleep(1000);
