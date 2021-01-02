@@ -25,6 +25,10 @@ public class autoTest extends LinearOpMode {
         //robot.wobbleArmDown();
             robot.wobbleArmDown();
 
+        sleep(2000);
+        robot.wobbleArmUp();
+        sleep(2000);
+        robot.wobbleArmVertical();
         sleep(5000);
     }
     public void foo(){

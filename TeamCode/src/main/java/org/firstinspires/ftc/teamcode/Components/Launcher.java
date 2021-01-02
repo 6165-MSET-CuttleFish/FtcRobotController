@@ -105,10 +105,10 @@ public class Launcher {
         }
     }
     public void flapUp(){
-        flap.setPosition(0.07);
+        flap.setPosition(0.48);
     }
     public void flapDown(){
-        flap.setPosition(0);
+        flap.setPosition(0.35);
     }
 //    public static void main(String[] args){
 //        findAngle(inchesToMeters(36), targets.highGoal);
