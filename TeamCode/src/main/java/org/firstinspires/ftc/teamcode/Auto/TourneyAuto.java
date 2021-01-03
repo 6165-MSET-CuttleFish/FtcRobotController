@@ -69,10 +69,10 @@ public class TourneyAuto extends LinearOpMode {
             case0();
         }
         Coordinate homePos = new Coordinate(88, robot.position.y);
-        robot.goTo(homePos, 0.7, 0, 0);
+        robot.goTo(homePos, 0.7, Math.toRadians(180), 0.6);
         while (opModeIsActive()) {
         }
-        robot.position.stop();
+        Robot.position.stop();
     }
 
     public void newcase0() {
