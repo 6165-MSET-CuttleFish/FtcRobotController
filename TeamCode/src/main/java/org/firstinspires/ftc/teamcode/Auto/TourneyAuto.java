@@ -50,6 +50,7 @@ public class TourneyAuto extends LinearOpMode {
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
+        robot.orient(0, 0.24);
         robot.goTo(Robot.leftWobble, 0.55, 0, 0.5);
         robot.goTo(new Coordinate(Robot.position.x - 3, Robot.position.y), 0.2, 0, 0.5);
         robot.grab();
@@ -139,7 +140,7 @@ public class TourneyAuto extends LinearOpMode {
     }
 
     public void getMoreRings() {
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 15), 1, 0, 0.5);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 1, 0, 0.5);
         Coordinate rings2 = new Coordinate(Robot.position.x + 16, Robot.position.y);
         robot.intake(1);
         robot.goTo(rings2, 0.3, 0, 0.3);
