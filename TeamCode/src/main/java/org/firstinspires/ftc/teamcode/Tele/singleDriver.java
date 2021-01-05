@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Components.PIDController;
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
@@ -32,6 +34,8 @@ public class singleDriver extends LinearOpMode {
     public DcMotor verticalLeft, verticalRight, horizontal;
     public Servo rightIntakeHolder, leftIntakeHolder;
     Coordinate shootingPos;
+    PIDController pidRotate, pidDrive, pidStrafe, pidCurve, pidCorrection;
+    double globalAngle, power = .30, correction, rotation, lastAngles;
     double shootingAngle;
     public void runOpMode() throws InterruptedException {
         initialize();
@@ -39,7 +43,7 @@ public class singleDriver extends LinearOpMode {
         //position = new OdometryGlobalCoordinatePosition(fr, br, bl, COUNTS_PER_INCH, 75, 0, 0);
         position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 75, 0, 0, 0);
         //position = new OdometryGlobalCoordinatePosition(br, bl, fr, COUNTS_PER_INCH, 75, 0, 0);
-
+        Robot robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 0, 0, 0, 18, 18);
         Thread positionThread = new Thread(position);
         positionThread.start();
         shootingPos = new Coordinate(position);
@@ -55,6 +59,17 @@ public class singleDriver extends LinearOpMode {
             if(gamepad1.y){
                 goTo(shootingPos, 0.8, shootingAngle, 0.6);
             }
+            if(gamepad1.dpad_right){
+                position.setPoint(9, 141 - 9);
+                shootingAngle = 0;
+                position.robotOrientationRadians = 0;
+                goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(0), 0.3);
+                int i = 0;
+                while(i < 3 && !manualOverride()) {
+                    launcherturnTo(Robot.pwrShots[i], 0.7);
+                    i++;
+                }
+            }
 
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
@@ -68,6 +83,9 @@ public class singleDriver extends LinearOpMode {
             //idle();
         }
         position.stop();
+    }
+    private boolean manualOverride(){
+        return gamepad1.left_stick_x != 0 && gamepad1.left_stick_y != 0 && gamepad1.right_stick_x != 0;
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
@@ -245,7 +263,7 @@ public class singleDriver extends LinearOpMode {
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(opModeIsActive() && distance > 1 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+        while(opModeIsActive() && distance > 1 && !manualOverride()) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -272,6 +290,110 @@ public class singleDriver extends LinearOpMode {
         fr.setPower(Range.clip(ly - lx - rx, -1, 1));
         bl.setPower(Range.clip(ly - lx + rx, -1, 1));
         br.setPower(Range.clip(ly + lx - rx, -1, 1));
+    }
+    public void pidRotate(double degrees, double power) {
+        // restart imu angle tracking.
+        resetAngle();
+
+        // if degrees > 359 we cap at 359 with same sign as original degrees.
+        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
+
+        // start pid controller. PID controller will monitor the turn angle with respect to the
+        // target angle and reduce power as we approach the target angle. This is to prevent the
+        // robots momentum from overshooting the turn after we turn off the power. The PID controller
+        // reports onTarget() = true when the difference between turn angle and target angle is within
+        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
+        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
+        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
+        // turning the robot back toward the setpoint value.
+
+        pidRotate.reset();
+        pidRotate.setSetpoint(degrees);
+        pidRotate.setInputRange(0, degrees);
+        pidRotate.setOutputRange(0.14, power);
+        pidRotate.setTolerance(1);
+        pidRotate.enable();
+
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+
+        // rotate until turn is completed.
+
+        if (degrees < 0)
+        {
+            // On right turn we have to get off zero first.
+            while (getAngle() == 0)
+            {
+                setMovement(0, 0 , power);
+//                leftMotor.setPower(power);
+//                rightMotor.setPower(-power);
+                sleep(100);
+            }
+
+            do
+            {
+                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+//                leftMotor.setPower(-power);
+//                rightMotor.setPower(power);
+                setMovement(0, 0, -power);
+            } while (!pidRotate.onTarget());
+        }
+        else    // left turn.
+            do
+            {
+                power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+//                leftMotor.setPower(-power);
+//                rightMotor.setPower(power);
+                setMovement(0, 0, -power);
+            } while (!pidRotate.onTarget());
+
+        // turn the motors off.
+        setMovement(0, 0 ,0);
+
+        rotation = getAngle();
+
+        // wait for rotation to stop.
+        sleep(500);
+
+        // reset angle tracking on new heading.
+        resetAngle();
+    }
+    private void resetAngle()
+    {
+        lastAngles =  position.returnOrientation();
+
+        globalAngle = 0;
+    }
+    public void launcherturnTo(Coordinate pt, double pwr){
+        double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
+        double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
+        Coordinate shooter = position.toPoint();
+        shooter.polarAdd(position.radians() - Math.PI/2, 4.5);
+        double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
+        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
+        pidRotate(Math.toDegrees(relAngleToPoint), pwr);
+    }
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        double angles = position.returnOrientation();
+
+        double deltaAngle = angles - lastAngles;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
     }
     public void shooter() {
         if (gamepad2.dpad_up == true) {
