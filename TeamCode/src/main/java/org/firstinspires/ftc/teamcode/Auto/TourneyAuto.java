@@ -46,7 +46,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(300);
         for (int i = 0; i < Robot.pwrShots.length; i++) {
             robot.launcher.flapDown();
-            robot.launcherturnTo(Robot.pwrShots[i], 0.22);
+            robot.launcherturnTo(Robot.pwrShots[i], 0.23);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
