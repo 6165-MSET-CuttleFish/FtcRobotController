@@ -41,7 +41,7 @@ public class singleDriver extends LinearOpMode {
         initialize();
         waitForStart();
         //position = new OdometryGlobalCoordinatePosition(fr, br, bl, COUNTS_PER_INCH, 75, 0, 0);
-        position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 75, 0, 0, 0);
+        position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 50, 0, 0, 0);
         //position = new OdometryGlobalCoordinatePosition(br, bl, fr, COUNTS_PER_INCH, 75, 0, 0);
         Robot robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 0, 0, 0, 18, 18);
         Thread positionThread = new Thread(position);
@@ -57,7 +57,8 @@ public class singleDriver extends LinearOpMode {
             intake();
             shooter();
             if(gamepad1.y){
-                goTo(shootingPos, 0.7, shootingAngle, 0.6);
+                goTo(shootingPos, 0.8, shootingAngle, 0.5);
+                orient(shootingAngle, 0.25);
             }
             if(gamepad1.dpad_right){
                 position.setPoint(9, 141 - 9);
@@ -86,6 +87,10 @@ public class singleDriver extends LinearOpMode {
     }
     private boolean manualOverride(){
         return gamepad1.left_stick_x != 0 && gamepad1.left_stick_y != 0 && gamepad1.right_stick_x != 0;
+    }
+    public void orient(double angle, double pwr) {
+        double closest = angle - position.returnOrientation();
+        pidRotate(closest, pwr);
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
