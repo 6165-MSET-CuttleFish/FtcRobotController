@@ -57,7 +57,7 @@ public class singleDriver extends LinearOpMode {
             intake();
             shooter();
             if(gamepad1.y){
-                goTo(shootingPos, 0.6, shootingAngle, 0.4);
+                goTo(shootingPos, 0.7, shootingAngle, 0.6);
             }
             if(gamepad1.dpad_right){
                 position.setPoint(9, 141 - 9);
@@ -264,7 +264,7 @@ public class singleDriver extends LinearOpMode {
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
 
-        while(opModeIsActive() && distance > 4 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+        while(opModeIsActive() && distance > 1 && gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
