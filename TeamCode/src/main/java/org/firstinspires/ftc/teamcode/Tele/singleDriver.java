@@ -85,7 +85,7 @@ public class singleDriver extends LinearOpMode {
         position.stop();
     }
     private boolean manualOverride(){
-        return gamepad1.left_stick_x != 0 && gamepad1.left_stick_y != 0 && gamepad1.right_stick_x != 0;
+        return gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0 || gamepad1.right_stick_x != 0;
     }
     public void initialize(){
         fl = hardwareMap.get(DcMotor.class , "fl"); //green
