@@ -87,7 +87,7 @@ public class singleDriver extends LinearOpMode {
         position.stop();
     }
     private boolean manualOverride(){
-        return gamepad1.left_stick_x != 0 && gamepad1.left_stick_y != 0 && gamepad1.right_stick_x != 0;
+        return gamepad1.left_stick_x == 0 || gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0;
     }
     public void orient(double angle, double pwr) {
         double closest = angle - position.returnOrientation();
@@ -343,7 +343,7 @@ public class singleDriver extends LinearOpMode {
 //                leftMotor.setPower(-power);
 //                rightMotor.setPower(power);
                 setMovement(0, 0, -power);
-            } while (!pidRotate.onTarget());
+            } while (!pidRotate.onTarget() && manualOverride());
         }
         else    // left turn.
             do
@@ -352,7 +352,7 @@ public class singleDriver extends LinearOpMode {
 //                leftMotor.setPower(-power);
 //                rightMotor.setPower(power);
                 setMovement(0, 0, -power);
-            } while (!pidRotate.onTarget());
+            } while (!pidRotate.onTarget() && manualOverride());
 
         // turn the motors off.
         setMovement(0, 0 ,0);
