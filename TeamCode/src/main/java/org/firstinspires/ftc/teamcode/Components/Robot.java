@@ -65,7 +65,7 @@ public class Robot {
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(119, 29);
 
-    public static Coordinate leftWobble = new Coordinate(42, 57);
+    public static Coordinate leftWobble = new Coordinate(42.5, 57);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -86,7 +86,7 @@ public class Robot {
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
 //        pwrShots[2] = new Goal(144, 53.25, 23.5);
-        pwrShots[0] = new Goal(144, 68, 23.5);
+        pwrShots[0] = new Goal(144, 67, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
         pwrShots[2] = new Goal(144, 53.25, 23.5);
 
@@ -353,7 +353,7 @@ public class Robot {
         double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
         double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() - Math.PI/2, 4.5);
+        shooter.polarAdd(position.radians() - Math.PI/2, 4);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);

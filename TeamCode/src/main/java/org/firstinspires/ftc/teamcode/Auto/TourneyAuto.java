@@ -41,12 +41,12 @@ public class TourneyAuto extends LinearOpMode {
         sleep(200);
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
-        robot.launcher.setFlyWheel(0.75);
-        robot.goTo(Robot.pwrShotLocals[1], 0.6, 0, 0.4);
+        robot.launcher.setFlyWheel(0.7);
+        robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.4);
         sleep(300);
         for (int i = 0; i < Robot.pwrShots.length; i++) {
             robot.launcher.flapDown();
-            robot.launcherturnTo(Robot.pwrShots[i], 0.24);
+            robot.launcherturnTo(Robot.pwrShots[i], 0.22);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
@@ -69,7 +69,7 @@ public class TourneyAuto extends LinearOpMode {
             case0();
         }
         Coordinate homePos = new Coordinate(88, robot.position.y);
-        robot.goTo(homePos, 0.7, Math.toRadians(180), 0.6);
+        robot.goTo(homePos, 0.7, Math.toRadians(180), 0.4);
         while (opModeIsActive()) {
         }
         Robot.position.stop();
@@ -142,11 +142,11 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 1, 0, 0.5);
         Coordinate rings2 = new Coordinate(Robot.position.x + 16, Robot.position.y);
         robot.intake(1);
-        robot.goTo(rings2, 0.35, 0, 0.3);
-        robot.launcher.setOnlyFlyWheel(1);
+        robot.goTo(rings2, 0.3, 0, 0.3);
+        robot.launcher.setOnlyFlyWheel(0.95);
         //robot.launcher.flapUp();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, 0, 0.3);
-        robot.goTo(new Coordinate(50, Robot.hiGoal.y), 0.7, 0, 0.4);
+        robot.goTo(new Coordinate(51, Robot.hiGoal.y), 0.7, 0, 0.4);
         robot.intake(-1);
         sleep(1000);
         if (robot.discs == 4) {
