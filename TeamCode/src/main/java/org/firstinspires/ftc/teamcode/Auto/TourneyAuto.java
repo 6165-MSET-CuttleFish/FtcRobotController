@@ -42,15 +42,15 @@ public class TourneyAuto extends LinearOpMode {
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         robot.launcher.setFlyWheel(0.75);
-        robot.goTo(Robot.pwrShotLocals[1], 0.6, 0, 0.3);
+        robot.goTo(Robot.pwrShotLocals[1], 0.6, 0, 0.4);
         sleep(300);
         for (int i = 0; i < Robot.pwrShots.length; i++) {
             robot.launcher.flapDown();
-            robot.launcherturnTo(Robot.pwrShots[i], 0.23);
+            robot.launcherturnTo(Robot.pwrShots[i], 0.26);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
-        robot.orient(0, 0.24);
+        robot.orient(0, 0.25);
         robot.goTo(Robot.leftWobble, 0.55, 0, 0.5);
         robot.goTo(new Coordinate(Robot.position.x - 3, Robot.position.y), 0.2, 0, 0.5);
         robot.grab();
@@ -145,7 +145,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.intake(1);
         robot.goTo(rings2, 0.3, 0, 0.3);
         robot.launcher.setOnlyFlyWheel(1);
-        robot.launcher.flapUp();
+        //robot.launcher.flapUp();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, 0, 0.3);
         robot.goTo(new Coordinate(50, Robot.hiGoal.y), 0.7, 0, 0.4);
         robot.intake(-1);
