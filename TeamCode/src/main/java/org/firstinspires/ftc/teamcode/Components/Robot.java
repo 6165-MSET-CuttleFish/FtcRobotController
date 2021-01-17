@@ -59,8 +59,8 @@ public class Robot {
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
     public static Coordinate A = new Coordinate(65, 20);
-    public static Coordinate B = new Coordinate(88, 38);
-    public static Coordinate C = new Coordinate(105, 20);
+    public static Coordinate B = new Coordinate(78, 38);
+    public static Coordinate C = new Coordinate(95, 20);
     public static Coordinate newA = new Coordinate(80, 30);
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(119, 29);
@@ -218,7 +218,7 @@ public class Robot {
             tfod.activate();
         }
     }
-    public double height;
+    public double height = -1;
     public void scan(){
         if(tfod != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();

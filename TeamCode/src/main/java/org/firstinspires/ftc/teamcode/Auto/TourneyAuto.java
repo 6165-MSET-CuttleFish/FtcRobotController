@@ -75,10 +75,12 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.A;
             newcase0();
         }
-        Coordinate homePos = new Coordinate(88, robot.position.y);
+        Coordinate homePos = new Coordinate(88, Robot.position.y);
         if(robot.discs != 0) {
             robot.goTo(homePos, 0.6, Math.toRadians(180), 0);
         }
+        robot.wobbleArmUp();
+        sleep(600);
         Robot.position.stop();
     }
 
