@@ -57,10 +57,10 @@ public class TourneyAuto extends LinearOpMode {
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
-        robot.goTo(Robot.leftWobble, 0.5, 0, 0.5);
-        robot.goTo(new Coordinate(Robot.position.x - 3, Robot.position.y), 0.2, 0, 0.5);
+        robot.goTo(Robot.leftWobble, 0.48, 0, 0.5);
+        robot.goTo(new Coordinate(Robot.position.x - 6, Robot.position.y), 0.2, 0, 0.5);
         robot.grab();
-        sleep(500);
+        sleep(600);
         robot.wobbleArmUp();
         if (robot.discs != 0) {
             getMoreRings();
