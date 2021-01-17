@@ -90,14 +90,9 @@ public class Robot {
         pwrShots[1] = new Goal(144, 60, 23.5);
         pwrShots[2] = new Goal(144, 52.4, 23.5);
 
-
-
-
-        
-        //pwrShotLocals[1] = new Coordinate(70, 60.75);
+        pwrShotLocals[0] = new Coordinate(70, 67);
         pwrShotLocals[1] = new Coordinate(70, 60);
-
-        pwrShotLocals[2] = new Coordinate(720, 53.25);
+        pwrShotLocals[2] = new Coordinate(70, 53.25);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;
