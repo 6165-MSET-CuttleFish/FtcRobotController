@@ -145,16 +145,21 @@ public class TourneyAuto extends LinearOpMode {
     }
 
     public void getMoreRings() {
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 1, 0, 0.5);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 0.7, 0, 0.5);
         Coordinate rings2 = new Coordinate(Robot.position.x + 15.4, Robot.position.y);
         robot.intake(1);
-        robot.goTo(rings2, 0.3, 0, 0.3);
+        if(robot.discs == 4) {
+            robot.goTo(rings2, 0.3, 0, 0.3);
+        }
+        else {
+            robot.goTo(rings2, 0.7, 0, 0.3);
+        }
         robot.launcher.setOnlyFlyWheel(0.95);
         //robot.launcher.flapUp();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, 0, 0.3);
         robot.goTo(new Coordinate(51, Robot.hiGoal.y), 0.7, 0, 0.4);
         robot.intake(-1);
-        sleep(1000);
+        sleep(1200);
         if (robot.discs == 4) {
             robot.launcher.magazineShoot();
         } else {
