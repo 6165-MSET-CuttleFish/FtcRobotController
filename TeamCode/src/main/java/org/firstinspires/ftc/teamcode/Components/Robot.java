@@ -244,6 +244,8 @@ public class Robot {
                 }
             }
         }
+    }
+    public void turnOffVision(){
         if(tfod != null) {
             tfod.shutdown();
         }

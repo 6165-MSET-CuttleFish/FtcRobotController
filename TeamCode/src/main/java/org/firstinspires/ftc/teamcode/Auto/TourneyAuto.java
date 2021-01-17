@@ -27,6 +27,7 @@ public class TourneyAuto extends LinearOpMode {
         }
         waitForStart();
         robot.scan();
+        robot.turnOffVision();
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
