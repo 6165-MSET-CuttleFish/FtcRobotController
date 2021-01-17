@@ -48,7 +48,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         robot.launcher.setFlyWheel(0.68);
-        robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.4);
+        robot.goTo(Robot.pwrShotLocals[1], 0.5, Math.toRadians(0), 0.4);
         sleep(300);
         for (int i = 0; i < Robot.pwrShots.length; i++) {
             robot.launcher.flapDown();
@@ -72,11 +72,11 @@ public class TourneyAuto extends LinearOpMode {
             case1();
         } else {
             targetPos = Robot.A;
-            case0();
+            newcase0();
         }
         Coordinate homePos = new Coordinate(88, robot.position.y);
-        robot.goTo(homePos, 0.7, Math.toRadians(180), 0.4);
-        while (opModeIsActive()) {
+        if(robot.discs != 0) {
+            robot.goTo(homePos, 0.6, Math.toRadians(180), 0);
         }
         Robot.position.stop();
     }
