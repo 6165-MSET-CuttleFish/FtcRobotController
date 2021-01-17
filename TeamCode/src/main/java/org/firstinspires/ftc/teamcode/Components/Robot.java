@@ -81,7 +81,7 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.07, 0.013, 0.0044);
+        pidRotate = new PIDController(.07, 0.013, 0.00425);
         //pidRotate = new PIDController(.00, .0000, 0);
 //        pwrShots[0] = new Goal(144, 65.25, 23.5);
 //        pwrShots[1] = new Goal(144, 60, 23.5);
@@ -92,7 +92,7 @@ public class Robot {
 
         pwrShotLocals[0] = new Coordinate(70, 68.25);
         //pwrShotLocals[1] = new Coordinate(70, 60.75);
-        pwrShotLocals[1] = new Coordinate(70, 60);
+        pwrShotLocals[1] = new Coordinate(70, 60.75);
 
         pwrShotLocals[2] = new Coordinate(720, 53.25);
         this.robotWidth = robotWidth;
@@ -103,9 +103,6 @@ public class Robot {
         topRight = map.dcMotor.get("fr");
         botLeft = map.dcMotor.get("bl");
         botRight = map.dcMotor.get("br");
-
-
-
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.get(Servo.class, "in1");
@@ -377,7 +374,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.14, power);
+        pidRotate.setOutputRange(0.15, power);
         pidRotate.setTolerance(1);
         pidRotate.enable();
 
