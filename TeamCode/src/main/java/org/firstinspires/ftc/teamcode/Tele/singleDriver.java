@@ -61,17 +61,17 @@ public class singleDriver extends LinearOpMode {
                 goTo(shootingPos, 0.8, shootingAngle, 0.5);
                 orient(shootingAngle, 0.25);
             }
-            if(gamepad1.dpad_right){
-                position.setPoint(9, 141 - 9);
-                shootingAngle = 0;
-                position.robotOrientationRadians = 0;
-                goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(0), 0.3);
-                int i = 0;
-                while(i < 3 && !manualOverride()) {
-                    launcherturnTo(Robot.pwrShots[i], 0.7);
-                    i++;
-                }
-            }
+//            if(gamepad1.dpad_right){
+//                position.setPoint(9, 141 - 9);
+//                shootingAngle = 0;
+//                position.robotOrientationRadians = 0;
+//                goTo(Robot.pwrShotLocals[1], 0.7, Math.toRadians(0), 0.3);
+//                int i = 0;
+//                while(i < 3 && !manualOverride()) {
+//                    launcherturnTo(Robot.pwrShots[i], 0.7);
+//                    i++;
+//                }
+//            }
 
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
