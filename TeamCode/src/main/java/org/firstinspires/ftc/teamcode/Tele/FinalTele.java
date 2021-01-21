@@ -109,8 +109,8 @@ public class FinalTele extends LinearOpMode{
         tilt = hardwareMap.get(Servo.class, "tilt");
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
-        arm1.setPosition(0.93);
-        arm2.setPosition(0.07);
+        arm1.setPosition(0.1);
+        arm2.setPosition (0.88);
 
         leftIntakeHolder = hardwareMap.get(Servo.class,"wallL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"wallR");
@@ -246,18 +246,24 @@ public class FinalTele extends LinearOpMode{
         }
         if(gamepad2.left_trigger >=0.1){
             tilt.setPosition(0.75);
-            flywheel.setPower(-0.95);
-            flywheel1.setPower(-0.95);
+            flywheel.setPower(-0.90);
+            flywheel1.setPower(-0.90);
+            leftIntakeHolder.setPosition(.23);
+            rightIntakeHolder.setPosition(.84);
         }
         else if(gamepad2.left_bumper){
-            flywheel.setPower(-0.75);
-            flywheel1.setPower(-0.75);
+            flywheel.setPower(-0.79);
+            flywheel1.setPower(-0.79);
             tilt.setPosition(0.75);
+            leftIntakeHolder.setPosition(.23);
+            rightIntakeHolder.setPosition(.84);
         }
         else if(shooterOn == 0){
             tilt.setPosition(0.5);
             flywheel.setPower(0);
             flywheel1.setPower(0);
+            leftIntakeHolder.setPosition(0.91);
+            rightIntakeHolder.setPosition(0.18);
         }
 
         if(gamepad2.right_trigger >= 0.1){
