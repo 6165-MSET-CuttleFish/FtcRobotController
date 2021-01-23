@@ -65,7 +65,7 @@ public class Robot {
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(119, 29);
 
-    public static Coordinate leftWobble = new Coordinate(43, 57);
+    public static Coordinate leftWobble = new Coordinate(44, 57);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
