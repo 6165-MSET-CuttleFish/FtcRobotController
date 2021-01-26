@@ -245,7 +245,7 @@ public class FinalTele extends LinearOpMode{
             mag.setPosition(.5);
         }
         if(gamepad2.left_trigger >=0.1){
-            tilt.setPosition(0.77);
+            tilt.setPosition(0.79);
             flywheel.setPower(-0.90);
             flywheel1.setPower(-0.90);
             leftIntakeHolder.setPosition(.23);
