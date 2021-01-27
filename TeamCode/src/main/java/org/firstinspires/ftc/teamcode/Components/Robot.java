@@ -375,7 +375,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(1);
+        pidRotate.setTolerance(0.6);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

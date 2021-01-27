@@ -184,8 +184,8 @@ public class FinalTele extends LinearOpMode{
             sleep(400);
         }
         else if(gamepad2.a == true){
-            arm1.setPosition(0.69);
-            arm2.setPosition(0.3);
+            arm1.setPosition(0.5);
+            arm2.setPosition(0.5);
             armUp = false;
         }
         if(gamepad2.x == true && grabber.getPosition()>0.3){
@@ -246,19 +246,21 @@ public class FinalTele extends LinearOpMode{
         }
         if(gamepad2.left_trigger >=0.1){
             tilt.setPosition(0.75);
-            flywheel.setPower(-0.90);
-            flywheel1.setPower(-0.90);
+            flap.setPosition(0.42);
+            flywheel.setPower(-0.95);
+            flywheel1.setPower(-0.95);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
         }
         else if(gamepad2.left_bumper){
-            flywheel.setPower(-0.79);
-            flywheel1.setPower(-0.79);
+            flywheel.setPower(-1);
+            flywheel1.setPower(-1);
             tilt.setPosition(0.75);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
         }
         else if(shooterOn == 0){
+            flap.setPosition(0.35);
             tilt.setPosition(0.5);
             flywheel.setPower(0);
             flywheel1.setPower(0);
