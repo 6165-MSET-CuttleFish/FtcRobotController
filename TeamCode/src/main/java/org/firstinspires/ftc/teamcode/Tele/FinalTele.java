@@ -280,7 +280,7 @@ public class FinalTele extends LinearOpMode{
                 shootingPos = position.toPoint();
                 shootingAngle = position.radians();
                 mag.setPosition(.5);
-                sleep(400);
+                sleep(800);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();
