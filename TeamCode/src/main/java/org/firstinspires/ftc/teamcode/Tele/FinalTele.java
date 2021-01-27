@@ -251,6 +251,7 @@ public class FinalTele extends LinearOpMode{
             flywheel1.setPower(-0.95);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
+            flap.setPosition(1);
         }
         else if(gamepad2.left_bumper){
             flywheel.setPower(-1);
@@ -258,6 +259,7 @@ public class FinalTele extends LinearOpMode{
             tilt.setPosition(0.75);
             leftIntakeHolder.setPosition(.23);
             rightIntakeHolder.setPosition(.84);
+            flap.setPosition(1);
         }
         else if(shooterOn == 0){
             flap.setPosition(0.35);
@@ -266,6 +268,7 @@ public class FinalTele extends LinearOpMode{
             flywheel1.setPower(0);
             leftIntakeHolder.setPosition(0.91);
             rightIntakeHolder.setPosition(0.18);
+            flap.setPosition(0.35);
         }
 
         if(gamepad2.right_trigger >= 0.1){
@@ -277,7 +280,7 @@ public class FinalTele extends LinearOpMode{
                 shootingPos = position.toPoint();
                 shootingAngle = position.radians();
                 mag.setPosition(.5);
-                sleep(800);
+                sleep(400);
                 i++;
                 telemetry.addData("i", i);
                 telemetry.update();
