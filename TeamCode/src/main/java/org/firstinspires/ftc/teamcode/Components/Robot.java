@@ -17,12 +17,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import java.util.List;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
@@ -60,7 +60,7 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(65, 20);
     public static Coordinate B = new Coordinate(78, 38);
-    public static Coordinate C = new Coordinate(100, 20);
+    public static Coordinate C = new Coordinate(110, 15);
     public static Coordinate newA = new Coordinate(80, 30);
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(120, 20);
@@ -146,10 +146,37 @@ public class Robot {
         }
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
+//        double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
+//        while(distance > 3.5) {
+//            distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+//
+//            double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+//
+//            double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+//            //System.out.println("Rel " + relAngleToPoint);
+//            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+//            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+//            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+//            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+//
+//            double movement_x = movementXPower * power;
+//            double movement_y = movementYPower * power;
+//            double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
+//            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
+//            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
+//            //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+//            setMovement(movement_x, movement_y, -rx);
+//        }
+//        setMovement(0, 0, 0);
+        goTo(pt, power, preferredAngle, turnSpeed, () -> {});
+    }
+    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
         while(distance > 3.5) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-
+            if(distance < 10){
+                block.run();
+            }
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
 
             double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
@@ -179,22 +206,6 @@ public class Robot {
     }
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
-    }
-    public void goToPosition(Coordinate pt, double power, double desiredOrientation, double allowableDistanceError){
-        double distanceToX = pt.x - position.getX();
-        double distanceToY = pt.y - position.getY();
-        double distance = Math.hypot(distanceToX, distanceToY);
-        while(distance > allowableDistanceError) {
-            distanceToX = pt.x - position.getX();
-            distanceToY = pt.y - position.getY();
-            distance = Math.hypot(distanceToX, distanceToY);
-            double robotMovementAngle = Math.toDegrees(Math.atan2(distanceToX, distanceToY));
-            double lx = calculateY(robotMovementAngle, power);
-            double ly = calculateX(robotMovementAngle, power);
-            double rx = Range.clip((desiredOrientation - position.returnOrientation())/30, -1, 1);
-            setMovement(lx, ly, -rx);
-        }
-        setMovement(0, 0, 0);
     }
     private double calculateX(double desiredAngle, double speed) {
         return Math.sin(Math.toRadians(desiredAngle)) * speed;
@@ -358,7 +369,7 @@ public class Robot {
         double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
         double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() - Math.PI/2, 4);
+        shooter.polarAdd(position.radians() - Math.PI/2, -10);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);
@@ -370,20 +381,11 @@ public class Robot {
         // if degrees > 359 we cap at 359 with same sign as original degrees.
         if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
 
-        // start pid controller. PID controller will monitor the turn angle with respect to the
-        // target angle and reduce power as we approach the target angle. This is to prevent the
-        // robots momentum from overshooting the turn after we turn off the power. The PID controller
-        // reports onTarget() = true when the difference between turn angle and target angle is within
-        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
-        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
-        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
-        // turning the robot back toward the setpoint value.
-
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(0.6);
+        pidRotate.setTolerance(0.7);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

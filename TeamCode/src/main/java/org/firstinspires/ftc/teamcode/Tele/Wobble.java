@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="wobble", group = "LinearOpMode")
+@Disabled
 public class Wobble extends LinearOpMode {
 
     public Servo arm1, arm2;

@@ -31,7 +31,7 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y - 10), 0.9, 0, 0);
+        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y - 10), 0.9, 0, 0);
         //robot.goTo(new Coordinate(Robot.position.x + 5, Robot.position.y - 10), 1, 0, 0);
         if (robot.discs == 4) {
             targetPos = Robot.newC;
@@ -41,7 +41,7 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.newA;
         }
 
-        robot.goTo(targetPos, 0.7, Math.toRadians(90), 0.4);
+        robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4);
         robot.wobbleArmDown();
         sleep(550);
         robot.release();
@@ -160,7 +160,7 @@ public class TourneyAuto extends LinearOpMode {
         //robot.launcher.flapUp();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-10), 0.3);
         robot.goTo(new Coordinate(51, Robot.hiGoal.y), 0.7, Math.toRadians(-10), 0.4);
-        //robot.intake(-1);
+        robot.intake(-1);
         robot.launcher.setOnlyFlyWheel(1);
         sleep(1200);
         if (robot.discs == 4) {

@@ -73,10 +73,10 @@ public class Launcher {
         flywheel1.setPower(-pwr);
     }
     public void tiltUp(){
-        tilt.setPosition(0.72);
+        tilt.setPosition(0.75);
     }
     public void tiltDown(){
-        tilt.setPosition(0.52);
+        tilt.setPosition(0.57);
     }
 
     public void magazineShoot(){

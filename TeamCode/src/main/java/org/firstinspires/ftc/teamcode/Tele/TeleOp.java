@@ -26,6 +26,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void runOpMode() throws InterruptedException {
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18);
         robot.init();
+        pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);
         waitForStart();
         driveTrain.start();
