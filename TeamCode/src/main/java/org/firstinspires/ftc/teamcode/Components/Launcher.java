@@ -105,7 +105,7 @@ public class Launcher {
         }
     }
     public void flapUp(){
-        flap.setPosition(0.48);
+        flap.setPosition(0.42);
     }
     public void flapDown(){
         flap.setPosition(0.35);

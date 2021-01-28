@@ -71,7 +71,7 @@ public class Robot {
     public Launcher launcher;
     Orientation orientation = new Orientation();
     PIDController pidRotate, pidDrive, pidStrafe, pidCurve, pidCorrection;
-    double globalAngle, power = .30, correction, rotation, lastAngles;
+    double globalAngle, power = .30, correction, lastAngles;
 
     DcMotor.RunMode newRun;
     HardwareMap map;
@@ -169,6 +169,14 @@ public class Robot {
         }
         setMovement(0, 0, 0);
     }
+    public void wingsOut() {
+        leftIntakeHolder.setPosition(.23);
+        rightIntakeHolder.setPosition(.84);
+    }
+    public void wingsIn() {
+        leftIntakeHolder.setPosition(0.91);
+        rightIntakeHolder.setPosition(0.18);
+    }
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
     }
@@ -259,7 +267,7 @@ public class Robot {
     public double getHeading() {//for overall
         return position.returnOrientation();
     }
-    private void resetAngle()
+    public void resetAngle()
     {
         lastAngles =  position.returnOrientation();
 
@@ -285,8 +293,8 @@ public class Robot {
 
     }
     public void wobbleArmVertical(){
-        arm1.setPosition(0.69);
-        arm2.setPosition (0.3);
+        arm1.setPosition(0.5);
+        arm2.setPosition (0.5);
     }
     public void grab(){
         grabber.setPosition(0.13);
@@ -314,7 +322,7 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
-    private double getAngle()
+    public double getAngle()
     {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -413,8 +421,6 @@ public class Robot {
 
         // turn the motors off.
         setMovement(0, 0 ,0);
-
-        rotation = getAngle();
 
         // wait for rotation to stop.
         sleep(500);
