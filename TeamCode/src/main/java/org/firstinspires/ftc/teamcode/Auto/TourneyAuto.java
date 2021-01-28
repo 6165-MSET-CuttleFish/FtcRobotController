@@ -41,19 +41,19 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.newA;
         }
 
-        robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4);
-        robot.wobbleArmDown();
-        sleep(550);
+        robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4, () -> robot.wobbleArmDown());
         robot.release();
         sleep(200);
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
-        robot.launcher.setFlyWheel(0.7);
-        robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.5);
+        robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.5, () -> {
+            robot.launcher.setFlyWheel(0.7);
+            robot.wingsIn();
+        });
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapDown();
-            robot.launcherturnTo(pwrShot, 0.23);
+            robot.launcherturnTo(pwrShot, 0.22);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
@@ -136,12 +136,8 @@ public class TourneyAuto extends LinearOpMode {
     }
 
     public void case4() {
-        Coordinate slowDownPt = new Coordinate(Robot.C);
-        slowDownPt.addX(-20);
-        slowDownPt.addY(10);
-        robot.goTo(slowDownPt, 0.7, Math.toRadians(150), 0.5);
-        robot.wobbleArmDown();
-        robot.goTo(Robot.C, 0.7, Math.toRadians(150), 0.4);
+
+        robot.goTo(Robot.C, 0.7, Math.toRadians(150), 0.4, () -> robot.wobbleArmDown());
         robot.release();
         sleep(500);
         //robot.goTo(new Coordinate(Robot.position.x - 10, Robot.position.y), 0.8, 0, 0);
