@@ -60,10 +60,10 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(65, 20);
     public static Coordinate B = new Coordinate(78, 38);
-    public static Coordinate C = new Coordinate(95, 20);
+    public static Coordinate C = new Coordinate(100, 20);
     public static Coordinate newA = new Coordinate(80, 30);
     public static Coordinate newB = new Coordinate(95, 55);
-    public static Coordinate newC = new Coordinate(119, 29);
+    public static Coordinate newC = new Coordinate(120, 20);
 
     public static Coordinate leftWobble = new Coordinate(44, 57);
     public static Coordinate rightWobble = new Coordinate(14, 24);
@@ -90,9 +90,9 @@ public class Robot {
         pwrShots[1] = new Goal(144, 60, 23.5);
         pwrShots[2] = new Goal(144, 52.4, 23.5);
 
-        pwrShotLocals[0] = new Coordinate(70, 67);
-        pwrShotLocals[1] = new Coordinate(70, 60);
-        pwrShotLocals[2] = new Coordinate(70, 53.25);
+        pwrShotLocals[0] = new Coordinate(75, 67);
+        pwrShotLocals[1] = new Coordinate(75, 60);
+        pwrShotLocals[2] = new Coordinate(75, 53.25);
         this.robotWidth = robotWidth;
         this.robotLength = robotLength;
         map = imported;
@@ -147,7 +147,7 @@ public class Robot {
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed){
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(distance > 5) {
+        while(distance > 3.5) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
 
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -350,7 +350,7 @@ public class Robot {
         double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
         double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() - Math.PI/2, -4);
+        shooter.polarAdd(position.radians() - Math.PI/2, 4);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         pidRotate(Math.toDegrees(relAngleToPoint), pwr);
