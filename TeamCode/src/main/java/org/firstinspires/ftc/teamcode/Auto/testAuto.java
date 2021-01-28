@@ -15,7 +15,7 @@ public class testAuto extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 79, 56.5, 0,18, 18);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 79, 56.5, 0,18, 18, this::opModeIsActive);
         robot.init();
         telemetry.addData("orient", robot.position.returnOrientation());
         telemetry.addData("x",robot.position.x);

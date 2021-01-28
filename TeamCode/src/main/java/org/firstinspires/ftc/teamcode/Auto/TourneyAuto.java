@@ -14,7 +14,7 @@ public class TourneyAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0, 18, 18);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0, 18, 18, this::opModeIsActive);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
@@ -41,15 +41,23 @@ public class TourneyAuto extends LinearOpMode {
             targetPos = Robot.newA;
         }
 
-        robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4, () -> robot.wobbleArmDown());
+        try {
+            robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4, () -> robot.wobbleArmDown());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         robot.release();
         sleep(200);
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
-        robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.5, () -> {
-            robot.launcher.setFlyWheel(0.7);
-            robot.wingsIn();
-        });
+        try {
+            robot.goTo(Robot.pwrShotLocals[1], 0.6, Math.toRadians(0), 0.5, () -> {
+                robot.launcher.setFlyWheel(0.7);
+                robot.wingsIn();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapDown();
@@ -72,7 +80,11 @@ public class TourneyAuto extends LinearOpMode {
         } else {
             targetPos = Robot.A;
         }
-        robot.goTo(targetPos, 0.7, Math.toRadians(150), 0.4, () -> robot.wobbleArmDown());
+        try {
+            robot.goTo(targetPos, 0.7, Math.toRadians(150), 0.4, () -> robot.wobbleArmDown());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         robot.release();
         sleep(200);
         Coordinate homePos = new Coordinate(88, Robot.position.y);

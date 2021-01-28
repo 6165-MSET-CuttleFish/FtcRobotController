@@ -43,7 +43,7 @@ public class singleDriver extends LinearOpMode {
         //position = new OdometryGlobalCoordinatePosition(fr, br, bl, COUNTS_PER_INCH, 75, 0, 0);
         position = new OdometryGlobalCoordinatePosition(bl, br, fr, COUNTS_PER_INCH, 75, 0, 0, 0);
         //position = new OdometryGlobalCoordinatePosition(br, bl, fr, COUNTS_PER_INCH, 75, 0, 0);
-        Robot robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 0, 0, 0, 18, 18);
+        //Robot robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 0, 0, 0, 18, 18);
         Thread positionThread = new Thread(position);
         pidRotate = new PIDController(.07, 0.013, 0.0044);
         positionThread.start();
