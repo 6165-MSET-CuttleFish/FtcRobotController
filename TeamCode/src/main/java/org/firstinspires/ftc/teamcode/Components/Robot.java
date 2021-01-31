@@ -69,7 +69,7 @@ public class Robot {
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(120, 20);
 
-    public static Coordinate leftWobble = new Coordinate(44, 55);
+    public static Coordinate leftWobble = new Coordinate(45, 55);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -162,7 +162,7 @@ public class Robot {
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
         while(distance > 3.5 && overrides.call()) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-            if(distance < 10){
+            if(distance < 20){
                 block.run();
             }
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -360,7 +360,7 @@ public class Robot {
         double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
         double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() - Math.PI/2, -10);
+        shooter.polarAdd(position.radians() + Math.PI/2, 30);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {

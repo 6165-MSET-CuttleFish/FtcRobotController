@@ -91,7 +91,6 @@ public class Launcher {
     }
     public void singleRound(){
         tiltUp();
-        sleep(500);
         mag.setPosition(0.32);
         sleep(300);
         mag.setPosition(0.55);
@@ -105,7 +104,7 @@ public class Launcher {
         }
     }
     public void flapUp(){
-        flap.setPosition(0.42);
+        flap.setPosition(0.43);
     }
     public void flapDown(){
         flap.setPosition(0.35);

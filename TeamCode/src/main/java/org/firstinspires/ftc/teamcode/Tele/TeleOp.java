@@ -15,12 +15,10 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group = "LinearOpMode")
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
-    boolean ninja, armUp, flapUp;
-    double lastTime = System.currentTimeMillis();
-    double multiplier = 1;
-    public final double COUNTS_PER_INCH = 3072;
+    boolean ninja, armUp;
     Coordinate shootingPosition;
-    double shootingAngle;
+    double shootingAngle = 0;
+    boolean isOnAuto = false;
     PIDController pidRotate;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,21 +27,28 @@ public class TeleOp extends LinearOpMode implements Runnable{
         pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);
         waitForStart();
+        shootingPosition = Robot.position.toPoint();
         driveTrain.start();
         while(opModeIsActive()){
             setMultiplier();
             wobble();
             robot.intake(gamepad2.right_stick_y);
-            if(gamepad1.y) robot.goTo(shootingPosition, 1, shootingAngle, 0.7);
             shooter();
             idle();
         }
+        driveTrain.stop();
         Robot.position.stop();
     }
+    double lxMult = 1;
+    double lyMult = 1;
+    double rxMult = 1;
     @Override
     public void run() {
         while(opModeIsActive()) {
-            robot.setMovement(gamepad1.left_stick_x * multiplier, gamepad1.left_stick_y * multiplier, gamepad1.right_stick_x * multiplier);
+            robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
+            if(gamepad1.y) {
+                robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
+            }
             telemetry.addData("X Position", robot.position.getX());
             telemetry.addData("Y Position", robot.position.getY());
             telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
@@ -53,16 +58,21 @@ public class TeleOp extends LinearOpMode implements Runnable{
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper){
             ninja = true;
-            multiplier /= 3;
+            lxMult /= 3;
+            rxMult /= 3;
+            lyMult /= 3;
             sleep(300);
         }
         else if(ninja && gamepad1.left_bumper){
             ninja = false;
-            multiplier *= 3;
+            lxMult *= 3;
+            rxMult *= 3;
+            lyMult *= 3;
             sleep(300);
         }
         if(gamepad1.right_bumper){
-            multiplier = -multiplier;
+            lxMult = -lxMult;
+            lyMult = -lyMult;
             sleep(300);
         }
     }
@@ -74,6 +84,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.b && armUp){
             robot.wobbleArmDown();
+            armUp = false;
             sleep(300);
         }
         else if(gamepad2.a){
