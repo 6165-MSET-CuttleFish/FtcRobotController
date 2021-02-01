@@ -118,11 +118,11 @@ public class Coordinate {
         return y/Math.sin(Math.toRadians(heading));
     }
     public static double xCovered(double angle, double distance) {
-        return Math.cos(Math.toRadians(angle)) * distance;
+        return Math.cos(angle) * distance;
     }
 
     public static double yCovered(double angle, double distance) {
-        return Math.sin(Math.toRadians(angle)) * distance;
+        return Math.sin(angle) * distance;
     }
     public static Coordinate toPoint(Coordinate pt){
         return new Coordinate(pt.x, pt.y);

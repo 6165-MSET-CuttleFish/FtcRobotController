@@ -64,7 +64,7 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(65, 20);
     public static Coordinate B = new Coordinate(78, 38);
-    public static Coordinate C = new Coordinate(110, 15);
+    public static Coordinate C = new Coordinate(112, 5);
     public static Coordinate newA = new Coordinate(80, 30);
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(120, 20);
@@ -357,10 +357,8 @@ public class Robot {
         }
     }
     public void launcherturnTo(Coordinate pt, double pwr){
-        double dx = 5 * Math.cos(AngleWrap(position.radians() - Math.PI/2));
-        double dy = 5 * Math.sin(AngleWrap(position.radians() - Math.PI/2));
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 30);
+        shooter.polarAdd(position.radians() + Math.PI/2, 12);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -380,7 +378,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(0.7);
+        pidRotate.setTolerance(0.9);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
