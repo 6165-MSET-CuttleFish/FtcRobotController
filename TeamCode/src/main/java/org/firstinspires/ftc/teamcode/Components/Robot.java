@@ -358,7 +358,7 @@ public class Robot {
     }
     public void launcherturnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 12);
+        shooter.polarAdd(position.radians() + Math.PI/2, 15);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {

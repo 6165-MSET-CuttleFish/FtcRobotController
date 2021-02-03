@@ -30,8 +30,8 @@ public class Launcher implements Runnable{
         controller = new PIDController(0.5, 0, 0.8);
         flywheel = map.get(DcMotor.class, "fw");
         flywheel1 = map.get(DcMotor.class, "fw1");
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
-        flywheel1.setDirection(DcMotor.Direction.REVERSE);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
@@ -111,12 +111,12 @@ public class Launcher implements Runnable{
         else {
             tiltUp();
         }
-        flywheel.setPower(-pwr);
-        flywheel1.setPower(-pwr);
+        flywheel.setPower(pwr);
+        flywheel1.setPower(pwr);
     }
     public void setOnlyFlyWheel(double pwr){
-        flywheel.setPower(-pwr);
-        flywheel1.setPower(-pwr);
+        flywheel.setPower(pwr);
+        flywheel1.setPower(pwr);
     }
     public void tiltUp(){
         tilt.setPosition(0.75);

@@ -22,14 +22,10 @@ public class autoTest extends LinearOpMode {
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        //robot.wobbleArmDown();
-            robot.wobbleArmDown();
-
-        sleep(2000);
-        robot.wobbleArmUp();
-        sleep(2000);
-        robot.wobbleArmVertical();
-        sleep(5000);
+        robot.wingsOut();
+        sleep(500);
+        robot.wingsIn();
+        sleep(500);
     }
     public void foo(){
         //robot.goToPosition(new Coordinate(28, 24), 0.4, 0, 2);

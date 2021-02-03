@@ -126,11 +126,13 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 shootSpeed = 0.85;
                 hasShot = true;
             }
+            isWingsOut = true;
             robot.launcher.setFlyWheel(shootSpeed);
             robot.wingsOut();
             robot.launcher.flapUp();
         }
         else if(gamepad2.left_bumper){
+            isWingsOut = true;
             robot.launcher.setFlyWheel(0.7);
             robot.wingsOut();
             robot.launcher.flapDown();
