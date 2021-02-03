@@ -8,18 +8,26 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
+import java.util.concurrent.Callable;
+
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
-public class Launcher {
+public class Launcher implements Runnable{
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
     public DcMotor flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public static Goal position;
-
-
+    private boolean isRunning = true;
+    private Coordinate robotPosition;
+    private double lastPosition;
+    private double lastTime = System.currentTimeMillis();
+    private double targetVelocity = 0;
+    PIDController controller;
+    public boolean isShooting;
     public Launcher(HardwareMap map){
+        controller = new PIDController(0.5, 0, 0.8);
         flywheel = map.get(DcMotor.class, "fw");
         flywheel1 = map.get(DcMotor.class, "fw1");
         flywheel.setDirection(DcMotor.Direction.REVERSE);
@@ -28,7 +36,45 @@ public class Launcher {
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
         //mag.setPosition(0.5);
-        tilt.setPosition(0.52);
+        tilt.setPosition(0.54);
+    }
+    public void stop(){
+        isRunning = false;
+    }
+    private void updateCoordinate(){
+
+    }
+    @Override
+    public void run() {
+        while(isRunning){
+            if(isShooting){
+                foo();
+            } else {
+                flywheel.setPower(0);
+            }
+        }
+    }
+    double power;
+    private void foo(){
+        controller.reset();
+        controller.setSetpoint(targetVelocity);
+        controller.setInputRange(0, targetVelocity * 2);
+        controller.setOutputRange(0.6, 1);
+        controller.setTolerance(0.1);
+        controller.enable();// left turn.
+            do
+            {
+                power = controller.performPID(getVelocity()); // power will be + on left turn.
+                setFlyWheel(power);
+            } while (isShooting);
+    }
+    public double getVelocity(){
+        double v = flywheel.getCurrentPosition() - lastPosition/(System.currentTimeMillis() - lastTime);
+        lastPosition = flywheel.getCurrentPosition();
+        return v;
+    }
+    public void setTargetVelocity(double targetVelocity){
+        this.targetVelocity = targetVelocity;
     }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
