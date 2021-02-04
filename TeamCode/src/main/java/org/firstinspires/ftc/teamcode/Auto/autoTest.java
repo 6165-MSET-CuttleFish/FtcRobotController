@@ -23,9 +23,9 @@ public class autoTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
         robot.wingsOut();
-        sleep(500);
+        sleep(2000);
         robot.wingsIn();
-        sleep(500);
+        sleep(2000);
     }
     public void foo(){
         //robot.goToPosition(new Coordinate(28, 24), 0.4, 0, 2);

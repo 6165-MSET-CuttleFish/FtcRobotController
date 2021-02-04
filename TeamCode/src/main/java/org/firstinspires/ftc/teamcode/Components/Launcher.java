@@ -36,7 +36,7 @@ public class Launcher implements Runnable{
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
         //mag.setPosition(0.5);
-        tilt.setPosition(0.54);
+        tilt.setPosition(0.57);
     }
     public void stop(){
         isRunning = false;

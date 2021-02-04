@@ -358,7 +358,7 @@ public class Robot {
     }
     public void launcherturnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 15);
+        shooter.polarAdd(position.radians() + Math.PI/2, 12);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -377,7 +377,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.15, power);
+        pidRotate.setOutputRange(0.14, power);
         pidRotate.setTolerance(0.9);
         pidRotate.enable();
 
