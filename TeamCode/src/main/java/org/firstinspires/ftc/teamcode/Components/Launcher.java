@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
-public class Launcher implements Runnable{
+public class Launcher {
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
@@ -41,37 +41,8 @@ public class Launcher implements Runnable{
     public void stop(){
         isRunning = false;
     }
-    private void updateCoordinate(){
+    private void updateCoordinate() {
 
-    }
-    @Override
-    public void run() {
-        while(isRunning){
-            if(isShooting){
-                foo();
-            } else {
-                flywheel.setPower(0);
-            }
-        }
-    }
-    double power;
-    private void foo(){
-        controller.reset();
-        controller.setSetpoint(targetVelocity);
-        controller.setInputRange(0, targetVelocity * 2);
-        controller.setOutputRange(0.6, 1);
-        controller.setTolerance(0.1);
-        controller.enable();// left turn.
-            do
-            {
-                power = controller.performPID(getVelocity()); // power will be + on left turn.
-                setFlyWheel(power);
-            } while (isShooting);
-    }
-    public double getVelocity(){
-        double v = flywheel.getCurrentPosition() - lastPosition/(System.currentTimeMillis() - lastTime);
-        lastPosition = flywheel.getCurrentPosition();
-        return v;
     }
     public void setTargetVelocity(double targetVelocity){
         this.targetVelocity = targetVelocity;
