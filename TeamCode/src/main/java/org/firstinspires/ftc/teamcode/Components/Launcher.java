@@ -35,8 +35,7 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
-        //mag.setPosition(0.5);
-        tilt.setPosition(0.57);
+        tiltUp();
     }
     public void stop(){
         isRunning = false;

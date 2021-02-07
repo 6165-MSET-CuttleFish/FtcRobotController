@@ -64,7 +64,7 @@ public class Robot {
 
     public static Coordinate A = new Coordinate(65, 20);
     public static Coordinate B = new Coordinate(78, 38);
-    public static Coordinate C = new Coordinate(112, 5);
+    public static Coordinate C = new Coordinate(108, 8);
     public static Coordinate newA = new Coordinate(80, 30);
     public static Coordinate newB = new Coordinate(95, 55);
     public static Coordinate newC = new Coordinate(120, 20);
@@ -185,12 +185,12 @@ public class Robot {
         setMovement(0, 0, 0);
     }
     public void wingsOut() {
-        leftIntakeHolder.setPosition(.23);
-        rightIntakeHolder.setPosition(.84);
+        leftIntakeHolder.setPosition(0.96);
+        rightIntakeHolder.setPosition(0.18);
     }
     public void wingsIn() {
-        leftIntakeHolder.setPosition(0.91);
-        rightIntakeHolder.setPosition(0.18);
+        leftIntakeHolder.setPosition(.3);
+        rightIntakeHolder.setPosition(.84);
     }
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
@@ -358,7 +358,7 @@ public class Robot {
     }
     public void launcherturnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 12);
+        shooter.polarAdd(position.radians() + Math.PI/2, 14.8);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -377,7 +377,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.14, power);
+        pidRotate.setOutputRange(0.13, power);
         pidRotate.setTolerance(0.9);
         pidRotate.enable();
 

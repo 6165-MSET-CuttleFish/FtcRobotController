@@ -39,7 +39,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.intake(gamepad2.right_stick_y);
             shooter();
             idle();
-            if(gamepad2.y){
+            if(gamepad2.y || gamepad1.right_trigger >= 0.2){
                 if(!isWingsOut) {
                     robot.wingsOut();
                     isWingsOut = true;
@@ -123,7 +123,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >=0.1){
             if(!hasShot){
-                shootSpeed = 0.82;
+                shootSpeed = 0.68;
                 hasShot = true;
             }
             isWingsOut = true;
@@ -133,7 +133,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.left_bumper){
             isWingsOut = true;
-            robot.launcher.setFlyWheel(0.5);
+            robot.launcher.setFlyWheel(0.4);
             robot.wingsOut();
             robot.launcher.flapDown();
         }
@@ -146,7 +146,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
-            shootSpeed = 0.87;
+            shootSpeed = 0.71;
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){
