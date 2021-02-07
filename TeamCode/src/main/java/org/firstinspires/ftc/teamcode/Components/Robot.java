@@ -83,7 +83,7 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Callable<Boolean> overrides) {
         this.overrides = overrides;
         construct(runMode, imported, robotLength, robotWidth);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pidRotate = new PIDController(.07, 0.014, 0.0044);
@@ -148,7 +148,7 @@ public class Robot {
         this.overrides = overrides;
         construct(runMode, imported, robotLength, robotWidth);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 3072, 75, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, 0, 0, 0);
         }
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
