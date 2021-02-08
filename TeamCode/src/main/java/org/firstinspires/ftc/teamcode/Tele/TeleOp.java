@@ -159,7 +159,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         shootingAngle = Robot.position.radians();
     }
     private boolean gamepadIdle(){
-        return gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && opModeIsActive();
+        return gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0;
     }
     private void goToLaunchZone(){
         robot.goTo(shootingPosition, 0.5, shootingAngle, 0.5);
