@@ -63,13 +63,13 @@ public class Robot {
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
     public static Coordinate A = new Coordinate(65, 20);
-    public static Coordinate B = new Coordinate(78, 38);
-    public static Coordinate C = new Coordinate(108, 8);
-    public static Coordinate newA = new Coordinate(80, 30);
-    public static Coordinate newB = new Coordinate(95, 55);
-    public static Coordinate newC = new Coordinate(120, 20);
+    public static Coordinate B = new Coordinate(95.25, 38);
+    public static Coordinate C = new Coordinate(119, 8);
+    public static Coordinate newA = new Coordinate(83.25, 30);
+    public static Coordinate newB = new Coordinate(107.25, 52);
+    public static Coordinate newC = new Coordinate(128, 30);
 
-    public static Coordinate leftWobble = new Coordinate(42, 55);
+    public static Coordinate leftWobble = new Coordinate(43, 44);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -87,10 +87,7 @@ public class Robot {
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pidRotate = new PIDController(.07, 0.014, 0.0044);
-        //pidRotate = new PIDController(.00, .0000, 0);
-//        pwrShots[0] = new Goal(144, 65.25, 23.5);
-//        pwrShots[1] = new Goal(144, 60, 23.5);
-//        pwrShots[2] = new Goal(144, 53.25, 23.5);
+
         pwrShots[0] = new Goal(144, 67, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
         pwrShots[2] = new Goal(144, 52.4, 23.5);
@@ -114,16 +111,10 @@ public class Robot {
 
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
-        //arm1.setDirection( Servo.Direction.REVERSE);
-//        arm1.setPosition(0.93);
-//        arm2.setPosition(0.07);
         grabber = map.get(Servo.class, "wobbleGrabber1");
         grabber2 = map.get(Servo.class, "wobbleGrabber2");
-        //grabber.setPosition(0.92);
-
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
-//        lockIntake();
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         launcher = new Launcher(map);
@@ -194,18 +185,6 @@ public class Robot {
     }
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
-    }
-    private double calculateX(double desiredAngle, double speed) {
-        return Math.sin(Math.toRadians(desiredAngle)) * speed;
-    }
-    /**
-     * Calculate the power in the y direction
-     * @param desiredAngle angle on the y axis
-     * @param speed robot's speed
-     * @return the y vector
-     */
-    private double calculateY(double desiredAngle, double speed) {
-        return Math.cos(Math.toRadians(desiredAngle)) * speed;
     }
     public void setMovement(double lx, double ly, double rx){
         topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
@@ -356,9 +335,9 @@ public class Robot {
             e.printStackTrace();
         }
     }
-    public void launcherturnTo(Coordinate pt, double pwr){
+    public void launcherTurnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 14.8);
+        shooter.polarAdd(position.radians() - Math.PI/2, 2);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -378,7 +357,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.13, power);
-        pidRotate.setTolerance(0.9);
+        pidRotate.setTolerance(1);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

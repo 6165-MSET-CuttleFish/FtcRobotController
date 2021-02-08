@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
-import java.io.Console;
-
 @Autonomous
 public class TourneyAuto extends LinearOpMode {
     Robot robot;
@@ -66,7 +64,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapUp();
-            robot.launcherturnTo(pwrShot, 0.19);
+            robot.launcherTurnTo(pwrShot, 0.19);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
@@ -113,7 +111,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(600);
         Robot.position.stop();
     }
-    public void getMoreRings() {
+    private void getMoreRings() {
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 0.7, 0, 0.5);
         Coordinate rings2 = new Coordinate(Robot.position.x + 14.6, Robot.position.y);
         robot.intake(1);
@@ -125,9 +123,9 @@ public class TourneyAuto extends LinearOpMode {
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-10), 0.3);
-        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.7, Math.toRadians(-10), 0.4);
-        robot.launcher.setOnlyFlyWheel(0.55);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-5), 0.3);
+        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.7, Math.toRadians(-5), 0.4);
+        robot.launcher.setOnlyFlyWheel(0.62);
         robot.intake(-1);
         sleep(300);
         robot.intake(1);
@@ -139,8 +137,8 @@ public class TourneyAuto extends LinearOpMode {
             robot.launcher.magazineShoot();
         } else {
             robot.launcher.singleRound();
+            sleep(400);
         }
         robot.launcher.setFlyWheel(0);
-        robot.intake(0);
     }
 }

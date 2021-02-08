@@ -102,7 +102,7 @@ public class Launcher {
             mag.setPosition(0.32);
             sleep(150);
             mag.setPosition(.55);
-            sleep(800);
+            sleep(400);
         }
     }
     public void singleRound(){
@@ -125,9 +125,6 @@ public class Launcher {
     public void flapDown(){
         flap.setPosition(0.35);
     }
-//    public static void main(String[] args){
-//        findAngle(inchesToMeters(36), targets.highGoal);
-//    }
     enum targets{
         highGoal,
         lowGoal,
