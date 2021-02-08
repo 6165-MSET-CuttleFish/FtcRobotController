@@ -33,7 +33,7 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y - 8), 0.9, 0, 0);
+       // if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y - 3), 0.9, 0, 0);
         //robot.goTo(new Coordinate(Robot.position.x + 5, Robot.position.y - 10), 1, 0, 0);
         if (robot.discs == 4) {
             targetPos = Robot.newC;

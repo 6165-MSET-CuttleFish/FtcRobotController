@@ -35,7 +35,7 @@ public class OdometryCalibration extends LinearOpMode {
     final double PIVOT_SPEED = 0.3;
 
     //The amount of encoder ticks for each inch the robot moves. THIS WILL CHANGE FOR EACH ROBOT AND NEEDS TO BE UPDATED HERE
-    final double COUNTS_PER_INCH = 3072;
+    final double COUNTS_PER_INCH = 8192/(1.5*Math.PI);
     //307.699557;
     double initialAngle;
     ElapsedTime timer = new ElapsedTime();

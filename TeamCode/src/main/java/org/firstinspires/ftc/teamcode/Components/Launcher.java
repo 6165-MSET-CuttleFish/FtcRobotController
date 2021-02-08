@@ -92,7 +92,7 @@ public class Launcher {
         tilt.setPosition(0.75);
     }
     public void tiltDown(){
-        tilt.setPosition(0.57);
+        tilt.setPosition(0.52);
     }
 
     public void magazineShoot(){

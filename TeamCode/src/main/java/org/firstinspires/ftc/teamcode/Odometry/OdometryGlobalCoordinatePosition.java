@@ -54,6 +54,7 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         sleepTime = threadSleepDelay;
         this.robotOrientationRadians = 0;
         robotOrientationRadians = orientation;
+        COUNTS_PER_INCH = 8192/(1.5*Math.PI);
         robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
         this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
         this.COUNTS_PER_INCH = COUNTS_PER_INCH;
@@ -92,7 +93,7 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         //robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
        // add(1.748133*dX/COUNTS_PER_INCH, -1.748133*dY/COUNTS_PER_INCH);
         //add(1.76109755*dX/COUNTS_PER_INCH, -1.76109755*dY/COUNTS_PER_INCH);
-        add(dX/COUNTS_PER_INCH, dY/COUNTS_PER_INCH);
+        add((dX/8192) * Math.PI * 1.5, -(dY/8192) * Math.PI * 1.5);
 
         previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
         previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
