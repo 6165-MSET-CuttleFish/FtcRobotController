@@ -31,7 +31,7 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 15, Robot.position.y - 3), 0.9, 0, 0);
+        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 30, Robot.position.y - 9), 0.8, 0, 0);
         if (robot.discs == 4) {
             targetPos = Robot.newC;
         } else if (robot.discs == 1) {
@@ -50,8 +50,8 @@ public class TourneyAuto extends LinearOpMode {
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         try {
-            robot.goTo(Robot.pwrShotLocals[1], 0.5, Math.toRadians(0), 0.3, () -> {
-                robot.launcher.setFlyWheel(0.38);
+            robot.goTo(Robot.pwrShotLocals[0], 0.48, Math.toRadians(0), 0.3, () -> {
+                robot.launcher.setFlyWheel(0.4);
                 robot.wingsIn();
             });
         } catch (Exception e) {
@@ -62,14 +62,14 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.update();
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
-            robot.launcher.flapUp();
-            robot.launcherTurnTo(pwrShot, 0.19);
+            robot.launcher.flapDown();
+            robot.launcherTurnTo(pwrShot, 0.2);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
         try {
             robot.goTo(Robot.leftWobble, 0.48, 0, 0.5, () -> {
-                if(Robot.position.distanceTo(Robot.leftWobble) < 8)
+                if(Robot.position.distanceTo(Robot.leftWobble) < 7.2)
                     robot.grab();
             });
         } catch (Exception e) {
@@ -77,9 +77,9 @@ public class TourneyAuto extends LinearOpMode {
         }
         sleep(600);
         robot.wobbleArmUp();
-        if (robot.discs != 0) {
-            getMoreRings();
-        }
+//        if (robot.discs != 0) {
+//            getMoreRings();
+//        }
         if (robot.discs == 4) {
             targetPos = Robot.C;
         } else if (robot.discs == 1) {

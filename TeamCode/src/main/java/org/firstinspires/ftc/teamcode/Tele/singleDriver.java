@@ -75,12 +75,10 @@ public class singleDriver extends LinearOpMode {
 
             telemetry.addData("X Position", position.getX() );
             telemetry.addData("Y Position", position.getY() );
-            telemetry.addData("left encoder", bl.getCurrentPosition());
-            telemetry.addData("right encoder", br.getCurrentPosition());
-            telemetry.addData("horizontal encoder", fr.getCurrentPosition());
+//            telemetry.addData("left encoder", bl.getCurrentPosition());
+//            telemetry.addData("right encoder", br.getCurrentPosition());
+//            telemetry.addData("horizontal encoder", fr.getCurrentPosition());
             telemetry.addData("Orientation (Degrees)", position.returnOrientation());
-            telemetry.addData("Thread Active", positionThread.isAlive());
-            telemetry.addData("flap pos:", flap.getPosition ());
             telemetry.update();
             //idle();
         }
