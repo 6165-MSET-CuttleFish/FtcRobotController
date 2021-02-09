@@ -35,7 +35,7 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
-        tiltUp();
+        tiltDown();
     }
     public void stop(){
         isRunning = false;
@@ -75,10 +75,10 @@ public class Launcher {
         return -0.1*theta*theta + 3*theta;
     }
     public void setFlyWheel(double pwr){
-        if(pwr == 0) {
+        if(pwr < 0.5) {
             tiltDown();
         }
-        else {
+        else if (pwr >= 0.5){
             tiltUp();
         }
         flywheel.setPower(pwr);
@@ -104,11 +104,13 @@ public class Launcher {
             mag.setPosition(.55);
             sleep(400);
         }
+        tiltDown();
     }
     public void singleRound(){
         tiltUp();
         mag.setPosition(0.32);
-        sleep(300);
+        sleep(250);
+        //this is sleep value to change
         mag.setPosition(0.55);
     }
     public void shoot(double rounds){
