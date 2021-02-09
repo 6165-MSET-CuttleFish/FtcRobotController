@@ -300,10 +300,6 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
-    public boolean isIntakeRunning(){
-        if(intakeL.getPower()!=0) return false;
-        return true;
-    }
     public double getAngle()
     {
         double angles = position.returnOrientation();
