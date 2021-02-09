@@ -122,7 +122,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
     }
     public void shooter(){
-        if(gamepad2.left_trigger >= 0.1 && gamepad2.right_stick_y == 0){
+        if(gamepad2.left_trigger >= 0.1){
             if(!hasShot){
                 shootSpeed = 0.68;
                 hasShot = true;
