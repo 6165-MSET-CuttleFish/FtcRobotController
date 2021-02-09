@@ -23,6 +23,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     boolean isWingsOut = false;
     double shootSpeed = 0.85;
     boolean hasShot = false;
+    int wingsLimit = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18, () -> opModeIsActive() && gamepadIdle());
@@ -126,6 +127,11 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 shootSpeed = 0.68;
                 hasShot = true;
             }
+            if(wingsLimit >= 1){
+                robot.wingsOut();
+            } else {
+                robot.wingsIn();
+            }
             isWingsOut = true;
             robot.launcher.setFlyWheel(shootSpeed);
             //robot.wingsOut();
@@ -138,6 +144,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.launcher.flapDown();
         }
         else {
+            wingsLimit = 0;
             hasShot = false;
             robot.launcher.setFlyWheel(0.05);
             if(!isWingsOut)
@@ -146,6 +153,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
+            wingsLimit++;
             shootSpeed = 0.71;
             storeCoordinate();
         }
