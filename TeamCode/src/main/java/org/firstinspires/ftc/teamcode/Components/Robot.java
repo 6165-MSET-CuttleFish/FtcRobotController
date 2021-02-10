@@ -88,9 +88,9 @@ public class Robot {
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
         pidRotate = new PIDController(.067, 0.014, 0.0044);
 
-        pwrShots[0] = new Goal(142, 67, 23.5);
-        pwrShots[1] = new Goal(142, 60, 23.5);
-        pwrShots[2] = new Goal(142, 51.4, 23.5);
+        pwrShots[0] = new Goal(144, 67, 23.5);
+        pwrShots[1] = new Goal(144, 60, 23.5);
+        pwrShots[2] = new Goal(144, 53.25, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 67);
         pwrShotLocals[1] = new Coordinate(70, 60);
@@ -348,7 +348,7 @@ public class Robot {
     }
     public void launcherTurnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 7.5);
+        shooter.polarAdd(position.radians() + Math.PI/2, 2);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
