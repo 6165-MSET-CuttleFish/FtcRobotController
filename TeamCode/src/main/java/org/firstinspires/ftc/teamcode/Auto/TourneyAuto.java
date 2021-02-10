@@ -19,6 +19,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
+        robot.launcher.tiltUp();
         while(!opModeIsActive()){
             robot.scan();
             telemetry.addData("Stack Height", robot.height);
@@ -31,7 +32,7 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Stack Height", robot.height);
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
-        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 30, Robot.position.y - 9), 0.8, 0, 0);
+        if(robot.discs != 0) robot.goTo(new Coordinate(Robot.position.x + 50, Robot.position.y - 13), 0.7, 0, 0);
         if (robot.discs == 4) {
             targetPos = Robot.newC;
         } else if (robot.discs == 1) {
@@ -51,7 +52,8 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         try {
             robot.goTo(Robot.pwrShotLocals[0], 0.48, Math.toRadians(0), 0.3, () -> {
-                robot.launcher.setOnlyFlyWheel(0.4);
+                robot.launcher.setOnlyFlyWheel(0.39);
+                robot.launcher.tiltUp();
                 robot.wingsIn();
             });
         } catch (Exception e) {
@@ -63,7 +65,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapDown();
-            robot.launcherTurnTo(pwrShot, 0.2);
+            robot.launcherTurnTo(pwrShot, 0.19);
             robot.launcher.singleRound();
         }
         robot.launcher.setFlyWheel(0);
@@ -77,9 +79,9 @@ public class TourneyAuto extends LinearOpMode {
         }
         sleep(600);
         robot.wobbleArmUp();
-//        if (robot.discs != 0) {
-//            getMoreRings();
-//        }
+        if (robot.discs != 0) {
+            getMoreRings();
+        }
         if (robot.discs == 4) {
             targetPos = Robot.C;
         } else if (robot.discs == 1) {
@@ -89,7 +91,7 @@ public class TourneyAuto extends LinearOpMode {
         }
         if(robot.discs != 0) {
             try {
-                robot.goTo(targetPos, 0.7, Math.toRadians(140), 0.4, () -> robot.wobbleArmDown());
+                robot.goTo(targetPos, 0.7, Math.toRadians(135), 0.4, () -> robot.wobbleArmDown());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -111,27 +113,28 @@ public class TourneyAuto extends LinearOpMode {
         Robot.position.stop();
     }
     private void getMoreRings() {
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 16), 0.7, 0, 0.5);
-        Coordinate rings2 = new Coordinate(Robot.position.x + 14.6, Robot.position.y);
+        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y - 13), 0.7, Math.toRadians(-10), 0.5);
+        Coordinate rings2 = new Coordinate(Robot.position.x + 13.7, Robot.position.y);
         robot.intake(1);
         if(robot.discs == 4) {
-            robot.goTo(rings2, 0.25, 0, 0.3);
+            robot.goTo(rings2, 0.28, 0, 0.3);
         }
         else {
             robot.goTo(rings2, 0.7, 0, 0.3);
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-5), 0.3);
-        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.7, Math.toRadians(-5), 0.4);
-        robot.launcher.setOnlyFlyWheel(0.62);
-        robot.intake(-1);
-        sleep(300);
-        robot.intake(1);
-        sleep(300);
+        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-10), 0.3);
+        //robot.intake(0);
+        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.7, Math.toRadians(-8), 0.4);
+        robot.launcher.setOnlyFlyWheel(0.63);
+//        robot.intake(-1);
+//        sleep(300);
+//        robot.intake(1);
+        sleep(600);
         robot.launcher.tiltUp();
         robot.intake(0);
-        sleep(300);
+        sleep(500);
         if (robot.discs == 4) {
             robot.launcher.magazineShoot();
         } else {

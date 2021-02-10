@@ -109,7 +109,7 @@ public class Launcher {
     public void singleRound(){
         tiltUp();
         mag.setPosition(0.32);
-        sleep(250);
+        sleep(200);
         //this is sleep value to change
         mag.setPosition(0.55);
     }
