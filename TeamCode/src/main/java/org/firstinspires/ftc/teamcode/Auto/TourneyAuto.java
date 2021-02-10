@@ -51,7 +51,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         try {
             robot.goTo(Robot.pwrShotLocals[0], 0.48, Math.toRadians(0), 0.3, () -> {
-                robot.launcher.setFlyWheel(0.4);
+                robot.launcher.setOnlyFlyWheel(0.4);
                 robot.wingsIn();
             });
         } catch (Exception e) {
