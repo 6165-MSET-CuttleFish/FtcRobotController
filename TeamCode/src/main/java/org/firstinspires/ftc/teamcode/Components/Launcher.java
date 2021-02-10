@@ -75,10 +75,10 @@ public class Launcher {
         return -0.1*theta*theta + 3*theta;
     }
     public void setFlyWheel(double pwr){
-        if(pwr < 0.5) {
+        if(pwr < 0.42) {
             tiltDown();
         }
-        else if (pwr >= 0.5){
+        else if (pwr >= 0.42){
             tiltUp();
         }
         flywheel.setPower(pwr);
