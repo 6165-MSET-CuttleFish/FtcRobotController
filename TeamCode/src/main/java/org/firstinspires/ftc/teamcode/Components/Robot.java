@@ -83,14 +83,14 @@ public class Robot {
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Callable<Boolean> overrides) {
         this.overrides = overrides;
         construct(runMode, imported, robotLength, robotWidth);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 50, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.077, 0.0142, 0.004);
+        pidRotate = new PIDController(.067, 0.014, 0.0044);
 
-        pwrShots[0] = new Goal(141, 67, 23.5);
-        pwrShots[1] = new Goal(141, 60, 23.5);
-        pwrShots[2] = new Goal(141, 51.4, 23.5);
+        pwrShots[0] = new Goal(142, 67, 23.5);
+        pwrShots[1] = new Goal(142, 60, 23.5);
+        pwrShots[2] = new Goal(142, 51.4, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 67);
         pwrShotLocals[1] = new Coordinate(70, 60);
@@ -348,7 +348,7 @@ public class Robot {
     }
     public void launcherTurnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 6.6);
+        shooter.polarAdd(position.radians() + Math.PI/2, 7.5);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -367,7 +367,7 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.15, power);
+        pidRotate.setOutputRange(0.14, power);
         pidRotate.setTolerance(1);
         pidRotate.enable();
 
