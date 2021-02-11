@@ -33,8 +33,8 @@ public class TourneyAuto extends LinearOpMode {
         telemetry.addData("Discs", robot.discs);
         telemetry.update();
         if(robot.discs != 0) {
-            robot.goTo(new Coordinate(Robot.position.x + 13, Robot.position.y - 8), 0.7, 0, 0);
-            robot.goTo(new Coordinate(Robot.position.x + 50, Robot.position.y - 13), 0.7, 0, 0);
+            robot.goTo(new Coordinate(Robot.position.x + 13, Robot.position.y - 8), 0.8, 0, 0);
+            robot.goTo(new Coordinate(Robot.position.x + 30, Robot.position.y - 2), 0.8, 0, 0);
         }
         if (robot.discs == 4) {
             targetPos = Robot.newC;
@@ -121,20 +121,22 @@ public class TourneyAuto extends LinearOpMode {
         robot.intake(1);
         if(robot.discs == 4) {
             robot.goTo(rings2, 0.28, 0, 0.3);
+            robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-8), 0.3);
         }
         else {
             robot.goTo(rings2, 0.7, 0, 0.3);
+
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-        robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-10), 0.3);
+
         //robot.intake(0);
-        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.7, Math.toRadians(-8), 0.4);
-        robot.launcher.setOnlyFlyWheel(0.63);
+        robot.goTo(new Coordinate(53, Robot.hiGoal.y), 0.7, Math.toRadians(-5), 0.4);
+        robot.launcher.setOnlyFlyWheel(0.6);
         sleep(800);
         robot.launcher.tiltUp();
         robot.intake(0);
-        sleep(400);
+        sleep(500);
         if (robot.discs == 4) {
             robot.launcher.magazineShoot();
         } else {

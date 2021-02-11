@@ -63,13 +63,13 @@ public class Robot {
     public static Coordinate[] pwrShotLocals = new Coordinate[3];
 
     public static Coordinate A = new Coordinate(65, 20);
-    public static Coordinate B = new Coordinate(89.25, 38);
-    public static Coordinate C = new Coordinate(116, 18);
+    public static Coordinate B = new Coordinate(87.25, 38);
+    public static Coordinate C = new Coordinate(108, 18);
     public static Coordinate newA = new Coordinate(81.25, 25);
     public static Coordinate newB = new Coordinate(100.25, 52);
-    public static Coordinate newC = new Coordinate(120, 25);
+    public static Coordinate newC = new Coordinate(120, 27);
 
-    public static Coordinate leftWobble = new Coordinate(38.3, 54);
+    public static Coordinate leftWobble = new Coordinate(37, 54);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -86,11 +86,11 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
-        pidRotate = new PIDController(.067, 0.014, 0.0044);
+        pidRotate = new PIDController(.067, 0.018, 0.004);
 
-        pwrShots[0] = new Goal(144, 67, 23.5);
-        pwrShots[1] = new Goal(144, 60, 23.5);
-        pwrShots[2] = new Goal(144, 53.25, 23.5);
+        pwrShots[0] = new Goal(141, 67, 23.5);
+        pwrShots[1] = new Goal(141, 60, 23.5);
+        pwrShots[2] = new Goal(141, 53.25, 23.5);
 
         pwrShotLocals[0] = new Coordinate(70, 67);
         pwrShotLocals[1] = new Coordinate(70, 60);
@@ -348,7 +348,7 @@ public class Robot {
     }
     public void launcherTurnTo(Coordinate pt, double pwr){
         Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 2);
+        shooter.polarAdd(position.radians() + Math.PI/2, 2.3);
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
@@ -367,8 +367,8 @@ public class Robot {
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.14, power);
-        pidRotate.setTolerance(1);
+        pidRotate.setOutputRange(0.15, 0.18);
+        pidRotate.setTolerance(0.5);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

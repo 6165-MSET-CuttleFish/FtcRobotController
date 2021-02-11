@@ -67,6 +67,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             }
             telemetry.addData("X Position", robot.position.getX());
             telemetry.addData("Y Position", robot.position.getY());
+            telemetry.addData("Gamepad Idle", gamepadIdle());
             telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
             telemetry.update();
         }
@@ -105,7 +106,11 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.a){
             robot.wobbleArmVertical();
-            armUp = false;
+            sleep(300);
+            robot.release();
+            sleep(200);
+            robot.wobbleArmUp();
+            armUp = true;
         }
         if(gamepad2.x && robot.grabber.getPosition()>0.3){
             robot.grab();
@@ -124,7 +129,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
             if(!hasShot){
-                shootSpeed = 0.68;
+                shootSpeed = 0.9;
                 hasShot = true;
             }
             if(wingsLimit >= 1){
@@ -135,7 +140,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             isWingsOut = true;
             robot.launcher.setFlyWheel(shootSpeed);
             //robot.wingsOut();
-            robot.launcher.flapUp();
+            robot.launcher.flapDown();
         }
         else if(gamepad2.left_bumper){
             isWingsOut = true;
@@ -154,7 +159,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
             wingsLimit++;
-            shootSpeed = 0.71;
+            shootSpeed = 0.9;
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){
