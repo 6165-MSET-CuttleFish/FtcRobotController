@@ -26,7 +26,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     int wingsLimit = 0;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18, () -> opModeIsActive() && gamepadIdle());
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18, telemetry, () -> opModeIsActive() && gamepadIdle());
         robot.init();
         pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);

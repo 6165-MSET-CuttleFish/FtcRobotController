@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.Locale;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
@@ -79,15 +80,17 @@ public class Robot {
     DcMotor.RunMode newRun;
     HardwareMap map;
     Callable<Boolean> overrides;
+    Telemetry telemetry;
 
-    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Callable<Boolean> overrides) {
+    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
-        construct(runMode, imported, robotLength, robotWidth);
+
+        construct(runMode, imported, robotLength, robotWidth, telemetry);
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, x, y, robotOrientation);
     }
-    private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth){
+    private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry){
         pidRotate = new PIDController(.067, 0.018, 0.004);
-
+        this.telemetry = telemetry;
         pwrShots[0] = new Goal(141, 67, 23.5);
         pwrShots[1] = new Goal(141, 60, 23.5);
         pwrShots[2] = new Goal(141, 53.25, 23.5);
@@ -135,9 +138,9 @@ public class Robot {
         botLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         botRight.setDirection(DcMotorSimple.Direction.FORWARD);
     }
-    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Callable<Boolean> overrides) {
+    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
-        construct(runMode, imported, robotLength, robotWidth);
+        construct(runMode, imported, robotLength, robotWidth, telemetry);
         if(position == null){
             position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, 0, 0, 0);
         }
@@ -202,6 +205,10 @@ public class Robot {
         topRight.setPower(Range.clip(ly - lx - rx, -1, 1));
         botLeft.setPower(Range.clip(ly - lx + rx, -1, 1));
         botRight.setPower(Range.clip(ly + lx - rx, -1, 1));
+        telemetry.addData("x", position.x);
+        telemetry.addData("y", position.y);
+        telemetry.addData("orientation(degrees)", position.returnOrientation());
+        telemetry.update();
     }
     public void init(){
        Thread newThread = new Thread(position);

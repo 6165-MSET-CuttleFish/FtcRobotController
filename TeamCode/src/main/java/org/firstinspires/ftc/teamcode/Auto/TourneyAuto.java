@@ -14,7 +14,7 @@ public class TourneyAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0, 18, 18, this::opModeIsActive);
+        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0, 18, 18, telemetry, this::opModeIsActive);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
