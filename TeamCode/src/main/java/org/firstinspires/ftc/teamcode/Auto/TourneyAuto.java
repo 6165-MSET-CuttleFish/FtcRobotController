@@ -89,11 +89,11 @@ public class TourneyAuto extends LinearOpMode {
         if (robot.discs == 4) {
             targetPos = Robot.C;
         } else if (robot.discs == 1) {
-            targetPos = Robot.B;
+            targetPos = Robot.newB;
         } else {
             targetPos = Robot.newA;
         }
-        if(robot.discs != 0) {
+        if(robot.discs == 4) {
             try {
                 robot.goTo(targetPos, 0.7, Math.toRadians(160), 0.4, () -> robot.wobbleArmDown());
             } catch (Exception e) {
