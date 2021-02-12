@@ -54,8 +54,8 @@ public class TourneyAuto extends LinearOpMode {
         robot.unlockIntake();
         robot.goTo(new Coordinate(Robot.position.x, Robot.position.y + 10), 0.8, 0, 0);
         try {
-            robot.goTo(Robot.pwrShotLocals[0], 0.48, Math.toRadians(0), 0.3, () -> {
-                robot.launcher.setOnlyFlyWheel(0.39);
+            robot.goTo(Robot.pwrShotLocals[0], 0.44, Math.toRadians(0), 0.3, () -> {
+                robot.launcher.setOnlyFlyWheel(0.4);
                 robot.launcher.tiltUp();
                 robot.wingsIn();
             });
@@ -68,9 +68,10 @@ public class TourneyAuto extends LinearOpMode {
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapDown();
-            robot.launcherTurnTo(pwrShot, 0.2);
+            robot.launcherTurnTo(pwrShot, 0.19);
             robot.launcher.singleRound();
         }
+        sleep(500);
         robot.launcher.setFlyWheel(0);
         try {
             robot.goTo(Robot.leftWobble, 0.48, 0, 0.5, () -> {
@@ -94,7 +95,7 @@ public class TourneyAuto extends LinearOpMode {
         }
         if(robot.discs != 0) {
             try {
-                robot.goTo(targetPos, 0.7, Math.toRadians(135), 0.4, () -> robot.wobbleArmDown());
+                robot.goTo(targetPos, 0.7, Math.toRadians(160), 0.4, () -> robot.wobbleArmDown());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -107,36 +108,36 @@ public class TourneyAuto extends LinearOpMode {
         }
         robot.release();
         sleep(200);
+        robot.wobbleArmUp();
         Coordinate homePos = new Coordinate(88, Robot.position.y);
         if(robot.discs != 0) {
             robot.goTo(homePos, 0.6, Math.toRadians(180), 0);
         }
-        robot.wobbleArmUp();
         sleep(600);
         Robot.position.stop();
     }
     private void getMoreRings() {
         robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y - 13), 0.7, Math.toRadians(-10), 0.5);
-        Coordinate rings2 = new Coordinate(Robot.position.x + 13.7, Robot.position.y);
+        Coordinate rings2 = new Coordinate(Robot.position.x + 15.2, Robot.position.y);
         robot.intake(1);
         if(robot.discs == 4) {
             robot.goTo(rings2, 0.28, 0, 0.3);
-            robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.7, Math.toRadians(-8), 0.3);
+            robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.6, Math.toRadians(-8), 0.3);
         }
         else {
-            robot.goTo(rings2, 0.7, 0, 0.3);
+            robot.goTo(rings2, 0.3, 0, 0.3);
 
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
 
         //robot.intake(0);
-        robot.goTo(new Coordinate(53, Robot.hiGoal.y), 0.7, Math.toRadians(-5), 0.4);
-        robot.launcher.setOnlyFlyWheel(0.6);
+        robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
+        robot.launcher.setOnlyFlyWheel(0.58);
         sleep(800);
         robot.launcher.tiltUp();
         robot.intake(0);
-        sleep(500);
+        sleep(600);
         if (robot.discs == 4) {
             robot.launcher.magazineShoot();
         } else {
