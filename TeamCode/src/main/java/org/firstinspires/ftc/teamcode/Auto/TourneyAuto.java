@@ -81,7 +81,7 @@ public class TourneyAuto extends LinearOpMode {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        sleep(600);
+        //sleep(600);
         robot.wobbleArmUp();
         if (robot.discs != 0) {
             getMoreRings();
@@ -130,11 +130,11 @@ public class TourneyAuto extends LinearOpMode {
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-
+        robot.launcher.setOnlyFlyWheel(0.58);
         //robot.intake(0);
         robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
-        robot.launcher.setOnlyFlyWheel(0.58);
-        sleep(800);
+
+        sleep(500);
         robot.launcher.tiltUp();
         robot.intake(0);
         sleep(600);
