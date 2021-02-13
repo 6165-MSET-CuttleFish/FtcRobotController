@@ -66,11 +66,11 @@ public class Robot {
     public static Coordinate A = new Coordinate(65, 20);
     public static Coordinate B = new Coordinate(87.25, 35);
     public static Coordinate C = new Coordinate(108, 9);
-    public static Coordinate newA = new Coordinate(79.25, 25);
-    public static Coordinate newB = new Coordinate(100.25, 52);
+    public static Coordinate newA = new Coordinate(80.25, 25);
+    public static Coordinate newB = new Coordinate(106.25, 52);
     public static Coordinate newC = new Coordinate(120, 27);
 
-    public static Coordinate leftWobble = new Coordinate(35, 54);
+    public static Coordinate leftWobble = new Coordinate(34.7, 53);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
     public Launcher launcher;
@@ -89,11 +89,11 @@ public class Robot {
         position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 20, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry){
-        pidRotate = new PIDController(.067, 0.014, 0.0044);
+        pidRotate = new PIDController(.07, 0.013, 0.004);
         this.telemetry = telemetry;
-        pwrShots[0] = new Goal(142, 70, 23.5);
+        pwrShots[0] = new Goal(142, 70.6, 23.5);
         pwrShots[1] = new Goal(144, 60, 23.5);
-        pwrShots[2] = new Goal(144, 53.25, 23.5);
+        pwrShots[2] = new Goal(144, 52.25, 23.5);
 
         pwrShotLocals[0] = new Coordinate(67, 67);
         pwrShotLocals[1] = new Coordinate(67, 60);
@@ -156,7 +156,7 @@ public class Robot {
         double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
         while(distance > 3.5 && overrides.call()) {
             distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-            if(distance < 20){
+            if(distance < 15){
                 block.run();
             }
             double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
@@ -250,6 +250,9 @@ public class Robot {
         }
     }
     public void turnOffVision(){
+        if(discs == 0){
+            leftWobble.addY(-5);
+        }
         if(tfod != null) {
             tfod.shutdown();
         }
@@ -375,7 +378,7 @@ public class Robot {
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(1.7);
+        pidRotate.setTolerance(1.4);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
