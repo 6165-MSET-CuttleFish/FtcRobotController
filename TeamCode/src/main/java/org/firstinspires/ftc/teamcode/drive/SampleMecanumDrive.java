@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.Components.StateMachine;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -213,6 +214,14 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void followTrajectory(Trajectory trajectory) {
         followTrajectoryAsync(trajectory);
         waitForIdle();
+    }
+
+    public void followTrajectory(Trajectory trajectory, StateMachine stateMachine){
+        Thread async = new Thread(stateMachine);
+        async.start();
+        followTrajectoryAsync(trajectory);
+        waitForIdle();
+        async.stop();
     }
 
     public Pose2d getLastError() {

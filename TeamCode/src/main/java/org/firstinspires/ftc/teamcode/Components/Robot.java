@@ -4,6 +4,7 @@ import android.telecom.Call;
 
 import java.lang.*;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
@@ -82,6 +84,7 @@ public class Robot {
     Callable<Boolean> overrides;
     Telemetry telemetry;
     public StateMachine stateMachine = new StateMachine();
+    public SampleMecanumDrive driveTrain;
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
@@ -226,8 +229,9 @@ public class Robot {
         if(tfod != null) {
             tfod.activate();
         }
+        driveTrain = new SampleMecanumDrive(map);
     }
-    public double height = -1;
+    public double height = 0;
     public void scan(){
         if(tfod != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
