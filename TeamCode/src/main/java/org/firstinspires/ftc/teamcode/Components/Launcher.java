@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,7 +17,7 @@ public class Launcher {
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
-    public DcMotor flywheel, flywheel1;
+    public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public static Goal position;
     private boolean isRunning = true;
@@ -28,10 +29,10 @@ public class Launcher {
     public boolean isShooting;
     public Launcher(HardwareMap map){
         controller = new PIDController(0.5, 0, 0.8);
-        flywheel = map.get(DcMotor.class, "fw");
-        flywheel1 = map.get(DcMotor.class, "fw1");
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel = map.get(DcMotorEx.class, "fw");
+        flywheel1 = map.get(DcMotorEx.class, "fw1");
+        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
@@ -45,6 +46,9 @@ public class Launcher {
     }
     public void setTargetVelocity(double targetVelocity){
         this.targetVelocity = targetVelocity;
+    }
+    private double getVelocity(){
+        return flywheel.getVelocity();
     }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
