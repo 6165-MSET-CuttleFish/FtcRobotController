@@ -81,6 +81,7 @@ public class Robot {
     HardwareMap map;
     Callable<Boolean> overrides;
     Telemetry telemetry;
+    public StateMachine stateMachine = new StateMachine();
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;

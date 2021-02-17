@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.firstinspires.ftc.teamcode.Components.Goal;
 
 public class Coordinate {
@@ -126,5 +128,8 @@ public class Coordinate {
     }
     public static Coordinate toPoint(Coordinate pt){
         return new Coordinate(pt.x, pt.y);
+    }
+    public static Coordinate toPoint(Pose2d pt){
+        return new Coordinate(pt.getX(), pt.getY());
     }
 }
