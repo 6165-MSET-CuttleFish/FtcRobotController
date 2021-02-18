@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Components.StateMachine;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 @Autonomous(name = "newAuto", group = "LinearOpMode")
 class BounceBackAuto extends LinearOpMode {
@@ -29,28 +34,18 @@ class BounceBackAuto extends LinearOpMode {
         robot.scan();
         robot.turnOffVision();
         robot.unlockIntake();
-        robot.goTo(Robot.pwrShotLocals[0], 0.8, 0, 0.4, ()->{
+        Trajectory splineToShootingPos = robot.driveTrain.trajectoryBuilder(Robot.pwrShotLocals[0].toPose2d(0))
+                .splineTo(new Vector2d(0, 0), 50)
+                .build();
+        robot.driveTrain.followTrajectory(splineToShootingPos, 5, () -> {
             robot.wingsIn();
             robot.launcher.setFlyWheel(0.4);
-            robot.launcher.flapDown();
         });
-        for(Coordinate pt : Robot.pwrShots){
-            robot.turnTo(pt, 0.23);
+        for(Coordinate powerShot: Robot.pwrShots){
+            robot.driveTrain.turn(MathFunctions.AngleWrap(Coordinate.toPoint(robot.driveTrain.getPoseEstimate()).angleTo(powerShot) - robot.driveTrain.getPoseEstimate().getHeading()));
             robot.launcher.singleRound();
         }
-        sleep(50);
-        robot.launcher.setFlyWheel(0);
-        /*
-        INSERT BOUNCEBACK CODE HERE
-         */
-        goToTargetPos();
-        robot.goTo(Robot.rightWobble, 0.5, 0, 0.5, ()->robot.grab());
-        robot.launcher.setFlyWheel(0.5);
-        robot.goTo(new Coordinate(52, Robot.hiGoal.y), 0.5, 0, 0.5, ()->robot.grab());
-        robot.launcher.shoot(3);
-        /*
-        next 3 rings here
-         */
+        sleep(200);
     }
     private void goToTargetPos(){
         if(robot.discs == 4){

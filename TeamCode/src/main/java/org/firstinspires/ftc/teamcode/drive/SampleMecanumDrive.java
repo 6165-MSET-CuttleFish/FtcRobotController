@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.Components.StateMachine;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -218,6 +219,15 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void followTrajectory(Trajectory trajectory, StateMachine stateMachine){
         Thread async = new Thread(stateMachine);
+        async.start();
+        followTrajectoryAsync(trajectory);
+        waitForIdle();
+        async.stop();
+    }
+    public void followTrajectory(Trajectory trajectory, double distanceTolerance,Runnable block){
+        StateMachine state = new StateMachine();
+        state.setState(()-> Coordinate.toPoint(getPoseEstimate()).distanceTo(Coordinate.toPoint(trajectory.end())) < distanceTolerance, block);
+        Thread async = new Thread(state);
         async.start();
         followTrajectoryAsync(trajectory);
         waitForIdle();

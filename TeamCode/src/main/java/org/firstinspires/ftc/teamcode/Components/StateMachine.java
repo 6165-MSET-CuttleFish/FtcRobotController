@@ -6,10 +6,11 @@ public class StateMachine implements Runnable{
     Callable<Boolean> trigger;
     Runnable action;
     boolean isActive;
-    public void setState(Callable<Boolean> trigger, Runnable action){
+    public StateMachine setState(Callable<Boolean> trigger, Runnable action){
         this.trigger = trigger;
         this.action = action;
         isActive = true;
+        return this;
     }
     @Override
     public void run(){

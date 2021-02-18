@@ -5,6 +5,7 @@ import android.telecom.Call;
 import java.lang.*;
 
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -257,6 +258,13 @@ public class Robot {
                 }
             }
         }
+    }
+    public void followTrajectory(Trajectory trajectory, Runnable block){
+        stateMachine.setState(()->false, block);
+        Thread stateThread = new Thread(stateMachine);
+        stateThread.start();
+        driveTrain.followTrajectory(trajectory);
+        stateThread.stop();
     }
     public void turnOffVision(){
         if(discs == 0){
