@@ -131,7 +131,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
             if(!hasShot){
-                shootSpeed = 0.88;
+                shootSpeed = 0.89;
                 hasShot = true;
             }
             if(wingsLimit >= 1){
@@ -161,7 +161,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
             wingsLimit++;
-            shootSpeed = 0.88;
+            shootSpeed = 0.89;
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){

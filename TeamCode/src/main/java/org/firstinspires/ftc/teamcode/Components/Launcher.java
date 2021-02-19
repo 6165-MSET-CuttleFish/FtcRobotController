@@ -102,7 +102,7 @@ public class Launcher {
             mag.setPosition(0.32);
             sleep(150);
             mag.setPosition(.55);
-            sleep(400);
+            sleep(450);
         }
         tiltDown();
     }

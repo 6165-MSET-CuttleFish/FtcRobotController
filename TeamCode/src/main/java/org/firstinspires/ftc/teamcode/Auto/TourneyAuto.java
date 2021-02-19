@@ -80,14 +80,14 @@ public class TourneyAuto extends LinearOpMode {
         sleep(300);
         for (Coordinate pwrShot : Robot.pwrShots) {
             robot.launcher.flapDown();
-            robot.launcherTurnTo(pwrShot, 0.22);
+            robot.launcherTurnTo(pwrShot, 0.23);
             robot.launcher.singleRound();
         }
         sleep(400);
         robot.launcher.setFlyWheel(0);
         try {
             robot.goTo(Robot.leftWobble, 0.48, 0, 0.5, () -> {
-                if(Robot.position.distanceTo(Robot.leftWobble) < 5.5)
+                if(Robot.position.distanceTo(Robot.leftWobble) < 7)
                     robot.grab();
             });
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class TourneyAuto extends LinearOpMode {
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-        robot.launcher.setOnlyFlyWheel(0.52);
+        robot.launcher.setOnlyFlyWheel(0.49);
         robot.intake(0);
         robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
         robot.intake(1);
