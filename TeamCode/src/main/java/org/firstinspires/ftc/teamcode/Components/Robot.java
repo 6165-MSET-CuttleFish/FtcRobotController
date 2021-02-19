@@ -4,6 +4,8 @@ import android.telecom.Call;
 
 import java.lang.*;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -28,6 +30,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
@@ -81,12 +84,14 @@ public class Robot {
     HardwareMap map;
     Callable<Boolean> overrides;
     Telemetry telemetry;
+    public StateMachine stateMachine = new StateMachine();
+    public SampleMecanumDrive driveTrain;
 
     public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
 
         construct(runMode, imported, robotLength, robotWidth, telemetry);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 20, x, y, robotOrientation);
+        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry){
         pidRotate = new PIDController(.07, 0.013, 0.004);
@@ -142,7 +147,7 @@ public class Robot {
         this.overrides = overrides;
         construct(runMode, imported, robotLength, robotWidth, telemetry);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 75, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, 0, 0, 0);
         }
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
@@ -152,31 +157,35 @@ public class Robot {
             e.printStackTrace();
         }
     }
-    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) throws Exception {
-        double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-        while(distance > 3.5 && overrides.call()) {
-            distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-            if(distance < 15){
-                block.run();
+    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) {
+        try {
+            double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
+            while (distance > 3.5 && overrides.call()) {
+                distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+                if (distance < 15) {
+                    block.run();
+                }
+                double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+
+                double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+                //System.out.println("Rel " + relAngleToPoint);
+                double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+                double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+                double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+                double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+
+                double movement_x = movementXPower * power;
+                double movement_y = movementYPower * power;
+                double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
+                double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
+                double rx = turnSpeed * Range.clip((AngleWrap(preferredAngle - position.radians())) / Math.toRadians(20), -1, 1);
+                //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+                setMovement(movement_x, movement_y, -rx);
             }
-            double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
-
-            double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
-            //System.out.println("Rel " + relAngleToPoint);
-            double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
-            double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
-            double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-            double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-
-            double movement_x = movementXPower * power;
-            double movement_y = movementYPower * power;
-            double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-            double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
-            double rx = turnSpeed*Range.clip((AngleWrap(preferredAngle - position.radians()))/Math.toRadians(20), -1, 1);
-            //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-            setMovement(movement_x, movement_y, -rx);
+            setMovement(0, 0, 0);
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        setMovement(0, 0, 0);
     }
     public void wingsOut() {
         leftIntakeHolder.setPosition(0.96);
@@ -221,8 +230,9 @@ public class Robot {
         if(tfod != null) {
             tfod.activate();
         }
+        driveTrain = new SampleMecanumDrive(map);
     }
-    public double height = -1;
+    public double height = 0;
     public void scan(){
         if(tfod != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -248,6 +258,13 @@ public class Robot {
                 }
             }
         }
+    }
+    public void followTrajectory(Trajectory trajectory, Runnable block){
+        stateMachine.setState(()->false, block);
+        Thread stateThread = new Thread(stateMachine);
+        stateThread.start();
+        driveTrain.followTrajectory(trajectory);
+        stateThread.stop();
     }
     public void turnOffVision(){
         if(discs == 0){
