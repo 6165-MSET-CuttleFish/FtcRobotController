@@ -106,7 +106,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         dashboard = FtcDashboard.getInstance();
-        dashboard.setTelemetryTransmissionInterval(25);
+        if(dashboard != null) {
+            dashboard.setTelemetryTransmissionInterval(25);
+        }
 
         clock = NanoClock.system();
 

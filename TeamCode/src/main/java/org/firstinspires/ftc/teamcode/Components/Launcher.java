@@ -101,21 +101,19 @@ public class Launcher {
 
     public void magazineShoot(){
         tiltUp();
-        sleep(600);
-        for(int i = 0; i < 3; i++){
-            mag.setPosition(0.32);
-            sleep(150);
-            mag.setPosition(.55);
-            sleep(450);
+        //sleep(600);
+        for(int i = 0; i < 4; i++){
+            singleRound();
+            sleep(100);
         }
         tiltDown();
     }
     public void singleRound(){
         tiltUp();
         mag.setPosition(0.32);
-        sleep(200);
+        sleep(120);
         //this is sleep value to change
-        mag.setPosition(0.55);
+        mag.setPosition(0.48);
     }
     public void shoot(double rounds){
         for(int i = 0; i < rounds; i++){

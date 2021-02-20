@@ -326,12 +326,12 @@ public class Robot {
         intakeL.setPower(-intakeSpeed);
         intakeR.setPower(-intakeSpeed);
         if(intakeSpeed>0){
-            in1.setPosition(1);
-            in2.setPosition(0);
-        }
-        else if(intakeSpeed<0){
             in1.setPosition(0);
             in2.setPosition(1);
+        }
+        else if(intakeSpeed<0){
+            in1.setPosition(1);
+            in2.setPosition(0);
         }
         else{
             in1.setPosition(0.5);
