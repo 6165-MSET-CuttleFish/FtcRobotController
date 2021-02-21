@@ -19,6 +19,7 @@ public class Launcher {
     static final double g = -9.08711677875;
     public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
+    public Servo rightIntakeHolder, leftIntakeHolder;
     public static Goal position;
     private boolean isRunning = true;
     private Coordinate robotPosition;
@@ -36,6 +37,8 @@ public class Launcher {
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
+        leftIntakeHolder = map.get(Servo.class,"wallL");
+        rightIntakeHolder = map.get(Servo.class,"wallR");
         tiltDown();
     }
     public void stop(){
@@ -52,6 +55,28 @@ public class Launcher {
     }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
+    }
+    public void wingsOut() {
+        leftIntakeHolder.setPosition(0.96);
+        rightIntakeHolder.setPosition(0.18);
+    }
+    public void wingsIn() {
+        leftIntakeHolder.setPosition(.3);
+        rightIntakeHolder.setPosition(.84);
+    }
+
+    public void wingsMid() {
+        leftIntakeHolder.setPosition(.7);
+        rightIntakeHolder.setPosition(0.84);
+    }
+
+    public void leftOut() {
+        leftIntakeHolder.setPosition(.96);
+        rightIntakeHolder.setPosition(0.84);
+    }
+
+    public void unlockIntake(){
+        rightIntakeHolder.setPosition(0.4);
     }
     public static void findAngle(double d, targets t, Servo flap){
         double goalHeight = 0;
@@ -110,8 +135,9 @@ public class Launcher {
     }
     public void singleRound(){
         tiltUp();
-        mag.setPosition(0.32);
-        sleep(120);
+        mag.setPosition(0.35);
+        sleep(100);
+        leftOut();
         //this is sleep value to change
         mag.setPosition(0.48);
     }
