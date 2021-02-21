@@ -214,10 +214,10 @@ public class Robot {
         topRight.setPower(Range.clip(ly - lx - rx, -1, 1));
         botLeft.setPower(Range.clip(ly - lx + rx, -1, 1));
         botRight.setPower(Range.clip(ly + lx - rx, -1, 1));
-        telemetry.addData("x", position.x);
-        telemetry.addData("y", position.y);
-        telemetry.addData("orientation(degrees)", position.returnOrientation());
-        telemetry.update();
+//        telemetry.addData("x", position.x);
+//        telemetry.addData("y", position.y);
+//        telemetry.addData("orientation(degrees)", position.returnOrientation());
+//        telemetry.update();
     }
     public void init(){
        Thread newThread = new Thread(position);

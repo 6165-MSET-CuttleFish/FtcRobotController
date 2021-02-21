@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.PIDController;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
@@ -53,6 +54,8 @@ public class TeleOp extends LinearOpMode implements Runnable{
                     sleep(500);
                 }
             }
+            telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
         }
         driveTrain.stop();
         Robot.position.stop();
@@ -67,11 +70,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
             if(gamepad1.y) {
                 robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
             }
-            telemetry.addData("X Position", robot.position.getX());
-            telemetry.addData("Y Position", robot.position.getY());
-            telemetry.addData("Gamepad Idle", gamepadIdle());
-            telemetry.addData("Orientation (Degrees)", robot.position.returnOrientation());
-            telemetry.update();
         }
     }
     private void setMultiplier(){

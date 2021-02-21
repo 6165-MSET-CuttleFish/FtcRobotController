@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
@@ -14,6 +16,7 @@ import java.util.concurrent.Callable;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 public class Launcher {
+    public ColorRangeSensor colorRangeSensor;
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
@@ -29,6 +32,7 @@ public class Launcher {
     PIDController controller;
     public boolean isShooting;
     public Launcher(HardwareMap map){
+        colorRangeSensor = map.get(ColorRangeSensor.class, "range");
         controller = new PIDController(0.5, 0, 0.8);
         flywheel = map.get(DcMotorEx.class, "fw");
         flywheel1 = map.get(DcMotorEx.class, "fw1");
@@ -126,7 +130,6 @@ public class Launcher {
 
     public void magazineShoot(){
         tiltUp();
-        //sleep(600);
         for(int i = 0; i < 4; i++){
             singleRound();
             sleep(100);
@@ -137,7 +140,9 @@ public class Launcher {
         tiltUp();
         mag.setPosition(0.35);
         sleep(100);
-        leftOut();
+        if(colorRangeSensor.getDistance(DistanceUnit.INCH) > 2){
+            leftOut();
+        }
         //this is sleep value to change
         mag.setPosition(0.48);
     }
