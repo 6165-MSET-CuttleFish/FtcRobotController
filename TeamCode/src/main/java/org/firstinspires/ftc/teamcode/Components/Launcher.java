@@ -70,8 +70,8 @@ public class Launcher {
     }
 
     public void wingsMid() {
-        leftIntakeHolder.setPosition(.7);
-        rightIntakeHolder.setPosition(0.84);
+        leftIntakeHolder.setPosition(.85);
+        rightIntakeHolder.setPosition(0.3);
     }
 
     public void leftOut() {
@@ -130,19 +130,19 @@ public class Launcher {
 
     public void magazineShoot(){
         tiltUp();
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 3; i++){
             singleRound();
-            sleep(100);
+            sleep(110);
+            if(i == 1){
+                sleep(30);
+            }
         }
-        tiltDown();
     }
     public void singleRound(){
         tiltUp();
-        mag.setPosition(0.35);
-        sleep(100);
-        if(colorRangeSensor.getDistance(DistanceUnit.INCH) > 2){
-            leftOut();
-        }
+        mag.setPosition(0.34);
+        sleep(110);
+            wingsOut();
         //this is sleep value to change
         mag.setPosition(0.48);
     }

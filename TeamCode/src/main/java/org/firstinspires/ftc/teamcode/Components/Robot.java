@@ -197,8 +197,8 @@ public class Robot {
     }
 
     public void wingsMid() {
-        leftIntakeHolder.setPosition(.7);
-        rightIntakeHolder.setPosition(0.84);
+        leftIntakeHolder.setPosition(.8);
+        rightIntakeHolder.setPosition(0.38);
     }
 
     public void leftOut() {
