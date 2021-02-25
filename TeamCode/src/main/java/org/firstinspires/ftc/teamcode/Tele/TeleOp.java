@@ -48,13 +48,16 @@ public class TeleOp extends LinearOpMode implements Runnable{
                     isWingsOut = true;
                     sleep(500);
                 } else {
-                    robot.wingsMid();
+                    robot.launcher.wingsVert();
                     wingsLimit++;
                     isWingsOut = false;
                     sleep(500);
                 }
             }
             telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
+            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
+            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
             telemetry.update();
         }
         driveTrain.stop();
@@ -139,7 +142,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 robot.wingsMid();
             }
             isWingsOut = true;
-            robot.launcher.setFlyWheel(shootSpeed);
+            robot.launcher.setFlyWheel(0.8);
             //robot.wingsOut();
         }
         else if(gamepad2.left_bumper){
@@ -153,7 +156,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             hasShot = false;
             robot.launcher.setFlyWheel(0); //change to make constant speed
             if(!isWingsOut)
-                robot.wingsMid();
+                robot.launcher.wingsVert();
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){

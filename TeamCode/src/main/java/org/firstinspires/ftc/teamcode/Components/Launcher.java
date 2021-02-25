@@ -73,7 +73,10 @@ public class Launcher {
         leftIntakeHolder.setPosition(.85);
         rightIntakeHolder.setPosition(0.3);
     }
-
+    public void wingsVert(){
+        leftIntakeHolder.setPosition(0.6);
+        rightIntakeHolder.setPosition(0.6);
+    }
     public void leftOut() {
         leftIntakeHolder.setPosition(.96);
         rightIntakeHolder.setPosition(0.84);

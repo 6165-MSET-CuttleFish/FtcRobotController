@@ -13,7 +13,7 @@ import java.io.File;
  */
 public class OdometryGlobalCoordinatePosition extends Coordinate implements Runnable{
     //Odometry wheels
-    private DcMotor verticalEncoderLeft, verticalEncoderRight, horizontalEncoder;
+    public DcMotor verticalEncoderLeft, verticalEncoderRight, horizontalEncoder;
 
     //Thead run condition
     private boolean isRunning = true;
@@ -58,8 +58,8 @@ public class OdometryGlobalCoordinatePosition extends Coordinate implements Runn
         robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
         this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
         this.COUNTS_PER_INCH = COUNTS_PER_INCH;
-        reverseLeftEncoder();
-        reverseRightEncoder();
+//        reverseLeftEncoder();
+//        reverseRightEncoder();
         //reverseNormalEncoder();
     }
 

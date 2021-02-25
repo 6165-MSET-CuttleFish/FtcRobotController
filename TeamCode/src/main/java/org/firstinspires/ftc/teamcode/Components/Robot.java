@@ -147,8 +147,11 @@ public class Robot {
         this.overrides = overrides;
         construct(runMode, imported, robotLength, robotWidth, telemetry);
         if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, 0, 0, 0);
+            position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
         }
+        //horiozontal = intakeR; reversed
+        //left = intakeL; reversed
+        //right ; reversed;
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
         try {
@@ -188,26 +191,22 @@ public class Robot {
         }
     }
     public void wingsOut() {
-        leftIntakeHolder.setPosition(0.96);
-        rightIntakeHolder.setPosition(0.18);
+        launcher.wingsOut();
     }
     public void wingsIn() {
-        leftIntakeHolder.setPosition(.3);
-        rightIntakeHolder.setPosition(.84);
+        launcher.wingsIn();
     }
 
     public void wingsMid() {
-        leftIntakeHolder.setPosition(.8);
-        rightIntakeHolder.setPosition(0.38);
+        launcher.wingsMid();
     }
 
     public void leftOut() {
-        leftIntakeHolder.setPosition(.96);
-        rightIntakeHolder.setPosition(0.84);
+        launcher.leftOut();
     }
 
     public void unlockIntake(){
-        rightIntakeHolder.setPosition(0.4);
+        launcher.unlockIntake();
     }
     public void setMovement(double lx, double ly, double rx){
         topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
