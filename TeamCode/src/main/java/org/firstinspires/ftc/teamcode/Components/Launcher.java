@@ -31,6 +31,7 @@ public class Launcher {
     private double targetVelocity = 0;
     PIDController controller;
     public boolean isShooting;
+    public double flyWheelSpeed;
     public Launcher(HardwareMap map){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
         controller = new PIDController(0.5, 0, 0.8);
@@ -111,6 +112,7 @@ public class Launcher {
         return -0.1*theta*theta + 3*theta;
     }
     public void setFlyWheel(double pwr){
+        flyWheelSpeed = pwr;
         if(pwr < 0.3) {
             tiltDown();
         }
@@ -121,6 +123,7 @@ public class Launcher {
         flywheel1.setPower(pwr);
     }
     public void setOnlyFlyWheel(double pwr){
+        flyWheelSpeed = pwr;
         flywheel.setPower(pwr);
         flywheel1.setPower(pwr);
     }
@@ -135,9 +138,10 @@ public class Launcher {
         tiltUp();
         for(int i = 0; i < 3; i++){
             singleRound();
-            sleep(110);
+            setOnlyFlyWheel(flyWheelSpeed + 0.08);
+            sleep(120);
             if(i == 1){
-                sleep(30);
+                sleep(50);
             }
         }
     }

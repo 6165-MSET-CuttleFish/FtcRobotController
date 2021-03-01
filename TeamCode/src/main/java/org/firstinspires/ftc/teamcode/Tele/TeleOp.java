@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
+import java.io.DataInput;
+
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group = "LinearOpMode")
@@ -22,7 +24,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     boolean isOnAuto = false;
     PIDController pidRotate;
     boolean isWingsOut = false;
-    double shootSpeed = 0.85;
+    double shootSpeed = 0.56;
     boolean hasShot = false;
     int wingsLimit = 0;
     @Override
@@ -133,7 +135,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         if(gamepad2.left_trigger >= 0.1){
             robot.launcher.flapDown();
             if(!hasShot){
-                shootSpeed = 1;
+                shootSpeed = 0.60;
                 hasShot = true;
             }
             if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) >= 2.3){
@@ -147,7 +149,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.left_bumper){
             isWingsOut = true;
-            robot.launcher.setFlyWheel(0.42);
+            robot.launcher.setFlyWheel(0.45);
             robot.wingsOut();
             robot.launcher.flapDown();
         }
@@ -155,9 +157,13 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wingsLimit = 0;
             hasShot = false;
             robot.launcher.tiltDown();
-            robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y)); //change to make constant speed
-            if(!isWingsOut)
+            if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) <= 4){
+                robot.launcher.setOnlyFlyWheel(0.55); //change to make constant speed
+            } else
+                robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y)); //change to make constant speed
+            if(!isWingsOut) {
                 robot.launcher.wingsOut();
+            }
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
