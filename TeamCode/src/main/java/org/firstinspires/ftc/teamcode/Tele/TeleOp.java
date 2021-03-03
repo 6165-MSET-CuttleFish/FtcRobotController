@@ -60,6 +60,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
 //            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
 //            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
 //            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
+            telemetry.addData("Velocity", robot.launcher.getVelocity());
             telemetry.update();
         }
         driveTrain.stop();

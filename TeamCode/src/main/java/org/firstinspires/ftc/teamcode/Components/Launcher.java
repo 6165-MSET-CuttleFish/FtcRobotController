@@ -56,7 +56,7 @@ public class Launcher {
     public void setTargetVelocity(double targetVelocity){
         this.targetVelocity = targetVelocity;
     }
-    private double getVelocity(){
+    public double getVelocity(){
         return flywheel.getVelocity();
     }
     public void aimAt(Goal g, Coordinate p){
