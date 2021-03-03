@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Components.Dice;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
@@ -14,9 +15,9 @@ public class TourneyAuto extends LinearOpMode {
     Robot robot;
     Coordinate targetPos;
     double powerReturn(){
-        if(robot.discs == 0){
+        if(robot.dice == Dice.one){
             return 0.35;
-        } else if(robot.discs == 1){
+        } else if(robot.dice ==Dice.two){
             return 0.3;
         } else {
             return 0.44;
@@ -24,7 +25,7 @@ public class TourneyAuto extends LinearOpMode {
     }
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 9, 25, 0, 18, 18, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 9, 25, 0, telemetry, this::opModeIsActive);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
@@ -33,30 +34,30 @@ public class TourneyAuto extends LinearOpMode {
         while(!opModeIsActive()){
             robot.scan();
             telemetry.addData("Stack Height", robot.height);
-            telemetry.addData("Discs", robot.discs);
+            telemetry.addData("dice", robot.dice);
             telemetry.update();
         }
         waitForStart();
         robot.scan();
         robot.turnOffVision();
         telemetry.addData("Stack Height", robot.height);
-        telemetry.addData("Discs", robot.discs);
+        telemetry.addData("dice", robot.dice);
         telemetry.update();
-       // if(robot.discs != 0) {
+       // if(robot.dice != 0) {
             robot.goTo(new Coordinate(Robot.position.x + 13, Robot.position.y - 8), 0.8, 0, 0);
-            if(robot.discs != 0)
+            if(robot.dice != Dice.one)
             robot.goTo(new Coordinate(Robot.position.x + 30, Robot.position.y - 2), 0.8, 0, 0);
         //}
-        if (robot.discs == 4) {
+        if (robot.dice ==Dice.three) {
             targetPos = Robot.newC;
-        } else if (robot.discs == 1) {
+        } else if (robot.dice ==Dice.two) {
             targetPos = Robot.newB;
         } else {
             targetPos = Robot.newA;
         }
 
         try {
-            if(robot.discs == 4)
+            if(robot.dice ==Dice.three)
             robot.goTo(targetPos, 0.8, Math.toRadians(90), 0.4, () -> robot.wobbleArmDown());
             else robot.goTo(targetPos, 0.6, Math.toRadians(90), 0.4, () -> robot.wobbleArmDown());
         } catch (Exception e) {
@@ -97,17 +98,17 @@ public class TourneyAuto extends LinearOpMode {
         }
         //sleep(600);
         robot.wobbleArmUp();
-        if (robot.discs != 0) {
+        if (robot.dice != Dice.one) {
             getMoreRings();
         }
-        if (robot.discs == 4) {
+        if (robot.dice ==Dice.three) {
             targetPos = Robot.C;
-        } else if (robot.discs == 1) {
+        } else if (robot.dice ==Dice.two) {
             targetPos = Robot.newB;
         } else {
             targetPos = Robot.newA;
         }
-        if(robot.discs == 4) {
+        if(robot.dice ==Dice.three) {
             try {
                 robot.goTo(targetPos, 0.7, Math.toRadians(160), 0.4, () -> robot.wobbleArmDown());
             } catch (Exception e) {
@@ -124,7 +125,7 @@ public class TourneyAuto extends LinearOpMode {
         sleep(200);
         robot.wobbleArmUp();
         Coordinate homePos = new Coordinate(88, Robot.position.y);
-        if(robot.discs != 0) {
+        if(robot.dice != Dice.one) {
             robot.goTo(homePos, 0.6, Math.toRadians(180), 0);
         } else {
             robot.goTo(new Coordinate(80, 48), 0.5, 0, 0.5);
@@ -136,7 +137,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y - 13), 0.7, Math.toRadians(-10), 0.5);
         Coordinate rings2 = new Coordinate(Robot.position.x + 15.2, Robot.position.y);
         robot.intake(1);
-        if(robot.discs == 4) {
+        if(robot.dice == Dice.three) {
             robot.goTo(rings2, 0.28, 0, 0.3);
             robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.6, Math.toRadians(-8), 0.3);
         }
@@ -154,7 +155,7 @@ public class TourneyAuto extends LinearOpMode {
         robot.launcher.tiltUp();
         robot.intake(0);
         sleep(400);
-        if (robot.discs == 4) {
+        if (robot.dice == Dice.three) {
             robot.launcher.magazineShoot();
         } else {
             robot.launcher.singleRound();

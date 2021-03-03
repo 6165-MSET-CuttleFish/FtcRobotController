@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -32,7 +33,7 @@ public class Launcher {
     PIDController controller;
     public boolean isShooting;
     public double flyWheelSpeed;
-    public Launcher(HardwareMap map){
+    public Launcher(HardwareMap map, Pose2d pose2d){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
         controller = new PIDController(0.5, 0, 0.8);
         flywheel = map.get(DcMotorEx.class, "fw");

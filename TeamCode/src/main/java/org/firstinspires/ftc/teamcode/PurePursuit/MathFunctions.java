@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import java.util.ArrayList;
 
 import static java.lang.Math.pow;
@@ -62,5 +64,8 @@ public class MathFunctions {
     }
     public static double inchesToMeters(double inches){
         return 0.0254*inches;
+    }
+    public static Pose2d netPos(Pose2d a, Pose2d b){
+        return new Pose2d(a.getX() + b.getX(), a.getY() + b.getY(), AngleWrap(a.getHeading() + b.getHeading()));
     }
 }

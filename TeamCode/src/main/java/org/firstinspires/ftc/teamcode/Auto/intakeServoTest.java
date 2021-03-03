@@ -17,7 +17,7 @@ public class intakeServoTest extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 14, 24, 0,18, 18, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 14, 24, 0, telemetry, this::opModeIsActive);
         robot.init();
         waitForStart();
         robot.unlockIntake();

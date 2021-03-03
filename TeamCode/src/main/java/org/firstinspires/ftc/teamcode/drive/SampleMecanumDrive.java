@@ -29,14 +29,13 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.Components.StateMachine;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -173,7 +172,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
-
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
     }
@@ -184,6 +182,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose, double startHeading) {
         return new TrajectoryBuilder(startPose, startHeading, velConstraint, accelConstraint);
+    }
+
+    public TrajectoryBuilder trajectoryBuilder() {
+        return new TrajectoryBuilder(getPoseEstimate(), velConstraint, accelConstraint);
     }
 
     public void turnAsync(double angle) {
@@ -216,22 +218,17 @@ public class SampleMecanumDrive extends MecanumDrive {
         followTrajectoryAsync(trajectory);
         waitForIdle();
     }
-
-    public void followTrajectory(Trajectory trajectory, StateMachine stateMachine){
-        Thread async = new Thread(stateMachine);
-        async.start();
+    public void followTrajectory(Trajectory trajectory, double distanceTolerance, Runnable block){
         followTrajectoryAsync(trajectory);
-        waitForIdle();
-        async.stop();
+        waitForIdle(()->{
+            if(Coordinate.toPoint(getPoseEstimate()).distanceTo(Coordinate.toPoint(trajectory.end())) < distanceTolerance)
+            block.run();
+        });
     }
-    public void followTrajectory(Trajectory trajectory, double distanceTolerance,Runnable block){
-        StateMachine state = new StateMachine();
-        state.setState(()-> Coordinate.toPoint(getPoseEstimate()).distanceTo(Coordinate.toPoint(trajectory.end())) < distanceTolerance, block);
-        Thread async = new Thread(state);
-        async.start();
+
+    public void followTrajectory(Trajectory trajectory, Runnable block){
         followTrajectoryAsync(trajectory);
-        waitForIdle();
-        async.stop();
+        waitForIdle(block);
     }
 
     public Pose2d getLastError() {
@@ -334,7 +331,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public void waitForIdle() {
+        waitForIdle(()->{});
+    }
+    private void waitForIdle(Runnable block) {
         while (!Thread.currentThread().isInterrupted() && isBusy()) {
+            block.run();
             update();
         }
     }

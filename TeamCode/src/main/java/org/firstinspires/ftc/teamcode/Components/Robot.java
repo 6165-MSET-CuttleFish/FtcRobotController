@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import android.telecom.Call;
-
 import java.lang.*;
 
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -39,19 +39,17 @@ public class Robot {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
-    private double robotLength;
-    private double robotWidth;
-    public int discs;
+    public Dice dice;
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
     public static OdometryGlobalCoordinatePosition position;
 
-    public DcMotor topLeft;
-    public DcMotor topRight;
-    public DcMotor botLeft;
-    public DcMotor botRight;
+//    public DcMotor topLeft;
+//    public DcMotor topRight;
+//    public DcMotor botLeft;
+//    public DcMotor botRight;
 
     public DcMotor intakeR, intakeL;
 
@@ -64,14 +62,14 @@ public class Robot {
     public static Goal loGoal = new Goal(141, 37.5, 17);
     public static Goal[] pwrShots = new Goal[3];
 
-    public static Coordinate[] pwrShotLocals = new Coordinate[3];
+    public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
-    public static Coordinate A = new Coordinate(65, 20);
-    public static Coordinate B = new Coordinate(87.25, 35);
-    public static Coordinate C = new Coordinate(108, 9);
-    public static Coordinate newA = new Coordinate(80.25, 25);
-    public static Coordinate newB = new Coordinate(106.25, 52);
-    public static Coordinate newC = new Coordinate(120, 27);
+    public static Pose2d A = new Pose2d(65, 20);
+    public static Pose2d B = new Pose2d(87.25, 35);
+    public static Pose2d C = new Pose2d(108, 9);
+    public static Pose2d newA = new Pose2d(80.25, 25);
+    public static Pose2d newB = new Pose2d(106.25, 52);
+    public static Pose2d newC = new Pose2d(120, 27);
 
     public static Coordinate leftWobble = new Coordinate(34.7, 53);
     public static Coordinate rightWobble = new Coordinate(14, 24);
@@ -80,37 +78,34 @@ public class Robot {
     public PIDController pidRotate;
     double globalAngle, lastAngles;
 
-    DcMotor.RunMode newRun;
     HardwareMap map;
     Callable<Boolean> overrides;
     Telemetry telemetry;
-    public StateMachine stateMachine = new StateMachine();
-    public SampleMecanumDrive driveTrain;
+    public static SampleMecanumDrive driveTrain;
 
-    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double x, double y, double robotOrientation, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
+    public Robot(HardwareMap imported, double x, double y, double robotOrientation, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
-
-        construct(runMode, imported, robotLength, robotWidth, telemetry);
-        position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
+        driveTrain = new SampleMecanumDrive(imported);
+        driveTrain.setPoseEstimate(new Pose2d(x, y, robotOrientation));
+        construct(imported, telemetry);
+       // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
-    private void construct(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry){
+    private void construct(HardwareMap imported, Telemetry telemetry){
         pidRotate = new PIDController(.07, 0.013, 0.004);
         this.telemetry = telemetry;
         pwrShots[0] = new Goal(142, 70.5, 23.5);
         pwrShots[1] = new Goal(142, 59, 23.5);
         pwrShots[2] = new Goal(142, 53.25, 23.5);
 
-        pwrShotLocals[0] = new Coordinate(67, 67);
-        pwrShotLocals[1] = new Coordinate(67, 60);
-        pwrShotLocals[2] = new Coordinate(67, 53.25);
-        this.robotWidth = robotWidth;
-        this.robotLength = robotLength;
+        pwrShotLocals[0] = new Vector2d(67, 67);
+        pwrShotLocals[1] = new Vector2d(67, 60);
+        pwrShotLocals[2] = new Vector2d(67, 53.25);
         map = imported;
-        newRun = runMode;
-        topLeft = map.dcMotor.get("fl");
-        topRight = map.dcMotor.get("fr");
-        botLeft = map.dcMotor.get("bl");
-        botRight = map.dcMotor.get("br");
+//        newRun = runMode;
+//        topLeft = map.dcMotor.get("fl");
+//        topRight = map.dcMotor.get("fr");
+//        botLeft = map.dcMotor.get("bl");
+//        botRight = map.dcMotor.get("br");
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.get(Servo.class, "in1");
@@ -125,40 +120,33 @@ public class Robot {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        launcher = new Launcher(map);
+        launcher = new Launcher(map, driveTrain.getPoseEstimate());
 
-        topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        botLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        botRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        topLeft.setMode(newRun);
-        topRight.setMode(newRun);
-        botLeft.setMode(newRun);
-        botRight.setMode(newRun);
-
-
-        topLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        topRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        botLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        botRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//        topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        botLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        botRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        topLeft.setMode(newRun);
+//        topRight.setMode(newRun);
+//        botLeft.setMode(newRun);
+//        botRight.setMode(newRun);
+//
+//
+//        topLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        topRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//        botLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        botRight.setDirection(DcMotorSimple.Direction.FORWARD);
     }
-    public Robot(DcMotor.RunMode runMode, HardwareMap imported, double robotLength, double robotWidth, Telemetry telemetry, Callable<Boolean> overrides) {
+    public Robot(HardwareMap imported, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
-        construct(runMode, imported, robotLength, robotWidth, telemetry);
+        construct(imported, telemetry);
         if(position == null){
             position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
         }
-        //horiozontal = intakeR; reversed
-        //left = intakeL; reversed
-        //right ; reversed;
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
-        try {
-            goTo(pt, power, preferredAngle, turnSpeed, () -> {});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        goTo(pt, power, preferredAngle, turnSpeed, () -> {});
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) {
         try {
@@ -190,6 +178,30 @@ public class Robot {
             e.printStackTrace();
         }
     }
+    public void knockPowerShots(){
+        Trajectory trajectory = driveTrain.trajectoryBuilder()
+                .splineTo(pwrShotLocals[0], 0)
+                .build();
+        driveTrain.followTrajectory(trajectory);
+        launcher.singleRound();
+        for(int i = 1; i < 3; i++){
+            Trajectory newTraj = driveTrain.trajectoryBuilder()
+                    .strafeTo(pwrShotLocals[i])
+                    .build();
+            driveTrain.followTrajectory(newTraj);
+            launcher.singleRound();
+        }
+    }
+    public Trajectory dropZone(){
+        switch(dice){
+            case one: return driveTrain.trajectoryBuilder().splineToSplineHeading(A, Math.toRadians(-180)).build();
+            case two: return driveTrain.trajectoryBuilder().splineToSplineHeading(B, Math.toRadians(-180)).build();
+            default: return driveTrain.trajectoryBuilder().splineToSplineHeading(C, Math.toRadians(-180)).build();
+        }
+    }
+    public static Trajectory shootingPath = driveTrain.trajectoryBuilder()
+            .splineToSplineHeading(new Pose2d(57, hiGoal.y),0)
+            .build();
     public void wingsOut() {
         launcher.wingsOut();
     }
@@ -209,10 +221,10 @@ public class Robot {
         launcher.unlockIntake();
     }
     public void setMovement(double lx, double ly, double rx){
-        topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
-        topRight.setPower(Range.clip(ly - lx - rx, -1, 1));
-        botLeft.setPower(Range.clip(ly - lx + rx, -1, 1));
-        botRight.setPower(Range.clip(ly + lx - rx, -1, 1));
+//        topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
+//        topRight.setPower(Range.clip(ly - lx - rx, -1, 1));
+//        botLeft.setPower(Range.clip(ly - lx + rx, -1, 1));
+//        botRight.setPower(Range.clip(ly + lx - rx, -1, 1));
 //        telemetry.addData("x", position.x);
 //        telemetry.addData("y", position.y);
 //        telemetry.addData("orientation(degrees)", position.returnOrientation());
@@ -246,11 +258,11 @@ public class Robot {
 //                        discs = 0;
 //                    }
                         if (recognition.getHeight() >= 90) {
-                            discs = 4;
+                            dice = Dice.one;
                         } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
-                            discs = 1;
+                            dice = Dice.two;
                         } else {
-                            discs = 0;
+                            dice = Dice.three;
                         }
                         height = recognition.getHeight();
                     }
@@ -258,15 +270,8 @@ public class Robot {
             }
         }
     }
-    public void followTrajectory(Trajectory trajectory, Runnable block){
-        stateMachine.setState(()->false, block);
-        Thread stateThread = new Thread(stateMachine);
-        stateThread.start();
-        driveTrain.followTrajectory(trajectory);
-        stateThread.stop();
-    }
     public void turnOffVision(){
-        if(discs == 0){
+        if(dice == Dice.one){
             leftWobble.addY(-5);
         }
         if(tfod != null) {

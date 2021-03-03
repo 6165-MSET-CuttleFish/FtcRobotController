@@ -29,7 +29,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     int wingsLimit = 0;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap, 18, 18, telemetry, () -> opModeIsActive() && gamepadIdle());
+        robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
         robot.init();
         pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);
@@ -57,9 +57,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 }
             }
             telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
-            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
-            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
+//            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
+//            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
+//            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
             telemetry.update();
         }
         driveTrain.stop();

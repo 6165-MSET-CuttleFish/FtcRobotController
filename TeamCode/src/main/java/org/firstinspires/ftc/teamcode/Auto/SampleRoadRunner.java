@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 public class SampleRoadRunner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(DcMotor.RunMode.RUN_WITHOUT_ENCODER, hardwareMap,0, 0,telemetry, this::opModeIsActive);
+        Robot robot = new Robot( hardwareMap, 0, 0, 0, telemetry, this::opModeIsActive);
         robot.autoInit();
         SampleMecanumDrive driveTrain = new SampleMecanumDrive(hardwareMap);
 
@@ -46,7 +46,6 @@ public class SampleRoadRunner extends LinearOpMode {
         Trajectory splineToPosition = driveTrain.trajectoryBuilder(new Pose2d(0, 0, Math.toRadians(90)))
                 .splineTo(new Vector2d(0, 0), 50)
                 .build();
-        robot.stateMachine.setState(() -> Coordinate.toPoint(driveTrain.getPoseEstimate()).distanceTo(Robot.B) <= 20, robot::wobbleArmDown);
         driveTrain.followTrajectory(splineToPosition);
     }
 }
