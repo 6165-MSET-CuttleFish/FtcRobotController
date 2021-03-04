@@ -81,16 +81,16 @@ public class Robot {
     HardwareMap map;
     Callable<Boolean> overrides;
     Telemetry telemetry;
-    public static SampleMecanumDrive driveTrain;
+    public SampleMecanumDrive driveTrain;
 
     public Robot(HardwareMap imported, double x, double y, double robotOrientation, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
-        driveTrain = new SampleMecanumDrive(imported);
-        driveTrain.setPoseEstimate(new Pose2d(x, y, robotOrientation));
         construct(imported, telemetry);
+        driveTrain.setPoseEstimate(new Pose2d(x, y, robotOrientation));
        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     private void construct(HardwareMap imported, Telemetry telemetry){
+        driveTrain = new SampleMecanumDrive(imported);
         pidRotate = new PIDController(.07, 0.013, 0.004);
         this.telemetry = telemetry;
         pwrShots[0] = new Goal(142, 70.5, 23.5);
@@ -141,9 +141,9 @@ public class Robot {
     public Robot(HardwareMap imported, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
         construct(imported, telemetry);
-        if(position == null){
-            position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
-        }
+//        if(position == null){
+//            //position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
+//        }
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
         goTo(pt, power, preferredAngle, turnSpeed, () -> {});
@@ -199,9 +199,9 @@ public class Robot {
             default: return driveTrain.trajectoryBuilder().splineToSplineHeading(C, Math.toRadians(-180)).build();
         }
     }
-    public static Trajectory shootingPath = driveTrain.trajectoryBuilder()
-            .splineToSplineHeading(new Pose2d(57, hiGoal.y),0)
-            .build();
+//    public static Trajectory shootingPath = driveTrain.trajectoryBuilder()
+//            .splineToSplineHeading(new Pose2d(57, hiGoal.y),0)
+//            .build();
     public void wingsOut() {
         launcher.wingsOut();
     }
@@ -231,8 +231,8 @@ public class Robot {
 //        telemetry.update();
     }
     public void init(){
-       Thread newThread = new Thread(position);
-       newThread.start();
+//       Thread newThread = new Thread(position);
+//       newThread.start();
     }
     public void autoInit(){
         init();
