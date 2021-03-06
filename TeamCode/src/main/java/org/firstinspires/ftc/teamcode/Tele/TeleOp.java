@@ -77,14 +77,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
         while(opModeIsActive()) {
             robot.driveTrain.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
+                            -gamepad1.left_stick_y * lyMult,
+                            -gamepad1.left_stick_x * lxMult,
+                            -gamepad1.right_stick_x *rxMult
                     )
             );
             //robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
             if(gamepad1.y) {
-                robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
+                //robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
             }
         }
     }

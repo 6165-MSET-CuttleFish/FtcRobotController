@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,6 +20,7 @@ public class Launcher {
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
+    InterpLUT controlPoints;
     public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
@@ -45,7 +45,12 @@ public class Launcher {
         tilt = map.get(Servo.class, "tilt");
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
+        controlPoints = new InterpLUT();
         tiltDown();
+        setControlPoints();
+    }
+    private void setControlPoints(){
+        controlPoints.add(0, 3000);
     }
     public void stop(){
         isRunning = false;
@@ -53,8 +58,8 @@ public class Launcher {
     private void updateCoordinate() {
 
     }
-    public void setTargetVelocity(double targetVelocity){
-        this.targetVelocity = targetVelocity;
+    public void setVelocity(double v){
+        flywheel.setVelocity(v);
     }
     public double getVelocity(){
         return flywheel.getVelocity();
