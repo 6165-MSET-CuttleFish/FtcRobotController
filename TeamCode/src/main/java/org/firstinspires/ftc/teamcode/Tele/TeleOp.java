@@ -19,13 +19,11 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group = "LinearOpMode")
 public class TeleOp extends LinearOpMode implements Runnable{
     Robot robot;
+    Runnable wingDefault;
     boolean ninja, armUp;
     Coordinate shootingPosition;
     double shootingAngle = 0;
-    boolean isOnAuto = false;
-    PIDController pidRotate;
     boolean isWingsOut = false;
-    double shootSpeed = 0.56;
     double velo = 0;
     boolean hasShot = false;
     int wingsLimit = 0;
@@ -47,13 +45,11 @@ public class TeleOp extends LinearOpMode implements Runnable{
             idle();
             if(gamepad2.y || gamepad1.right_trigger >= 0.2){
                 if(!isWingsOut) {
-                    robot.wingsOut();
-                    wingsLimit++;
+                    wingDefault = ()-> robot.wingsOut();
                     isWingsOut = true;
                     sleep(500);
                 } else {
-                    robot.launcher.wingsVert();
-                    wingsLimit++;
+                    wingDefault = ()->robot.launcher.wingsVert();
                     isWingsOut = false;
                     sleep(500);
                 }
@@ -146,7 +142,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
         if(gamepad2.left_trigger >= 0.1){
             robot.launcher.flapDown();
             if(!hasShot){
-                shootSpeed = 0.60;
                 hasShot = true;
             }
             if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) >= 2.3){
@@ -154,33 +149,26 @@ public class TeleOp extends LinearOpMode implements Runnable{
             } else {
                 robot.wingsMid();
             }
-            isWingsOut = true;
             robot.launcher.setFlyWheel(0.8);
             //robot.wingsOut();
         }
         else if(gamepad2.left_bumper){
-            isWingsOut = true;
             robot.launcher.setFlyWheel(0.45);
             robot.wingsOut();
             robot.launcher.flapDown();
         }
         else {
-            wingsLimit = 0;
-            hasShot = false;
             robot.launcher.tiltDown();
+            wingDefault.run();
             if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) <= 4){
                 robot.launcher.setOnlyFlyWheel(0.55); //change to make constant speed
             } else
                 robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y)); //change to make constant speed
-            if(!isWingsOut) {
-                robot.launcher.wingsOut();
-            }
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
             wingsLimit++;
-            shootSpeed = 1;
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){
