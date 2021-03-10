@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -143,14 +144,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
     private void strafePowerShot(){
         if(gamepad2.dpad_down){
             robot.launcher.setFlyWheel(0.45);
-            Trajectory traj = driveTrain.trajectoryBuilder()
-                    .strafeLeft(7.5);
+            Trajectory traj = robot.driveTrain.trajectoryBuilder()
+                    .strafeLeft(7.5)
                     .build();
 
             robot.launcher.tiltUp();
             robot.launcher.singleRound();
             for(int i = 0; i<2; i++){
-                driveTrain.followTrajectory(traj);
+                robot.driveTrain.followTrajectory(traj);
                 robot.launcher.mag.setPosition(0.34);
                 sleep(110);
                 robot.launcher.mag.setPosition(0.48);
