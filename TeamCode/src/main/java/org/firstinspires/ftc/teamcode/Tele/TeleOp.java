@@ -148,9 +148,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 .build();
 
             robot.launcher.tiltUp();
-            robot.launcher.mag.setPosition(0.34);
-            sleep(110);
-            robot.launcher.mag.setPosition(0.48);
+            robot.launcher.singleRound();
             for(int i = 0; i<2; i++){
                 driveTrain.followTrajectory(traj);
                 robot.launcher.mag.setPosition(0.34);
