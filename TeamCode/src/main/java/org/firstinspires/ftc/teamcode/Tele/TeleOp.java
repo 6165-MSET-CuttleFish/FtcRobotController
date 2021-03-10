@@ -145,7 +145,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.launcher.setFlyWheel(0.45);
             Trajectory traj = driveTrain.trajectoryBuilder()
                     .strafeLeft(7.5);
-                .build();
+                    .build();
 
             robot.launcher.tiltUp();
             robot.launcher.singleRound();
