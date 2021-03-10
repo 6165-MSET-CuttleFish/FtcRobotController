@@ -183,7 +183,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         else {
             robot.launcher.tiltDown();
             wingDefault.run();
-            if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) <= 4){
+            if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) <= 6){
                 robot.launcher.setOnlyFlyWheel(0.55); //change to make constant speed
             } else
                 robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y)); //change to make constant speed
