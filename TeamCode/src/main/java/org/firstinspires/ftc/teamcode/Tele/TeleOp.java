@@ -43,6 +43,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.intake(gamepad2.right_stick_y);
             shooter();
             idle();
+            
             if(gamepad2.y || gamepad1.right_trigger >= 0.2){
                 if(!isWingsOut) {
                     wingDefault = ()-> robot.wingsOut();
@@ -84,6 +85,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             }
         }
     }
+
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper){
             ninja = true;
@@ -137,6 +139,28 @@ public class TeleOp extends LinearOpMode implements Runnable{
         for(Coordinate pwrShot : Robot.pwrShots){
             robot.turnTo(pwrShot, 0.24);
         }
+    }
+    private void strafePowerShot(){
+        if(gamepad2.dpad_down){
+            robot.launcher.setFlyWheel(0.45);
+            Trajectory traj = driveTrain.trajectoryBuilder()
+                    .strafeLeft(7.5);
+                .build();
+
+            robot.launcher.tiltUp();
+            robot.launcher.mag.setPosition(0.34);
+            sleep(110);
+            robot.launcher.mag.setPosition(0.48);
+            for(int i = 0; i<2; i++){
+                driveTrain.followTrajectory(traj);
+                robot.launcher.mag.setPosition(0.34);
+                sleep(110);
+                robot.launcher.mag.setPosition(0.48);
+            }
+            robot.launcher.setFlyWheel(0);
+            robot.launcher.tiltDown();
+        }
+
     }
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
