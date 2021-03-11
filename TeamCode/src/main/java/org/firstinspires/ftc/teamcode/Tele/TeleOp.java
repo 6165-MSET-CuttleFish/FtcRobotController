@@ -31,6 +31,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
         robot.init();
+        wingDefault = ()->robot.launcher.wingsVert();
        // pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);
         waitForStart();
@@ -46,12 +47,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
             if(gamepad2.y || gamepad1.right_trigger >= 0.2){
                 if(!isWingsOut) {
                     wingDefault = ()-> robot.wingsOut();
+                    robot.wingsOut();
                     isWingsOut = true;
-                    sleep(500);
+                    sleep(400);
                 } else {
                     wingDefault = ()->robot.launcher.wingsVert();
+                    robot.launcher.wingsVert();
                     isWingsOut = false;
-                    sleep(500);
+                    sleep(400);
                 }
             }
             telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
