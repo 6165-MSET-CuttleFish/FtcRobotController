@@ -25,13 +25,7 @@ public class Launcher {
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public static Goal position;
-    private boolean isRunning = true;
-    private Coordinate robotPosition;
-    private double lastPosition;
-    private double lastTime = System.currentTimeMillis();
-    private double targetVelocity = 0;
     PIDController controller;
-    public boolean isShooting;
     public double flyWheelSpeed;
     public Launcher(HardwareMap map, Pose2d pose2d){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
@@ -52,11 +46,17 @@ public class Launcher {
     private void setControlPoints(){
         controlPoints.add(0, 3000);
     }
-    public void stop(){
-        isRunning = false;
-    }
-    private void updateCoordinate() {
-
+    public int getRings(){
+        double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
+        if(range < 2){
+            return 3;
+        } else if(range < 4){
+            return 2;
+        } else if(range < 7){
+            return 1;
+        } else {
+            return 0;
+        }
     }
     public void setVelocity(double v){
         flywheel.setVelocity(v);
@@ -139,14 +139,13 @@ public class Launcher {
     public void tiltDown(){
         tilt.setPosition(0.52);
     }
-
     public void magazineShoot(){
-        tiltUp();
-        for(int i = 0; i < 3; i++){
+        int rounds = getRings();
+        for(int i = 0; i < rounds; i++){
             singleRound();
             setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(120);
-            if(i == 1){
+            if(i == rounds - 2){
                 sleep(50);
             }
         }
@@ -158,14 +157,6 @@ public class Launcher {
             wingsOut();
         //this is sleep value to change
         mag.setPosition(0.48);
-    }
-    public void shoot(double rounds){
-        for(int i = 0; i < rounds; i++){
-            mag.setPosition(0.32);
-            sleep(800);
-            mag.setPosition(.55);
-            if(i != rounds - 1) sleep(150);
-        }
     }
     public void flapUp(){
         flap.setPosition(0.42);

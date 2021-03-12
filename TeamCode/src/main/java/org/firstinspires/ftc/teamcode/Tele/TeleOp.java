@@ -26,7 +26,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
     double shootingAngle = 0;
     boolean isWingsOut = false;
     double velo = 0;
-    boolean hasShot = false;
     int wingsLimit = 0;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -167,16 +166,15 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
             robot.launcher.flapDown();
-            if(!hasShot){
-                hasShot = true;
-            }
             if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) >= 2.3){
                 robot.wingsOut();
             } else {
                 robot.wingsMid();
             }
             robot.launcher.setFlyWheel(0.8);
-            //robot.wingsOut();
+            if(robot.launcher.getVelocity() >= 1200){
+                robot.launcher.magazineShoot();
+            }
         }
         else if(gamepad2.left_bumper){
             robot.launcher.setFlyWheel(0.45);
