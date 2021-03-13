@@ -48,9 +48,9 @@ public class Launcher {
     }
     public int getRings(){
         double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
-        if(range < 2){
+        if(range < 2.5){
             return 3;
-        } else if(range < 4){
+        } else if(range < 4.5){
             return 2;
         } else if(range < 7){
             return 1;
@@ -141,6 +141,7 @@ public class Launcher {
     }
     public void magazineShoot(){
         int rounds = getRings();
+        if(rounds == 3) rounds ++;
         for(int i = 0; i < rounds; i++){
             singleRound();
             setOnlyFlyWheel(flyWheelSpeed + 0.08);
