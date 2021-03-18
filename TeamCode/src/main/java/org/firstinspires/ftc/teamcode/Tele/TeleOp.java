@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import java.io.DataInput;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
@@ -70,7 +71,8 @@ public class TeleOp extends LinearOpMode implements Runnable{
 //            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
             telemetry.addData("Velocity", velo);
             telemetry.addData("current", robot.launcher.getVelocity());
-            telemetry.addData("Average Cycle Time: ", calcAvg());
+            telemetry.addData("Average Cycle Time", calcAvg());
+            telemetry.addData("Median Cycle Time", calcMedian());
             telemetry.update();
         }
         driveTrain.stop();
@@ -100,8 +102,12 @@ public class TeleOp extends LinearOpMode implements Runnable{
         for(int i = 0; i < timer.size (); i++){
             avg += timer.get(i)/1000.0;
         }
-        avg/= timer.size ();
+        avg/= timer.size();
         return avg;
+    }
+    private double calcMedian(){
+        Collections.sort(timer);
+        return timer.get(timer.size()/2);
     }
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper){
