@@ -98,7 +98,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     private double calcAvg(){
         double avg = 0;
         for(int i = 0; i < timer.size (); i++){
-            avg += timer.get(i);
+            avg += timer.get(i)/1000.0;
         }
         avg/= timer.size ();
         return avg;
