@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import java.io.DataInput;
+import java.util.ArrayList;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
@@ -27,6 +28,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
     boolean isWingsOut = false;
     double velo = 0;
     int wingsLimit = 0;
+    ArrayList<Double> timer = new ArrayList<Double> ();
+    double currentMillis = 0;
+    double lastMillis = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
@@ -58,12 +62,15 @@ public class TeleOp extends LinearOpMode implements Runnable{
                     sleep(400);
                 }
             }
+
+            currentMillis = System.currentTimeMillis ();
             telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
 //            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
 //            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
 //            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
             telemetry.addData("Velocity", velo);
             telemetry.addData("current", robot.launcher.getVelocity());
+            telemetry.addData("Average Cycle Time: ", calcAvg());
             telemetry.update();
         }
         driveTrain.stop();
@@ -88,7 +95,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
             }
         }
     }
-
+    private double calcAvg(){
+        double avg = 0;
+        for(int i = 0; i < timer.size (); i++){
+            avg += timer.get(i);
+        }
+        avg/= timer.size ();
+        return avg;
+    }
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper){
             ninja = true;
@@ -174,6 +188,8 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.launcher.setFlyWheel(0.8);
             if(robot.launcher.getVelocity() >= 1300){
                 robot.launcher.magazineShoot();
+                timer.add(currentMillis - lastMillis);
+                lastMillis = currentMillis;
             }
         }
         else if(gamepad2.left_bumper){
