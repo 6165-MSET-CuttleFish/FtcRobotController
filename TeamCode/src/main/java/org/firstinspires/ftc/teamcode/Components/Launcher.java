@@ -9,9 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
-
-import java.util.concurrent.Callable;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 

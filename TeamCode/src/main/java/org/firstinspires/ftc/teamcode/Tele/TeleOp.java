@@ -172,7 +172,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 robot.wingsMid();
             }
             robot.launcher.setFlyWheel(0.8);
-            if(robot.launcher.getVelocity() >= 1350){
+            if(robot.launcher.getVelocity() >= 1300){
                 robot.launcher.magazineShoot();
             }
         }
