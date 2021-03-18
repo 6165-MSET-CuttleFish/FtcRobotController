@@ -143,6 +143,7 @@ public class Launcher {
             singleRound();
             setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(120);
+            if(i+1==rounds) sleep(20);
             if(i == rounds - 2){
                 sleep(50);
             }
