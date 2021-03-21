@@ -144,7 +144,7 @@ public class Launcher {
             setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(120);
             if(i == rounds - 2){
-                sleep(50);
+                sleep(100);
             }
         }
     }
