@@ -32,6 +32,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     ArrayList<Double> timer = new ArrayList<Double> ();
     double currentMillis = 0;
     double lastMillis = 0;
+    int cycles = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
@@ -194,8 +195,15 @@ public class TeleOp extends LinearOpMode implements Runnable{
             robot.launcher.setFlyWheel(0.8);
             if(robot.launcher.getVelocity() >= 1300){
                 robot.launcher.magazineShoot();
-                timer.add(currentMillis - lastMillis);
-                lastMillis = currentMillis;
+                if(cycles == 0){
+                    cycles++;
+                    lastMillis = currentMillis;
+                }
+                else{
+                    timer.add(currentMillis - lastMillis);
+                    lastMillis = currentMillis;
+                }
+
             }
         }
         else if(gamepad2.left_bumper){
