@@ -39,7 +39,7 @@ public class Robot {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
-    public Dice dice;
+    public Dice dice = Dice.one;
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
@@ -180,13 +180,13 @@ public class Robot {
     }
     public void knockPowerShots(){
         Trajectory trajectory = driveTrain.trajectoryBuilder()
-                .splineTo(pwrShotLocals[0], 0)
+                .splineTo(pwrShotLocals[2], 0)
                 .build();
         driveTrain.followTrajectory(trajectory);
         launcher.singleRound();
         for(int i = 1; i < 3; i++){
             Trajectory newTraj = driveTrain.trajectoryBuilder()
-                    .strafeTo(pwrShotLocals[i])
+                    .splineTo(pwrShotLocals[i], 0)
                     .build();
             driveTrain.followTrajectory(newTraj);
             launcher.singleRound();

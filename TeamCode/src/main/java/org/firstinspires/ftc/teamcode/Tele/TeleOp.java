@@ -107,7 +107,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     }
     private double calcMedian(){
         Collections.sort(timer);
-        return timer.get(timer.size()/2);
+        return timer.size() != 0 ? timer.get(timer.size()/2) : 0;
     }
     private void setMultiplier(){
         if(!ninja && gamepad1.left_bumper){

@@ -12,13 +12,12 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 @Autonomous(name = "newAuto", group = "LinearOpMode")
-@Disabled
 public class BounceBackAuto extends LinearOpMode {
     Robot robot;
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 9, 25, 0, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 9, 35.5, 0, telemetry, this::opModeIsActive);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
