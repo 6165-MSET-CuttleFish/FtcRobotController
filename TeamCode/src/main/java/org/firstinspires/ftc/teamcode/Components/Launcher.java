@@ -138,13 +138,12 @@ public class Launcher {
     }
     public void magazineShoot(){
         int rounds = getRings();
-        if(rounds == 3) rounds ++;
         for(int i = 0; i < rounds; i++){
             singleRound();
             setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(120);
             if(i == rounds - 2){
-                sleep(100);
+                sleep(80);
             }
         }
     }
