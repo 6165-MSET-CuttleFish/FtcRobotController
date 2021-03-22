@@ -45,6 +45,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         driveTrain.start();
 
         while(opModeIsActive()){
+            currentMillis = System.currentTimeMillis();
             setMultiplier();
             wobble();
             robot.intake(gamepad2.right_stick_y);
@@ -65,7 +66,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 }
             }
 
-            currentMillis = System.currentTimeMillis ();
+
             telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
 //            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
 //            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
