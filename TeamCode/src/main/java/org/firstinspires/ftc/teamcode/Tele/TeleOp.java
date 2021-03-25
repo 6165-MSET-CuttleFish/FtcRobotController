@@ -188,7 +188,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
             robot.launcher.flapDown();
-            if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) >= 2.3){
+            if(robot.launcher.getRings() < 3){
                 robot.wingsOut();
             } else {
                 robot.wingsMid();
