@@ -57,6 +57,7 @@ public class Robot {
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
+    public Servo slapper;
 
     public static Goal hiGoal = new Goal(141, 37.5, 35.5);//142.75
     public static Goal loGoal = new Goal(141, 37.5, 17);
@@ -110,7 +111,7 @@ public class Robot {
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.get(Servo.class, "in1");
         in2 = map.get(Servo.class, "in2");
-
+        slapper = map.servo.get("slappy");
 
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
@@ -144,6 +145,12 @@ public class Robot {
 //        if(position == null){
 //            //position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
 //        }
+    }
+    public void slap(){
+        slapper.setPosition(1);
+    }
+    public void notSlap(){
+        slapper.setPosition(0.5);
     }
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
         goTo(pt, power, preferredAngle, turnSpeed, () -> {});

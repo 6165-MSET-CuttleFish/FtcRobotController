@@ -50,6 +50,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wobble();
             robot.intake(gamepad2.right_stick_y);
             shooter();
+            robot.slap();
             idle();
             
             if(gamepad2.y || gamepad1.right_trigger >= 0.2){
@@ -214,11 +215,16 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         else {
             robot.launcher.tiltDown();
-            wingDefault.run();
-            if(robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH) <= 6){
+            if(robot.launcher.getRings() < 3) {
+                wingDefault.run();
+            } else {
+                robot.launcher.wingsMid();
+            }
+            if(robot.launcher.getRings() >= 1){
                 robot.launcher.setOnlyFlyWheel(0.55); //change to make constant speed
-            } else
-                robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y)); //change to make constant speed
+            } else {
+                robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y));
+            }//change to make constant speed
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
