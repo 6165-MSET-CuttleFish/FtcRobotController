@@ -150,7 +150,7 @@ public class Launcher {
     public void singleRound(){
         tiltUp();
         mag.setPosition(0.34);
-        sleep(110);
+        sleep(150);
             wingsOut();
         //this is sleep value to change
         mag.setPosition(0.48);
