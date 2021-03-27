@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -119,7 +120,7 @@ public class Robot {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        launcher = new Launcher(map, driveTrain.getPoseEstimate());
+        launcher = new Launcher(map);
 
 //        topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -144,7 +145,6 @@ public class Robot {
 //            //position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
 //        }
     }
-
     public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
         goTo(pt, power, preferredAngle, turnSpeed, () -> {});
     }

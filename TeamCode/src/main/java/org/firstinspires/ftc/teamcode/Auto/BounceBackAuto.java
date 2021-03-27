@@ -34,13 +34,13 @@ public class BounceBackAuto extends LinearOpMode {
         robot.scan();
         robot.turnOffVision();
         robot.unlockIntake();
-        robot.launcher.setFlyWheel(0.47);
+        //robot.launcher.setFlyWheel(0.47);
         robot.knockPowerShots();
         /*
         PICK UP BOUNCEBACKS
          */
         //Robot.driveTrain.followTrajectory(robot.dropZone(), 10, ()->robot.wobbleArmDown());
-        robot.launcher.setFlyWheel(0.55);
+        //robot.launcher.setFlyWheel(0.55);
         //Robot.driveTrain.followTrajectory(Robot.shootingPath);
     }
 }

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * classes). The robot drives in a DISTANCE-by-DISTANCE square indefinitely. Utilization of the
  * dashboard is recommended for this tuning routine. To access the dashboard, connect your computer
  * to the RC's WiFi network. In your browser, navigate to https://192.168.49.1:8080/dash if you're
- * using the RC phone or https://192.168.43.1:8080/dash if you are using the Control Hub. Once
+ * using the RC phone or http://192.168.43.1:8080/dash if you are using the Control Hub. Once
  * you've successfully connected, start the program, and your robot will begin driving in a square.
  * You should observe the target position (green) and your pose estimate (blue) and adjust your
  * follower PID coefficients such that you follow the target position as accurately as possible.

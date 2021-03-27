@@ -50,7 +50,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wobble();
             robot.intake(gamepad2.right_stick_y);
             shooter();
-            robot.slap();
             idle();
             
             if(gamepad2.y || gamepad1.right_trigger >= 0.2){
@@ -168,7 +167,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
     }
     private void strafePowerShot(){
         if(gamepad2.dpad_down){
-            robot.launcher.setFlyWheel(0.45);
+            //robot.launcher.setFlyWheel(0.45);
             Trajectory traj = robot.driveTrain.trajectoryBuilder()
                     .strafeLeft(7.5)
                     .build();
@@ -181,7 +180,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 sleep(110);
                 robot.launcher.mag.setPosition(0.48);
             }
-            robot.launcher.setFlyWheel(0);
+           // robot.launcher.setFlyWheel(0);
             robot.launcher.tiltDown();
         }
 
@@ -194,22 +193,14 @@ public class TeleOp extends LinearOpMode implements Runnable{
             } else {
                 robot.wingsMid();
             }
-            robot.launcher.setFlyWheel(0.8);
-            if(robot.launcher.getVelocity() >= 1340){
-                robot.launcher.magazineShoot();
-                if(cycles == 0){
-                    cycles++;
-                    lastMillis = currentMillis;
-                }
-                else{
-                    timer.add(currentMillis - lastMillis);
-                    lastMillis = currentMillis;
-                }
-
-            }
+            robot.launcher.setVelocity(1300);
+//            if(robot.launcher.getVelocity() >= 1340){
+//                robot.launcher.magazineShoot();
+//
+//            }
         }
         else if(gamepad2.left_bumper){
-            robot.launcher.setFlyWheel(0.45);
+            robot.launcher.setVelocity(1000);
             robot.wingsOut();
             robot.launcher.flapDown();
         }
@@ -221,10 +212,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 robot.launcher.wingsMid();
             }
             if(robot.launcher.getRings() >= 1){
-                robot.launcher.setOnlyFlyWheel(0.55); //change to make constant speed
-            } else {
-                robot.launcher.setOnlyFlyWheel(Math.abs(gamepad2.left_stick_y));
-            }//change to make constant speed
+                robot.launcher.setVelocity(1340); //change to make constant speed
+            }
+            robot.launcher.setVelocity(0);//change to make constant speed
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
@@ -236,6 +226,13 @@ public class TeleOp extends LinearOpMode implements Runnable{
             wingsLimit++;
             velo = robot.launcher.getVelocity();
             robot.launcher.magazineShoot();
+            if(cycles == 0){
+                cycles++;
+            }
+            else{
+                timer.add(currentMillis - lastMillis);
+            }
+            lastMillis = currentMillis;
             storeCoordinate();
         }
     }

@@ -148,7 +148,7 @@ public class TourneyAuto extends LinearOpMode {
         }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
-        robot.launcher.setOnlyFlyWheel(0.49);
+        //robot.launcher.setOnlyFlyWheel(0.49);
         robot.intake(0);
         robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
         robot.intake(1);
@@ -164,6 +164,6 @@ public class TourneyAuto extends LinearOpMode {
             robot.launcher.singleRound();
             sleep(400);
         }
-        robot.launcher.setFlyWheel(0);
+        //robot.launcher.setFlyWheel(0);
     }
 }

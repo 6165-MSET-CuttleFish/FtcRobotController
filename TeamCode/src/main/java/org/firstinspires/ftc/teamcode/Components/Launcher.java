@@ -1,36 +1,53 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
-public class Launcher {
+public class Launcher implements Runnable{
     public ColorRangeSensor colorRangeSensor;
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.003, 0, 0);
+
+    public static double kV = 0.00067714285714285714;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static double kA = 0.0003;
+    public static double kStatic = 0;
+
+    double lastTargetVelo = 0.0;
+    VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
+
+    private final ElapsedTime veloTimer = new ElapsedTime();
     InterpLUT controlPoints;
     public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public static Goal position;
-    PIDController controller;
     public double flyWheelSpeed;
-    public Launcher(HardwareMap map, Pose2d pose2d){
+    public double targetVelo;
+    public volatile boolean isActive;
+    public Launcher(HardwareMap map){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
-        controller = new PIDController(0.5, 0, 0.8);
         flywheel = map.get(DcMotorEx.class, "fw");
         flywheel1 = map.get(DcMotorEx.class, "fw1");
-        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");
@@ -38,7 +55,31 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         controlPoints = new InterpLUT();
         tiltDown();
+        for (LynxModule module : map.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
         setControlPoints();
+    }
+    @Override
+    public void run(){
+        isActive = true;
+        veloTimer.reset();
+        while(isActive){
+            veloController.setTargetVelocity(targetVelo);
+            veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
+            veloTimer.reset();
+            lastTargetVelo = targetVelo;
+            double motorPos = flywheel.getCurrentPosition();
+            double motorVelo = flywheel.getVelocity();
+            double power = veloController.update(motorPos, motorVelo);
+            flywheel.setPower(power);
+            flywheel1.setPower(power);
+        }
+        flywheel.setPower(0);
+        flywheel1.setPower(0);
+    }
+    public void stop(){
+        isActive = false;
     }
     private void setControlPoints(){
         controlPoints.add(0, 3000);
@@ -56,7 +97,7 @@ public class Launcher {
         }
     }
     public void setVelocity(double v){
-        flywheel.setVelocity(v);
+        targetVelo = v;
     }
     public double getVelocity(){
         return flywheel.getVelocity();
@@ -114,22 +155,6 @@ public class Launcher {
         theta -= 25;
         return -0.1*theta*theta + 3*theta;
     }
-    public void setFlyWheel(double pwr){
-        flyWheelSpeed = pwr;
-        if(pwr < 0.3) {
-            tiltDown();
-        }
-        else if (pwr >= 0.3){
-            tiltUp();
-        }
-        flywheel.setPower(pwr);
-        flywheel1.setPower(pwr);
-    }
-    public void setOnlyFlyWheel(double pwr){
-        flyWheelSpeed = pwr;
-        flywheel.setPower(pwr);
-        flywheel1.setPower(pwr);
-    }
     public void tiltUp(){
         tilt.setPosition(0.75);
     }
@@ -140,7 +165,7 @@ public class Launcher {
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
-            setOnlyFlyWheel(flyWheelSpeed + 0.08);
+            //setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(120);
             if(i == rounds - 2){
                 sleep(80);
