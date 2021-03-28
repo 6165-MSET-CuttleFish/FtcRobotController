@@ -48,6 +48,8 @@ public class Launcher implements Runnable{
         flywheel1 = map.get(DcMotorEx.class, "fw1");
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         mag = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         tilt = map.get(Servo.class, "tilt");

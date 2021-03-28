@@ -30,7 +30,7 @@ public class OdometryCalibration extends LinearOpMode {
 
     //Hardware Map Names for drive motors and odometry wheels. THIS WILL CHANGE ON EACH ROBOT, YOU NEED TO UPDATE THESE VALUES ACCORDINGLY
     String rfName = "fr", rbName = "br", lfName = "fl", lbName = "bl";
-    String verticalLeftEncoderName = lbName, verticalRightEncoderName = rbName, horizontalEncoderName = rfName;
+    String verticalLeftEncoderName = "intakeL", verticalRightEncoderName = "fw1", horizontalEncoderName = "intakeR";
 
     final double PIVOT_SPEED = 0.3;
 
@@ -50,7 +50,6 @@ public class OdometryCalibration extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Initialize hardware map values. PLEASE UPDATE THESE VALUES TO MATCH YOUR CONFIGURATION
         initHardwareMap(rfName, rbName, lfName, lbName, verticalLeftEncoderName, verticalRightEncoderName, horizontalEncoderName);
-
         //Initialize IMU hardware map value. PLEASE UPDATE THIS VALUE TO MATCH YOUR CONFIGURATION
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
@@ -175,7 +174,6 @@ public class OdometryCalibration extends LinearOpMode {
         left_back.setDirection(DcMotorSimple.Direction.REVERSE);
         //right_front.setDirection(DcMotorSimple.Direction.REVERSE);
         //right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();

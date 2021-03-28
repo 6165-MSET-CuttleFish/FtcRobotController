@@ -231,6 +231,8 @@ public class Robot {
 //        telemetry.update();
     }
     public void init(){
+        Thread launcherThread = new Thread(launcher);
+        launcherThread.start();
 //       Thread newThread = new Thread(position);
 //       newThread.start();
     }
