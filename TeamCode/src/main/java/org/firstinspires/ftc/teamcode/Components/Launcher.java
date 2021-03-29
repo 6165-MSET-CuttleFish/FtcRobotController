@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -39,7 +35,6 @@ public class Launcher implements Runnable{
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public static Goal position;
-    public double flyWheelSpeed;
     public double targetVelo;
     public volatile boolean isActive;
     public Launcher(HardwareMap map){
@@ -74,8 +69,13 @@ public class Launcher implements Runnable{
             double motorPos = flywheel.getCurrentPosition();
             double motorVelo = flywheel.getVelocity();
             double power = veloController.update(motorPos, motorVelo);
-            flywheel.setPower(power);
-            flywheel1.setPower(power);
+            if(targetVelo == 0){
+                flywheel.setPower(0);
+                flywheel1.setPower(0);
+            } else {
+                flywheel.setPower(power);
+                flywheel1.setPower(power);
+            }
         }
         flywheel.setPower(0);
         flywheel1.setPower(0);
@@ -115,7 +115,6 @@ public class Launcher implements Runnable{
         leftIntakeHolder.setPosition(.3);
         rightIntakeHolder.setPosition(.84);
     }
-
     public void wingsMid() {
         leftIntakeHolder.setPosition(.85);
         rightIntakeHolder.setPosition(0.3);
@@ -201,5 +200,3 @@ public class Launcher implements Runnable{
         }
     }
 }
-
-
