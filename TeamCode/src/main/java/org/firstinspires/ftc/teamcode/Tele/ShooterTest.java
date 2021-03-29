@@ -39,9 +39,13 @@ public class ShooterTest extends LinearOpMode
     int cycles = 0;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
+<<<<<<< Updated upstream
+        //robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
+=======
+       // robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
+>>>>>>> Stashed changes
         robot.init();
-        wingDefault = ()->robot.launcher.wingsVert();
+        //wingDefault = ()->robot.launcher.wingsVert();
         // pidRotate = new PIDController(.07, 0.014, 0.0044);
         //Thread driveTrain = new Thread(this);
         waitForStart();
