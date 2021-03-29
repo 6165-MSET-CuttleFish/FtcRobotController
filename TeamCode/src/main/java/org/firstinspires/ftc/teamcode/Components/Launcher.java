@@ -57,12 +57,11 @@ public class Launcher implements Runnable{
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         setControlPoints();
+        veloTimer.reset();
     }
     @Override
     public void run(){
         isActive = true;
-        veloTimer.reset();
-        while(isActive){
             veloController.setTargetVelocity(targetVelo);
             veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
             veloTimer.reset();
@@ -77,7 +76,7 @@ public class Launcher implements Runnable{
                 flywheel.setPower(Range.clip(0, 1, power));
                 flywheel1.setPower(Range.clip(0, 1, power));
             }
-        }
+        
         flywheel.setPower(0);
         flywheel1.setPower(0);
     }

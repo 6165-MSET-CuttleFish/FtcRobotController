@@ -97,6 +97,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             if(gamepad1.y) {
                 //robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
             }
+            robot.launcher.run();
         }
     }
     private double calcAvg(){
