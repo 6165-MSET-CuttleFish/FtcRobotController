@@ -76,9 +76,6 @@ public class Launcher implements Runnable{
                 flywheel.setPower(Range.clip(0, 1, power));
                 flywheel1.setPower(Range.clip(0, 1, power));
             }
-        
-        flywheel.setPower(0);
-        flywheel1.setPower(0);
     }
     public void stop(){
         isActive = false;
