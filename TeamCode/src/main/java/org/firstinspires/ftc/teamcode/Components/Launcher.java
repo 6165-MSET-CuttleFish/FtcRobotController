@@ -104,6 +104,9 @@ public class Launcher implements Runnable{
     public double getVelocity(){
         return flywheel.getVelocity();
     }
+    public double getTargetVelo(){
+        return targetVelo;
+    }
     public void aimAt(Goal g, Coordinate p){
         double angle = findAngle(g, p);
     }

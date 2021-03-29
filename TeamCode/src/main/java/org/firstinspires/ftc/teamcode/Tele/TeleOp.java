@@ -78,7 +78,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             telemetry.update();
         }
         driveTrain.stop();
-        Robot.position.stop();
+        robot.launcher.stop();
     }
     double lxMult = 1;
     double lyMult = 1;
@@ -195,6 +195,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 robot.wingsMid();
             }
             robot.launcher.setVelocity(1300);
+            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 50){
+                robot.launcher.magazineShoot();
+            }
 //            if(robot.launcher.getVelocity() >= 1340){
 //                robot.launcher.magazineShoot();
 //
