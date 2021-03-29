@@ -28,7 +28,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
     double shootingAngle = 0;
     boolean isWingsOut = false;
     double velo = 0;
-    int wingsLimit = 0;
     ArrayList<Double> timer = new ArrayList<Double> ();
     double currentMillis = 0;
     double lastMillis = 0;
@@ -194,7 +193,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
             } else {
                 robot.wingsMid();
             }
-            robot.launcher.setVelocity(1300);
+            robot.launcher.setVelocity(1340);
             if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 50){
                 robot.launcher.magazineShoot();
             }
@@ -224,11 +223,9 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         if(gamepad2.right_bumper){
             robot.launcher.singleRound();
-            wingsLimit++;
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){
-            wingsLimit++;
             velo = robot.launcher.getVelocity();
             robot.launcher.magazineShoot();
             if(cycles == 0){
