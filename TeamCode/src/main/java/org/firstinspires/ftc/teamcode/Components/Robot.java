@@ -4,6 +4,7 @@ import java.lang.*;
 
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -72,6 +73,9 @@ public class Robot {
     public static Pose2d newB = new Pose2d(106.25, 52);
     public static Pose2d newC = new Pose2d(120, 27);
 
+    public static Pose2d robotPose;
+    public Pose2d startPose;
+
     public static Coordinate leftWobble = new Coordinate(34.7, 53);
     public static Coordinate rightWobble = new Coordinate(14, 24);
 
@@ -87,7 +91,8 @@ public class Robot {
     public Robot(HardwareMap imported, double x, double y, double robotOrientation, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
         construct(imported, telemetry);
-        driveTrain.setPoseEstimate(new Pose2d(x, y, robotOrientation));
+        startPose = new Pose2d(x, y, robotOrientation);
+        driveTrain.setPoseEstimate(startPose);
        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     private void construct(HardwareMap imported, Telemetry telemetry){
@@ -102,11 +107,6 @@ public class Robot {
         pwrShotLocals[1] = new Vector2d(67, 60);
         pwrShotLocals[2] = new Vector2d(67, 53.25);
         map = imported;
-//        newRun = runMode;
-//        topLeft = map.dcMotor.get("fl");
-//        topRight = map.dcMotor.get("fr");
-//        botLeft = map.dcMotor.get("bl");
-//        botRight = map.dcMotor.get("br");
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.get(Servo.class, "in1");
@@ -121,22 +121,6 @@ public class Robot {
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         launcher = new Launcher(map);
-
-//        topLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        topRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        botLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        botRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//        topLeft.setMode(newRun);
-//        topRight.setMode(newRun);
-//        botLeft.setMode(newRun);
-//        botRight.setMode(newRun);
-//
-//
-//        topLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//        topRight.setDirection(DcMotorSimple.Direction.FORWARD);
-//        botLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//        botRight.setDirection(DcMotorSimple.Direction.FORWARD);
     }
     public Robot(HardwareMap imported, Telemetry telemetry, Callable<Boolean> overrides) {
         this.overrides = overrides;
@@ -179,18 +163,21 @@ public class Robot {
         }
     }
     public void knockPowerShots(){
-        Trajectory trajectory = driveTrain.trajectoryBuilder()
+        Trajectory trajectory = driveTrain.trajectoryBuilder(startPose)
                 .splineTo(pwrShotLocals[2], 0)
                 .build();
         driveTrain.followTrajectory(trajectory);
         launcher.singleRound();
-        for(int i = 1; i < 3; i++){
-            Trajectory newTraj = driveTrain.trajectoryBuilder()
-                    .splineTo(pwrShotLocals[i], 0)
-                    .build();
-            driveTrain.followTrajectory(newTraj);
-            launcher.singleRound();
-        }
+        Trajectory newTraj = driveTrain.trajectoryBuilder(trajectory.end())
+                .splineTo(pwrShotLocals[1], 0)
+                .build();
+        driveTrain.followTrajectory(newTraj);
+        launcher.singleRound();
+        Trajectory newTraj1 = driveTrain.trajectoryBuilder(newTraj.end())
+                .splineTo(pwrShotLocals[0], 0)
+                .build();
+        driveTrain.followTrajectory(newTraj1);
+        launcher.singleRound();
     }
     public Trajectory dropZone(){
         switch(dice){
@@ -233,8 +220,6 @@ public class Robot {
     public void init(){
         Thread launcherThread = new Thread(launcher);
         launcherThread.start();
-//       Thread newThread = new Thread(position);
-//       newThread.start();
     }
     public void autoInit(){
         init();
@@ -243,7 +228,6 @@ public class Robot {
         if(tfod != null) {
             tfod.activate();
         }
-        driveTrain = new SampleMecanumDrive(map);
     }
     public double height = 0;
     public void scan(){

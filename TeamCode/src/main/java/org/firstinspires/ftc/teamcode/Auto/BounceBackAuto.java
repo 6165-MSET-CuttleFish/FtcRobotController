@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,25 +18,31 @@ public class BounceBackAuto extends LinearOpMode {
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 9, 35.5, 0, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 0, 0, 0, telemetry, this::opModeIsActive);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         robot.launcher.tiltUp();
         robot.grab();
-        while (!opModeIsActive()) {
-            robot.scan();
-            telemetry.addData("Stack Height", robot.height);
-            telemetry.addData("Discs", robot.dice.toString());
-            telemetry.update();
-        }
+//        while (!opModeIsActive()) {
+//            robot.scan();
+//            telemetry.addData("Stack Height", robot.height);
+//            telemetry.addData("Discs", robot.dice.toString());
+//            telemetry.update();
+//        }
         waitForStart();
-        robot.scan();
-        robot.turnOffVision();
-        robot.unlockIntake();
-        //robot.launcher.setFlyWheel(0.47);
-        robot.knockPowerShots();
+//        robot.scan();
+//        robot.turnOffVision();
+//        robot.unlockIntake();
+//        robot.launcher.flapUp();
+//        robot.launcher.setVelocity(800);
+        //robot.knockPowerShots();
+        Trajectory trajectory = robot.driveTrain.trajectoryBuilder(robot.startPose)
+                .splineTo(new Vector2d(30, 35.5), 0)
+                .build();
+        robot.driveTrain.followTrajectory(trajectory);
+        //robot.launcher.setVelocity(0);
         /*
         PICK UP BOUNCEBACKS
          */
