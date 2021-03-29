@@ -78,6 +78,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
         }
         driveTrain.stop();
         robot.launcher.stop();
+        robot.killThreads();
     }
     double lxMult = 1;
     double lyMult = 1;
