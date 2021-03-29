@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
@@ -73,8 +74,8 @@ public class Launcher implements Runnable{
                 flywheel.setPower(0);
                 flywheel1.setPower(0);
             } else {
-                flywheel.setPower(power);
-                flywheel1.setPower(power);
+                flywheel.setPower(Range.clip(0, 1, power));
+                flywheel1.setPower(Range.clip(0, 1, power));
             }
         }
         flywheel.setPower(0);

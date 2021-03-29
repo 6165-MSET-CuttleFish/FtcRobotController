@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 @Config
 @TeleOp
@@ -78,8 +79,8 @@ public class LinkedMotorTuner extends LinearOpMode {
             double motorPos = flywheel.getCurrentPosition();
             double motorVelo = flywheel.getVelocity();
             double power = veloController.update(motorPos, motorVelo);
-            flywheel.setPower(power);
-            flywheel1.setPower(power);
+            flywheel.setPower(Range.clip(0, 1, power));
+            flywheel1.setPower(Range.clip(0, 1, power));
 
             if(lastKv != kV || lastKa != kA || lastKstatic != kStatic) {
                 lastKv = kV;
