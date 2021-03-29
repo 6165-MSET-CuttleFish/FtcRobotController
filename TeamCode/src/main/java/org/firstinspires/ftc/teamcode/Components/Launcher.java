@@ -167,7 +167,7 @@ public class Launcher implements Runnable{
         for(int i = 0; i < rounds; i++){
             singleRound();
             //setOnlyFlyWheel(flyWheelSpeed + 0.08);
-            sleep(120);
+            sleep(100);
             if(i == rounds - 2){
                 sleep(80);
             }
