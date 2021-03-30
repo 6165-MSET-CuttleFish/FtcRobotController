@@ -39,9 +39,15 @@ public class TeleOp extends LinearOpMode implements Runnable{
         wingDefault = ()->robot.launcher.wingsVert();
        // pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread driveTrain = new Thread(this);
+        Thread shooterThread = new Thread(()->{
+            while(opModeIsActive()){
+                robot.launcher.updatePID();
+            }
+        });
         waitForStart();
         //shootingPosition = Robot.position.toPoint();
         driveTrain.start();
+        shooterThread.start();
 
         while(opModeIsActive()){
             currentMillis = System.currentTimeMillis();
@@ -76,9 +82,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
             telemetry.addData("Median Cycle Time", calcMedian());
             telemetry.update();
         }
-        driveTrain.stop();
-        robot.launcher.stop();
-        robot.killThreads();
     }
     double lxMult = 1;
     double lyMult = 1;
@@ -97,7 +100,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
             if(gamepad1.y) {
                 //robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
             }
-            robot.launcher.run();
         }
     }
     private double calcAvg(){
@@ -196,7 +198,7 @@ public class TeleOp extends LinearOpMode implements Runnable{
                 robot.wingsMid();
             }
             robot.launcher.setVelocity(1340);
-            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 50){
+            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 100){
                 robot.launcher.magazineShoot();
             }
 //            if(robot.launcher.getVelocity() >= 1340){

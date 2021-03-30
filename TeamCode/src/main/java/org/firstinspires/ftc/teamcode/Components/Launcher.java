@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
+import java.util.concurrent.Callable;
+
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 
 public class Launcher implements Runnable{
@@ -61,21 +63,38 @@ public class Launcher implements Runnable{
     }
     @Override
     public void run(){
-        isActive = true;
-            veloController.setTargetVelocity(targetVelo);
-            veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
-            veloTimer.reset();
-            lastTargetVelo = targetVelo;
-            double motorPos = flywheel.getCurrentPosition();
-            double motorVelo = flywheel.getVelocity();
-            double power = veloController.update(motorPos, motorVelo);
-            if(targetVelo == 0){
-                flywheel.setPower(0);
-                flywheel1.setPower(0);
-            } else {
-                flywheel.setPower(Range.clip(0, 1, power));
-                flywheel1.setPower(Range.clip(0, 1, power));
+            while (isActive) {
+                veloController.setTargetVelocity(targetVelo);
+                veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
+                veloTimer.reset();
+                lastTargetVelo = targetVelo;
+                double motorPos = flywheel.getCurrentPosition();
+                double motorVelo = flywheel.getVelocity();
+                double power = veloController.update(motorPos, motorVelo);
+                if (targetVelo == 0) {
+                    flywheel.setPower(0);
+                    flywheel1.setPower(0);
+                } else {
+                    flywheel.setPower(power);
+                    flywheel1.setPower(power);
+                }
             }
+    }
+    public void updatePID(){
+        veloController.setTargetVelocity(targetVelo);
+        veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
+        veloTimer.reset();
+        lastTargetVelo = targetVelo;
+        double motorPos = flywheel.getCurrentPosition();
+        double motorVelo = flywheel.getVelocity();
+        double power = veloController.update(motorPos, motorVelo);
+        if (targetVelo == 0) {
+            flywheel.setPower(0);
+            flywheel1.setPower(0);
+        } else {
+            flywheel.setPower(power);
+            flywheel1.setPower(power);
+        }
     }
     public void stop(){
         isActive = false;

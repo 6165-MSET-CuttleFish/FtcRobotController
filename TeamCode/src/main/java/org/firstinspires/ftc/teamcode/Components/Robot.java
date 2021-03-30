@@ -212,13 +212,7 @@ public class Robot {
 //        telemetry.addData("orientation(degrees)", position.returnOrientation());
 //        telemetry.update();
     }
-    //Thread launcherThread = new Thread(launcher);
-
     public void init(){
-        //launcherThread.start();
-    }
-    public void killThreads(){
-       // launcherThread.stop();
     }
     public void autoInit(){
         init();
