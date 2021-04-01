@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -10,17 +13,17 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.PIDController;
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Components.TuningController;
 import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import java.io.DataInput;
 import java.util.ArrayList;
 import java.util.Collections;
-
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
-
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group = "LinearOpMode")
-public class TeleOp extends LinearOpMode implements Runnable{
+@TeleOp(name="TeleOp", group = "LinearOpMode")
+public class MainTele extends LinearOpMode implements Runnable{
     Robot robot;
     Runnable wingDefault;
     boolean ninja, armUp;
@@ -32,9 +35,11 @@ public class TeleOp extends LinearOpMode implements Runnable{
     double currentMillis = 0;
     double lastMillis = 0;
     int cycles = 0;
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();
        // pidRotate = new PIDController(.07, 0.014, 0.0044);
@@ -70,17 +75,6 @@ public class TeleOp extends LinearOpMode implements Runnable{
                     sleep(400);
                 }
             }
-
-
-            telemetry.addData("Distance",robot.launcher.colorRangeSensor.getDistance(DistanceUnit.INCH));
-//            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
-//            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
-//            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
-            telemetry.addData("Velocity", velo);
-            telemetry.addData("current", robot.launcher.getVelocity());
-            telemetry.addData("Average Cycle Time", calcAvg());
-            telemetry.addData("Median Cycle Time", calcMedian());
-            telemetry.update();
         }
     }
     double lxMult = 1;
@@ -100,6 +94,16 @@ public class TeleOp extends LinearOpMode implements Runnable{
             if(gamepad1.y) {
                 //robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
             }
+//            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
+//            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
+//            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
+            telemetry.addData("velocity", robot.launcher.getVelocity());
+            telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
+            telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
+
+            telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
+            telemetry.addData("lowerBound", 0);
+            telemetry.update();
         }
     }
     private double calcAvg(){

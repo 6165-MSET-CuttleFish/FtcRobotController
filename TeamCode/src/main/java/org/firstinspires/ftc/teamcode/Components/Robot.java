@@ -80,7 +80,6 @@ public class Robot {
 
     HardwareMap map;
     Callable<Boolean> overrides;
-    Telemetry telemetry;
     public SampleMecanumDrive driveTrain;
 
     public Robot(HardwareMap imported, double x, double y, double robotOrientation, Telemetry telemetry, Callable<Boolean> overrides) {
@@ -93,7 +92,6 @@ public class Robot {
     private void construct(HardwareMap imported, Telemetry telemetry){
         driveTrain = new SampleMecanumDrive(imported);
         pidRotate = new PIDController(.07, 0.013, 0.004);
-        this.telemetry = telemetry;
         pwrShots[0] = new Goal(142, 70.5, 23.5);
         pwrShots[1] = new Goal(142, 59, 23.5);
         pwrShots[2] = new Goal(142, 53.25, 23.5);

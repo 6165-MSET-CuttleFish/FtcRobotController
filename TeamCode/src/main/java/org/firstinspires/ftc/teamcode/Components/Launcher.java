@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -9,27 +10,27 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
-import java.util.concurrent.Callable;
-
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
-
-public class Launcher implements Runnable{
+@Config
+public class Launcher {
     public ColorRangeSensor colorRangeSensor;
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.003, 0, 0);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0075, 0, 0.0001);
 
-    public static double kV = 0.00067714285714285714;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static double kV = 0.00071428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
 
     double lastTargetVelo = 0.0;
+    double lastKv = kV;
+    double lastKa = kA;
+    double lastKstatic = kStatic;
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
 
     private final ElapsedTime veloTimer = new ElapsedTime();
@@ -37,7 +38,7 @@ public class Launcher implements Runnable{
     public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
-    public static Goal position;
+    public Goal position;
     public double targetVelo;
     public volatile boolean isActive;
     public Launcher(HardwareMap map){
@@ -61,23 +62,9 @@ public class Launcher implements Runnable{
         setControlPoints();
         veloTimer.reset();
     }
-    @Override
     public void run(){
             while (isActive) {
-                veloController.setTargetVelocity(targetVelo);
-                veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
-                veloTimer.reset();
-                lastTargetVelo = targetVelo;
-                double motorPos = flywheel.getCurrentPosition();
-                double motorVelo = flywheel.getVelocity();
-                double power = veloController.update(motorPos, motorVelo);
-                if (targetVelo == 0) {
-                    flywheel.setPower(0);
-                    flywheel1.setPower(0);
-                } else {
-                    flywheel.setPower(power);
-                    flywheel1.setPower(power);
-                }
+                updatePID();
             }
     }
     public void updatePID(){
@@ -94,6 +81,12 @@ public class Launcher implements Runnable{
         } else {
             flywheel.setPower(power);
             flywheel1.setPower(power);
+        }
+        if(lastKv != kV || lastKa != kA || lastKstatic != kStatic) {
+            lastKv = kV;
+            lastKa = kA;
+            lastKstatic = kStatic;
+            veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
     }
     public void stop(){
@@ -168,6 +161,7 @@ public class Launcher implements Runnable{
         double theta;
         double h = goalHeight - launcherHeight;
         theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
+        theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
         return theta;
     }
 
@@ -183,10 +177,10 @@ public class Launcher implements Runnable{
     }
     public void magazineShoot(){
         int rounds = getRings();
-        for(int i = 0; i < rounds; i++){
+        for(int i = 0; i < 3; i++){
             singleRound();
             //setOnlyFlyWheel(flyWheelSpeed + 0.08);
-            sleep(100);
+            sleep(200);
             if(i == rounds - 2){
                 sleep(80);
             }
@@ -194,9 +188,8 @@ public class Launcher implements Runnable{
     }
     public void singleRound(){
         tiltUp();
-        mag.setPosition(0.34);
-        sleep(150);
-            wingsOut();
+        mag.setPosition(0.35);
+        sleep(140);
         //this is sleep value to change
         mag.setPosition(0.48);
     }

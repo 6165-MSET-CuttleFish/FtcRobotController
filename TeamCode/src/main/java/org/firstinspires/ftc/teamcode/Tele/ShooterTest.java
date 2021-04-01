@@ -1,47 +1,35 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Robot;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Components.PIDController;
-import org.firstinspires.ftc.teamcode.Components.Robot;
-import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-
-import java.io.DataInput;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
-
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="ShooterTest", group = "LinearOpMode")
-public class ShooterTest extends LinearOpMode
-{
+@TeleOp(name="ShooterTest", group = "LinearOpMode")
+public class ShooterTest extends LinearOpMode implements Runnable{
     Robot robot;
+    double targetVelo = 1000;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override
     public void runOpMode() throws InterruptedException {
 
         robot = new Robot (hardwareMap, telemetry, this::opModeIsActive);
 
        // robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
-        double targetVelo = 1000;
+
         robot.init();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         //wingDefault = ()->robot.launcher.wingsVert();
         // pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread shooterThread = new Thread(()->{
-            while(opModeIsActive()){
+            while(opModeIsActive() && !isStopRequested()){
                 robot.launcher.updatePID();
             }
         });
+        Thread otherThread = new Thread(this);
         waitForStart();
+        otherThread.start();
         shooterThread.start();
         while(opModeIsActive()){
             if(gamepad1.dpad_up){
@@ -52,15 +40,25 @@ public class ShooterTest extends LinearOpMode
                 sleep(300);
             }
             if(gamepad1.left_trigger >= 0.1) {
+                robot.launcher.tiltUp();
                 robot.launcher.setVelocity(targetVelo);
             } else {
                 robot.launcher.setVelocity(0);
                 if (gamepad1.left_bumper) robot.launcher.tiltUp();
                 else robot.launcher.tiltDown();
             }
-            telemetry.addData("targetVelo ", targetVelo);
-            telemetry.addData("current velo ", robot.launcher.getVelocity());
+            if(gamepad1.right_trigger >= 0.1){
+                robot.launcher.magazineShoot();
+            }
         }
     }
 
+    @Override
+    public void run() {
+        while(opModeIsActive() && !isStopRequested()){
+            telemetry.addData("targetVelo ", targetVelo);
+            telemetry.addData("current velo ", robot.launcher.getVelocity());
+            telemetry.update();
+        }
+    }
 }
