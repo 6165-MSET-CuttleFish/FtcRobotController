@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -27,8 +29,6 @@ public class MainTele extends LinearOpMode implements Runnable{
     Robot robot;
     Runnable wingDefault;
     boolean ninja, armUp;
-    Coordinate shootingPosition;
-    double shootingAngle = 0;
     boolean isWingsOut = false;
     double velo = 0;
     ArrayList<Double> timer = new ArrayList<Double> ();
@@ -87,7 +87,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                     new Pose2d(
                             -gamepad1.left_stick_y * lyMult,
                             -gamepad1.left_stick_x * lxMult,
-                            -gamepad1.right_stick_x *rxMult
+                            -gamepad1.right_stick_x * 0.8 *rxMult
                     )
             );
             //robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
@@ -100,10 +100,10 @@ public class MainTele extends LinearOpMode implements Runnable{
             telemetry.addData("velocity", robot.launcher.getVelocity());
             telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
             telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
-
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);
             telemetry.update();
+            Log.println(Log.INFO, "Velocity: ", robot.launcher.getVelocity() + "");
         }
     }
     private double calcAvg(){
@@ -226,7 +226,9 @@ public class MainTele extends LinearOpMode implements Runnable{
             if(robot.launcher.getRings() >= 1){
                 robot.launcher.setVelocity(1000); //change to make constant speed
             }
-            else robot.launcher.setVelocity(0);//change to make constant speed
+            else {
+                robot.launcher.setVelocity(0);//change to make constant speed
+            }
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
