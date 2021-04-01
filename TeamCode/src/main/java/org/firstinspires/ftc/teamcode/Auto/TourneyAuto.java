@@ -135,22 +135,22 @@ public class TourneyAuto extends LinearOpMode {
 //        Robot.position.stop();
     }
     private void getMoreRings() {
-        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y - 13), 0.7, Math.toRadians(-10), 0.5);
-        Coordinate rings2 = new Coordinate(Robot.position.x + 15.2, Robot.position.y);
-        robot.intake(1);
-        if(robot.dice == Dice.three) {
-            robot.goTo(rings2, 0.28, 0, 0.3);
-            robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.6, Math.toRadians(-8), 0.3);
-        }
-        else {
-            robot.goTo(rings2, 0.3, 0, 0.3);
-
-        }
+//        robot.goTo(new Coordinate(Robot.position.x - 8, Robot.position.y - 13), 0.7, Math.toRadians(-10), 0.5);
+//        Coordinate rings2 = new Coordinate(Robot.position.x + 15.2, Robot.position.y);
+//        robot.intake(1);
+//        if(robot.dice == Dice.three) {
+//            robot.goTo(rings2, 0.28, 0, 0.3);
+//            robot.goTo(new Coordinate(Robot.position.x, Robot.position.y - 12), 0.6, Math.toRadians(-8), 0.3);
+//        }
+//        else {
+//            robot.goTo(rings2, 0.3, 0, 0.3);
+//
+//        }
         //robot.launcher.flapUp();
         robot.launcher.flapDown();
         //robot.launcher.setOnlyFlyWheel(0.49);
         robot.intake(0);
-        robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
+        //robot.goTo(new Coordinate(55, Robot.hiGoal.y), 0.6, Math.toRadians(-5), 0.4);
         robot.intake(1);
         sleep(700);
         robot.launcher.tiltUp();

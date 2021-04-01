@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 public class SampleRoadRunner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot( hardwareMap, 0, 0, 0, telemetry, this::opModeIsActive);
+        Robot robot = new Robot( hardwareMap, 0, 0, 0);
         robot.autoInit();
         SampleMecanumDrive driveTrain = new SampleMecanumDrive(hardwareMap);
 

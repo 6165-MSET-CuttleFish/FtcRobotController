@@ -79,17 +79,15 @@ public class Robot {
     double globalAngle, lastAngles;
 
     HardwareMap map;
-    Callable<Boolean> overrides;
     public SampleMecanumDrive driveTrain;
 
-    public Robot(HardwareMap imported, double x, double y, double robotOrientation, Telemetry telemetry, Callable<Boolean> overrides) {
-        this.overrides = overrides;
-        construct(imported, telemetry);
+    public Robot(HardwareMap imported, double x, double y, double robotOrientation) {
+        construct(imported);
         startPose = new Pose2d(x, y, robotOrientation);
         driveTrain.setPoseEstimate(startPose);
        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
-    private void construct(HardwareMap imported, Telemetry telemetry){
+    private void construct(HardwareMap imported){
         driveTrain = new SampleMecanumDrive(imported);
         pidRotate = new PIDController(.07, 0.013, 0.004);
         pwrShots[0] = new Goal(142, 70.5, 23.5);
@@ -115,46 +113,46 @@ public class Robot {
 
         launcher = new Launcher(map);
     }
-    public Robot(HardwareMap imported, Telemetry telemetry, Callable<Boolean> overrides) {
-        this.overrides = overrides;
-        construct(imported, telemetry);
+    public Robot(HardwareMap imported) {
+       // this.overrides = overrides;
+        construct(imported);
 //        if(position == null){
 //            //position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
 //        }
     }
-    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
-        goTo(pt, power, preferredAngle, turnSpeed, () -> {});
-    }
-    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) {
-        try {
-            double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-            while (distance > 3.5 && overrides.call()) {
-                distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-                if (distance < 15) {
-                    block.run();
-                }
-                double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
-
-                double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
-                //System.out.println("Rel " + relAngleToPoint);
-                double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
-                double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
-                double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-                double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-
-                double movement_x = movementXPower * power;
-                double movement_y = movementYPower * power;
-                double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-                double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
-                double rx = turnSpeed * Range.clip((AngleWrap(preferredAngle - position.radians())) / Math.toRadians(20), -1, 1);
-                //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-                setMovement(movement_x, movement_y, -rx);
-            }
-            setMovement(0, 0, 0);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+//    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
+//        goTo(pt, power, preferredAngle, turnSpeed, () -> {});
+//    }
+//    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) {
+//        try {
+//            double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
+//            while (distance > 3.5 && overrides.call()) {
+//                distance = Math.hypot(pt.x - position.x, pt.y - position.y);
+//                if (distance < 15) {
+//                    block.run();
+//                }
+//                double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
+//
+//                double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
+//                //System.out.println("Rel " + relAngleToPoint);
+//                double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
+//                double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
+//                double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+//                double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
+//
+//                double movement_x = movementXPower * power;
+//                double movement_y = movementYPower * power;
+//                double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
+//                double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
+//                double rx = turnSpeed * Range.clip((AngleWrap(preferredAngle - position.radians())) / Math.toRadians(20), -1, 1);
+//                //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
+//                setMovement(movement_x, movement_y, -rx);
+//            }
+//            setMovement(0, 0, 0);
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
     public void knockPowerShots(){
         Trajectory trajectory = driveTrain.trajectoryBuilder(startPose)
                 .splineTo(pwrShotLocals[2], 0)
@@ -339,7 +337,7 @@ public class Robot {
     public void orient(double angle, double pwr) {
         double closest = angle - position.returnOrientation();
         try {
-            pidRotate(closest, pwr);
+            //pidRotate(closest, pwr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -349,7 +347,7 @@ public class Robot {
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         //orient(position.angleTo(pt), pwr);
         try {
-            pidRotate(Math.toDegrees(relAngleToPoint), pwr);
+            //pidRotate(Math.toDegrees(relAngleToPoint), pwr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -360,60 +358,10 @@ public class Robot {
         double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
         double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
         try {
-            pidRotate(Math.toDegrees(relAngleToPoint), pwr);
+            //pidRotate(Math.toDegrees(relAngleToPoint), pwr);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    public void pidRotate(double degrees, double power) throws Exception{
-        // restart imu angle tracking.
-        resetAngle();
-
-        // if degrees > 359 we cap at 359 with same sign as original degrees.
-        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
-
-        pidRotate.reset();
-        pidRotate.setSetpoint(degrees);
-        pidRotate.setInputRange(0, degrees);
-        pidRotate.setOutputRange(0.15, power);
-        pidRotate.setTolerance(1.4);
-        pidRotate.enable();
-
-        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
-        // clockwise (right).
-
-        // rotate until turn is completed.
-
-        if (degrees < 0)
-        {
-            // On right turn we have to get off zero first.
-            while (getAngle() == 0 && overrides.call())
-            {
-                setMovement(0, 0 , power);
-                sleep(100);
-            }
-
-            do
-            {
-                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                setMovement(0, 0, -power);
-            } while (!pidRotate.onTarget() && overrides.call());
-        }
-        else    // left turn.
-            do
-            {
-                power = pidRotate.performPID(getAngle()); // power will be + on left turn.
-                setMovement(0, 0, -power);
-            } while (!pidRotate.onTarget() && overrides.call());
-
-        // turn the motors off.
-        setMovement(0, 0 ,0);
-
-        // wait for rotation to stop.
-        sleep(500);
-
-        // reset angle tracking on new heading.
-        resetAngle();
     }
     private void initVuforia() {
         /*

@@ -38,7 +38,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
+        robot = new Robot(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();
@@ -254,6 +254,6 @@ public class MainTele extends LinearOpMode implements Runnable{
         return gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0;
     }
     private void goToLaunchZone(){
-        robot.goTo(shootingPosition, 0.5, shootingAngle, 0.5);
+        //robot.goTo(shootingPosition, 0.5, shootingAngle, 0.5);
     }
 }

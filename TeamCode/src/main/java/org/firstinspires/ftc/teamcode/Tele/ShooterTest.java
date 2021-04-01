@@ -14,7 +14,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot = new Robot (hardwareMap, telemetry, this::opModeIsActive);
+        robot = new Robot (hardwareMap);
 
        // robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
 

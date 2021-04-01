@@ -17,7 +17,7 @@ public class intakeServoTest extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(hardwareMap, 14, 24, 0, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 14, 24, 0);
         robot.init();
         waitForStart();
         robot.unlockIntake();

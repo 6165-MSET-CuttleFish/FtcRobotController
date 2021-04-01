@@ -17,14 +17,14 @@ public class testAuto extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException{
-        robot = new Robot(hardwareMap, 9, 25, 0, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 9, 25, 0);
         robot.autoInit();
         telemetry.addData("orient", robot.position.returnOrientation());
         telemetry.addData("x",robot.position.x);
         telemetry.addData("y", robot.position.y);
         telemetry.update();
         waitForStart();
-        robot.goTo(Robot.leftWobble, 0.6, Math.toRadians(0), 0.4);
+       // robot.goTo(Robot.leftWobble, 0.6, Math.toRadians(0), 0.4);
         //robot.orient(0, 0.4);
     }
 }

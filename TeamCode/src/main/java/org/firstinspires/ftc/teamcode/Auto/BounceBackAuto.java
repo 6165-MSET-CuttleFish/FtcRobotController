@@ -18,7 +18,7 @@ public class BounceBackAuto extends LinearOpMode {
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 0, 0, 0, telemetry, this::opModeIsActive);
+        robot = new Robot(hardwareMap, 0, 0, 0);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
