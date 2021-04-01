@@ -41,6 +41,7 @@ public class Launcher {
     public Goal position;
     public double targetVelo;
     public volatile boolean isActive;
+
     public Launcher(HardwareMap map){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
         flywheel = map.get(DcMotorEx.class, "fw");
@@ -97,15 +98,18 @@ public class Launcher {
     }
     public int getRings(){
         double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
-        if(range < 2.5){
-            return 3;
-        } else if(range < 4.5){
-            return 2;
-        } else if(range < 7){
-            return 1;
-        } else {
-            return 0;
-        }
+            if (range < 2.6) {
+                return 3;
+            } else if (range < 4.1) {
+                return 2;
+            } else if (range < 7) {
+                return 1;
+            } else {
+                return 0;
+            }
+    }
+    public double getDistance(){
+        return colorRangeSensor.getDistance(DistanceUnit.INCH);
     }
     public void setVelocity(double v){
         targetVelo = v;
