@@ -201,7 +201,7 @@ public class MainTele extends LinearOpMode implements Runnable{
             } else {
                 robot.wingsMid();
             }
-            robot.launcher.setVelocity(1340);
+            robot.launcher.setVelocity(1320);
             if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 100){
                 robot.launcher.magazineShoot();
             }
@@ -212,7 +212,7 @@ public class MainTele extends LinearOpMode implements Runnable{
         }
         else if(gamepad2.left_bumper){
             robot.launcher.tiltUp();
-            robot.launcher.setVelocity(1000);
+            robot.launcher.setVelocity(1170);
             robot.wingsOut();
             robot.launcher.flapDown();
         }
@@ -224,9 +224,9 @@ public class MainTele extends LinearOpMode implements Runnable{
                 robot.launcher.wingsMid();
             }
             if(robot.launcher.getRings() >= 1){
-                robot.launcher.setVelocity(1340); //change to make constant speed
+                robot.launcher.setVelocity(1000); //change to make constant speed
             }
-            robot.launcher.setVelocity(0);//change to make constant speed
+            else robot.launcher.setVelocity(0);//change to make constant speed
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
