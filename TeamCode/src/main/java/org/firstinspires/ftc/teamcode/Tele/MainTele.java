@@ -81,7 +81,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                                 -gamepad1.right_stick_x * 0.8 * rxMult
                         )
                 );
-                robot.driveTrain.update();
+                //robot.driveTrain.update();
             }
             //robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
             if(gamepad1.y) {
@@ -218,7 +218,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 robot.launcher.wingsMid();
             }
             if(robot.launcher.getRings() >= 1){
-                robot.launcher.setVelocity(1000); //change to make constant speed
+                robot.launcher.setVelocity(400); //change to make constant speed
             }
             else {
                 robot.launcher.setVelocity(0);//change to make constant speed
