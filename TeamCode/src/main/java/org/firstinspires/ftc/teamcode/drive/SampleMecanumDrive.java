@@ -81,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private FtcDashboard dashboard;
     private NanoClock clock;
 
-    private Mode mode;
+    public Mode mode;
 
     private PIDFController turnController;
     private MotionProfile turnProfile;

@@ -18,6 +18,10 @@ public class Coordinate {
         this.x = point.getX();
         this.y = point.getY();
     }
+    public Coordinate(Pose2d pose){
+        this.x = pose.getX();
+        this.y = pose.getY();
+    }
     public Coordinate(){}
     public void setPoint(double x, double y) {
         this.x = x;

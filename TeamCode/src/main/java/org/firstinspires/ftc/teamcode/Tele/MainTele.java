@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.TuningController;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import java.util.ArrayList;
 import java.util.Collections;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,6 +25,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     double lastMillis = 0;
     int cycles = 0;
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
+    Pose2d shootingPose;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
@@ -71,20 +73,24 @@ public class MainTele extends LinearOpMode implements Runnable{
     @Override
     public void run() {
         while(opModeIsActive()) {
-            robot.driveTrain.setWeightedDrivePower(
-                    new Pose2d(
-                            -gamepad1.left_stick_y * lyMult,
-                            -gamepad1.left_stick_x * lxMult,
-                            -gamepad1.right_stick_x * 0.8 *rxMult
-                    )
-            );
+            if(robot.driveTrain.mode == SampleMecanumDrive.Mode.IDLE) {
+                robot.driveTrain.setWeightedDrivePower(
+                        new Pose2d(
+                                -gamepad1.left_stick_y * lyMult,
+                                -gamepad1.left_stick_x * lxMult,
+                                -gamepad1.right_stick_x * 0.8 * rxMult
+                        )
+                );
+                robot.driveTrain.update();
+            }
             //robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
             if(gamepad1.y) {
-                //robot.goTo(shootingPosition, 0.8, shootingAngle, 0.6);
+                Trajectory trajectory = robot.driveTrain.trajectoryBuilder()
+                        .splineToLinearHeading(shootingPose, 0)
+                        .build();
+                robot.driveTrain.followTrajectoryAsync(trajectory);
             }
-//            telemetry.addData("left", Robot.position.verticalEncoderLeft.getCurrentPosition());
-//            telemetry.addData("right", Robot.position.verticalEncoderRight.getCurrentPosition());
-//            telemetry.addData("horizontal", Robot.position.horizontalEncoder.getCurrentPosition());
+            if(!gamepadIdle()) robot.driveTrain.mode = SampleMecanumDrive.Mode.IDLE;
             telemetry.addData("velocity", robot.launcher.getVelocity());
             telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
             telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
@@ -237,13 +243,10 @@ public class MainTele extends LinearOpMode implements Runnable{
         }
     }
     private void storeCoordinate(){
-        //shootingPosition = Robot.position.toPoint();
-       // shootingAngle = Robot.position.radians();
+        shootingPose = new Coordinate(robot.driveTrain.getPoseEstimate())
+                .toPose2d(robot.driveTrain.getPoseEstimate().getHeading());
     }
     private boolean gamepadIdle(){
         return gamepad1.left_stick_x == 0 && gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0;
-    }
-    private void goToLaunchZone(){
-        //robot.goTo(shootingPosition, 0.5, shootingAngle, 0.5);
     }
 }
