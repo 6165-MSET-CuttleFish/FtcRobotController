@@ -73,7 +73,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     @Override
     public void run() {
         while(opModeIsActive()) {
-            if(robot.driveTrain.mode == SampleMecanumDrive.Mode.IDLE) {
+            if(robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.left_stick_y * lyMult,
@@ -90,7 +90,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                         .build();
                 robot.driveTrain.followTrajectoryAsync(trajectory);
             }
-            if(!gamepadIdle()) robot.driveTrain.mode = SampleMecanumDrive.Mode.IDLE;
+            if(!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             telemetry.addData("velocity", robot.launcher.getVelocity());
             telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
             telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
