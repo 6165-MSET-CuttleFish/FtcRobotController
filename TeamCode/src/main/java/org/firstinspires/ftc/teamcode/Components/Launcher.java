@@ -21,7 +21,7 @@ public class Launcher {
     static final double launcherHeight = 0.2032;
     static final double V = 9.9059;
     static final double g = -9.08711677875;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0075, 0, 0.0001);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0072, 0, 0.00009);
 
     public static double kV = 0.00071428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
