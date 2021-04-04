@@ -18,13 +18,30 @@ public class BounceBackAuto extends LinearOpMode {
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 0, 0, 0);
+        robot = new Robot(hardwareMap, 9, 48, 0);
         robot.autoInit();
         sleep(1000);
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         robot.launcher.tiltUp();
         robot.grab();
+        Thread shooterThread = new Thread(()->{
+            while(opModeIsActive()){
+                robot.launcher.updatePID();
+            }
+        });
+        Trajectory trajectory = robot.driveTrain.trajectoryBuilder(robot.startPose)
+                .splineTo(Robot.pwrShotLocals[2], 0)
+                .build();
+
+        Trajectory newTraj = robot.driveTrain.trajectoryBuilder(trajectory.end())
+                .strafeTo(Robot.pwrShotLocals[1])
+                .build();
+
+        Trajectory newTraj1 = robot.driveTrain.trajectoryBuilder(newTraj.end())
+                .strafeTo(Robot.pwrShotLocals[0])
+                .build();
+
 //        while (!opModeIsActive()) {
 //            robot.scan();
 //            telemetry.addData("Stack Height", robot.height);
@@ -32,17 +49,20 @@ public class BounceBackAuto extends LinearOpMode {
 //            telemetry.update();
 //        }
         waitForStart();
-//        robot.scan();
-//        robot.turnOffVision();
-//        robot.unlockIntake();
-//        robot.launcher.flapUp();
-//        robot.launcher.setVelocity(800);
-        //robot.knockPowerShots();
-        Trajectory trajectory = robot.driveTrain.trajectoryBuilder(robot.startPose)
-                .splineTo(new Vector2d(30, 35.5), 0)
-                .build();
+        shooterThread.start();
+       // robot.scan();
+        robot.turnOffVision();
+        //robot.unlockIntake();
+        robot.launcher.flapUp();
+        robot.launcher.setVelocity(700);
         robot.driveTrain.followTrajectory(trajectory);
-        //robot.launcher.setVelocity(0);
+        robot.launcher.singleRound();
+        robot.launcher.singleRound();
+//        robot.driveTrain.followTrajectory(newTraj);
+//        robot.launcher.singleRound();
+//        robot.driveTrain.followTrajectory(newTraj1);
+//        robot.launcher.singleRound();
+        robot.launcher.setVelocity(0);
         /*
         PICK UP BOUNCEBACKS
          */
