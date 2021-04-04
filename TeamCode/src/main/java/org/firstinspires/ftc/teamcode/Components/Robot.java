@@ -88,7 +88,6 @@ public class Robot {
        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     private void construct(HardwareMap imported){
-        driveTrain = new SampleMecanumDrive(imported);
         pidRotate = new PIDController(.07, 0.013, 0.004);
         pwrShots[0] = new Goal(142, 70.5, 23.5);
         pwrShots[1] = new Goal(142, 59, 23.5);
@@ -110,8 +109,8 @@ public class Robot {
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
-
         launcher = new Launcher(map);
+        driveTrain = new SampleMecanumDrive(imported);
     }
     public Robot(HardwareMap imported) {
        // this.overrides = overrides;
@@ -154,21 +153,7 @@ public class Robot {
 //        }
 //    }
     public void knockPowerShots(){
-        Trajectory trajectory = driveTrain.trajectoryBuilder(startPose)
-                .splineTo(pwrShotLocals[2], 0)
-                .build();
-        driveTrain.followTrajectory(trajectory);
-        launcher.singleRound();
-        Trajectory newTraj = driveTrain.trajectoryBuilder(trajectory.end())
-                .splineTo(pwrShotLocals[1], 0)
-                .build();
-        driveTrain.followTrajectory(newTraj);
-        launcher.singleRound();
-        Trajectory newTraj1 = driveTrain.trajectoryBuilder(newTraj.end())
-                .splineTo(pwrShotLocals[0], 0)
-                .build();
-        driveTrain.followTrajectory(newTraj1);
-        launcher.singleRound();
+
     }
     public Trajectory dropZone(){
         switch(dice){
