@@ -81,16 +81,16 @@ public class MainTele extends LinearOpMode implements Runnable{
                                 -gamepad1.right_stick_x * 0.8 * rxMult
                         )
                 );
-                //robot.driveTrain.update();
+                robot.driveTrain.update();
             }
             //robot.setMovement(gamepad1.left_stick_x * lxMult, -gamepad1.left_stick_y * lyMult, gamepad1.right_stick_x * rxMult);
-            if(gamepad1.y) {
-                Trajectory trajectory = robot.driveTrain.trajectoryBuilder()
-                        .splineToLinearHeading(shootingPose, 0)
-                        .build();
-                robot.driveTrain.followTrajectoryAsync(trajectory);
-            }
-            if(!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+//            if(gamepad1.y) {
+//                Trajectory trajectory = robot.driveTrain.trajectoryBuilder()
+//                        .splineToLinearHeading(shootingPose, 0)
+//                        .build();
+//                robot.driveTrain.followTrajectoryAsync(trajectory);
+//            }
+//            if(!gamepad1.a) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             telemetry.addData("velocity", robot.launcher.getVelocity());
             telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
             telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
@@ -217,10 +217,13 @@ public class MainTele extends LinearOpMode implements Runnable{
             } else {
                 robot.launcher.wingsMid();
             }
-            if(robot.launcher.getRings() >= 1){
-                robot.launcher.setVelocity(400); //change to make constant speed
-            }
-            else {
+            if(robot.launcher.getRings() == 1){
+                robot.launcher.setVelocity(600); //change to make constant speed
+            } else if(robot.launcher.getRings() == 2){
+                robot.launcher.setVelocity(1000);
+            } else if(robot.launcher.getRings() == 3){
+                robot.launcher.setVelocity(1320);
+            } else {
                 robot.launcher.setVelocity(0);//change to make constant speed
             }
             robot.launcher.flapDown();
