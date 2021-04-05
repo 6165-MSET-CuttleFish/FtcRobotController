@@ -55,6 +55,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(141, 37.5);
+    public static Pose2d shootingPose = new Pose2d(55, 37.5, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
