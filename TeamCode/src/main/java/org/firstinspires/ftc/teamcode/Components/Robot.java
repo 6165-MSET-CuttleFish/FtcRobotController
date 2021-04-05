@@ -36,7 +36,8 @@ public class Robot {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
-    public Dice dice = Dice.one;
+    public static Dice dice = Dice.one;
+    public static OpModeType opModeType = OpModeType.auto;
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
@@ -86,6 +87,17 @@ public class Robot {
         startPose = new Pose2d(x, y, robotOrientation);
         driveTrain.setPoseEstimate(startPose);
        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
+    }
+    public Robot(HardwareMap imported, double x, double y, double robotOrientation, OpModeType type) {
+        opModeType = type;
+        construct(imported);
+        startPose = new Pose2d(x, y, robotOrientation);
+        driveTrain.setPoseEstimate(startPose);
+        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
+    }
+    public Robot(HardwareMap imported, OpModeType type){
+        opModeType = type;
+        construct(imported);
     }
     private void construct(HardwareMap imported){
         pidRotate = new PIDController(.07, 0.013, 0.004);
