@@ -178,7 +178,7 @@ public class Launcher {
         tilt.setPosition(0.75);
     }
     public void tiltDown(){
-        tilt.setPosition(0.52);
+        tilt.setPosition(0.54);
     }
     public void magazineShoot(){
         int rounds = getRings();
