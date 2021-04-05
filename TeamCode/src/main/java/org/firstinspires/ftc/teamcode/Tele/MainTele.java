@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.TuningController;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
@@ -28,7 +30,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     Pose2d shootingPose;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap);
+        robot = new Robot(hardwareMap, OpModeType.tele);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();

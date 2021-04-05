@@ -186,6 +186,7 @@ public class Launcher {
             singleRound();
             //setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(200);
+            if(Robot.opModeType == OpModeType.tele) wingsOut();
             if(i == rounds - 2){
                 sleep(80);
             }

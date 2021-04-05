@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
+import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
@@ -26,7 +27,7 @@ public class BounceBackAuto extends LinearOpMode {
     Coordinate targetPos;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 9, 48, 0);
+        robot = new Robot(hardwareMap, 9, 48, 0, OpModeType.auto);
         robot.autoInit();
         Trajectory trajectory = robot.driveTrain.trajectoryBuilder(robot.startPose)
                 .splineTo(Robot.pwrShotLocals[2], 0)
