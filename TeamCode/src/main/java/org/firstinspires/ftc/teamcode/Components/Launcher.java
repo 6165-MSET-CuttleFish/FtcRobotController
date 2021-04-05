@@ -176,6 +176,7 @@ public class Launcher {
     }
     public void tiltUp(){
         tilt.setPosition(0.75);
+        sleep(10);
     }
     public void tiltDown(){
         tilt.setPosition(0.54);
