@@ -66,8 +66,9 @@ public class BounceBackAuto extends LinearOpMode {
                 .addTemporalMarker(0.3, ()->robot.wobbleArmDown())
                 .splineToLinearHeading(Robot.shootingPose, 0)
                 .build();
-        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(wobbleDropA.end(), true)
-                .splineTo(Robot.rightWobble, 0)
+        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(wobbleDropA.end())
+                .splineToConstantHeading(Robot.rightWobble, 0)
+                .splineTo(new Vector2d(20, 30), 0)
                 .build();
         Trajectory stackIntake = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
                 .splineTo(new Vector2d(30, 30), Math.toRadians(-2), new MinVelocityConstraint(

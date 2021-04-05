@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="SingleDriverTele", group = "LinearOpMode")
+@Disabled
 public class singleDriver extends LinearOpMode {
 
     public DcMotor fl, fr, bl,br;//matthew is fat

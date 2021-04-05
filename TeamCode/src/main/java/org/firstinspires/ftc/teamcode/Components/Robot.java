@@ -137,7 +137,7 @@ public class Robot {
     private void setYController(){
     }
     public double getPoseVelo(){
-        return velocityController.get(driveTrain.getPoseEstimate().vec().distTo(goal));
+        return Range.clip(0, 1350, velocityController.get(driveTrain.getPoseEstimate().vec().distTo(goal)));
     }
     public Robot(HardwareMap imported) {
         construct(imported);
