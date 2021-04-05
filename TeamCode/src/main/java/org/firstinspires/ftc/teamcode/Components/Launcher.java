@@ -23,7 +23,7 @@ public class Launcher {
     static final double g = -9.08711677875;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.002, 0, 0.00009);
 
-    public static double kV = 0.00071428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
 
@@ -55,12 +55,13 @@ public class Launcher {
         tilt = map.get(Servo.class, "tilt");
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
-        controlPoints = new InterpLUT();
+        singleRound();
+        //controlPoints = new InterpLUT();
         tiltDown();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        setControlPoints();
+        //setControlPoints();
         veloTimer.reset();
     }
     public void run(){
@@ -191,14 +192,13 @@ public class Launcher {
         }
     }
     public void singleRound(){
-        tiltUp();
-        mag.setPosition(0.35);
-        sleep(140);
+        mag.setPosition(0.34);
+        sleep(150);
         //this is sleep value to change
         mag.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.45);
+        flap.setPosition(0.43);
     }
     public void flapDown(){
         flap.setPosition(0.35);

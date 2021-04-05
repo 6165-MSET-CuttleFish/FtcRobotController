@@ -94,8 +94,8 @@ public class Robot {
         pwrShots[2] = new Goal(142, 53.25, 23.5);
 
         pwrShotLocals[0] = new Vector2d(67, 67);
-        pwrShotLocals[1] = new Vector2d(67, 60);
-        pwrShotLocals[2] = new Vector2d(67, 53.25);
+        pwrShotLocals[1] = new Vector2d(67, 58);
+        pwrShotLocals[2] = new Vector2d(67, 50.25);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
