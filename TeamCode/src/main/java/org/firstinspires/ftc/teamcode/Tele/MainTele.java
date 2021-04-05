@@ -163,11 +163,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             sleep(300);
         }
     }
-    private void autoPowerShots(){
-        for(Coordinate pwrShot : Robot.pwrShots){
-            robot.turnTo(pwrShot, 0.24);
-        }
-    }
     private void strafePowerShot(){
         if(gamepad2.dpad_down){
             //robot.launcher.setFlyWheel(0.45);
@@ -198,7 +193,8 @@ public class MainTele extends LinearOpMode implements Runnable{
                 robot.wingsMid();
             }
             robot.launcher.setVelocity(1320);
-            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 100){
+            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 60){
+                sleep(100);
                 robot.launcher.magazineShoot();
             }
 //            if(robot.launcher.getVelocity() >= 1340){

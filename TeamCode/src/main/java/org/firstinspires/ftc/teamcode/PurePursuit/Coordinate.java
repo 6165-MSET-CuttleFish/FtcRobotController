@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-
-import org.firstinspires.ftc.teamcode.Components.Goal;
 
 public class Coordinate {
     public double x;
@@ -71,17 +68,6 @@ public class Coordinate {
     }
     public Pose2d toPose2d(double angle){
         return new Pose2d(x, y, angle);
-    }
-    public double distanceTo(Goal g, double height){
-        double x = distanceTo(Coordinate.toPoint(g));
-        double y = g.height - height;
-        return Math.hypot(x, y);
-    }
-    public double verticalAngleTo(Goal g, double height){//some work needed
-        double x = distanceTo(Coordinate.toPoint(g));
-        double y = g.height - height;
-        Coordinate c = new Coordinate(x, y);
-        return angleTo(c);
     }
     public double distanceTo(Coordinate B) {
         return Math.sqrt(Math.pow(B.getX() - getX(), 2) + Math.pow(B.getY() - getY(), 2));

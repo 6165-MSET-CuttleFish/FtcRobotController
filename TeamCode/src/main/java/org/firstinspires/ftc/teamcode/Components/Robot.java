@@ -5,6 +5,7 @@ import java.lang.*;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -42,12 +43,9 @@ public class Robot {
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
-    public static OdometryGlobalCoordinatePosition position;
-
-//    public DcMotor topLeft;
-//    public DcMotor topRight;
-//    public DcMotor botLeft;
-//    public DcMotor botRight;
+    private InterpLUT velocityController;
+    private InterpLUT xController;
+    private InterpLUT yController;
 
     public DcMotor intakeR, intakeL;
 
@@ -56,54 +54,47 @@ public class Robot {
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
 
-    public static Goal hiGoal = new Goal(141, 37.5, 35.5);//142.75
-    public static Goal loGoal = new Goal(141, 37.5, 17);
-    public static Goal[] pwrShots = new Goal[3];
+    public static Vector2d goal = new Vector2d(141, 37.5);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
-    public static Pose2d A = new Pose2d(65, 20);
-    public static Pose2d B = new Pose2d(87.25, 35);
-    public static Pose2d C = new Pose2d(108, 9);
-    public static Pose2d newA = new Pose2d(80.25, 25);
-    public static Pose2d newB = new Pose2d(106.25, 52);
-    public static Pose2d newC = new Pose2d(120, 27);
+    public static Vector2d A = new Vector2d(65, 20);
+    public static Vector2d B = new Vector2d(87.25, 35);
+    public static Vector2d C = new Vector2d(108, 9);
+    public static Vector2d newA = new Vector2d(80.25, 25);
+    public static Vector2d newB = new Vector2d(106.25, 52);
+    public static Vector2d newC = new Vector2d(120, 27);
 
-    public static Pose2d robotPose;
-    public Pose2d startPose;
+    public static Pose2d robotPose = new Pose2d();
 
-    public static Coordinate leftWobble = new Coordinate(34.7, 53);
-    public static Coordinate rightWobble = new Coordinate(14, 24);
+    public static Vector2d leftWobble = new Vector2d(34.7, 53);
+    public static Vector2d rightWobble = new Vector2d(14, 24);
 
     public Launcher launcher;
-    public PIDController pidRotate;
-    double globalAngle, lastAngles;
 
     HardwareMap map;
     public SampleMecanumDrive driveTrain;
 
     public Robot(HardwareMap imported, double x, double y, double robotOrientation) {
+        robotPose = new Pose2d(x, y, robotOrientation);
         construct(imported);
-        startPose = new Pose2d(x, y, robotOrientation);
-        driveTrain.setPoseEstimate(startPose);
-       // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     public Robot(HardwareMap imported, double x, double y, double robotOrientation, OpModeType type) {
         opModeType = type;
+        robotPose = new Pose2d(x, y, robotOrientation);
         construct(imported);
-        startPose = new Pose2d(x, y, robotOrientation);
-        driveTrain.setPoseEstimate(startPose);
-        // position  = new OdometryGlobalCoordinatePosition(botLeft, botRight, topRight, 8192/(1.5*Math.PI), 3, x, y, robotOrientation);
     }
     public Robot(HardwareMap imported, OpModeType type){
         opModeType = type;
         construct(imported);
     }
     private void construct(HardwareMap imported){
-        pidRotate = new PIDController(.07, 0.013, 0.004);
-        pwrShots[0] = new Goal(142, 70.5, 23.5);
-        pwrShots[1] = new Goal(142, 59, 23.5);
-        pwrShots[2] = new Goal(142, 53.25, 23.5);
+        velocityController = new InterpLUT();
+        xController = new InterpLUT();
+        yController = new InterpLUT();
+        setVelocityController();
+        setXController();
+        setYController();
 
         pwrShotLocals[0] = new Vector2d(67, 67);
         pwrShotLocals[1] = new Vector2d(67, 58);
@@ -123,60 +114,33 @@ public class Robot {
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
         launcher = new Launcher(map);
         driveTrain = new SampleMecanumDrive(imported);
+        driveTrain.setPoseEstimate(robotPose);
+    }
+    private void setVelocityController(){
+        velocityController.add(75,1360);
+        velocityController.add(77.5,1320);
+        velocityController.add(80,1340);
+        velocityController.add(85,1300);
+        velocityController.add(90, 1260);
+        velocityController.add(95,1220);
+        velocityController.add(100,1200);
+        velocityController.add(105,1200);
+        velocityController.add(110,1190);
+        velocityController.add(115,1190);
+        velocityController.add(120,1190);
+        velocityController.add(125,1210);
+        velocityController.add(132.5,1220);
+    }
+    private void setXController(){
+    }
+    private void setYController(){
+    }
+    public double getPoseVelo(){
+        return velocityController.get(driveTrain.getPoseEstimate().vec().distTo(goal));
     }
     public Robot(HardwareMap imported) {
-       // this.overrides = overrides;
         construct(imported);
-//        if(position == null){
-//            //position  = new OdometryGlobalCoordinatePosition(intakeL, launcher.flywheel1, intakeR, 8192/(1.5*Math.PI), 3, 0, 0, 0);
-//        }
     }
-//    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed) {
-//        goTo(pt, power, preferredAngle, turnSpeed, () -> {});
-//    }
-//    public void goTo(Coordinate pt, double power, double preferredAngle, double turnSpeed, Runnable block) {
-//        try {
-//            double distance = Math.hypot(pt.x - position.getX(), pt.y - position.y);
-//            while (distance > 3.5 && overrides.call()) {
-//                distance = Math.hypot(pt.x - position.x, pt.y - position.y);
-//                if (distance < 15) {
-//                    block.run();
-//                }
-//                double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
-//
-//                double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians() + Math.toRadians(90));
-//                //System.out.println("Rel " + relAngleToPoint);
-//                double relativeXToPoint = Math.cos(relAngleToPoint) * distance;
-//                double relativeYToPoint = Math.sin(relAngleToPoint) * distance;
-//                double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-//                double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
-//
-//                double movement_x = movementXPower * power;
-//                double movement_y = movementYPower * power;
-//                double relTurnAngle = relAngleToPoint - Math.toRadians(90) + preferredAngle;
-//                double movement_turn = distance > 5 ? Range.clip(relTurnAngle / Math.toRadians(20), -1, 1) * turnSpeed : 0;
-//                double rx = turnSpeed * Range.clip((AngleWrap(preferredAngle - position.radians())) / Math.toRadians(20), -1, 1);
-//                //double movement_turn = distance > 10 ? Range.clip(relTurnAngle / Math.toRadians(30), -1, 1) * turnSpeed : 0;
-//                setMovement(movement_x, movement_y, -rx);
-//            }
-//            setMovement(0, 0, 0);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-    public void knockPowerShots(){
-
-    }
-    public Trajectory dropZone(){
-        switch(dice){
-            case one: return driveTrain.trajectoryBuilder().splineToSplineHeading(A, Math.toRadians(-180)).build();
-            case two: return driveTrain.trajectoryBuilder().splineToSplineHeading(B, Math.toRadians(-180)).build();
-            default: return driveTrain.trajectoryBuilder().splineToSplineHeading(C, Math.toRadians(-180)).build();
-        }
-    }
-//    public static Trajectory shootingPath = driveTrain.trajectoryBuilder()
-//            .splineToSplineHeading(new Pose2d(57, hiGoal.y),0)
-//            .build();
     public void wingsOut() {
         launcher.wingsOut();
     }
@@ -195,16 +159,6 @@ public class Robot {
     public void unlockIntake(){
         launcher.unlockIntake();
     }
-    public void setMovement(double lx, double ly, double rx){
-//        topLeft.setPower(Range.clip(ly + lx + rx, -1, 1));
-//        topRight.setPower(Range.clip(ly - lx - rx, -1, 1));
-//        botLeft.setPower(Range.clip(ly - lx + rx, -1, 1));
-//        botRight.setPower(Range.clip(ly + lx - rx, -1, 1));
-//        telemetry.addData("x", position.x);
-//        telemetry.addData("y", position.y);
-//        telemetry.addData("orientation(degrees)", position.returnOrientation());
-//        telemetry.update();
-    }
     public void init(){
     }
     public void autoInit(){
@@ -222,13 +176,6 @@ public class Robot {
             if (updatedRecognitions != null) {
                 for (Recognition recognition : updatedRecognitions) {
                     if (recognition.getHeight() < 200) {
-//                    if (recognition.getLabel() == LABEL_FIRST_ELEMENT) {
-//                        discs = 4;
-//                    } else if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
-//                        discs = 1;
-//                    } else {
-//                        discs = 0;
-//                    }
                         if (recognition.getHeight() >= 90) {
                             dice = Dice.one;
                         } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
@@ -243,9 +190,6 @@ public class Robot {
         }
     }
     public void turnOffVision(){
-        if(dice == Dice.one){
-            leftWobble.addY(-5);
-        }
         if(tfod != null) {
             tfod.shutdown();
         }
@@ -255,15 +199,6 @@ public class Robot {
     }
     private String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
-    public double getHeading() {//for overall
-        return position.returnOrientation();
-    }
-    public void resetAngle()
-    {
-        lastAngles =  position.returnOrientation();
-
-        globalAngle = 0;
     }
     public final void idle() {
         Thread.yield();
@@ -314,70 +249,12 @@ public class Robot {
             in2.setPosition(0.5);
         }
     }
-    public double getAngle()
-    {
-        double angles = position.returnOrientation();
-
-        double deltaAngle = angles - lastAngles;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastAngles = angles;
-
-        return globalAngle;
-    }
-    public void orient(double angle, double pwr) {
-        double closest = angle - position.returnOrientation();
-        try {
-            //pidRotate(closest, pwr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void turnTo(Coordinate pt, double pwr){
-        double absAngleToTarget = Math.atan2(pt.y - position.y, pt.x - position.x);
-        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
-        //orient(position.angleTo(pt), pwr);
-        try {
-            //pidRotate(Math.toDegrees(relAngleToPoint), pwr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void launcherTurnTo(Coordinate pt, double pwr){
-        Coordinate shooter = position.toPoint();
-        shooter.polarAdd(position.radians() + Math.PI/2, 8);
-        double absAngleToTarget = Math.atan2(pt.y - shooter.y, pt.x - shooter.x);
-        double relAngleToPoint = AngleWrap(absAngleToTarget - position.radians());
-        try {
-            //pidRotate(Math.toDegrees(relAngleToPoint), pwr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = CameraDirection.BACK;
-
-        //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
     private void initTfod() {
         int tfodMonitorViewId = map.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", map.appContext.getPackageName());

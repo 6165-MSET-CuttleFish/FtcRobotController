@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -34,11 +33,9 @@ public class Launcher {
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
 
     private final ElapsedTime veloTimer = new ElapsedTime();
-    InterpLUT controlPoints;
     public DcMotorEx flywheel, flywheel1;
     public Servo mag, flap, tilt;
     public Servo rightIntakeHolder, leftIntakeHolder;
-    public Goal position;
     public double targetVelo;
     public volatile boolean isActive;
 
@@ -56,12 +53,10 @@ public class Launcher {
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
-        //controlPoints = new InterpLUT();
         tiltDown();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        //setControlPoints();
         veloTimer.reset();
     }
     public void run(){
@@ -94,9 +89,6 @@ public class Launcher {
     public void stop(){
         isActive = false;
     }
-    private void setControlPoints(){
-        controlPoints.add(0, 3000);
-    }
     public int getRings(){
         double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
             if (range < 2.6) {
@@ -120,9 +112,6 @@ public class Launcher {
     }
     public double getTargetVelo(){
         return targetVelo;
-    }
-    public void aimAt(Goal g, Coordinate p){
-        double angle = findAngle(g, p);
     }
     public void wingsOut() {
         leftIntakeHolder.setPosition(0.96);
@@ -160,23 +149,12 @@ public class Launcher {
         //System.out.println(theta);
         flap.setPosition(setAngle(theta));
     }
-    public static double findAngle(Goal goal, Coordinate position){
-        double d = goal.x - position.x;//position.distanceTo(goal);
-        double goalHeight = inchesToMeters(goal.height);
-        double theta;
-        double h = goalHeight - launcherHeight;
-        theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        return theta;
-    }
-
     public static double setAngle(double theta){
         theta -= 25;
         return -0.1*theta*theta + 3*theta;
     }
     public void tiltUp(){
         tilt.setPosition(0.75);
-        sleep(10);
     }
     public void tiltDown(){
         tilt.setPosition(0.54);
