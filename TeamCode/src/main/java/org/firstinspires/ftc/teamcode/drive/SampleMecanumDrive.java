@@ -242,9 +242,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         throw new AssertionError();
     }
-
+    private double lastAngle = 0;
     public void update() {
         updatePoseEstimate();
+        Pose2d tempPose = getPoseEstimate();
+        if(lastAngle != getRawExternalHeading()) {
+            lastAngle = getRawExternalHeading();
+            setPoseEstimate(new Pose2d(tempPose.getX(), tempPose.getY(), Math.toRadians(lastAngle)));
+        }
 
         Pose2d currentPose = getPoseEstimate();
         Pose2d lastError = getLastError();
@@ -423,7 +428,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return -imu.getAngularOrientation().firstAngle;
     }
 
     @Override
