@@ -23,11 +23,11 @@ public class autoTest extends LinearOpMode {
         robot.init();
         waitForStart();
         Trajectory trajectoryForward = robot.driveTrain.trajectoryBuilder(new Pose2d())
-                .forward(50)
+                .strafeLeft(30)
                 .build();
 
         Trajectory trajectoryBackward = robot.driveTrain.trajectoryBuilder(trajectoryForward.end())
-                .back(50)
+                .strafeRight(30)
                 .build();
         //Async.start(()->opModeIsActive(), ()->robot.wobbleArmDown());
         while(opModeIsActive()){

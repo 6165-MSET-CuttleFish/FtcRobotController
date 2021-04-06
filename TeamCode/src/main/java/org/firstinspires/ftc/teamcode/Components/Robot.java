@@ -97,8 +97,8 @@ public class Robot {
         setXController();
         setYController();
 
-        pwrShotLocals[0] = new Vector2d(67, 67);
-        pwrShotLocals[1] = new Vector2d(67, 58);
+        pwrShotLocals[0] = new Vector2d(67, 70);
+        pwrShotLocals[1] = new Vector2d(67, 61);
         pwrShotLocals[2] = new Vector2d(67, 50.25);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
@@ -140,6 +140,7 @@ public class Robot {
         return Range.clip(0, 1350, velocityController.get(driveTrain.getPoseEstimate().vec().distTo(goal)));
     }
     public Robot(HardwareMap imported) {
+        robotPose = new Pose2d();
         construct(imported);
     }
     public void wingsOut() {

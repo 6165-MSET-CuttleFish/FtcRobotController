@@ -50,29 +50,32 @@ public class MainTele extends LinearOpMode implements Runnable{
         Thread driveTrain = new Thread(this);
         Thread pathGenerator = new Thread(()->{
             while (opModeIsActive()){
-                powerShots = robot.driveTrain.trajectoryBuilder()
-                        .splineTo(Robot.pwrShotLocals[2], 0)
-                        .addDisplacementMarker(()-> Async.start(()->true, ()->robot.launcher.singleRound()))
-                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
-                                        Arrays.asList(
-                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                        )
-                                ),
-                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .addDisplacementMarker(()->Async.start(()->true, ()->robot.launcher.singleRound()))
-                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
-                                        Arrays.asList(
-                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                        )
-                                ),
-                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .addDisplacementMarker(()->Async.start(()->true, ()->robot.launcher.singleRound()))
-                        .build();
-                shootingPath = robot.driveTrain.trajectoryBuilder()
-                        .splineToLinearHeading(shootingPose, 0)
-                        .build();
+                if(robot.intakeL.getPower() != 0) {
+                    sleep(400);
+                    powerShots = robot.driveTrain.trajectoryBuilder()
+                            .splineTo(Robot.pwrShotLocals[2], 0)
+                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
+                            .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
+                                            Arrays.asList(
+                                                    new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                    new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+                                            )
+                                    ),
+                                    new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
+                            .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
+                                            Arrays.asList(
+                                                    new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                    new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+                                            )
+                                    ),
+                                    new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
+                            .build();
+                    shootingPath = robot.driveTrain.trajectoryBuilder()
+                            .splineToLinearHeading(shootingPose, 0)
+                            .build();
+                }
             }
         });
         waitForStart();
@@ -233,7 +236,7 @@ public class MainTele extends LinearOpMode implements Runnable{
             }
             robot.launcher.setVelocity(1320);
             if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 60){
-                sleep(100);
+                sleep(400);
                 robot.launcher.magazineShoot();
             }
         }
