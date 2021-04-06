@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 
@@ -44,9 +45,9 @@ public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Robot robot = new Robot(hardwareMap);
 
-        if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
+        if (!(robot.driveTrain.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "
                     + "drive class. Ensure that \"setLocalizer(new StandardTrackingWheelLocalizer"
                     + "(hardwareMap));\" is called in SampleMecanumDrive.java");
@@ -66,24 +67,24 @@ public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
 
         MovingStatistics forwardOffsetStats = new MovingStatistics(NUM_TRIALS);
         for (int i = 0; i < NUM_TRIALS; i++) {
-            drive.setPoseEstimate(new Pose2d());
+            robot.driveTrain.setPoseEstimate(new Pose2d());
 
             // it is important to handle heading wraparounds
             double headingAccumulator = 0;
             double lastHeading = 0;
 
-            drive.turnAsync(Math.toRadians(ANGLE));
+            robot.driveTrain.turnAsync(Math.toRadians(ANGLE));
 
-            while (!isStopRequested() && drive.isBusy()) {
-                double heading = drive.getPoseEstimate().getHeading();
+            while (!isStopRequested() && robot.driveTrain.isBusy()) {
+                double heading = robot.driveTrain.getPoseEstimate().getHeading();
                 headingAccumulator += Angle.norm(heading - lastHeading);
                 lastHeading = heading;
 
-                drive.update();
+                robot.driveTrain.update();
             }
 
             double forwardOffset = StandardTrackingWheelLocalizer.FORWARD_OFFSET +
-                    drive.getPoseEstimate().getY() / headingAccumulator;
+                    robot.driveTrain.getPoseEstimate().getY() / headingAccumulator;
             forwardOffsetStats.add(forwardOffset);
 
             sleep(DELAY);

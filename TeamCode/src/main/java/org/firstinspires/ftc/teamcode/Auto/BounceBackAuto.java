@@ -30,7 +30,7 @@ public class BounceBackAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 9, 48, 0, OpModeType.auto);
-        robot.autoInit();
+        //robot.autoInit();
         Trajectory powerShotsTraj = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
                 .splineTo(Robot.pwrShotLocals[2], 0, new MinVelocityConstraint(
                                 Arrays.asList(
@@ -112,7 +112,7 @@ public class BounceBackAuto extends LinearOpMode {
         shooterThread.start();
         robot.turnOffVision();
         robot.launcher.flapUp();
-        robot.launcher.setVelocity(915);
+        robot.launcher.setVelocity(907);
         robot.driveTrain.followTrajectory(powerShotsTraj);
         robot.driveTrain.followTrajectory(powerShotsTrajCont);
         sleep(200);

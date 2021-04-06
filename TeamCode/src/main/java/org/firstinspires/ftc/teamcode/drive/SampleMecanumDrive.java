@@ -61,8 +61,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6.3, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 0.3);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(18, 0, 0.1);
 
     public static double LATERAL_MULTIPLIER = 0.98826721;
 
@@ -137,7 +137,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-
+        while(!imu.isGyroCalibrated()){}
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
@@ -242,14 +242,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         throw new AssertionError();
     }
-    private double lastAngle = 0;
     public void update() {
         updatePoseEstimate();
-        Pose2d tempPose = getPoseEstimate();
-        if(lastAngle != getRawExternalHeading()) {
-            lastAngle = getRawExternalHeading();
-            setPoseEstimate(new Pose2d(tempPose.getX(), tempPose.getY(), Math.toRadians(lastAngle)));
-        }
 
         Pose2d currentPose = getPoseEstimate();
         Pose2d lastError = getLastError();
@@ -428,7 +422,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return -imu.getAngularOrientation().firstAngle;
+        return imu.getAngularOrientation().firstAngle;
     }
 
     @Override

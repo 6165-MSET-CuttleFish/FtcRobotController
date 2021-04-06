@@ -178,7 +178,7 @@ public class Launcher {
         mag.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.43);
+        flap.setPosition(0.44);
     }
     public void flapDown(){
         flap.setPosition(0.35);

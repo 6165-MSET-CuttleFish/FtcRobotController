@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 
@@ -68,9 +69,9 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Robot robot = new Robot(hardwareMap);
 
-        if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
+        if (!(robot.driveTrain.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "
                     + "drive class. Ensure that \"setLocalizer(new StandardTrackingWheelLocalizer"
                     + "(hardwareMap));\" is called in SampleMecanumDrive.java");
@@ -97,11 +98,11 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
         while (!isStopRequested() && !tuningFinished) {
             Pose2d vel = new Pose2d(0, 0, -gamepad1.right_stick_x);
-            drive.setDrivePower(vel);
+            robot.driveTrain.setDrivePower(vel);
 
-            drive.update();
+            robot.driveTrain.update();
 
-            double heading = drive.getPoseEstimate().getHeading();
+            double heading = robot.driveTrain.getPoseEstimate().getHeading();
             double deltaHeading = heading - lastHeading;
 
             headingAccumulator += Angle.normDelta(deltaHeading);
@@ -110,7 +111,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             telemetry.clearAll();
             telemetry.addLine("Total Heading (deg): " + Math.toDegrees(headingAccumulator));
             telemetry.addLine("Raw Heading (deg): " + Math.toDegrees(heading));
-            telemetry.addLine("IMU Heading: " + Math.toDegrees(drive.getExternalHeading()));
+            telemetry.addLine("IMU Heading: " + Math.toDegrees(robot.driveTrain.getRawExternalHeading()));
             telemetry.addLine();
             telemetry.addLine("Press Y/△ to conclude routine");
             telemetry.update();

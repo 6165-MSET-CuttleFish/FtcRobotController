@@ -97,9 +97,9 @@ public class Robot {
         setXController();
         setYController();
 
-        pwrShotLocals[0] = new Vector2d(67, 70);
-        pwrShotLocals[1] = new Vector2d(67, 61);
-        pwrShotLocals[2] = new Vector2d(67, 50.25);
+        pwrShotLocals[0] = new Vector2d(68, 70);
+        pwrShotLocals[1] = new Vector2d(68, 60);
+        pwrShotLocals[2] = new Vector2d(68, 50.6);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
