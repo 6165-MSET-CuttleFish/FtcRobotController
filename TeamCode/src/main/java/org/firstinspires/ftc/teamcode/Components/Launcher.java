@@ -25,6 +25,7 @@ public class Launcher {
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
+    public static long sleepTime = 550;
 
     double lastTargetVelo = 0.0;
     double lastKv = kV;
@@ -164,7 +165,7 @@ public class Launcher {
         for(int i = 0; i < 3; i++){
             singleRound();
             //setOnlyFlyWheel(flyWheelSpeed + 0.08);
-            sleep(160);
+            sleep(sleepTime);
             if(Robot.opModeType == OpModeType.tele) wingsOut();
             if(i == rounds - 2){
                 sleep(80);
@@ -178,7 +179,7 @@ public class Launcher {
         mag.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.44);
+        flap.setPosition(0.43);
     }
     public void flapDown(){
         flap.setPosition(0.35);

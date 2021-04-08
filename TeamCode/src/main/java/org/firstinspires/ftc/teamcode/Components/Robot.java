@@ -61,7 +61,7 @@ public class Robot {
 
     public static Vector2d A = new Vector2d(65, 20);
     public static Vector2d B = new Vector2d(87.25, 35);
-    public static Vector2d C = new Vector2d(108, 9);
+    public static Vector2d C = new Vector2d(130, 18);
     public static Vector2d newA = new Vector2d(80.25, 25);
     public static Vector2d newB = new Vector2d(106.25, 52);
     public static Vector2d newC = new Vector2d(120, 27);
@@ -97,9 +97,9 @@ public class Robot {
         setXController();
         setYController();
 
-        pwrShotLocals[0] = new Vector2d(68, 70);
+        pwrShotLocals[0] = new Vector2d(68, 69.4);
         pwrShotLocals[1] = new Vector2d(68, 60);
-        pwrShotLocals[2] = new Vector2d(68, 50.6);
+        pwrShotLocals[2] = new Vector2d(68, 51);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
