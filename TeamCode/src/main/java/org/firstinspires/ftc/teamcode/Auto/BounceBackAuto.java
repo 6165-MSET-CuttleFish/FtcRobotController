@@ -32,10 +32,10 @@ public class BounceBackAuto extends LinearOpMode {
         robot = new Robot(hardwareMap, 9, 48, 0, OpModeType.auto);
         //robot.autoInit();
         Trajectory powerShotsTraj = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
-                .splineTo(Robot.pwrShotLocals[2], 0, new MinVelocityConstraint(
+                .splineTo(Robot.pwrShotLocals[0], 0, new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                        new MecanumVelocityConstraint(40, DriveConstants.TRACK_WIDTH)
+                                        new MecanumVelocityConstraint(45, DriveConstants.TRACK_WIDTH)
                                 )
                         ),
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -50,7 +50,7 @@ public class BounceBackAuto extends LinearOpMode {
                 ),
                 new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(()->Async.start(()->true, ()->robot.launcher.singleRound()))
-                .strafeTo(Robot.pwrShotLocals[0], new MinVelocityConstraint(
+                .strafeTo(Robot.pwrShotLocals[2], new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                         new MecanumVelocityConstraint(7, DriveConstants.TRACK_WIDTH)
