@@ -30,9 +30,8 @@ public class autoTest extends LinearOpMode {
                 .strafeRight(30)
                 .build();
         //Async.start(()->opModeIsActive(), ()->robot.wobbleArmDown());
-        while(opModeIsActive()){
-            robot.driveTrain.followTrajectory(trajectoryForward);
-            robot.driveTrain.followTrajectory(trajectoryBackward);
-        }
+            robot.unlockIntake();
+            sleep(1000);
+            robot.launcher.rightOut();
     }
 }

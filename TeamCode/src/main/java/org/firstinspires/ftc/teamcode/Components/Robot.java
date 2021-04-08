@@ -48,13 +48,13 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(141, 37.5);
-    public static Pose2d shootingPose = new Pose2d(55, 37.5, 0);
+    public static Pose2d shootingPose = new Pose2d(57, 20, Math.toRadians(2));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
     public static Vector2d A = new Vector2d(65, 20);
     public static Vector2d B = new Vector2d(87.25, 35);
-    public static Vector2d C = new Vector2d(130, 18);
+    public static Vector2d C = new Vector2d(120, 13);
     public static Vector2d newA = new Vector2d(80.25, 25);
     public static Vector2d newB = new Vector2d(106.25, 52);
     public static Vector2d newC = new Vector2d(120, 27);
@@ -62,7 +62,7 @@ public class Robot {
     public static Pose2d robotPose = new Pose2d();
 
     public static Vector2d leftWobble = new Vector2d(34.7, 53);
-    public static Vector2d rightWobble = new Vector2d(14, 24);
+    public static Vector2d rightWobble = new Vector2d(25, 33.5);
 
     public Launcher launcher;
 
@@ -124,13 +124,14 @@ public class Robot {
         velocityController.add(120,1190);
         velocityController.add(125,1210);
         velocityController.add(132.5,1220);
+        velocityController.createLUT();
     }
     private void setXController(){
     }
     private void setYController(){
     }
-    public double getPoseVelo(){
-        return Range.clip(0, 1350, velocityController.get(driveTrain.getPoseEstimate().vec().distTo(goal)));
+    public double getPoseVelo(Pose2d pose2d){
+        return Range.clip(velocityController.get(pose2d.vec().distTo(goal)), 0, 1350);
     }
     public Robot(HardwareMap imported) {
         robotPose = new Pose2d();

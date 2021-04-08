@@ -56,6 +56,7 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
         tiltDown();
+        if(Robot.opModeType == OpModeType.auto) wingsIn();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -136,6 +137,10 @@ public class Launcher {
         leftIntakeHolder.setPosition(.96);
         rightIntakeHolder.setPosition(0.84);
     }
+    public void rightOut() {
+        leftIntakeHolder.setPosition(.3);
+        rightIntakeHolder.setPosition(0.18);
+    }
 
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
@@ -164,7 +169,7 @@ public class Launcher {
     }
     public void magazineShoot(){
         int rounds = getRings();
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < rounds; i++){
             singleRound();
             //setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep(sleepTime);
