@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -11,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 @Config
@@ -86,6 +87,7 @@ public class Launcher {
             lastKstatic = kStatic;
             veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
+        if(getVelocity() > 100) Log.println(Log.INFO, "Velocity: ", getVelocity() + "");
     }
     public void stop(){
         isActive = false;

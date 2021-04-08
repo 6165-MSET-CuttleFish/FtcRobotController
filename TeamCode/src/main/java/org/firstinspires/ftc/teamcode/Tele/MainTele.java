@@ -31,7 +31,6 @@ public class MainTele extends LinearOpMode implements Runnable{
     Runnable wingDefault;
     boolean ninja, armUp;
     boolean isWingsOut = false;
-    double velo = 0;
     ArrayList<Double> timer = new ArrayList<Double> ();
     double currentMillis = 0;
     double lastMillis = 0;
@@ -46,42 +45,36 @@ public class MainTele extends LinearOpMode implements Runnable{
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();
-       // pidRotate = new PIDController(.07, 0.014, 0.0044);
-        Thread driveTrain = new Thread(this);
-        Thread pathGenerator = new Thread(()->{
-            while (opModeIsActive()){
-                if(robot.intakeL.getPower() != 0) {
-                    sleep(400);
-                    powerShots = robot.driveTrain.trajectoryBuilder()
-                            .splineTo(Robot.pwrShotLocals[2], 0)
-                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
-                            .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
-                                            Arrays.asList(
-                                                    new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                    new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                            )
-                                    ),
-                                    new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
-                            .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
-                                            Arrays.asList(
-                                                    new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                    new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                            )
-                                    ),
-                                    new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                            .addDisplacementMarker(() -> Async.start(() -> true, () -> robot.launcher.singleRound()))
-                            .build();
-                    shootingPath = robot.driveTrain.trajectoryBuilder()
-                            .splineToLinearHeading(shootingPose, 0)
-                            .build();
-                }
+        waitForStart();
+        Async.start(this);
+        Async.set(()-> opModeIsActive(), () -> {
+            if(robot.intakeL.getPower() != 0) {
+                sleep(600);
+                powerShots = robot.driveTrain.trajectoryBuilder()
+                        .splineTo(Robot.pwrShotLocals[2], 0)
+                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
+                                        Arrays.asList(
+                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+                                        )
+                                ),
+                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
+                                        Arrays.asList(
+                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+                                        )
+                                ),
+                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+                        .build();
+                shootingPath = robot.driveTrain.trajectoryBuilder()
+                        .splineToLinearHeading(shootingPose, 0)
+                        .build();
             }
         });
-        waitForStart();
-        //shootingPosition = Robot.position.toPoint();
-        driveTrain.start();
-        pathGenerator.start();
 
         while(opModeIsActive()){
             if(robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
@@ -141,7 +134,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
             telemetry.addData("lowerBound", 0);
             telemetry.update();
-            if(robot.launcher.getVelocity() > 100) Log.println(Log.INFO, "Velocity: ", robot.launcher.getVelocity() + "");
         }
     }
     private double calcAvg(){
@@ -269,7 +261,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             storeCoordinate();
         }
         if(gamepad2.right_trigger >= 0.1){
-            velo = robot.launcher.getVelocity();
             robot.launcher.magazineShoot();
             if(cycles == 0){
                 cycles++;
