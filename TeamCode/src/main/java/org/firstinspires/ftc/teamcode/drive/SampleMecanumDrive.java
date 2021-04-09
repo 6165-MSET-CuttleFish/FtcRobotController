@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -172,6 +173,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
+    Callable<Double> callable;
+    public void setCallable(Callable<Double> callable){
+        this.callable = callable;
+    }
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
     }
@@ -262,6 +267,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         packet.put("x", currentPose.getX());
         packet.put("y", currentPose.getY());
         packet.put("heading (deg)", Math.toDegrees(currentPose.getHeading()));
+        try {
+            packet.put("Velocity", callable.call());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());

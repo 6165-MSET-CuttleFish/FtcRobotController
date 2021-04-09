@@ -5,6 +5,7 @@ import java.lang.*;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -42,7 +43,7 @@ public class Robot {
 
     public DcMotor intakeR, intakeL;
 
-    public Servo in1, in2;
+    public CRServo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
@@ -96,8 +97,9 @@ public class Robot {
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
-        in1 = map.get(Servo.class, "in1");
-        in2 = map.get(Servo.class, "in2");
+        in1 = map.crservo.get("in1");
+        in2 = map.crservo.get("in2");
+        in1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm1 = map.get(Servo.class, "wobbleArm1");
         arm2 = map.get(Servo.class, "wobbleArm2");
@@ -109,6 +111,7 @@ public class Robot {
         launcher = new Launcher(map);
         driveTrain = new SampleMecanumDrive(imported);
         driveTrain.setPoseEstimate(robotPose);
+        driveTrain.setCallable(()->launcher.getVelocity());
     }
     private void setVelocityController(){
         velocityController.add(75,1360);
@@ -236,16 +239,16 @@ public class Robot {
         intakeL.setPower(-intakeSpeed);
         intakeR.setPower(-intakeSpeed);
         if(intakeSpeed>0){
-            in1.setPosition(0);
-            in2.setPosition(1);
+            in1.setPower(1);
+            in2.setPower(1);
         }
         else if(intakeSpeed<0){
-            in1.setPosition(1);
-            in2.setPosition(0);
+            in1.setPower(-1);
+            in2.setPower(-1);
         }
         else{
-            in1.setPosition(0.5);
-            in2.setPosition(0.5);
+            in1.setPower(0);
+            in2.setPower(0);
         }
     }
     private void initVuforia() {
