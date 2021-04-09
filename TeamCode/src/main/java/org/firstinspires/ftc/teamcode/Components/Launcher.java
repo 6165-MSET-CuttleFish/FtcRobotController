@@ -26,7 +26,7 @@ public class Launcher {
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
-    public static long sleepTime = 550;
+    public static long sleepTime = 250;
 
     double lastTargetVelo = 0.0;
     double lastKv = kV;
