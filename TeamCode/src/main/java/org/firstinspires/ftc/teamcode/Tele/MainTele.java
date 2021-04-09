@@ -47,34 +47,34 @@ public class MainTele extends LinearOpMode implements Runnable{
         wingDefault = ()->robot.launcher.wingsVert();
         waitForStart();
         Async.start(this);
-        Async.set(()-> opModeIsActive(), () -> {
-            if(robot.intakeL.getPower() != 0) {
-                sleep(600);
-                powerShots = robot.driveTrain.trajectoryBuilder()
-                        .splineTo(Robot.pwrShotLocals[2], 0)
-                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
-                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
-                                        Arrays.asList(
-                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                        )
-                                ),
-                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
-                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
-                                        Arrays.asList(
-                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
-                                        )
-                                ),
-                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
-                        .build();
-                shootingPath = robot.driveTrain.trajectoryBuilder()
-                        .splineToLinearHeading(shootingPose, 0)
-                        .build();
-            }
-        });
+//        Async.set(this::opModeIsActive, () -> {
+//            if(robot.intakeL.getPower() != 0) {
+//                sleep(600);
+//                powerShots = robot.driveTrain.trajectoryBuilder()
+//                        .splineTo(Robot.pwrShotLocals[2], 0)
+//                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+//                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[1], 0), 0, new MinVelocityConstraint(
+//                                        Arrays.asList(
+//                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+//                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+//                                        )
+//                                ),
+//                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+//                        .splineToLinearHeading(toPose(Robot.pwrShotLocals[0], 0), 0, new MinVelocityConstraint(
+//                                        Arrays.asList(
+//                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+//                                                new MecanumVelocityConstraint(9, DriveConstants.TRACK_WIDTH)
+//                                        )
+//                                ),
+//                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                        .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
+//                        .build();
+//                shootingPath = robot.driveTrain.trajectoryBuilder()
+//                        .splineToLinearHeading(shootingPose, 0)
+//                        .build();
+//            }
+//        });
 
         while(opModeIsActive()){
             if(robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
@@ -131,8 +131,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             telemetry.addData("velocity", robot.launcher.getVelocity());
             telemetry.addData("targetVelocity", robot.launcher.getTargetVelo());
             telemetry.addData("error", robot.launcher.getTargetVelo() - robot.launcher.getVelocity());
-            telemetry.addData("upperBound", TuningController.rpmToTicksPerSecond(TuningController.TESTING_MAX_SPEED * 1.15));
-            telemetry.addData("lowerBound", 0);
             telemetry.update();
         }
     }
