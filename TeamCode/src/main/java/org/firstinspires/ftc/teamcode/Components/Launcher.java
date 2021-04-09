@@ -111,6 +111,11 @@ public class Launcher {
     public void setVelocity(double v){
         targetVelo = v;
     }
+    public void setLauncherVelocity(double v){
+        targetVelo = v;
+        if(v > 100) tiltUp();
+        else tiltDown();
+    }
     public double getVelocity(){
         return flywheel.getVelocity();
     }

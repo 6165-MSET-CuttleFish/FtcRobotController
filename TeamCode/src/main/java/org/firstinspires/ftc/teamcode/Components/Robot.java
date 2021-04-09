@@ -48,7 +48,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(141, 37.5);
-    public static Pose2d shootingPose = new Pose2d(57, 20, Math.toRadians(2));
+    public static Pose2d shootingPose = new Pose2d(57, 20, Math.toRadians(0));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
@@ -132,6 +132,9 @@ public class Robot {
     }
     public double getPoseVelo(Pose2d pose2d){
         return Range.clip(velocityController.get(pose2d.vec().distTo(goal)), 0, 1350);
+    }
+    public double getPoseVelo(Vector2d vec){
+        return Range.clip(velocityController.get(vec.distTo(goal)), 0, 1350);
     }
     public Robot(HardwareMap imported) {
         robotPose = new Pose2d();
