@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import android.util.Log;
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -26,6 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.PurePursuit.Coordinate.toPose;
 
 @TeleOp(name="TeleOp", group = "LinearOpMode")
+@Config
 public class MainTele extends LinearOpMode implements Runnable{
     Robot robot;
     Runnable wingDefault;
@@ -39,6 +41,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     Pose2d shootingPose = new Pose2d();
     Trajectory powerShots;
     Trajectory shootingPath;
+    public static double targetVelocity;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
@@ -224,7 +227,7 @@ public class MainTele extends LinearOpMode implements Runnable{
             } else {
                 robot.wingsMid();
             }
-            robot.launcher.setVelocity(1320);
+            robot.launcher.setVelocity(targetVelocity);
             if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 60){
                 sleep(400);
                 robot.launcher.magazineShoot();
@@ -244,11 +247,11 @@ public class MainTele extends LinearOpMode implements Runnable{
                 robot.launcher.wingsMid();
             }
             if(robot.launcher.getRings() == 1){
-                robot.launcher.setVelocity(600); //change to make constant speed
+                robot.launcher.setVelocity(targetVelocity/2); //change to make constant speed
             } else if(robot.launcher.getRings() == 2){
-                robot.launcher.setVelocity(1000);
+                robot.launcher.setVelocity(targetVelocity*4/5);
             } else if(robot.launcher.getRings() == 3){
-                robot.launcher.setVelocity(1320);
+                robot.launcher.setVelocity(targetVelocity);
             } else {
                 robot.launcher.setVelocity(0);//change to make constant speed
             }
