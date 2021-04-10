@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.arcrobotics.ftclib.gamepad.*;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
@@ -26,14 +28,17 @@ public class MainTele extends LinearOpMode implements Runnable{
     }
     WingState wingDefault;
     boolean ninja, armUp;
-    boolean wingCheck;
+    boolean wingCheck, ninjaCheck, reverseCheck;
+    boolean shooterDisabled;
     ArrayList<Double> timer = new ArrayList<>();
     double currentMillis = 0;
     double lastMillis = 0;
     int cycles = 0;
     Pose2d shootingPose = new Pose2d();
     Trajectory shootingPath;
-    public static double targetVelocity= 1480;
+    Trajectory shootingPathAutoShoot;
+    public static double targetVelocity = 1500;
+    Vector2d targetVector;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
@@ -45,8 +50,15 @@ public class MainTele extends LinearOpMode implements Runnable{
             while(opModeIsActive()) {
                 if (robot.intakeL.getPower() != 0) {
                     sleep(300);
-                    shootingPath = robot.driveTrain.trajectoryBuilder()
-                            .splineToLinearHeading(Robot.shootingPose, 0)
+                    shootingPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                            .lineToLinearHeading(Robot.shootingPose)
+                            .build();
+                    shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                            .addDisplacementMarker(() -> {
+                                targetVector = Robot.shootingPose.vec();
+                                robot.launcher.setLauncherVelocity(getNeededVelocity());
+                            })
+                            .lineToLinearHeading(Robot.shootingPose)
                             .build();
                 }
             }
@@ -54,10 +66,9 @@ public class MainTele extends LinearOpMode implements Runnable{
 
         while(opModeIsActive()){
                 currentMillis = System.currentTimeMillis();
-                setMultiplier();
                 wobble();
                 robot.intake(gamepad2.right_stick_y);
-                shooter();
+                if(!shooterDisabled) shooter();
                 if (gamepad1.right_trigger >= 0.2 && !wingCheck) {
                     wingCheck = true;
                     switch (wingDefault){
@@ -73,7 +84,7 @@ public class MainTele extends LinearOpMode implements Runnable{
             switch (wingDefault){
                 case in: robot.launcher.wingsIn();
                 case out:
-                    if(robot.launcher.getRings() < 3)robot.launcher.wingsOut();
+                    if(robot.launcher.getRings() < 3) robot.launcher.wingsOut();
                     else robot.launcher.wingsMid();
                 case safe: robot.launcher.wingsMid();
                 case vertical: robot.launcher.wingsVert();
@@ -87,6 +98,8 @@ public class MainTele extends LinearOpMode implements Runnable{
     @Override
     public void run() {
         while(opModeIsActive()) {
+            shooterDisabled = false;
+            targetVector = null;
             robot.launcher.updatePID();
             if(robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
@@ -96,15 +109,29 @@ public class MainTele extends LinearOpMode implements Runnable{
                                 -gamepad1.right_stick_x * 0.92 * rxMult
                         )
                 );
+                setMultiplier();
                 robot.driveTrain.update();
             }
 
-            if(gamepad1.a) {
+            if(gamepad1.left_trigger >= 0.2) {
                 if(shootingPath != null)
                 robot.driveTrain.followTrajectory(shootingPath, ()->{
                     robot.launcher.updatePID();
                     if(!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                 });
+            } else if(gamepad1.a) {
+                if(shootingPathAutoShoot != null) {
+                    shooterDisabled = true;
+                    robot.driveTrain.followTrajectory(shootingPathAutoShoot, () -> {
+                        robot.launcher.updatePID();
+                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                    });
+                    while(Math.abs(robot.launcher.getVelocity() - robot.launcher.getTargetVelo()) >= 50 || gamepadIdle()){
+                        robot.launcher.updatePID();
+                        robot.driveTrain.update();
+                    }
+                    robot.launcher.magazineShoot();
+                }
             }
         }
     }
@@ -121,25 +148,25 @@ public class MainTele extends LinearOpMode implements Runnable{
         return timer.size() != 0 ? timer.get(timer.size()/2) : 0;
     }
     private void setMultiplier(){
-        if(!ninja && gamepad1.left_bumper){
-            ninja = true;
-            lxMult /= 3;
-            rxMult /= 3;
-            lyMult /= 3;
-            sleep(300);
+        if (!ninjaCheck) {
+            if (!ninja && gamepad1.left_bumper) {
+                ninja = true;
+                lxMult /= 3;
+                rxMult /= 3;
+                lyMult /= 3;
+            } else if (ninja && gamepad1.left_bumper) {
+                ninja = false;
+                lxMult *= 3;
+                rxMult *= 3;
+                lyMult *= 3;
+            }
         }
-        else if(ninja && gamepad1.left_bumper){
-            ninja = false;
-            lxMult *= 3;
-            rxMult *= 3;
-            lyMult *= 3;
-            sleep(300);
-        }
-        if(gamepad1.right_bumper){
+        if(gamepad1.right_bumper && !reverseCheck){
             lxMult = -lxMult;
             lyMult = -lyMult;
-            sleep(300);
         }
+        if(!gamepad1.right_bumper) reverseCheck = false;
+        if(!gamepad1.left_bumper) ninjaCheck = false;
     }
     public void wobble(){
         if(gamepad2.b && !armUp){
@@ -179,7 +206,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 wingDefault = WingState.safe;
             }
             robot.launcher.setVelocity(targetVelocity);
-            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 60){
+            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 50){
                 sleep(400);
                 robot.launcher.magazineShoot();
             }
@@ -219,6 +246,10 @@ public class MainTele extends LinearOpMode implements Runnable{
     private void storeCoordinate(){
         shootingPose = new Coordinate(robot.driveTrain.getPoseEstimate())
                 .toPose2d(robot.driveTrain.getPoseEstimate().getHeading());
+    }
+    private double getNeededVelocity(){
+        if(targetVector != null) return robot.getPoseVelo(targetVector);
+        else return robot.getPoseVelo(robot.driveTrain.getPoseEstimate());
     }
     private boolean gamepadIdle(){
         return Math.abs(gamepad1.left_stick_x) <= 0.3 && Math.abs(gamepad1.left_stick_y) <= 0.3 && Math.abs(gamepad1.right_stick_x) <= 0.3;
