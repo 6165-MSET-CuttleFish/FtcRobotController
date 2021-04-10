@@ -116,7 +116,7 @@ public class Robot {
     }
     private void setVelocityController(){
         velocityController.add(0,1700);
-        velocityController.add(75,1360);
+        velocityController.add(75,1500);
         velocityController.add(77.5,1320);
         velocityController.add(80,1340);
         velocityController.add(85,1300);
