@@ -42,15 +42,12 @@ public class MainTele extends LinearOpMode implements Runnable{
     Trajectory powerShots;
     Trajectory shootingPath;
     Trajectory trajectory;
-    public static double targetVelocity= 1340;
+    public static double targetVelocity= 1480;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();
-        shootingPath = robot.driveTrain.trajectoryBuilder()
-                .splineToLinearHeading(shootingPose, 0)
-                .build();
         waitForStart();
         Async.start(this);
         Async.start(() -> {
