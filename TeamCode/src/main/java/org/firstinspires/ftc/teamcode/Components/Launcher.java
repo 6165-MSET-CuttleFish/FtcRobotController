@@ -154,6 +154,16 @@ public class Launcher {
             }
         }
     }
+    public void safeShoot(){
+        int rounds = getRings();
+        for(int i = 0; i < rounds; i++){
+            singleRound();
+            sleep(400);
+            if(i == rounds - 2){
+                sleep(60);
+            }
+        }
+    }
     public void singleRound(){
         gunner.setPosition(0.34);
         sleep(145);
