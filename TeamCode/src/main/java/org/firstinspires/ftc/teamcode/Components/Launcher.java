@@ -148,7 +148,7 @@ public class Launcher {
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
-            sleep((long)sleepTime);
+            if(i != rounds-1)sleep((long)sleepTime);
             if(i == rounds - 2){
                 sleep(60);
             }
@@ -158,7 +158,7 @@ public class Launcher {
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
-            sleep(400);
+            if(i != rounds-1)sleep(400);
             if(i == rounds - 2){
                 sleep(60);
             }

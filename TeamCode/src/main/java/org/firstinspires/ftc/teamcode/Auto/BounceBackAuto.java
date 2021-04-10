@@ -117,7 +117,7 @@ public class BounceBackAuto extends LinearOpMode {
                 .addDisplacementMarker(()-> robot.release())
                 .build();
         Trajectory park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
-                .splineTo(new Vector2d(80, wobbleDrop2.end().getX()), Math.toRadians(180))
+                .splineTo(new Vector2d(80, wobbleDrop2.end().getY()), Math.toRadians(180))
                 .build();
         sleep(700);
         telemetry.addData("Initialization", "Complete");
@@ -163,6 +163,8 @@ public class BounceBackAuto extends LinearOpMode {
         robot.driveTrain.followTrajectory(stackIntake);
         sleep(100);
         robot.launcher.magazineShoot();
+        sleep(100);
+        robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobbleDrop2);
         robot.driveTrain.followTrajectory(park);
     }
