@@ -37,6 +37,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     Pose2d shootingPose = new Pose2d();
     Trajectory shootingPath;
     Trajectory shootingPathAutoShoot;
+    Trajectory powerShotPath;
     public static double targetVelocity = 1500;
     Vector2d targetVector;
     @Override
@@ -44,22 +45,14 @@ public class MainTele extends LinearOpMode implements Runnable{
         robot = new Robot(hardwareMap, OpModeType.tele);
         robot.init();
         wingDefault = WingState.vertical;
+        generatePaths();
         waitForStart();
         Async.start(this);
         Async.start(() -> {
             while(opModeIsActive()) {
-                if (robot.intakeL.getPower() != 0) {
+                if (robot.intakeL.getPower() != 0 && robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                     sleep(300);
-                    shootingPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-                            .lineToLinearHeading(Robot.shootingPose)
-                            .build();
-                    shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-                            .addDisplacementMarker(() -> {
-                                targetVector = Robot.shootingPose.vec();
-                                robot.launcher.setLauncherVelocity(getNeededVelocity());
-                            })
-                            .lineToLinearHeading(Robot.shootingPose)
-                            .build();
+                    generatePaths();
                 }
             }
         });
@@ -146,6 +139,21 @@ public class MainTele extends LinearOpMode implements Runnable{
     private double calcMedian(){
         Collections.sort(timer);
         return timer.size() != 0 ? timer.get(timer.size()/2) : 0;
+    }
+    private void generatePaths(){
+        shootingPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                .lineToLinearHeading(Robot.shootingPose)
+                .build();
+        shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                .addDisplacementMarker(() -> {
+                    targetVector = Robot.shootingPose.vec();
+                    robot.launcher.setLauncherVelocity(getNeededVelocity());
+                })
+                .lineToLinearHeading(Robot.shootingPose)
+                .build();
+        powerShotPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                .splineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0), 0)
+                .build();
     }
     private void setMultiplier(){
         if (!ninjaCheck) {
