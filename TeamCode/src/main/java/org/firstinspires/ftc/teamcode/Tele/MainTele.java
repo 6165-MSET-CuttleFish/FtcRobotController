@@ -42,14 +42,14 @@ public class MainTele extends LinearOpMode implements Runnable{
     Trajectory powerShots;
     Trajectory shootingPath;
     Trajectory trajectory;
-    public static double targetVelocity;
+    public static double targetVelocity= 1340;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
         robot.init();
         wingDefault = ()->robot.launcher.wingsVert();
-        trajectory = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
-                .splineTo(new Vector2d(20, 10), 0)
+        shootingPath = robot.driveTrain.trajectoryBuilder()
+                .splineToLinearHeading(shootingPose, 0)
                 .build();
         waitForStart();
         Async.start(this);
@@ -57,9 +57,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             while(opModeIsActive()) {
                 if (robot.intakeL.getPower() != 0) {
                     sleep(300);
-                    trajectory = robot.driveTrain.trajectoryBuilder()
-                            .lineToLinearHeading(new Pose2d(30, 10, 0))
-                            .build();
 //                    powerShots = robot.driveTrain.trajectoryBuilder()
 //                            .splineTo(Robot.pwrShotLocals[2], 0)
 //                            .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
@@ -209,7 +206,7 @@ public class MainTele extends LinearOpMode implements Runnable{
             if(robot.launcher.getRings() < 3){
                 robot.wingsOut();
             } else {
-                robot.wingsMid();
+                robot.launcher.wingsMid();
             }
             robot.launcher.setVelocity(targetVelocity);
             if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 60){

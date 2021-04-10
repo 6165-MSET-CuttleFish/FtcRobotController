@@ -111,9 +111,10 @@ public class Robot {
         launcher = new Launcher(map);
         driveTrain = new SampleMecanumDrive(imported);
         driveTrain.setPoseEstimate(robotPose);
-        driveTrain.setCallable(()->launcher.getVelocity());
+        driveTrain.setCallable(()->launcher.getTargetVelo());
     }
     private void setVelocityController(){
+        velocityController.add(0,1500);
         velocityController.add(75,1360);
         velocityController.add(77.5,1320);
         velocityController.add(80,1340);
@@ -127,6 +128,7 @@ public class Robot {
         velocityController.add(120,1190);
         velocityController.add(125,1210);
         velocityController.add(132.5,1220);
+        velocityController.add(1000,0);
         velocityController.createLUT();
     }
     private void setXController(){
@@ -148,10 +150,6 @@ public class Robot {
     }
     public void wingsIn() {
         launcher.wingsIn();
-    }
-
-    public void wingsMid() {
-        launcher.wingsMid();
     }
 
     public void leftOut() {

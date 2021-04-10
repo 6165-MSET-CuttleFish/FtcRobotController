@@ -15,11 +15,15 @@ public class colorTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
         robot.init();
+        waitForStart();
         while(opModeIsActive()){
             tiltMag();
             telemetry.addData("rings", robot.launcher.getRings());
             telemetry.addData("distance", robot.launcher.getDistance());
             telemetry.update();
+            if(gamepad1.a){
+                robot.launcher.wingsOut();
+            } if(gamepad1.b) robot.launcher.wingsVert();
         }
     }
 
