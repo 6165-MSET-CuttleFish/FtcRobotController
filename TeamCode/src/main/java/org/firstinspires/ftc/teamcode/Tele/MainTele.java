@@ -172,7 +172,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     public void shooter(){
         if(gamepad2.left_trigger >= 0.1){
             robot.launcher.flapDown();
-            robot.launcher.tiltUp();
+            robot.launcher.magUp();
             if(robot.launcher.getRings() < 3){
                 wingDefault = WingState.out;
             } else {
@@ -185,13 +185,13 @@ public class MainTele extends LinearOpMode implements Runnable{
             }
         }
         else if(gamepad2.left_bumper){
-            robot.launcher.tiltUp();
+            robot.launcher.magUp();
             robot.launcher.setVelocity(1170);
             wingDefault = WingState.out;
             robot.launcher.flapDown();
         }
         else {
-            robot.launcher.tiltDown();
+            robot.launcher.magDown();
             switch(robot.launcher.getRings()){
                 case 3: robot.launcher.setVelocity(targetVelocity);
                 case 2: robot.launcher.setVelocity(targetVelocity);

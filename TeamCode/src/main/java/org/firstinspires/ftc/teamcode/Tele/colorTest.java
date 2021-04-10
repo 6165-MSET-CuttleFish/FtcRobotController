@@ -26,10 +26,9 @@ public class colorTest extends LinearOpMode {
             } if(gamepad1.b) robot.launcher.wingsVert();
         }
     }
-
     public void tiltMag() {
-        if(gamepad2.left_bumper) robot.launcher.tiltDown();
-        else if(gamepad2.right_bumper) robot.launcher.tiltUp();
+        if(gamepad2.left_bumper) robot.launcher.magDown();
+        else if(gamepad2.right_bumper) robot.launcher.magUp();
     }
 
     private boolean gamepadIdle(){

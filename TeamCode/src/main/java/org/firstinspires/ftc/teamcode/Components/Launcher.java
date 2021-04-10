@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 //http://192.168.43.1:8080/dash
 @Config
 public class Launcher {
@@ -34,7 +33,7 @@ public class Launcher {
 
     private final ElapsedTime veloTimer = new ElapsedTime();
     public DcMotorEx flywheel, flywheel1;
-    public Servo mag, flap, tilt;
+    public Servo gunner, flap, mag;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public double targetVelo;
     public volatile boolean isActive;
@@ -47,13 +46,13 @@ public class Launcher {
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        mag = map.get(Servo.class, "mag");
+        gunner = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
-        tilt = map.get(Servo.class, "tilt");
+        mag = map.get(Servo.class, "tilt");
         leftIntakeHolder = map.get(Servo.class,"wallL");
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
-        tiltDown();
+        magDown();
         if(Robot.opModeType == OpModeType.auto) wingsIn();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -103,8 +102,8 @@ public class Launcher {
     }
     public void setLauncherVelocity(double v){
         targetVelo = v;
-        if(v > 100) tiltUp();
-        else tiltDown();
+        if(v > 100) magUp();
+        else magDown();
     }
     public double getVelocity(){
         return flywheel.getVelocity();
@@ -139,29 +138,27 @@ public class Launcher {
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
     }
-    public void tiltUp(){
-        tilt.setPosition(0.75);
+    public void magUp(){
+        mag.setPosition(0.75);
     }
-    public void tiltDown(){
-        tilt.setPosition(0.57);
+    public void magDown(){
+        mag.setPosition(0.57);
     }
     public void magazineShoot(){
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
-            //setOnlyFlyWheel(flyWheelSpeed + 0.08);
             sleep((long)sleepTime);
-            if(Robot.opModeType == OpModeType.tele) wingsOut();
             if(i == rounds - 2){
-                sleep(80);
+                sleep(60);
             }
         }
     }
     public void singleRound(){
-        mag.setPosition(0.34);
-        sleep(150);
-        //this is sleep value to change
-        mag.setPosition(0.48);
+        gunner.setPosition(0.34);
+        sleep(145);
+        if(Robot.opModeType == OpModeType.tele) wingsOut();
+        gunner.setPosition(0.48);
     }
     public void flapUp(){
         flap.setPosition(0.43);

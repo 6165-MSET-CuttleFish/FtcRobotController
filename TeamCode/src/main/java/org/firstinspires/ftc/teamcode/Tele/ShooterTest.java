@@ -7,17 +7,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 @TeleOp(name="ShooterTest", group = "LinearOpMode")
+@Config
 public class ShooterTest extends LinearOpMode implements Runnable{
     Robot robot;
-    double targetVelo = 1000;
+    public static double targetVelo = 1000;
     FtcDashboard dashboard = FtcDashboard.getInstance();
+    boolean magCheck;
+    boolean isMagUp;
     @Override
     public void runOpMode() throws InterruptedException {
-
         robot = new Robot (hardwareMap);
-
-       // robot = new Robot (hardwareMap, telemetry, () -> opModeIsActive() && gamepadIdle());
-
         robot.init();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         //wingDefault = ()->robot.launcher.wingsVert();
@@ -34,18 +33,28 @@ public class ShooterTest extends LinearOpMode implements Runnable{
         while(opModeIsActive()){
             if(gamepad1.dpad_up){
                 targetVelo += 20;
-                sleep(300);
+                sleep(150);
             } else if(gamepad1.dpad_down){
                 targetVelo -= 10;
-                sleep(300);
+                sleep(150);
             }
             if(gamepad1.left_trigger >= 0.1) {
-                robot.launcher.tiltUp();
+                robot.launcher.magUp();
                 robot.launcher.setVelocity(targetVelo);
             } else {
                 robot.launcher.setVelocity(0);
-                if (gamepad1.left_bumper) robot.launcher.tiltUp();
-                else robot.launcher.tiltDown();
+                if (gamepad1.left_bumper && !magCheck){
+                    magCheck = true;
+                    if(!isMagUp) {
+                        robot.launcher.magUp();
+                        isMagUp = true;
+                    }
+                    else {
+                        robot.launcher.magDown();
+                        isMagUp = false;
+                    }
+                }
+                if (!gamepad1.left_bumper) magCheck = false;
             }
             if(gamepad1.right_trigger >= 0.1){
                 robot.launcher.magazineShoot();

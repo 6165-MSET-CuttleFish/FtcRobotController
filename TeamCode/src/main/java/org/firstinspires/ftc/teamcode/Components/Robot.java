@@ -61,8 +61,6 @@ public class Robot {
     public static Vector2d newC = new Vector2d(120, 27);
 
     public static Pose2d robotPose = new Pose2d();
-
-    public static Vector2d leftWobble = new Vector2d(34.7, 53);
     public static Vector2d rightWobble = new Vector2d(25, 33.5);
 
     public Launcher launcher;
@@ -129,7 +127,7 @@ public class Robot {
         velocityController.add(120,1190);
         velocityController.add(125,1210);
         velocityController.add(132.5,1220);
-        velocityController.add(1000,0);
+        velocityController.add(1000,1000);
         velocityController.createLUT();
     }
     private void setXController(){
@@ -184,22 +182,6 @@ public class Robot {
             tfod.shutdown();
         }
     }
-    private String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
-    }
-    private String formatDegrees(double degrees) {
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
-    public final void idle() {
-        Thread.yield();
-    }
-    public final void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
     public void wobbleArmUp() {
         arm1.setPosition(0.1);
         arm2.setPosition (0.88);
@@ -216,28 +198,16 @@ public class Robot {
     public void grab(){
         grabber.setPosition(0.13);
         grabber2.setPosition(0.83);
-        sleep(100);
     }
     public void release(){
         grabber.setPosition(0.63);
         grabber2.setPosition(0.29);
-        sleep(100);
     }
     public void intake(double intakeSpeed){
         intakeL.setPower(-intakeSpeed);
         intakeR.setPower(-intakeSpeed);
-        if(intakeSpeed>0){
-            in1.setPower(1);
-            in2.setPower(1);
-        }
-        else if(intakeSpeed<0){
-            in1.setPower(-1);
-            in2.setPower(-1);
-        }
-        else{
-            in1.setPower(0);
-            in2.setPower(0);
-        }
+        in1.setPower(intakeSpeed);
+        in2.setPower(intakeSpeed);
     }
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
