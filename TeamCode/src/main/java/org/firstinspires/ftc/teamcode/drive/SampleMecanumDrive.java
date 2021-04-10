@@ -34,8 +34,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -173,9 +173,13 @@ public class SampleMecanumDrive extends MecanumDrive {
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
-    Callable<Double> callable;
-    public void setCallable(Callable<Double> callable){
-        this.callable = callable;
+    Callable<Double> veloCallable;
+    Callable<Double> targetVeloCallable;
+    public void setVelocityCallable(Callable<Double> veloCallable){
+        this.veloCallable = veloCallable;
+    }
+    public void setTargetVeloCallable(Callable<Double> callable){
+        this.targetVeloCallable = callable;
     }
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
@@ -190,7 +194,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
-        return new TrajectoryBuilder(getPoseEstimate(), velConstraint, accelConstraint);
+        return new TrajectoryBuilder(Robot.robotPose, velConstraint, accelConstraint);
     }
 
     public void turnAsync(double angle) {
@@ -268,7 +272,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         packet.put("y", currentPose.getY());
         packet.put("heading (deg)", Math.toDegrees(currentPose.getHeading()));
         try {
-            packet.put("Velocity", callable.call());
+            packet.put("Velocity", veloCallable.call());
+            packet.put("Target Velocity", targetVeloCallable.call());
         } catch (Exception e) {
             e.printStackTrace();
         }

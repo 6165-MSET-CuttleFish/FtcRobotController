@@ -19,9 +19,6 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.*;
 @Config
 public class Launcher {
     public ColorRangeSensor colorRangeSensor;
-    static final double launcherHeight = 0.2032;
-    static final double V = 9.9059;
-    static final double g = -9.08711677875;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.004, 0, 0);
 
     public static double kV = 0.00057428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
@@ -63,11 +60,6 @@ public class Launcher {
         }
         veloTimer.reset();
     }
-    public void run(){
-            while (isActive) {
-                updatePID();
-            }
-    }
     public void updatePID(){
         veloController.setTargetVelocity(targetVelo);
         veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
@@ -90,9 +82,6 @@ public class Launcher {
             veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
         if(getVelocity() > 100) Log.println(Log.INFO, "Velocity: ", getVelocity() + "");
-    }
-    public void stop(){
-        isActive = false;
     }
     public int getRings(){
         double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
@@ -147,25 +136,8 @@ public class Launcher {
         leftIntakeHolder.setPosition(.3);
         rightIntakeHolder.setPosition(0.18);
     }
-
     public void unlockIntake(){
         rightIntakeHolder.setPosition(0.4);
-    }
-    public static void findAngle(double d, targets t, Servo flap){
-        double goalHeight = 0;
-        if(t == targets.highGoal) goalHeight = 35.5;
-        else if(t == targets.lowGoal) goalHeight = 17;
-        else if(t == targets.pwrShot) goalHeight = 23.5;
-        goalHeight = inchesToMeters(goalHeight);
-        double theta;
-        double h = goalHeight - launcherHeight;
-        theta = Math.toDegrees((Math.acos((g*d*d/(V*V) - h)/Math.sqrt(h*h + d*d)) - Math.acos(h/Math.sqrt(h*h + d*d)))/2);
-        //System.out.println(theta);
-        flap.setPosition(setAngle(theta));
-    }
-    public static double setAngle(double theta){
-        theta -= 25;
-        return -0.1*theta*theta + 3*theta;
     }
     public void tiltUp(){
         tilt.setPosition(0.75);
@@ -196,11 +168,6 @@ public class Launcher {
     }
     public void flapDown(){
         flap.setPosition(0.35);
-    }
-    enum targets{
-        highGoal,
-        lowGoal,
-        pwrShot
     }
     public final void sleep(long milliseconds) {
         try {
