@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class Robot {
@@ -54,9 +55,6 @@ public class Robot {
     public static Vector2d A = new Vector2d(-5.4725, -50.4725);
     public static Vector2d B = new Vector2d(16.7775, -35.4725);
     public static Vector2d C = new Vector2d(49.5275, -53.4725);
-    // public static Vector2d newA = new Vector2d(80.25, 25);
-    // public static Vector2d newB = new Vector2d(106.25, 52);
-    // public static Vector2d newC = new Vector2d(120, 27); to be converted 
 
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-40.4725, -36.9725);
@@ -80,6 +78,13 @@ public class Robot {
         construct(imported);
     }
     private void construct(HardwareMap imported){
+        if(opModeType == OpModeType.tele) {
+            DriveConstants.MAX_VEL = 65;
+            DriveConstants.MAX_ACCEL = 65;
+        } else {
+            DriveConstants.MAX_VEL = 51;
+            DriveConstants.MAX_ACCEL = 51;
+        }
         velocityController = new InterpLUT();
         xController = new InterpLUT();
         yController = new InterpLUT();

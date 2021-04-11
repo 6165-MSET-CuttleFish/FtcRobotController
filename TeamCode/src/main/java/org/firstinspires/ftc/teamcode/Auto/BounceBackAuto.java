@@ -89,17 +89,17 @@ public class BounceBackAuto extends LinearOpMode {
                     //robot.launcher.magazineShoot();
                 }))
                 .build();
-        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end())
+        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end(), true)
                 .addSpatialMarker(Robot.rightWobble, ()-> {
                     robot.grab();
                     sleep(300);
                     robot.wobbleArmUp();
                 })
-                .splineToConstantHeading(new Vector2d(-43.4725, -36.9725), 0)
+                .splineToLinearHeading(new Pose2d(-43.4725, -36.9725), 0)
                 .addDisplacementMarker(()-> robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-32.4725, Robot.goal.getY()))))
                 .splineToConstantHeading(new Vector2d(-35.4725, Robot.goal.getY()), 0)
                 .addDisplacementMarker(()-> robot.intake(1))
-                .splineTo(new Vector2d(-32.4725, Robot.goal.getY()), Math.toRadians(2), new MinVelocityConstraint(
+                .splineToConstantHeading(new Vector2d(-32.4725, Robot.goal.getY()), 0, new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                         new MecanumVelocityConstraint(12, DriveConstants.TRACK_WIDTH)

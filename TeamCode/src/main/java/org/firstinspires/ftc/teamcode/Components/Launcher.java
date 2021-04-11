@@ -155,6 +155,7 @@ public class Launcher {
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
+            if(Robot.opModeType == OpModeType.tele) wingsOut();
             if(i != rounds-1)sleep((long)sleepTime);
             if(i == rounds - 2){
                 sleep(60);
@@ -174,7 +175,6 @@ public class Launcher {
     public void singleRound(){
         gunner.setPosition(0.34);
         sleep(145);
-        if(Robot.opModeType == OpModeType.tele) wingsOut();
         gunner.setPosition(0.48);
     }
     public void flapUp(){
