@@ -62,7 +62,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 wobble();
                 robot.intake(gamepad2.right_stick_y);
                 if(!shooterDisabled) shooter();
-                if (gamepad1.right_trigger >= 0.2 && !wingCheck) {
+                if (gamepad2.y && !wingCheck) {
                     wingCheck = true;
                     if(wingDefault == WingState.in) {
                         wingDefault = WingState.out;
@@ -75,7 +75,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                     }
 
                 }
-                if(gamepad1.right_trigger < 0.2){
+                if(!gamepad2.y){
                     wingCheck = false;
                 }
             if(wingDefault == WingState.in) {
