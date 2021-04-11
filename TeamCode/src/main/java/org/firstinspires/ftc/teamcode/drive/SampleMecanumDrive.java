@@ -218,6 +218,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         waitForIdle();
     }
 
+    public void turn(double angle, Runnable runnable){
+        turnAsync(angle);
+        waitForIdle(runnable);
+    }
+
     public void followTrajectoryAsync(Trajectory trajectory) {
         follower.followTrajectory(trajectory);
         mode = Mode.FOLLOW_TRAJECTORY;

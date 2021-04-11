@@ -13,10 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
-import java.util.Locale;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -53,6 +49,7 @@ public class Robot {
     public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -35.4725, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
+    public static Vector2d[] pwrShots = new Vector2d[3];
 
     public static Vector2d A = new Vector2d(-5.4725, -50.4725);
     public static Vector2d B = new Vector2d(16.7775, -35.4725);
@@ -89,7 +86,9 @@ public class Robot {
         setVelocityController();
         setXController();
         setYController();
-
+        pwrShots[0] = new Vector2d(70.4725, 67);
+        pwrShots[1] = new Vector2d(70.4725, 60);
+        pwrShots[2] = new Vector2d(70.4725, 50.4);
         pwrShotLocals[0] = new Vector2d(-2.4725, -1.0725);
         pwrShotLocals[1] = new Vector2d(-2.4725, -10.4725);
         pwrShotLocals[2] = new Vector2d(-2.4725, -19.4725);

@@ -130,4 +130,7 @@ public class Coordinate {
     public static Coordinate toPoint(Pose2d pt){
         return new Coordinate(pt.getX(), pt.getY());
     }
+    public static Coordinate toPoint(Vector2d pt){
+        return new Coordinate(pt.getX(), pt.getY());
+    }
 }
