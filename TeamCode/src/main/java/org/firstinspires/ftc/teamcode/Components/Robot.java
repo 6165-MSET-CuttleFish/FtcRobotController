@@ -49,19 +49,20 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(141, 37.5);
-    public static Pose2d shootingPose = new Pose2d(57, 20, Math.toRadians(0));
+    public static Pose2d shootingPose = new Pose2d(57, 19, Math.toRadians(5));
+    public static Pose2d shootingPoseTele = new Pose2d(65, 35, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
 
     public static Vector2d A = new Vector2d(65, 20);
     public static Vector2d B = new Vector2d(87.25, 35);
-    public static Vector2d C = new Vector2d(120, 13);
+    public static Vector2d C = new Vector2d(120, 17);
     public static Vector2d newA = new Vector2d(80.25, 25);
     public static Vector2d newB = new Vector2d(106.25, 52);
     public static Vector2d newC = new Vector2d(120, 27);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(25, 33.5);
+    public static Vector2d rightWobble = new Vector2d(30, 33.5);
 
     public Launcher launcher;
 

@@ -36,7 +36,6 @@ public class Launcher {
     public Servo gunner, flap, mag;
     public Servo rightIntakeHolder, leftIntakeHolder;
     public double targetVelo;
-    public volatile boolean isActive;
 
     public Launcher(HardwareMap map){
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
@@ -102,8 +101,12 @@ public class Launcher {
     }
     public void setLauncherVelocity(double v){
         targetVelo = v;
-        if(v > 100) magUp();
-        else magDown();
+        if(v > 0){
+            magUp();
+        }
+        else {
+            magDown();
+        }
     }
     public double getVelocity(){
         return flywheel.getVelocity();
@@ -131,6 +134,10 @@ public class Launcher {
         leftIntakeHolder.setPosition(.96);
         rightIntakeHolder.setPosition(0.84);
     }
+    public void safeLeftOut(){
+        leftIntakeHolder.setPosition(.75);
+        rightIntakeHolder.setPosition(.64);
+    }
     public void rightOut() {
         leftIntakeHolder.setPosition(.3);
         rightIntakeHolder.setPosition(0.18);
@@ -142,7 +149,7 @@ public class Launcher {
         mag.setPosition(0.75);
     }
     public void magDown(){
-        mag.setPosition(0.57);
+        mag.setPosition(0.56);
     }
     public void magazineShoot(){
         int rounds = getRings();

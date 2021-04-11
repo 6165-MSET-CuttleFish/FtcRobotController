@@ -34,7 +34,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     double currentMillis = 0;
     double lastMillis = 0;
     int cycles = 0;
-    Pose2d shootingPose = new Pose2d();
+    Pose2d shootingPose = Robot.shootingPoseTele;
     Trajectory shootingPath;
     Trajectory shootingPathAutoShoot;
     Trajectory powerShotPath;
@@ -42,7 +42,7 @@ public class MainTele extends LinearOpMode implements Runnable{
     Vector2d targetVector;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, OpModeType.tele);
+        robot = new Robot(hardwareMap, 87, 9, Math.toRadians(180), OpModeType.tele);
         robot.init();
         wingDefault = WingState.vertical;
         generatePaths();
@@ -64,23 +64,29 @@ public class MainTele extends LinearOpMode implements Runnable{
                 if(!shooterDisabled) shooter();
                 if (gamepad1.right_trigger >= 0.2 && !wingCheck) {
                     wingCheck = true;
-                    switch (wingDefault){
-                        case in: wingDefault = WingState.out;
-                        case out: wingDefault = WingState.vertical;
-                        case safe: wingDefault = WingState.vertical;
-                        case vertical: wingDefault = WingState.out;
+                    if(wingDefault == WingState.in) {
+                        wingDefault = WingState.out;
+                    } else if(wingDefault == WingState.out){
+                        wingDefault = WingState.vertical;
+                    } else if(wingDefault == WingState.safe){
+                        wingDefault = WingState.vertical;
+                    } else {
+                        wingDefault = WingState.out;
                     }
+
                 }
                 if(gamepad1.right_trigger < 0.2){
                     wingCheck = false;
                 }
-            switch (wingDefault){
-                case in: robot.launcher.wingsIn();
-                case out:
-                    if(robot.launcher.getRings() < 3) robot.launcher.wingsOut();
-                    else robot.launcher.wingsMid();
-                case safe: robot.launcher.wingsMid();
-                case vertical: robot.launcher.wingsVert();
+            if(wingDefault == WingState.in) {
+                robot.launcher.wingsIn();
+            } else if(wingDefault == WingState.out){
+                if(robot.launcher.getRings() < 3) robot.launcher.wingsOut();
+                else robot.launcher.wingsMid();
+            } else if(wingDefault == WingState.safe){
+                robot.launcher.wingsMid();
+            } else {
+                robot.launcher.wingsVert();
             }
                 idle();
         }
@@ -112,20 +118,21 @@ public class MainTele extends LinearOpMode implements Runnable{
                     robot.launcher.updatePID();
                     if(!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                 });
-            } else if(gamepad1.a) {
-                if(shootingPathAutoShoot != null) {
-                    shooterDisabled = true;
-                    robot.driveTrain.followTrajectory(shootingPathAutoShoot, () -> {
-                        robot.launcher.updatePID();
-                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-                    });
-                    while(Math.abs(robot.launcher.getVelocity() - robot.launcher.getTargetVelo()) >= 50 || gamepadIdle()){
-                        robot.launcher.updatePID();
-                        robot.driveTrain.update();
-                    }
-                    robot.launcher.magazineShoot();
-                }
             }
+//            else if(gamepad1.b) {
+//                if(shootingPathAutoShoot != null) {
+//                    shooterDisabled = true;
+//                    robot.driveTrain.followTrajectory(shootingPathAutoShoot, () -> {
+//                        robot.launcher.updatePID();
+//                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+//                    });
+//                    while(Math.abs(robot.launcher.getVelocity() - robot.launcher.getTargetVelo()) >= 50 || gamepadIdle()){
+//                        robot.launcher.updatePID();
+//                        robot.driveTrain.update();
+//                    }
+//                    robot.launcher.magazineShoot();
+//                }
+//            }
         }
     }
     private double calcAvg(){
@@ -142,14 +149,14 @@ public class MainTele extends LinearOpMode implements Runnable{
     }
     private void generatePaths(){
         shootingPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-                .lineToLinearHeading(Robot.shootingPose)
+                .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(() -> {
                     targetVector = Robot.shootingPose.vec();
                     robot.launcher.setLauncherVelocity(getNeededVelocity());
                 })
-                .lineToLinearHeading(Robot.shootingPose)
+                .lineToLinearHeading(shootingPose)
                 .build();
         powerShotPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .splineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0), 0)
@@ -214,7 +221,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 wingDefault = WingState.safe;
             }
             robot.launcher.setVelocity(targetVelocity);
-            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 50){
+            if(Math.abs(robot.launcher.getTargetVelo() - robot.launcher.getVelocity()) <= 30){
                 sleep(400);
                 robot.launcher.magazineShoot();
             }
@@ -227,12 +234,10 @@ public class MainTele extends LinearOpMode implements Runnable{
         }
         else {
             robot.launcher.magDown();
-            switch(robot.launcher.getRings()){
-                case 3: robot.launcher.setVelocity(targetVelocity);
-                case 2: robot.launcher.setVelocity(targetVelocity);
-                case 1: robot.launcher.setVelocity(targetVelocity/2);
-                case 0: robot.launcher.setVelocity(0);
-            }
+            if(robot.launcher.getRings() == 3) robot.launcher.setVelocity(targetVelocity);
+            else if(robot.launcher.getRings() == 2)robot.launcher.setVelocity(targetVelocity);
+            else if (robot.launcher.getRings() == 1) robot.launcher.setVelocity(targetVelocity);
+            else robot.launcher.setVelocity(0);
             robot.launcher.flapDown();
         }
         if(gamepad2.right_bumper){
