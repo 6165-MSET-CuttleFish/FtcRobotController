@@ -163,18 +163,14 @@ public class MainTele extends LinearOpMode implements Runnable{
                 .build();
     }
     private void setMultiplier(){
-        if (!ninjaCheck) {
-            if (!ninja && gamepad1.left_bumper) {
-                ninja = true;
-                lxMult /= 3;
-                rxMult /= 3;
-                lyMult /= 3;
-            } else if (ninja && gamepad1.left_bumper) {
-                ninja = false;
-                lxMult *= 3;
-                rxMult *= 3;
-                lyMult *= 3;
-            }
+        if(gamepad1.left_trigger >= 0.3){
+            lxMult = 0.5;
+            rxMult = 0.5;
+            lyMult = 0.5;
+        } else {
+            lxMult = 1;
+            rxMult = 1;
+            lyMult = 1;
         }
         if(gamepad1.right_bumper && !reverseCheck){
             lxMult = -lxMult;
