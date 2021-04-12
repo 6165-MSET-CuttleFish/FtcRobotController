@@ -156,7 +156,7 @@ public class Launcher {
         for(int i = 0; i < rounds; i++){
             singleRound();
             if(Robot.opModeType == OpModeType.tele) wingsOut();
-            if(i != rounds-1)sleep((long)sleepTime);
+            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleepTime);
             if(i == rounds - 2){
                 sleep(60);
             }
@@ -167,7 +167,7 @@ public class Launcher {
         for(int i = 0; i < rounds; i++){
             singleRound();
             if(Robot.opModeType == OpModeType.tele) wingsOut();
-            if(i != rounds-1)sleep((long)sleep);
+            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
                 sleep(60);
             }
@@ -177,7 +177,7 @@ public class Launcher {
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
-            if(i != rounds-1)sleep(400);
+            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep(400);
             if(i == rounds - 2){
                 sleep(60);
             }
