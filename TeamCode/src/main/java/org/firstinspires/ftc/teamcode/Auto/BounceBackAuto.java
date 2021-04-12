@@ -63,16 +63,16 @@ public class BounceBackAuto extends LinearOpMode {
         Trajectory wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj1.end())
                 .addTemporalMarker(0.3, ()->{
                     robot.launcher.wingsVert();
-                    Async.set(()->Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) < 13, ()-> robot.wobbleArmDown());
+                    Async.set(()->Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 15, ()-> robot.wobbleArmDown());
                 })
-                .splineTo(new Vector2d(37.5275, 11.5275), 0)
-                .splineTo(new Vector2d(58.9275, 9.5275), Math.toRadians(-90))
-                .splineTo(new Vector2d(58.9275, -10.4725), Math.toRadians(-90))
+                .splineTo(new Vector2d(37.5275, 9), Math.toRadians(0))
+                .splineTo(new Vector2d(58.8275, 8.5275), Math.toRadians(-90))
+                .splineTo(new Vector2d(58.8275, -10.4725), Math.toRadians(-90))
                 .splineTo(Robot.C, Math.toRadians(-180))
                 .addDisplacementMarker(()->{
                     Async.start(()-> {
                         robot.release();
-                        sleep(300);
+                        sleep(400);
                         robot.wobbleArmUp();
                     });
                     robot.intake(0);
@@ -85,21 +85,19 @@ public class BounceBackAuto extends LinearOpMode {
                 .lineToLinearHeading(Robot.shootingPose)
                 .addDisplacementMarker(()->Async.start(()->{
                     telemetry.addData("rings", robot.launcher.getRings());
+                    telemetry.addData("distance", Robot.goal.distTo(Robot.shootingPose.vec()));
                     telemetry.update();
                     //robot.launcher.magazineShoot();
                 }))
                 .build();
-        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end(), true)
-                .addSpatialMarker(Robot.rightWobble, ()-> {
-                    robot.grab();
-                    sleep(300);
-                    robot.wobbleArmUp();
-                })
-                .splineToLinearHeading(new Pose2d(-43.4725, -36.9725), 0)
+        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end())
+                .lineToLinearHeading(Coordinate.toPose(Robot.rightWobble, 0))
                 .addDisplacementMarker(()-> robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-32.4725, Robot.goal.getY()))))
-                .splineToConstantHeading(new Vector2d(-35.4725, Robot.goal.getY()), 0)
                 .addDisplacementMarker(()-> robot.intake(1))
-                .splineToConstantHeading(new Vector2d(-32.4725, Robot.goal.getY()), 0, new MinVelocityConstraint(
+                .build();
+        Trajectory stackIntake = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
+                .splineTo(new Vector2d(-35.4725, Robot.goal.getY()), 0)
+                .splineTo(new Vector2d(-32.4725, Robot.goal.getY()), 0, new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                         new MecanumVelocityConstraint(7, DriveConstants.TRACK_WIDTH)
@@ -110,17 +108,15 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.intake(0);
                     robot.launcher.magUp();
                 })
-                .build();
-        Trajectory stackIntake = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
-                .addDisplacementMarker(()->robot.intake(1))
-                .lineToLinearHeading(Robot.shootingPoseTele)
-                .addDisplacementMarker(()->{
-                    robot.intake(0);
-                    robot.launcher.magUp();
-                })
+//                .addDisplacementMarker(()->robot.intake(1))
+//                .lineToLinearHeading(Robot.shootingPoseTele)
+//                .addDisplacementMarker(()->{
+//                    robot.intake(0);
+//                    robot.launcher.magUp();
+//                })
                 .build();
         Trajectory wobbleDrop2 = robot.driveTrain.trajectoryBuilder(stackIntake.end())
-                .addDisplacementMarker(()-> Async.set(()-> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.C) < 10, ()-> robot.wobbleArmDown()))
+                .addDisplacementMarker(()-> Async.set(()-> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.C) <= 15, ()-> robot.wobbleArmDown()))
                 .lineToLinearHeading(Coordinate.toPose(Robot.C, 0))
                 .addDisplacementMarker(()-> Async.start(()-> {
                     robot.release();
@@ -153,11 +149,12 @@ public class BounceBackAuto extends LinearOpMode {
         robot.turnOffVision();
         robot.launcher.flapUp();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(907);
+        robot.launcher.setLauncherVelocity(908);
         robot.unlockIntake();
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);
         robot.driveTrain.followTrajectory(powerShotsTraj3);
+        sleep(100);
         robot.launcher.setLauncherVelocity(0);
         robot.intake(1);
         robot.driveTrain.followTrajectory(wobbleDrop);
@@ -167,15 +164,26 @@ public class BounceBackAuto extends LinearOpMode {
         robot.driveTrain.followTrajectory(firstShot);
         robot.wobbleArmDown();
         robot.launcher.safeShoot();
-        robot.launcher.setLauncherVelocity(0);
-        //Robot.shootingPose = new Pose2d(70, Robot.goal.getY(), 0);
-        robot.driveTrain.followTrajectory(wobblePickup);
-        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
-        robot.launcher.singleRound();
         sleep(100);
-        robot.launcher.magDown();
-        robot.launcher.setVelocity(0);
-//        robot.driveTrain.followTrajectory(stackIntake);
+        robot.launcher.setLauncherVelocity(0);
+        robot.wobbleArmDown();
+        //Robot.shootingPose = new Pose2d(70, Robot.goal.getY(), 0);
+        Async.set(()->robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) <= 7, ()-> {
+            robot.grab();
+            sleep(300);
+            robot.wobbleArmUp();
+        });
+        robot.driveTrain.followTrajectory(wobblePickup);
+//        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
+//        robot.launcher.singleRound();
+//        sleep(100);
+//        robot.launcher.magDown();
+//        robot.launcher.setVelocity(0);
+        robot.driveTrain.followTrajectory(stackIntake);
+        sleep(100);
+        robot.launcher.singleRound();
+        sleep(20);
+        //        robot.driveTrain.followTrajectory(stackIntake);
 //        sleep(100);
 //        robot.launcher.magazineShoot();
 //        sleep(40);

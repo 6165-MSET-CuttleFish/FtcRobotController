@@ -46,7 +46,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-13.4725, -51.4725, Math.toRadians(5));
+    public static Pose2d shootingPose = new Pose2d(-13.4725, -51.4725, Math.toRadians(10));
     public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -35.4725, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -57,7 +57,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(49.5275, -53.4725);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-40.4725, -36.9725);
+    public static Vector2d rightWobble = new Vector2d(-36.4725, -45.9725);
 
     public Launcher launcher;
 
@@ -82,8 +82,8 @@ public class Robot {
             DriveConstants.MAX_VEL = 65;
             DriveConstants.MAX_ACCEL = 65;
         } else {
-            DriveConstants.MAX_VEL = 51;
-            DriveConstants.MAX_ACCEL = 51;
+            DriveConstants.MAX_VEL = 49;
+            DriveConstants.MAX_ACCEL = 49;
         }
         velocityController = new InterpLUT();
         xController = new InterpLUT();
@@ -122,9 +122,11 @@ public class Robot {
         velocityController.add(75,1500);
         velocityController.add(77.5,1320);
         velocityController.add(80,1340);
-        velocityController.add(85,1300);
-        velocityController.add(90, 1260);
-        velocityController.add(95,1220);
+        //modified
+        velocityController.add(85,1180);
+        velocityController.add(90, 1180);
+        velocityController.add(95,1170);
+        //modified
         velocityController.add(100,1200);
         velocityController.add(105,1200);
         velocityController.add(110,1190);

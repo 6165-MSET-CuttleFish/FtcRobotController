@@ -52,7 +52,7 @@ public class MainTele extends LinearOpMode implements Runnable{
         Async.start(this);
         Async.start(() -> {
             while(opModeIsActive()) {
-                if (robot.intakeL.getPower() != 0 && robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
+                if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                     sleep(300);
                     generatePaths();
                 }
@@ -114,13 +114,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 robot.driveTrain.update();
             }
 
-            if(gamepad1.left_trigger >= 0.2) {
-                if(shootingPath != null)
-                robot.driveTrain.followTrajectory(shootingPath, ()->{
-                    robot.launcher.updatePID();
-                    if(!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-                });
-            } else if(gamepad1.x){
+            if(gamepad1.x){
                 robot.driveTrain.followTrajectory(powerShotPath);
                 for(Vector2d pwrShot : Robot.pwrShots) {
                     Pose2d position = robot.driveTrain.getPoseEstimate();
@@ -140,10 +134,6 @@ public class MainTele extends LinearOpMode implements Runnable{
                         robot.launcher.updatePID();
                         if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                     });
-                    while(Math.abs(robot.launcher.getVelocity() - robot.launcher.getTargetVelo()) >= 50 || gamepadIdle()){
-                        robot.launcher.updatePID();
-                        robot.driveTrain.update();
-                    }
                     robot.launcher.magazineShoot();
                 }
             }
@@ -167,10 +157,10 @@ public class MainTele extends LinearOpMode implements Runnable{
                 .build();
         shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(() -> {
-                    targetVector = Robot.shootingPose.vec();
+                    targetVector = Robot.shootingPoseTele.vec();
                     robot.launcher.setLauncherVelocity(getNeededVelocity());
                 })
-                .lineToLinearHeading(shootingPose)
+                .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         powerShotPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(()-> {
