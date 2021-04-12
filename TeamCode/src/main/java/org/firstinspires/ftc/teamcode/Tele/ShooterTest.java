@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 public class ShooterTest extends LinearOpMode implements Runnable{
     Robot robot;
     public static double targetVelo = 1000;
+    public static double sleepTime = 200;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     boolean magCheck;
     boolean isMagUp;
@@ -38,6 +39,13 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 targetVelo -= 10;
                 sleep(150);
             }
+            if(gamepad1.dpad_right){
+                sleepTime += 20;
+                sleep(150);
+            } else if(gamepad1.dpad_left){
+                sleepTime -= 10;
+                sleep(150);
+            }
             if(gamepad1.left_trigger >= 0.1) {
                 robot.launcher.magUp();
                 robot.launcher.setVelocity(targetVelo);
@@ -57,7 +65,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 if (!gamepad1.left_bumper) magCheck = false;
             }
             if(gamepad1.right_trigger >= 0.1){
-                robot.launcher.magazineShoot();
+                robot.launcher.customShoot(sleepTime);
             }
         }
     }

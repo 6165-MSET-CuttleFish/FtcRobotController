@@ -162,6 +162,17 @@ public class Launcher {
             }
         }
     }
+    public void customShoot(double sleep){
+        int rounds = getRings();
+        for(int i = 0; i < rounds; i++){
+            singleRound();
+            if(Robot.opModeType == OpModeType.tele) wingsOut();
+            if(i != rounds-1)sleep((long)sleep);
+            if(i == rounds - 2){
+                sleep(60);
+            }
+        }
+    }
     public void safeShoot(){
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){

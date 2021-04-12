@@ -164,7 +164,7 @@ public class MainTele extends LinearOpMode implements Runnable{
                 .build();
         powerShotPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(()-> {
-                    shooterDisabled = false;
+                    shooterDisabled = true;
                     robot.launcher.setVelocity(1170);
                     wingDefault = WingState.out;
                 })
