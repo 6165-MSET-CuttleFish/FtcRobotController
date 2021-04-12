@@ -16,12 +16,21 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Robot {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -33,6 +42,7 @@ public class Robot {
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
+    public OpenCvCamera webcam;
 
     private InterpLUT velocityController;
     private InterpLUT xController;
@@ -158,31 +168,53 @@ public class Robot {
     }
     public void autoInit(){
         init();
-        initVuforia();
-        initTfod();
-        if(tfod != null) {
-            tfod.activate();
-        }
+        int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam.setPipeline(new SamplePipeline());
+        webcam.openCameraDeviceAsync(() -> {
+            /*
+             * Tell the webcam to start streaming images to us! Note that you must make sure
+             * the resolution you specify is supported by the camera. If it is not, an exception
+             * will be thrown.
+             *
+             * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+             * supports streaming from the webcam in the uncompressed YUV image format. This means
+             * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+             * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+             *
+             * Also, we specify the rotation that the webcam is used in. This is so that the image
+             * from the camera sensor can be rotated such that it is always displayed with the image upright.
+             * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+             * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+             * away from the user.
+             */
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        });
+//        initVuforia();
+//        initTfod();
+//        if(tfod != null) {
+//            tfod.activate();
+//        }
     }
     public double height = 0;
     public void scan(){
-        if(tfod != null) {
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                for (Recognition recognition : updatedRecognitions) {
-                    if (recognition.getHeight() < 200) {
-                        if (recognition.getHeight() >= 90) {
-                            dice = Dice.one;
-                        } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
-                            dice = Dice.two;
-                        } else {
-                            dice = Dice.three;
-                        }
-                        height = recognition.getHeight();
-                    }
-                }
-            }
-        }
+//        if(tfod != null) {
+//            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+//            if (updatedRecognitions != null) {
+//                for (Recognition recognition : updatedRecognitions) {
+//                    if (recognition.getHeight() < 200) {
+//                        if (recognition.getHeight() >= 90) {
+//                            dice = Dice.one;
+//                        } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
+//                            dice = Dice.two;
+//                        } else {
+//                            dice = Dice.three;
+//                        }
+//                        height = recognition.getHeight();
+//                    }
+//                }
+//            }
+//        }
     }
     public void turnOffVision(){
         if(tfod != null) {
@@ -229,5 +261,78 @@ public class Robot {
         tfodParameters.minResultConfidence = 0.5f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+    class SamplePipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
+        /*
+         * NOTE: if you wish to use additional Mat objects in your processing pipeline, it is
+         * highly recommended to declare them here as instance variables and re-use them for
+         * each invocation of processFrame(), rather than declaring them as new local variables
+         * each time through processFrame(). This removes the danger of causing a memory leak
+         * by forgetting to call mat.release(), and it also reduces memory pressure by not
+         * constantly allocating and freeing large chunks of memory.
+         */
+
+        @Override
+        public Mat processFrame(Mat input)
+        {
+            /*
+             * IMPORTANT NOTE: the input Mat that is passed in as a parameter to this method
+             * will only dereference to the same image for the duration of this particular
+             * invocation of this method. That is, if for some reason you'd like to save a copy
+             * of this particular frame for later use, you will need to either clone it or copy
+             * it to another Mat.
+             */
+
+            /*
+             * Draw a simple box around the middle 1/2 of the entire frame
+             */
+            Imgproc.rectangle(
+                    input,
+                    new Point(
+                            input.cols()/4,
+                            input.rows()/4),
+                    new Point(
+                            input.cols()*(3f/4f),
+                            input.rows()*(3f/4f)),
+                    new Scalar(0, 255, 0), 4);
+
+            /**
+             * NOTE: to see how to get data from your pipeline to your OpMode as well as how
+             * to change which stage of the pipeline is rendered to the viewport when it is
+             * tapped, please see {@link PipelineStageSwitchingExample}
+             */
+
+            return input;
+        }
+
+        @Override
+        public void onViewportTapped()
+        {
+            /*
+             * The viewport (if one was specified in the constructor) can also be dynamically "paused"
+             * and "resumed". The primary use case of this is to reduce CPU, memory, and power load
+             * when you need your vision pipeline running, but do not require a live preview on the
+             * robot controller screen. For instance, this could be useful if you wish to see the live
+             * camera preview as you are initializing your robot, but you no longer require the live
+             * preview after you have finished your initialization process; pausing the viewport does
+             * not stop running your pipeline.
+             *
+             * Here we demonstrate dynamically pausing/resuming the viewport when the user taps it
+             */
+
+            viewportPaused = !viewportPaused;
+
+            if(viewportPaused)
+            {
+                webcam.pauseViewport();
+            }
+            else
+            {
+                webcam.resumeViewport();
+            }
+        }
     }
 }
