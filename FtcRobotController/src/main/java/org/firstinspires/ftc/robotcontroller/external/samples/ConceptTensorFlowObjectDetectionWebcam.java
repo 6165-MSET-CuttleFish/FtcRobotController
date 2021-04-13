@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -54,7 +55,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
-
+    double zoom = 1;
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -102,7 +103,8 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            //tfod.setZoom(1.5, 16.0/9.0);
+            tfod.setZoom(2, 16.0/9.0);
+            tfod.setClippingMargins(1, 1, 1, 1);
         }
 
         /** Wait for the game to begin */
@@ -113,6 +115,14 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
+                    if(gamepad1.dpad_up){
+                        zoom += 0.2;
+                        sleep(200);
+                    } else if(gamepad1.dpad_down){
+                        zoom -= 0.1;
+                        sleep(200);
+                    }
+                    tfod.setZoom(zoom, 16.0/9.0);
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
