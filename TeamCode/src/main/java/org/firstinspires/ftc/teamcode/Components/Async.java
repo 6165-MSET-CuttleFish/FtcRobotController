@@ -7,7 +7,7 @@ public class Async {
         Thread async = new Thread(()-> {
             while(true){
                 try {
-                    if (!!condition.call()) break;
+                    if (condition.call()) break;
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -17,7 +17,6 @@ public class Async {
         async.start();
     }
     public static void start(Runnable block){
-        Thread async = new Thread(block);
-        async.start();
+        new Thread(block).start();
     }
 }

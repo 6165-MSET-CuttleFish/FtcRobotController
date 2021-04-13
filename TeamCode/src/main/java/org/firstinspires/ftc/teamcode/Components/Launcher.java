@@ -114,6 +114,9 @@ public class Launcher {
     public double getTargetVelo(){
         return targetVelo;
     }
+    public double getError(){
+        return getTargetVelo() - getVelocity();
+    }
     public void wingsOut() {
         leftIntakeHolder.setPosition(0.96);
         rightIntakeHolder.setPosition(0.18);
@@ -152,20 +155,13 @@ public class Launcher {
         mag.setPosition(0.56);
     }
     public void magazineShoot(){
-        int rounds = getRings();
-        for(int i = 0; i < rounds; i++){
-            singleRound();
-            if(Robot.opModeType == OpModeType.tele) wingsOut();
-            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleepTime);
-            if(i == rounds - 2){
-                sleep(60);
-            }
-        }
+        customShoot(sleepTime);
     }
     public void customShoot(double sleep){
         int rounds = getRings();
         for(int i = 0; i < rounds; i++){
             singleRound();
+            Log.println(Log.INFO, "Shot Number: ", i + "");
             if(Robot.opModeType == OpModeType.tele) wingsOut();
             if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
@@ -174,14 +170,7 @@ public class Launcher {
         }
     }
     public void safeShoot(){
-        int rounds = getRings();
-        for(int i = 0; i < rounds; i++){
-            singleRound();
-            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep(400);
-            if(i == rounds - 2){
-                sleep(60);
-            }
-        }
+        customShoot(400);
     }
     public void singleRound(){
         gunner.setPosition(0.34);

@@ -21,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -45,6 +44,7 @@ public class Robot {
     public OpenCvCamera webcam;
 
     private InterpLUT velocityController;
+    private InterpLUT sleepController;
     private InterpLUT xController;
     private InterpLUT yController;
 
@@ -56,8 +56,8 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-13.4725, -51.4725, Math.toRadians(10));
-    public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -35.4725, 0);
+    public static Pose2d shootingPose = new Pose2d(-13.4725, -51.4725, Math.toRadians(5));
+    public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -36.4725, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
@@ -88,22 +88,15 @@ public class Robot {
         construct(imported);
     }
     private void construct(HardwareMap imported){
-        if(opModeType == OpModeType.tele) {
-            DriveConstants.MAX_VEL = 65;
-            DriveConstants.MAX_ACCEL = 65;
-        } else {
-            DriveConstants.MAX_VEL = 49;
-            DriveConstants.MAX_ACCEL = 49;
-        }
         velocityController = new InterpLUT();
         xController = new InterpLUT();
         yController = new InterpLUT();
         setVelocityController();
         setXController();
         setYController();
-        pwrShots[0] = new Vector2d(70.4725, 67);
-        pwrShots[1] = new Vector2d(70.4725, 60);
-        pwrShots[2] = new Vector2d(70.4725, 50.4);
+        pwrShots[0] = new Vector2d(70.4725, -1.0725);
+        pwrShots[1] = new Vector2d(70.4725, -10.4725);
+        pwrShots[2] = new Vector2d(70.4725, -19.4725);
         pwrShotLocals[0] = new Vector2d(-2.4725, -1.0725);
         pwrShotLocals[1] = new Vector2d(-2.4725, -10.4725);
         pwrShotLocals[2] = new Vector2d(-2.4725, -19.4725);

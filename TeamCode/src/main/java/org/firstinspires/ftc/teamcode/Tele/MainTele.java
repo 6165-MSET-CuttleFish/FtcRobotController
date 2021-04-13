@@ -29,8 +29,8 @@ public class MainTele extends LinearOpMode implements Runnable{
         vertical
     }
     WingState wingDefault;
-    boolean ninja, armUp;
-    boolean wingCheck, ninjaCheck, reverseCheck;
+    boolean armUp;
+    boolean wingCheck, reverseCheck;
     boolean shooterDisabled;
     ArrayList<Double> timer = new ArrayList<>();
     double currentMillis = 0;
@@ -113,7 +113,6 @@ public class MainTele extends LinearOpMode implements Runnable{
                 setMultiplier();
                 robot.driveTrain.update();
             }
-
             if(gamepad1.x){
                 robot.driveTrain.followTrajectory(powerShotPath);
                 for(Vector2d pwrShot : Robot.pwrShots) {
@@ -127,15 +126,29 @@ public class MainTele extends LinearOpMode implements Runnable{
                     robot.launcher.singleRound();
                 }
             }
-            else if(gamepad1.y) {
-                if(shootingPathAutoShoot != null) {
-                    shooterDisabled = true;
-                    robot.driveTrain.followTrajectory(shootingPathAutoShoot, () -> {
+            else if(gamepad1.left_bumper) {
+                    robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                            .addDisplacementMarker(()->{
+                                shooterDisabled = true;
+                                robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
+                            })
+                            .addTemporalMarker(0.7, ()-> robot.launcher.magUp())
+                            .splineToLinearHeading(Robot.shootingPoseTele, 0)
+                            .build(), () -> {
                         robot.launcher.updatePID();
                         if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                     });
+                    while(gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2){
+                        robot.driveTrain.update();
+                        robot.launcher.updatePID();
+                    }
                     robot.launcher.magazineShoot();
                 }
+             else if(gamepad1.right_trigger >= 0.2){
+                Pose2d position = robot.driveTrain.getPoseEstimate();
+                double absAngleToTarget = Math.atan2(Robot.goal.getY() - position.getY(), Robot.goal.getX() - position.getX());
+                double relAngleToPoint = AngleWrap(absAngleToTarget - position.getHeading());
+                robot.driveTrain.turnAsync(relAngleToPoint);
             }
         }
     }
@@ -186,7 +199,6 @@ public class MainTele extends LinearOpMode implements Runnable{
             lyMult = -lyMult;
         }
         if(!gamepad1.right_bumper) reverseCheck = false;
-        if(!gamepad1.left_bumper) ninjaCheck = false;
     }
     public void wobble(){
         if(gamepad2.b && !armUp){
