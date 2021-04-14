@@ -193,11 +193,6 @@ public class Robot {
         UGContourRingPipeline.Config.setHORIZON(HORIZON);
 
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-//        initVuforia();
-//        initTfod();
-//        if(tfod != null) {
-//            tfod.activate();
-//        }
     }
     public double height = 0;
     public void scan(){
@@ -208,9 +203,7 @@ public class Robot {
         }
     }
     public void turnOffVision(){
-        if(tfod != null) {
-            tfod.shutdown();
-        }
+        webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
     }
     public void wobbleArmUp() {
         arm1.setPosition(0.1);
