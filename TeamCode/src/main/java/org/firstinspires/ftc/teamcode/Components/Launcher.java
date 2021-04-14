@@ -52,7 +52,7 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
         magDown();
-        if(Robot.opModeType == OpModeType.auto) wingsIn();
+        if(Robot.opModeType == OpModeType.auto) wingsVert();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
