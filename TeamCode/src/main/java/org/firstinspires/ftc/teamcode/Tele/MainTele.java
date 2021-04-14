@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.arcrobotics.ftclib.gamepad.*;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
@@ -49,7 +48,7 @@ public class MainTele extends LinearOpMode implements Runnable {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 87, 9, Math.toRadians(180), OpModeType.tele);
+        robot = new Robot(hardwareMap, 87, 9, Math.toRadians(180), OpModeType.tele, this);
         robot.init();
         wingDefault = WingState.vertical;
         generatePaths();

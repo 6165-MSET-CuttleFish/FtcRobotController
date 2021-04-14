@@ -5,6 +5,8 @@ import java.lang.*;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
+import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -29,6 +31,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Robot {
@@ -36,12 +39,21 @@ public class Robot {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
+    private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
+    private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
+    private static final int HORIZON = 100; // horizon value to tune
+    private static final boolean DEBUG = false; // if debug is wanted, change to true
+    private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
+
     public static Dice dice = Dice.one;
-    public static OpModeType opModeType = OpModeType.auto;
+    public static OpModeType opModeType = OpModeType.none;
+
+    private LinearOpMode linearOpMode;
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
     public OpenCvCamera webcam;
+    private UGContourRingPipeline pipeline;
 
     private InterpLUT velocityController;
     private InterpLUT sleepController;
@@ -78,7 +90,8 @@ public class Robot {
         robotPose = new Pose2d(x - 70.4725, y - 70.4725, robotOrientation);
         construct(imported);
     }
-    public Robot(HardwareMap imported, double x, double y, double robotOrientation, OpModeType type) {
+    public Robot(HardwareMap imported, double x, double y, double robotOrientation, OpModeType type, LinearOpMode linearOpMode) {
+        this.linearOpMode = linearOpMode;
         opModeType = type;
         robotPose = new Pose2d(x - 70.4725, y - 70.4725, robotOrientation);
         construct(imported);
@@ -161,28 +174,25 @@ public class Robot {
     }
     public void autoInit(){
         init();
-        int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(new SamplePipeline());
-        webcam.openCameraDeviceAsync(() -> {
-            /*
-             * Tell the webcam to start streaming images to us! Note that you must make sure
-             * the resolution you specify is supported by the camera. If it is not, an exception
-             * will be thrown.
-             *
-             * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-             * supports streaming from the webcam in the uncompressed YUV image format. This means
-             * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-             * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-             *
-             * Also, we specify the rotation that the webcam is used in. This is so that the image
-             * from the camera sensor can be rotated such that it is always displayed with the image upright.
-             * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-             * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-             * away from the user.
-             */
-            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-        });
+        int cameraMonitorViewId = this
+                .map
+                .appContext
+                .getResources().getIdentifier(
+                        "cameraMonitorViewId",
+                        "id",
+                        map.appContext.getPackageName()
+                );
+            webcam = OpenCvCameraFactory
+                    .getInstance()
+                    .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+
+        webcam.setPipeline(pipeline = new UGContourRingPipeline(linearOpMode.telemetry, DEBUG));
+
+        UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
+
+        UGContourRingPipeline.Config.setHORIZON(HORIZON);
+
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
 //        initVuforia();
 //        initTfod();
 //        if(tfod != null) {
@@ -191,23 +201,11 @@ public class Robot {
     }
     public double height = 0;
     public void scan(){
-//        if(tfod != null) {
-//            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//            if (updatedRecognitions != null) {
-//                for (Recognition recognition : updatedRecognitions) {
-//                    if (recognition.getHeight() < 200) {
-//                        if (recognition.getHeight() >= 90) {
-//                            dice = Dice.one;
-//                        } else if (recognition.getHeight() < 90 && recognition.getHeight() > 10) {
-//                            dice = Dice.two;
-//                        } else {
-//                            dice = Dice.three;
-//                        }
-//                        height = recognition.getHeight();
-//                    }
-//                }
-//            }
-//        }
+        switch(pipeline.getHeight()){
+            case ZERO: dice = Dice.one;
+            case ONE: dice = Dice.two;
+            case FOUR: dice = Dice.three;
+        }
     }
     public void turnOffVision(){
         if(tfod != null) {
@@ -255,7 +253,7 @@ public class Robot {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-    class SamplePipeline extends OpenCvPipeline
+    class BounceBackPipeline extends OpenCvPipeline
     {
         boolean viewportPaused;
 

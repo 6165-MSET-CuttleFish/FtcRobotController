@@ -75,6 +75,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
         while(opModeIsActive() && !isStopRequested()){
             telemetry.addData("targetVelo ", targetVelo);
             telemetry.addData("current velo ", robot.launcher.getVelocity());
+            telemetry.addData("sleep time ", sleepTime);
             telemetry.update();
         }
     }
