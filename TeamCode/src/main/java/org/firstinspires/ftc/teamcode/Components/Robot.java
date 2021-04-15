@@ -110,9 +110,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.0725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-2.4725, -1.0725);
-        pwrShotLocals[1] = new Vector2d(-2.4725, -10.4725);
-        pwrShotLocals[2] = new Vector2d(-2.4725, -19.4725);
+        pwrShotLocals[0] = new Vector2d(-2.4725, -1);
+        pwrShotLocals[1] = new Vector2d(-2.4725, -10.7725);
+        pwrShotLocals[2] = new Vector2d(-2.4725, -20);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
@@ -203,7 +203,7 @@ public class Robot {
         }
     }
     public void turnOffVision(){
-        webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
+        //webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
     }
     public void wobbleArmUp() {
         arm1.setPosition(0.1);
