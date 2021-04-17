@@ -83,9 +83,9 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.launcher.wingsVert();
                     Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 15, () -> robot.wobbleArmDown());
                 })
-                .splineTo(new Vector2d(30.5275, 8.7), Math.toRadians(0))
-                .splineTo(new Vector2d(58.4, 0.5275), Math.toRadians(-90))
-                .splineTo(new Vector2d(58.4, -10.4725), Math.toRadians(-90))
+                .splineTo(new Vector2d(46.5275, 8.7), Math.toRadians(0))
+                .splineTo(new Vector2d(59, 0.5275), Math.toRadians(-90))
+                .splineTo(new Vector2d(59, -10.4725), Math.toRadians(-90))
                 .splineTo(Robot.C, Math.toRadians(-180))
                 .addDisplacementMarker(() -> {
                     Async.start(() -> {
@@ -117,11 +117,12 @@ public class BounceBackAuto extends LinearOpMode {
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-32.4725, Robot.goal.getY()))))
                 .addDisplacementMarker(() -> robot.intake(1))
-                .splineToConstantHeading(new Vector2d(-33, Robot.goal.getY()), 0)
-                .splineToLinearHeading(new Pose2d(-20.4725, Robot.goal.getY(), 0), 0, new MinVelocityConstraint(
+                .addDisplacementMarker(()-> robot.driveTrain.fixError())
+                .splineToConstantHeading(new Vector2d(-35, Robot.goal.getY()), 0)
+                .splineToLinearHeading(new Pose2d(-18.4725, Robot.goal.getY(), 0), 0, new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                        new MecanumVelocityConstraint(6, DriveConstants.TRACK_WIDTH)
+                                        new MecanumVelocityConstraint(5, DriveConstants.TRACK_WIDTH)
                                 )
                         ),
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -157,6 +158,12 @@ public class BounceBackAuto extends LinearOpMode {
                 Robot.robotPose = robot.driveTrain.getPoseEstimate();
             }
         });
+        Thread errorFix = new Thread(()->{
+            robot.driveTrain.fixError();
+            sleep(5);
+            telemetry.addData("I exist", "i exist");
+            telemetry.update();
+        });
 //        while (!opModeIsActive()) {
 //            robot.scan();
 //            telemetry.addData("Stack Height", robot.height);
@@ -165,10 +172,11 @@ public class BounceBackAuto extends LinearOpMode {
 //        }
         waitForStart();
         shooterThread.start();
+        errorFix.start();
         robot.turnOffVision();
         robot.launcher.flapUp();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(908);
+        robot.launcher.setLauncherVelocity(906);
         robot.unlockIntake();
         robot.driveTrain.followTrajectory(powerShotsTraj1);
 //        robot.driveTrain.followTrajectory(powerShotsTraj2);
@@ -177,21 +185,18 @@ public class BounceBackAuto extends LinearOpMode {
         robot.launcher.setLauncherVelocity(0);
         robot.intake(1);
         robot.driveTrain.followTrajectory(wobbleDrop);
-        /*
-        PICK UP BOUNCEBACKS
-         */
+        robot.driveTrain.fixError();
         robot.driveTrain.followTrajectory(firstShot);
         robot.wobbleArmDown();
         robot.launcher.safeShoot();
         robot.launcher.setLauncherVelocity(0);
         robot.wobbleArmDown();
-        Async.set(() -> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) <= 15, () -> {
+        Async.set(() -> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) <= 6, () -> {
             robot.grab();
             sleep(600);
             robot.wobbleArmUp();
         });
         robot.driveTrain.followTrajectory(wobblePickup);
-        sleep(600);
         robot.launcher.magUp();
         robot.intake(0);
         sleep(130);

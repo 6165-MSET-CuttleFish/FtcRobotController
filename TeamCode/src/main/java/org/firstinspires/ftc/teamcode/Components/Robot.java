@@ -68,7 +68,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-13.4725, -56.4725, Math.toRadians(15));
+    public static Pose2d shootingPose = new Pose2d(-13.4725, -50, Math.toRadians(10));
     public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -36.4725, 0);
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -76,10 +76,10 @@ public class Robot {
 
     public static Vector2d A = new Vector2d(-5.4725, -50.4725);
     public static Vector2d B = new Vector2d(16.7775, -35.4725);
-    public static Vector2d C = new Vector2d(47.5275, -53.4725);
+    public static Vector2d C = new Vector2d(47.5275, -53.7725);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-35.4725, -47.9725);
+    public static Vector2d rightWobble = new Vector2d(-34.4725, -43.9725);
 
     public Launcher launcher;
 
@@ -110,9 +110,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.0725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-2.4725, -1);
-        pwrShotLocals[1] = new Vector2d(-2.4725, -10.7725);
-        pwrShotLocals[2] = new Vector2d(-2.4725, -20);
+        pwrShotLocals[0] = new Vector2d(-2.8725, -1.2);
+        pwrShotLocals[1] = new Vector2d(-2.8725, -10.9);
+        pwrShotLocals[2] = new Vector2d(-2.8725, -20);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
@@ -128,7 +128,7 @@ public class Robot {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
         launcher = new Launcher(map);
-        driveTrain = new SampleMecanumDrive(imported);
+        driveTrain = new SampleMecanumDrive(imported, linearOpMode);
         driveTrain.setPoseEstimate(robotPose);
         driveTrain.setVelocityCallable(()->launcher.getVelocity());
         driveTrain.setTargetVeloCallable(()->launcher.getTargetVelo());

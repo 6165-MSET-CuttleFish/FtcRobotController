@@ -25,7 +25,7 @@ public class LocalizationTest extends LinearOpMode {
         robot.driveTrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
-        StandardTrackingWheelLocalizer localizer = new StandardTrackingWheelLocalizer(hardwareMap);
+        //StandardTrackingWheelLocalizer localizer = new StandardTrackingWheelLocalizer(hardwareMap);
         while (!isStopRequested()) {
             robot.driveTrain.setWeightedDrivePower(
                     new Pose2d(
@@ -41,9 +41,6 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-            telemetry.addData("left", localizer.leftEncoder.getCurrentPosition());
-            telemetry.addData("right", localizer.rightEncoder.getCurrentPosition());
-            telemetry.addData("front", localizer.frontEncoder.getCurrentPosition());
             telemetry.update();
         }
     }

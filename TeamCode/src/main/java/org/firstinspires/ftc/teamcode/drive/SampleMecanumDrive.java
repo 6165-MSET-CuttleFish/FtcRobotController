@@ -27,6 +27,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityCons
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -101,10 +102,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     private VoltageSensor batteryVoltageSensor;
 
     private Pose2d lastPoseOnTurn;
-
-    public SampleMecanumDrive(HardwareMap hardwareMap) {
+    double constant;
+    LinearOpMode opMode;
+    public SampleMecanumDrive(HardwareMap hardwareMap, LinearOpMode opMode) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
-
+        this.opMode = opMode;
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 
@@ -139,6 +141,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         while(!imu.isGyroCalibrated()){}
+        constant = imu.getAngularOrientation().firstAngle;
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
@@ -171,7 +174,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        setLocalizer(new GyroLocalizer(hardwareMap, this));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, this));
     }
     Callable<Double> veloCallable;
     Callable<Double> targetVeloCallable;
@@ -256,9 +259,16 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         throw new AssertionError();
     }
+    public void fixError(){
+        setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), getRawExternalHeading() - constant));
+    }
     public void update() {
         updatePoseEstimate();
-
+//        i++;
+//        if(i == 25) {
+//            i = 0;
+//            setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), getRawExternalHeading() - constant));
+//        }
         Pose2d currentPose = getPoseEstimate();
         Pose2d lastError = getLastError();
 
