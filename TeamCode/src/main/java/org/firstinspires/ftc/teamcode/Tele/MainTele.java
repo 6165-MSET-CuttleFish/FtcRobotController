@@ -259,7 +259,7 @@ public class MainTele extends LinearOpMode implements Runnable {
             }
         } else if (gamepad2.left_bumper) {
             robot.launcher.magUp();
-            robot.launcher.setVelocity(1170);
+            robot.launcher.setVelocity(1130);
             wingDefault = WingState.out;
         } else {
             robot.launcher.magDown();
