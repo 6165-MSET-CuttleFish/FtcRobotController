@@ -45,7 +45,7 @@ public class Robot {
     private static final boolean DEBUG = false; // if debug is wanted, change to true
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
 
-    public static Dice dice = Dice.one;
+    public static UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
     public static OpModeType opModeType = OpModeType.none;
 
     private LinearOpMode linearOpMode;
@@ -114,6 +114,17 @@ public class Robot {
         pwrShotLocals[1] = new Vector2d(-2.8725, -10.9);
         pwrShotLocals[2] = new Vector2d(-2.8725, -20);
         map = imported;
+        int cameraMonitorViewId = this
+                .map
+                .appContext
+                .getResources().getIdentifier(
+                        "cameraMonitorViewId",
+                        "id",
+                        map.appContext.getPackageName()
+                );
+        webcam = OpenCvCameraFactory
+                .getInstance()
+                .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.crservo.get("in1");
@@ -174,18 +185,6 @@ public class Robot {
     }
     public void autoInit(){
         init();
-        int cameraMonitorViewId = this
-                .map
-                .appContext
-                .getResources().getIdentifier(
-                        "cameraMonitorViewId",
-                        "id",
-                        map.appContext.getPackageName()
-                );
-            webcam = OpenCvCameraFactory
-                    .getInstance()
-                    .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-
         webcam.setPipeline(pipeline = new UGContourRingPipeline(linearOpMode.telemetry, DEBUG));
 
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
@@ -194,13 +193,8 @@ public class Robot {
 
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
-    public double height = 0;
     public void scan(){
-        switch(pipeline.getHeight()){
-            case ZERO: dice = Dice.one;
-            case ONE: dice = Dice.two;
-            case FOUR: dice = Dice.three;
-        }
+        height = pipeline.getHeight();
     }
     public void turnOffVision(){
         //webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());

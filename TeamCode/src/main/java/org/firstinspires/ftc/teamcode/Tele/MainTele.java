@@ -20,7 +20,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @TeleOp(name = "TeleOp", group = "LinearOpMode")
-@Config
 public class MainTele extends LinearOpMode implements Runnable {
     Robot robot;
 
