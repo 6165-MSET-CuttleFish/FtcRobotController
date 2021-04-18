@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.arcrobotics.ftclib.command.button.Trigger;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
@@ -16,20 +18,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @TeleOp(name = "TeleOp", group = "LinearOpMode")
 public class MainTele extends LinearOpMode implements Runnable {
     Robot robot;
-
     enum WingState {
         out,
         in,
         safe,
         vertical
     }
-
     WingState wingDefault;
     boolean armUp;
     boolean wingCheck, reverseCheck;
@@ -37,6 +38,8 @@ public class MainTele extends LinearOpMode implements Runnable {
     ArrayList<Double> timer = new ArrayList<>();
     double currentMillis = 0;
     double lastMillis = 0;
+    double coastDownTime = 1000;
+    double setInterval = 5;
     int cycles = 0;
     Pose2d shootingPose = Robot.shootingPoseTele;
     Trajectory shootingPath;
@@ -44,7 +47,6 @@ public class MainTele extends LinearOpMode implements Runnable {
     Trajectory powerShotPath;
     public static double targetVelocity = 1500;
     Vector2d targetVector;
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 87, 9, Math.toRadians(180), OpModeType.tele, this);
@@ -243,9 +245,20 @@ public class MainTele extends LinearOpMode implements Runnable {
             sleep(300);
         }
     }
-
+    boolean wasPressed;
+    boolean dpadToggle;
+    boolean wantsCoastDown;
+    double coastTimer;
+    double veloCadence;
     public void shooter() {
+        if(gamepad2.dpad_down && !dpadToggle){
+            dpadToggle = true;
+            wantsCoastDown = !wantsCoastDown;
+        } else if(dpadToggle){
+            dpadToggle = false;
+        }
         if (gamepad2.left_trigger >= 0.1) {
+            wasPressed = true;
             robot.launcher.magUp();
             if (robot.launcher.getRings() < 3) {
                 wingDefault = WingState.out;
@@ -264,7 +277,21 @@ public class MainTele extends LinearOpMode implements Runnable {
         } else {
             robot.launcher.magDown();
             if (robot.launcher.getRings() > 0) robot.launcher.setVelocity(targetVelocity);
-            else robot.launcher.setVelocity(0);
+            else {
+                if(wantsCoastDown) {
+                    if (wasPressed) {
+                        wasPressed = false;
+                        coastTimer = System.currentTimeMillis();
+                        veloCadence = (robot.launcher.getVelocity() - 1000) * setInterval / coastDownTime;
+                        robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
+                    }
+                    if (System.currentTimeMillis() > coastTimer + setInterval) {
+                        coastTimer = System.currentTimeMillis();
+                        robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
+                    }
+                }
+                robot.launcher.setVelocity(0);
+            }
         }
         if (gamepad2.right_bumper) {
             robot.launcher.singleRound();
