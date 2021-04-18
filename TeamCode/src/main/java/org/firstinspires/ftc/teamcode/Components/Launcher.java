@@ -183,7 +183,7 @@ public class Launcher {
         gunner.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.42);
+        flap.setPosition(0.44);
     }
     public void flapDown(){
         flap.setPosition(0.35);

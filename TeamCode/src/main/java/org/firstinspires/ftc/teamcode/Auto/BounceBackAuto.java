@@ -30,7 +30,7 @@ public class BounceBackAuto extends LinearOpMode {
         Trajectory powerShotsTraj1 = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
                 .addTemporalMarker(1.5, () -> robot.launcher.safeLeftOut())
                 //.lineToSplineHeading(new Pose2d(-40.4725, -21))
-                .splineToConstantHeading(Robot.pwrShotLocals[0],0, new MinVelocityConstraint(
+                .splineTo(Robot.pwrShotLocals[0],0, new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                         new MecanumVelocityConstraint(42, DriveConstants.TRACK_WIDTH)
@@ -76,8 +76,8 @@ public class BounceBackAuto extends LinearOpMode {
                     Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 12, () -> robot.wobbleArmDown());
                 })
                 .splineTo(new Vector2d(46.5275, 8), Math.toRadians(-10))
-                .splineTo(new Vector2d(58, 0.5275), Math.toRadians(-90))
-                .splineTo(new Vector2d(58, -30.4725), Math.toRadians(-90))
+                .splineTo(new Vector2d(57, 0.5275), Math.toRadians(-90))
+                .splineTo(new Vector2d(57, -30.4725), Math.toRadians(-90))
                 .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-180)), Math.toRadians(-180), new MinVelocityConstraint(
                         Arrays.asList(
                                 new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -167,7 +167,7 @@ public class BounceBackAuto extends LinearOpMode {
         //robot.turnOffVision();
         robot.launcher.flapUp();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(912);
+        robot.launcher.setLauncherVelocity(906);
         robot.launcher.wingsVert();
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);

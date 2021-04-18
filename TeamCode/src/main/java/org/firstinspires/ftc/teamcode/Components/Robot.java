@@ -61,8 +61,6 @@ public class Robot {
 
     private InterpLUT velocityController;
     private InterpLUT sleepController;
-    private InterpLUT xController;
-    private InterpLUT yController;
 
     public DcMotor intakeR, intakeL;
 
@@ -106,11 +104,8 @@ public class Robot {
     }
     private void construct(HardwareMap imported){
         velocityController = new InterpLUT();
-        xController = new InterpLUT();
-        yController = new InterpLUT();
+        sleepController = new InterpLUT();
         setVelocityController();
-        setXController();
-        setYController();
         pwrShots[0] = new Vector2d(70.4725, -1.0725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
@@ -167,10 +162,6 @@ public class Robot {
         velocityController.add(132.5,1220);
         velocityController.add(1000,1000);
         velocityController.createLUT();
-    }
-    private void setXController(){
-    }
-    private void setYController(){
     }
     public double getPoseVelo(Pose2d pose2d){
         return Range.clip(velocityController.get(pose2d.vec().distTo(goal)), 0, 1350);
