@@ -19,10 +19,10 @@ public class BounceBackPipelineDetector extends LinearOpMode {
 
     private static final boolean DEBUG = false; // if debug is wanted, change to true
 
-    private static final boolean USING_WEBCAM = false; // change to true if using webcam
+    private static final boolean USING_WEBCAM = true; // change to true if using webcam
     private static final String WEBCAM_NAME = ""; // insert webcam name from configuration if using webcam
 
-    private UGContourRingPipeline pipeline;
+    private CustomPipeline pipeline;
     private OpenCvCamera camera;
 
     @Override
@@ -45,18 +45,18 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new UGContourRingPipeline(telemetry, DEBUG));
+        camera.setPipeline(pipeline = new CustomPipeline(this));
 
-        UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
+        CustomPipeline.CAMERA_WIDTH = CAMERA_WIDTH;
 
-        UGContourRingPipeline.Config.setHORIZON(HORIZON);
+        CustomPipeline.HORIZON = HORIZON;
 
         camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
 
         waitForStart();
 
         while (opModeIsActive()) {
-            String height = "[HEIGHT]" + " " + pipeline.getHeight();
+            String height = "[HEIGHT]" + " " + pipeline.getVectors();
             telemetry.addData("[Ring Stack] >>", height);
             telemetry.update();
         }
