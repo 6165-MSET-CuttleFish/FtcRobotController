@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import com.arcrobotics.ftclib.vision.BounceBackPipeline;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -21,7 +20,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
     private static final boolean USING_WEBCAM = false; // change to true if using webcam
     private static final String WEBCAM_NAME = ""; // insert webcam name from configuration if using webcam
 
-    private BounceBackPipeline pipeline;
+    private UGContourRingPipeline pipeline;
     private OpenCvCamera camera;
 
     @Override
@@ -44,7 +43,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new BounceBackPipeline(telemetry, DEBUG));
+        camera.setPipeline(pipeline = new UGContourRingPipeline(telemetry, DEBUG));
 
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
 

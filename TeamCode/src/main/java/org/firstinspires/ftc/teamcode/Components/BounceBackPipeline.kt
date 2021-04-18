@@ -1,4 +1,4 @@
-package com.arcrobotics.ftclib.vision
+package org.firstinspires.ftc.teamcode.Components;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
