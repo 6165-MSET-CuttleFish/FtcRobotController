@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -9,6 +10,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
+@TeleOp(name = "BounceBackPipeline", group = "LinearOpMode")
 public class BounceBackPipelineDetector extends LinearOpMode {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
