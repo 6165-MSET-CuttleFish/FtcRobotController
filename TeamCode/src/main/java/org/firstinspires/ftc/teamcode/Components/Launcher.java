@@ -52,7 +52,7 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
         magDown();
-        if(Robot.opModeType == OpModeType.auto) wingsVert();
+        if(Robot.opModeType == OpModeType.auto) wingsIn();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -155,14 +155,16 @@ public class Launcher {
         mag.setPosition(0.56);
     }
     public void magazineShoot(){
-        customShoot(sleepTime);
+        customShoot(sleepTime, getRings());
     }
-    public void customShoot(double sleep){
-        int rounds = getRings();
+    public void customShoot(double sleep, int rounds){
         for(int i = 0; i < rounds; i++){
             singleRound();
             Log.println(Log.INFO, "Shot Number: ", i + "");
-            if(Robot.opModeType == OpModeType.tele) wingsOut();
+            if(Robot.opModeType == OpModeType.tele) Async.start(()->{
+                sleep(150);
+                wingsOut();
+            });
             if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
                 sleep(60);
@@ -170,7 +172,10 @@ public class Launcher {
         }
     }
     public void safeShoot(){
-        customShoot(400);
+        customShoot(400, getRings());
+    }
+    public void tripleShot(){
+        customShoot(sleepTime, 3);
     }
     public void singleRound(){
         gunner.setPosition(0.34);
@@ -178,7 +183,7 @@ public class Launcher {
         gunner.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.43);
+        flap.setPosition(0.42);
     }
     public void flapDown(){
         flap.setPosition(0.35);

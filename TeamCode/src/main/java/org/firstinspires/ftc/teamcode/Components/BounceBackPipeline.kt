@@ -71,7 +71,7 @@ import org.openftc.easyopencv.OpenCvPipeline
  */
 class BounceBackPipeline(
         private val telemetry: Telemetry? = null,
-        var debug: Boolean = false,
+        var debug: Boolean = false
 ): OpenCvPipeline() {
     /** variable to store the calculated height of the stack **/
     var height: Height

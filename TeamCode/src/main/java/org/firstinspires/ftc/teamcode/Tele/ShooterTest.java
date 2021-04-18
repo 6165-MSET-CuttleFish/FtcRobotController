@@ -65,7 +65,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 if (!gamepad1.left_bumper) magCheck = false;
             }
             if(gamepad1.right_trigger >= 0.1){
-                robot.launcher.customShoot(sleepTime);
+                robot.launcher.customShoot(sleepTime, 3);
             }
         }
     }

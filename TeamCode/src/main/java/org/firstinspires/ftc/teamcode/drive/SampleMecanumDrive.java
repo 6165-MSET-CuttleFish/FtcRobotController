@@ -63,10 +63,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6.4, 0, 0.3);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0.5);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 0.3);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0.2);
 
-    public static double LATERAL_MULTIPLIER = 1.2;
+    public static double LATERAL_MULTIPLIER = 1.21;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -174,7 +174,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, this));
+        setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
     }
     Callable<Double> veloCallable;
     Callable<Double> targetVeloCallable;
@@ -259,16 +259,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         throw new AssertionError();
     }
-    public void fixError(){
-        setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), getRawExternalHeading() - constant));
-    }
     public void update() {
         updatePoseEstimate();
-//        i++;
-//        if(i == 25) {
-//            i = 0;
-//            setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), getRawExternalHeading() - constant));
-//        }
         Pose2d currentPose = getPoseEstimate();
         Pose2d lastError = getLastError();
 
