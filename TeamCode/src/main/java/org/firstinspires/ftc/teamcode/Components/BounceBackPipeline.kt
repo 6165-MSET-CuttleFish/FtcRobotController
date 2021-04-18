@@ -1,25 +1,90 @@
-package org.firstinspires.ftc.teamcode.Components
+package com.arcrobotics.ftclib.vision
 
-import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.arcrobotics.ftclib.util.InterpLUT
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 
+/**
+ * This is a Vision Pipeline utilizing Contours and an Aspect Ratio to determine the number of rings
+ * currently in the ring stack.
+ *
+ * @author Team 6133: The "NUTS"
+ *
+ * Explanation of algorithm:
+ * Given an Mat of the current camera view, called input.
+ *
+ * We first take this Mat and convert it to YCrCb to help with thresholding.
+ *
+ * We then perform an inRange operation on the input Mat and store the result in a temporary
+ * variable called mask. This mask is a black and white image where all white pixels on the mask
+ * were pixels in input that are in the orange range threshold. All black pixels on the mask were
+ * pixels in the input that were not in the orange range threshold.
+ *
+ * Next, using a GaussianBlur, we eliminate any noise between the rings on the stack. Due to how we
+ * are thresholding in the mask calculation, there may be some gaps in the stack, due to shadows or
+ * unwanted light sources.
+ *
+ * After the GaussianBlur, this noise is eliminated as the picture becomes "blurrier". We then find
+ * all contours on the image.
+ *
+ * What is a Contour? Contours can be explained simply as a curve joining all the continuous points
+ * (along the boundary), having same color or intensity. The contours are a useful tool for shape
+ * analysis and object detection and recognition.
+ *
+ * After finding the contours on the black and white mask, we then perform a linear search algorithm
+ * on the resulting list of contours (stored in as MatOfPoint). We first find the bounding rectangle
+ * of each contour and use this bounding rectangle (not rotated) to find the rectangle with the
+ * biggest width. We do this in order to not confuse the ring stack with other objects that may have
+ * been thought to be orange by the mask. Since the ring stack will most likely be the largest blob
+ * of orange in the view of the camera.
+ *
+ * When then do a check on the width of the widest contour. To see if it is actually a ring stack,
+ * since zero is a valid option we must account for it. This check also makes sure that we don't
+ * mistake other smaller objects on the field as the ring stack, even if they are rings.
+ *
+ * We also implemented a horizon check. Anything above the horizon is disregarded and not looked at
+ * even if it has the greatest width from all the other contours. This is to ensure that the
+ * algorithm down not detect the red goal as YCrCb color space is very unreliable when detecting the
+ * difference between red and orange.
+ *
+ * After finding the widest contour, which is to be assumed the stack of rings, we perform an aspect
+ * ratio of the height over the width of the largest bounding rectangle.
+ *
+ * Why not just count how tall the largest bounding rectangle is? It is because of camera resolution.
+ * Since depending on the resolution of the camera, the height of the stack in pixels would be
+ * different despite them both being 4 (lets say for example).
+ *
+ * Didn't you just say that you used a width check on the contour though? Isn't that also pixels?
+ * Yes we did, however, unlike the height of the stack, the width of the stack is consistent. It is
+ * always one ring wide, this way we are able to algorithmically generate a minimum bounding width.
+ *
+ * example of blurring in order to smooth images: https://docs.opencv.org/3.4/dc/dd3/tutorial_gausian_median_blur_bilateral_filter.html
+ * example of contours:                           https://docs.opencv.org/3.4/df/d0d/tutorial_find_contours.html
+ *
+ * @constructor Constructs the VisionPipeline
+ *
+ * @param telemetry If wanted, provide a telemetry object to the constructor to get stacktrace if an
+ * error occurs (mainly for debug purposes)
+ * @param debug If true, all intermediate calculation results (except showing mat operations) will
+ * be printed to telemetry (mainly for debug purposes)
+ */
 class BounceBackPipeline(
         private val telemetry: Telemetry? = null,
         var debug: Boolean = false,
 ): OpenCvPipeline() {
     /** variable to store the calculated height of the stack **/
-    var positions: ArrayList<Vector2d>
+    var height: Height
         private set
 
     /** variables that will be reused for calculations **/
     private var mat: Mat
     private var ret: Mat
-    private var relativeX: InterpLUT = InterpLUT()
-    private var relativeY: InterpLUT = InterpLUT()
+
+    /** enum class for Height of the stone **/
+    enum class Height {
+        ZERO, ONE, FOUR
+    }
 
     /** companion object to store all static variables needed **/
     companion object Config {
@@ -48,18 +113,9 @@ class BounceBackPipeline(
      * default init call, body of constructors
      */
     init {
-        setControlPoints()
-        positions = ArrayList()
+        height = Height.ZERO
         ret = Mat()
         mat = Mat()
-    }
-    private fun setControlPoints() {
-        relativeX.add(2.0, 2.0)
-        relativeX.createLUT()
-        //
-        //
-        relativeY.add(0.0, 0.0)
-        relativeY.createLUT()
     }
 
 
@@ -134,23 +190,23 @@ class BounceBackPipeline(
              *
              * height = maxWidth >= MIN_WIDTH ? aspectRatio > BOUND_RATIO ? FOUR : ONE : ZERO
              **/
-//            height = if (maxWidth >= MIN_WIDTH) {
-//                val aspectRatio: Double = maxRect.height.toDouble() / maxRect.width.toDouble()
-//
-//                if(debug) telemetry?.addData("Vision: Aspect Ratio", aspectRatio)
-//
-//                /** checks if aspectRatio is greater than BOUND_RATIO
-//                 * to determine whether stack is ONE or FOUR
-//                 */
-//                if (aspectRatio > BOUND_RATIO)
-//                    Height.FOUR // height variable is now FOUR
-//                else
-//                    Height.ONE // height variable is now ONE
-//            } else {
-//                Height.ZERO // height variable is now ZERO
-//            }
+            height = if (maxWidth >= MIN_WIDTH) {
+                val aspectRatio: Double = maxRect.height.toDouble() / maxRect.width.toDouble()
 
-            //if (debug) telemetry?.addData("Vision: Height", height)
+                if(debug) telemetry?.addData("Vision: Aspect Ratio", aspectRatio)
+
+                /** checks if aspectRatio is greater than BOUND_RATIO
+                 * to determine whether stack is ONE or FOUR
+                 */
+                if (aspectRatio > BOUND_RATIO)
+                    Height.FOUR // height variable is now FOUR
+                else
+                    Height.ONE // height variable is now ONE
+            } else {
+                Height.ZERO // height variable is now ZERO
+            }
+
+            if (debug) telemetry?.addData("Vision: Height", height)
 
             // releasing all mats after use
             mat.release()
