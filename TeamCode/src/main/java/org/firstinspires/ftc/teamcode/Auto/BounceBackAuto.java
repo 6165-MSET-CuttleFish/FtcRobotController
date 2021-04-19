@@ -209,8 +209,8 @@ public class BounceBackAuto extends LinearOpMode {
         robot.intake(-1);
         robot.launcher.magUp();
         sleep(170);
-        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
         robot.launcher.singleRound();
+        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
         sleep(60);
         robot.launcher.magDown();
         robot.driveTrain.followTrajectory(finalShot);

@@ -133,4 +133,14 @@ public class Coordinate {
     public static Coordinate toPoint(Vector2d pt){
         return new Coordinate(pt.getX(), pt.getY());
     }
+    public static Vector2d pointLineIntersection(Pose2d pose2d, double x){
+        //y = mx + b
+        double m = Math.tan(pose2d.getHeading());
+        double b = pose2d.getY() - m*pose2d.getX();
+        double intersectionY = m*x + b;
+        return new Vector2d(x, intersectionY);
+    }
+    public static double distanceToLine(Pose2d pose2d, double x){
+        return pose2d.vec().distTo(pointLineIntersection(pose2d, x));
+    }
 }

@@ -98,6 +98,7 @@ public class MainTele extends LinearOpMode implements Runnable {
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
             telemetry.addData("Target Velocity", targetVelocity);
+            telemetry.addData("Distance To High Goal", Coordinate.distanceToLine(robot.driveTrain.getPoseEstimate(), Robot.goal.getX()));
             telemetry.update();
             idle();
         }
@@ -132,7 +133,7 @@ public class MainTele extends LinearOpMode implements Runnable {
                             wingDefault = WingState.out;
                         })
                         .addTemporalMarker(0.5, ()-> robot.launcher.magUp())
-                        .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0))
+                        .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1], 0))
                         .build(), () -> {
                     if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                 });
@@ -183,27 +184,6 @@ public class MainTele extends LinearOpMode implements Runnable {
         Collections.sort(timer);
         return timer.size() != 0 ? timer.get(timer.size() / 2) : 0;
     }
-
-//    private void generatePaths() {
-//        shootingPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-//                .lineToLinearHeading(Robot.shootingPoseTele)
-//                .build();
-//        shootingPathAutoShoot = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-//                .addDisplacementMarker(() -> {
-//                    targetVector = Robot.shootingPoseTele.vec();
-//                    robot.launcher.setLauncherVelocity(getNeededVelocity());
-//                })
-//                .lineToLinearHeading(Robot.shootingPoseTele)
-//                .build();
-//        powerShotPath = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-//                .addDisplacementMarker(() -> {
-//                    shooterDisabled = true;
-//                    robot.launcher.setVelocity(1170);
-//                    wingDefault = WingState.out;
-//                })
-//                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0))
-//                .build();
-//    }
 
     private void setMultiplier() {
         if (gamepad1.left_trigger >= 0.3) {
