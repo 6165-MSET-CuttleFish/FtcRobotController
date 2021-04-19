@@ -77,9 +77,9 @@ public class BounceBackAuto extends LinearOpMode {
                     Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 11, () -> robot.wobbleArmDown());
                 })
                 .splineToConstantHeading(new Vector2d(45, 15), 0)
-                .splineTo(new Vector2d(59.4, 0), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(59.8, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(59.8, -40.4725), Math.toRadians(-90))
+                .splineTo(new Vector2d(59.4, 0), Math.toRadians(-85))
+                .splineToConstantHeading(new Vector2d(59.8, -10.4725), Math.toRadians(-80))
+                .splineToConstantHeading(new Vector2d(59.8, -40.4725), Math.toRadians(-95))
                 .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-190)), Math.toRadians(-190), new MinVelocityConstraint(
                         Arrays.asList(
                                 new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -102,6 +102,7 @@ public class BounceBackAuto extends LinearOpMode {
                 .addTemporalMarker(1.7, ()->{
                     robot.intake(0);
                     robot.launcher.magUp();
+                    robot.launcher.safeLeftOut();
                 })
                 .lineToLinearHeading(Robot.shootingPose)
                 .addDisplacementMarker(() -> Async.start(() -> {
@@ -212,7 +213,6 @@ public class BounceBackAuto extends LinearOpMode {
         robot.launcher.singleRound();
         sleep(60);
         robot.launcher.magDown();
-        robot.launcher.leftOut();
         robot.driveTrain.followTrajectory(finalShot);
         sleep(20);
         robot.intake(0);
@@ -220,7 +220,6 @@ public class BounceBackAuto extends LinearOpMode {
         sleep(170);
         robot.launcher.tripleShot();
         sleep(60);
-        robot.launcher.rightOut();
         robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobbleDrop2);
         robot.driveTrain.followTrajectory(park);
