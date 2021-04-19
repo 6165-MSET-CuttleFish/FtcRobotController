@@ -11,6 +11,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
+import java.util.Arrays;
+
 @TeleOp(name = "BounceBackPipeline", group = "LinearOpMode")
 public class BounceBackPipelineDetector extends LinearOpMode {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
@@ -57,8 +59,8 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            String height = "[HEIGHT]" + " " + pipeline.getVectors();
-            telemetry.addData("[Ring Stack] >>", height);
+            telemetry.addData("X >>", pipeline.getX());
+            telemetry.addData("Y >>", pipeline.getY());
             telemetry.update();
         }
     }

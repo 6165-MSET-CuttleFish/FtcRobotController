@@ -41,6 +41,8 @@ public class CustomPipeline extends OpenCvPipeline {
 
     Scalar lowerOrange = new Scalar(0.0, 141.0, 0.0);
     Scalar upperOrange = new Scalar(255.0, 230.0, 95.0);
+    private int x;
+    private int y;
 
     /** width of the camera in use, defaulted to 320 as that is most common in examples **/
     public static int CAMERA_WIDTH = 320;
@@ -50,6 +52,7 @@ public class CustomPipeline extends OpenCvPipeline {
     public static int HORIZON = (int)((100.0 / 320.0) * CAMERA_WIDTH);
     /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
     final double BOUND_RATIO = 0.7;
+
     @Override
     public Mat processFrame(Mat input) {
         ret.release(); // releasing mat to release backing buffer
@@ -86,6 +89,8 @@ public class CustomPipeline extends OpenCvPipeline {
                 Rect rect =  Imgproc.boundingRect(copy);
                 // checking if the rectangle is below the horizon
                 if (rect.y + rect.height > HORIZON) {
+                    x = rect.x;
+                    y = rect.y;
                     vectors.add(new Vector2d(xParser.get(rect.x), yParser.get(rect.y)));
                     maxRect = rect;
                     Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
@@ -147,5 +152,11 @@ public class CustomPipeline extends OpenCvPipeline {
     }
     public ArrayList<Vector2d> getVectors(){
         return vectors;
+    }
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
     }
 }

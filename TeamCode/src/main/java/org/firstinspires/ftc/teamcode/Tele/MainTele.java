@@ -33,7 +33,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     }
     WingState wingDefault;
     boolean armUp;
-    boolean wingCheck, reverseCheck;
+    boolean wingCheck, reverseCheck, raiseCheck;
     boolean shooterDisabled;
     ArrayList<Double> timer = new ArrayList<>();
     double currentMillis = 0;
@@ -87,7 +87,17 @@ public class MainTele extends LinearOpMode implements Runnable {
             } else {
                 robot.launcher.wingsVert();
             }
+            if(raiseCheck) {
+                raiseCheck = false;
+                if (gamepad2.dpad_up) {
+                    targetVelocity += 30;
+                } else if (gamepad2.dpad_down) {
+                    targetVelocity -= 30;
+                }
+            }
+            if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
+            telemetry.addData("Target Velocity", targetVelocity);
             telemetry.update();
             idle();
         }
@@ -243,7 +253,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     double coastTimer;
     double veloCadence;
     public void shooter() {
-        if(gamepad2.dpad_down && !dpadToggle){
+        if(gamepad2.dpad_right && !dpadToggle){
             dpadToggle = true;
             wantsCoastDown = !wantsCoastDown;
         } else if(dpadToggle){
