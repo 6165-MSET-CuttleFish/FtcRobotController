@@ -172,7 +172,7 @@ public class Launcher {
         }
     }
     public void safeShoot(){
-        customShoot(400, getRings());
+        customShoot(300, getRings());
     }
     public void tripleShot(){
         customShoot(sleepTime, 3);
@@ -183,7 +183,7 @@ public class Launcher {
         gunner.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.44);
+        flap.setPosition(0.43);
     }
     public void flapDown(){
         flap.setPosition(0.35);

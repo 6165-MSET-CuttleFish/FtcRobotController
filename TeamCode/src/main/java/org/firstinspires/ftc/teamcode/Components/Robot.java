@@ -70,18 +70,18 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-17.4725, -50, Math.toRadians(3));
-    public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -36.4725, 0);
+    public static Pose2d shootingPose = new Pose2d(-17.4725, -51, Math.toRadians(1));
+    public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
 
     public static Vector2d A = new Vector2d(-5.4725, -50.4725);
     public static Vector2d B = new Vector2d(16.7775, -35.4725);
-    public static Vector2d C = new Vector2d(45.5275, -57);
+    public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-50.4725, -40.9725);
+    public static Vector2d rightWobble = new Vector2d(-43, -42.1);
 
     public Launcher launcher;
 
@@ -109,9 +109,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.0725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-2.8725, -2);
-        pwrShotLocals[1] = new Vector2d(-2.8725, -12);
-        pwrShotLocals[2] = new Vector2d(-2.8725, -22);
+        pwrShotLocals[0] = new Vector2d(-3.7, -6.54);
+        pwrShotLocals[1] = new Vector2d(-3.7, -13);
+        pwrShotLocals[2] = new Vector2d(-3.7, -22.7);
         map = imported;
         int cameraMonitorViewId = this
                 .map
@@ -148,11 +148,9 @@ public class Robot {
         velocityController.add(75,1500);
         velocityController.add(77.5,1320);
         velocityController.add(80,1340);
-        //modified
-        velocityController.add(85,1180);
-        velocityController.add(90, 1180);
-        velocityController.add(95,1170);
-        //modified
+        velocityController.add(85,1300);
+        velocityController.add(90, 1260);
+        velocityController.add(95,1220);
         velocityController.add(100,1200);
         velocityController.add(105,1200);
         velocityController.add(110,1190);
