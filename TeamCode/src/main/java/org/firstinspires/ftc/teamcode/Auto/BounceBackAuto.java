@@ -119,7 +119,8 @@ public class BounceBackAuto extends LinearOpMode {
                         ),
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> {
-                    robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-23, Robot.goal.getY())));
+                    robot.launcher.setVelocity(1170);
+                    //robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-23, Robot.goal.getY())));
                     robot.intake(1);
                     robot.launcher.wingsIn();
                 })

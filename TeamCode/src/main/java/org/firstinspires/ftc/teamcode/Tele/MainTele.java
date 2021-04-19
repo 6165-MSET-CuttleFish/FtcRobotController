@@ -49,7 +49,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     Vector2d targetVector;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 87, 9, Math.toRadians(180), OpModeType.tele, this);
+        robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
         robot.init();
         wingDefault = WingState.vertical;
         generatePaths();
@@ -57,10 +57,7 @@ public class MainTele extends LinearOpMode implements Runnable {
         Async.start(this);
         Async.start(() -> {
             while (opModeIsActive()) {
-                if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
-                    sleep(300);
-                    generatePaths();
-                }
+               robot.launcher.updatePID();
             }
         });
 
@@ -95,6 +92,8 @@ public class MainTele extends LinearOpMode implements Runnable {
             } else {
                 robot.launcher.wingsVert();
             }
+            telemetry.addData("Coast", wantsCoastDown);
+            telemetry.update();
             idle();
         }
     }
@@ -108,7 +107,7 @@ public class MainTele extends LinearOpMode implements Runnable {
         while (opModeIsActive()) {
             shooterDisabled = false;
             targetVector = null;
-            robot.launcher.updatePID();
+            if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
                         new Pose2d(
@@ -124,21 +123,24 @@ public class MainTele extends LinearOpMode implements Runnable {
                 robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                         .addDisplacementMarker(() -> {
                             shooterDisabled = true;
-                            robot.launcher.setVelocity(1170);
+                            robot.launcher.setVelocity(1130);
                             wingDefault = WingState.out;
                         })
+                        .addTemporalMarker(0.5, ()-> robot.launcher.magUp())
                         .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0))
                         .build(), () -> {
-                    robot.launcher.updatePID();
                     if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                 });
                 for (Vector2d pwrShot : Robot.pwrShots) {
-                    Pose2d position = robot.driveTrain.getPoseEstimate();
+                    Coordinate position = Coordinate.toPoint(robot.driveTrain.getPoseEstimate());
+                    position.polarAdd(robot.driveTrain.getPoseEstimate().getHeading() + Math.PI/2, 8);
+                    //Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(pwrShot.getY() - position.getY(), pwrShot.getX() - position.getX());
-                    double relAngleToPoint = AngleWrap(absAngleToTarget - position.getHeading());
+                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
                     robot.driveTrain.turn(relAngleToPoint, () -> {
-                        robot.launcher.updatePID();
-                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                        if (!gamepadIdle()) {
+                            robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                        }
                     });
                     robot.launcher.singleRound();
                 }
@@ -151,12 +153,10 @@ public class MainTele extends LinearOpMode implements Runnable {
                         .addTemporalMarker(0.7, () -> robot.launcher.magUp())
                         .splineToLinearHeading(Robot.shootingPoseTele, 0)
                         .build(), () -> {
-                    robot.launcher.updatePID();
                     if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                 });
                 while (gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2) {
                     robot.driveTrain.update();
-                    robot.launcher.updatePID();
                 }
                 robot.launcher.magazineShoot();
             } else if (gamepad1.right_trigger >= 0.2) {
@@ -251,7 +251,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     double coastTimer;
     double veloCadence;
     public void shooter() {
-        if(gamepad2.dpad_down && !dpadToggle){
+        if(gamepad2.right_trigger >= 0.2 && !dpadToggle){
             dpadToggle = true;
             wantsCoastDown = !wantsCoastDown;
         } else if(dpadToggle){
@@ -285,28 +285,28 @@ public class MainTele extends LinearOpMode implements Runnable {
                         veloCadence = (robot.launcher.getVelocity() - 1000) * setInterval / coastDownTime;
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
-                    if (System.currentTimeMillis() > coastTimer + setInterval) {
+                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1000) {
                         coastTimer = System.currentTimeMillis();
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
                 }
-                robot.launcher.setVelocity(0);
+                else robot.launcher.setVelocity(0);
             }
         }
         if (gamepad2.right_bumper) {
             robot.launcher.singleRound();
             storeCoordinate();
         }
-        if (gamepad2.right_trigger >= 0.1) {
-            robot.launcher.magazineShoot();
-            if (cycles == 0) {
-                cycles++;
-            } else {
-                timer.add(currentMillis - lastMillis);
-            }
-            lastMillis = currentMillis;
-            storeCoordinate();
-        }
+//        if (gamepad2.right_trigger >= 0.1) {
+//            robot.launcher.magazineShoot();
+//            if (cycles == 0) {
+//                cycles++;
+//            } else {
+//                timer.add(currentMillis - lastMillis);
+//            }
+//            lastMillis = currentMillis;
+//            storeCoordinate();
+//        }
     }
 
     private void storeCoordinate() {

@@ -53,6 +53,7 @@ public class Launcher {
         singleRound();
         magDown();
         if(Robot.opModeType == OpModeType.auto) wingsIn();
+        else if(Robot.opModeType == OpModeType.tele) wingsVert();
         for (LynxModule module : map.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
