@@ -19,8 +19,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomPipeline extends OpenCvPipeline {
-    public CustomPipeline(LinearOpMode opMode){
+public class BounceBackPipeline extends OpenCvPipeline {
+    public BounceBackPipeline(LinearOpMode opMode){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;
@@ -82,18 +82,16 @@ public class CustomPipeline extends OpenCvPipeline {
             Imgproc.drawContours(ret, contours, -1, new Scalar(0.0, 255.0, 0.0), 3);
 
             /**finding widths of each contour, comparing, and storing the widest**/
-            Rect maxRect = new Rect();
             vectors = new ArrayList<>();
             for (MatOfPoint c: contours) {
                 MatOfPoint2f copy = new MatOfPoint2f(c.toArray());
-                Rect rect =  Imgproc.boundingRect(copy);
+                RotatedRect ellipse = Imgproc.fitEllipse(copy);
                 // checking if the rectangle is below the horizon
-                if (rect.y + rect.height > HORIZON) {
-                    x = rect.x;
-                    y = rect.y;
-                    vectors.add(new Vector2d(xParser.get(rect.x), yParser.get(rect.y)));
-                    maxRect = rect;
-                    Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
+                if (ellipse.center.y + ellipse.size.height > HORIZON) {
+                    x = ellipse.center.x;
+                    y = ellipse.center.y;
+                    vectors.add(new Vector2d(xParser.get(ellipse.center.x), yParser.get(ellipse.center.y)));
+                    Imgproc.ellipse(ret, ellipse, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
