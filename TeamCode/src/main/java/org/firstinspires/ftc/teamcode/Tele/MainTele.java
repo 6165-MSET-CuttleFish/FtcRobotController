@@ -253,9 +253,9 @@ public class MainTele extends LinearOpMode implements Runnable {
             robot.launcher.magUp();
             wingDefault = WingState.out;
             robot.launcher.setVelocity(targetVelocity);
-            if (Math.abs(robot.launcher.getError()) <= 30) {
+            if (Math.abs(robot.launcher.getError()) <= 30 && gamepadIdle()) {
                 sleep(180);
-                robot.launcher.magazineShoot();
+                robot.launcher.tripleShot();
             }
         } else if (gamepad2.left_bumper) {
             robot.launcher.magUp();
@@ -302,6 +302,6 @@ public class MainTele extends LinearOpMode implements Runnable {
     }
 
     private boolean gamepadIdle() {
-        return Math.abs(gamepad1.left_stick_x) <= 0.3 && Math.abs(gamepad1.left_stick_y) <= 0.3 && Math.abs(gamepad1.right_stick_x) <= 0.3;
+        return Math.abs(gamepad1.left_stick_x) <= 0.3 && Math.abs(gamepad1.left_stick_y) <= 0.3 && Math.abs(gamepad1.right_stick_x) <= 0.15;
     }
 }
