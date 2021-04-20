@@ -42,7 +42,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     double setInterval = 5;
     int cycles = 0;
     Pose2d shootingPose = Robot.shootingPoseTele;
-    public static double targetVelocity = 1430;
+    public static double targetVelocity = 1330;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
