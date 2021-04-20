@@ -167,6 +167,15 @@ public class MainTele extends LinearOpMode implements Runnable {
                     robot.driveTrain.update();
                 }
                 robot.launcher.magazineShoot();
+            } else if(gamepad1.right_trigger >= 0.2){
+                Pose2d robotPose = robot.driveTrain.getPoseEstimate();
+                double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
+                double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+                robot.driveTrain.turn(relAngleToPoint, () -> {
+                    if (!gamepadIdle()) {
+                        robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                    }
+                });
             }
         }
     }
