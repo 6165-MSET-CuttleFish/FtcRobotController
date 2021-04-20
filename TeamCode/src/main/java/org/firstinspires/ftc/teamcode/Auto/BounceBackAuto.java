@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -44,18 +43,18 @@ public class BounceBackAuto extends LinearOpMode {
                 })
                 .build();
         Trajectory powerShotsTraj2 = robot.driveTrain.trajectoryBuilder(powerShotsTraj1.end())
-                .lineTo(Robot.pwrShotLocals[1], new MinVelocityConstraint(
+                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1], 0), new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                        new MecanumVelocityConstraint(6.7, DriveConstants.TRACK_WIDTH)
+                                        new MecanumVelocityConstraint(7, DriveConstants.TRACK_WIDTH)
                                 )
                         ),
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
-                .lineTo(Robot.pwrShotLocals[2], new MinVelocityConstraint(
+                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0), new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                        new MecanumVelocityConstraint(6.7, DriveConstants.TRACK_WIDTH)
+                                        new MecanumVelocityConstraint(7, DriveConstants.TRACK_WIDTH)
                                 )
                         ),
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -76,7 +75,8 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.launcher.wingsVert();
                     Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 11, () -> robot.wobbleArmDown());
                 })
-                .splineToConstantHeading(new Vector2d(45, 15), 0)
+                .splineToConstantHeading(powerShotsTraj2.end().vec().plus(new Vector2d(5, 5)), 0)
+                .splineTo(new Vector2d(45, 15), 0)
                 .splineTo(new Vector2d(59.4, 0), Math.toRadians(-85))
                 .splineToConstantHeading(new Vector2d(59.8, -10.4725), Math.toRadians(-80))
                 .splineToConstantHeading(new Vector2d(59.8, -40.4725), Math.toRadians(-95))

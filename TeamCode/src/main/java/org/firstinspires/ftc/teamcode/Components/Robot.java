@@ -70,7 +70,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-17.4725, -51, Math.toRadians(1));
+    public static Pose2d shootingPose = new Pose2d(-14.4725, -53, Math.toRadians(1));
     public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -81,7 +81,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-43, -42.1);
+    public static Vector2d rightWobble = new Vector2d(-42, -42.1);
 
     public Launcher launcher;
 
@@ -218,6 +218,9 @@ public class Robot {
         intakeR.setPower(-intakeSpeed);
         in1.setPower(intakeSpeed);
         in2.setPower(intakeSpeed);
+    }
+    public void optimalShoot(){
+        launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), launcher.getRings());
     }
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
