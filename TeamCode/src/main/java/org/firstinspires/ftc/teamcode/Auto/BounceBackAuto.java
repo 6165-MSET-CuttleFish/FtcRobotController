@@ -186,7 +186,7 @@ public class BounceBackAuto extends LinearOpMode {
         //robot.turnOffVision();
         robot.launcher.flapUp();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(895);
+        robot.launcher.setLauncherVelocity(900);
         robot.launcher.wingsVert();
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);
