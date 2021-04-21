@@ -168,7 +168,7 @@ public class Launcher {
             });
             if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
-                sleep(60);
+                sleep(90);
             }
         }
     }

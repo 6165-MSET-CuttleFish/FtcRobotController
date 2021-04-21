@@ -22,8 +22,8 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
-@TeleOp(name = "Driver Practice", group = "LinearOpMode")
-public class MainTele extends LinearOpMode implements Runnable {
+@TeleOp(name = "MTI TELE", group = "LinearOpMode")
+public class TourneyTele extends LinearOpMode implements Runnable {
     Robot robot;
     enum WingState {
         out,
@@ -45,14 +45,14 @@ public class MainTele extends LinearOpMode implements Runnable {
     public static double targetVelocity = 1330;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
+        robot = new Robot(hardwareMap, OpModeType.tele);
         robot.init();
         wingDefault = WingState.vertical;
         waitForStart();
         Async.start(this);
         Async.start(() -> {
             while (opModeIsActive()) {
-               robot.launcher.updatePID();
+                robot.launcher.updatePID();
             }
         });
 
@@ -126,10 +126,10 @@ public class MainTele extends LinearOpMode implements Runnable {
                 robot.driveTrain.update();
             }
             if (gamepad1.x) {
-                shooterDisabled = true;
                 robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                         .addDisplacementMarker(() -> {
-                            robot.launcher.setVelocity(1120);
+                            shooterDisabled = true;
+                            robot.launcher.setVelocity(1130);
                             wingDefault = WingState.out;
                         })
                         .addTemporalMarker(0.5, ()-> robot.launcher.magUp())
@@ -166,7 +166,7 @@ public class MainTele extends LinearOpMode implements Runnable {
                 while (gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2) {
                     robot.driveTrain.update();
                 }
-                robot.launcher.magazineShoot();
+                robot.optimalShoot(3);
             } else if(gamepad1.right_trigger >= 0.2){
                 Pose2d robotPose = robot.driveTrain.getPoseEstimate();
                 double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
@@ -253,9 +253,9 @@ public class MainTele extends LinearOpMode implements Runnable {
             robot.launcher.magUp();
             wingDefault = WingState.out;
             robot.launcher.setVelocity(targetVelocity);
-            if (Math.abs(robot.launcher.getError()) <= 30 && gamepadIdle()) {
+            if (Math.abs(robot.launcher.getError()) <= 30 && gamepadIdle() && !robot.driveTrain.isBusy() && !wasPressed) {
                 sleep(180);
-                robot.launcher.tripleShot();
+                robot.optimalShoot(3);
             }
         } else if (gamepad2.left_bumper) {
             robot.launcher.magUp();

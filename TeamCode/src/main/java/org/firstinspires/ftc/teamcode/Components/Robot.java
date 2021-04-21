@@ -81,7 +81,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-42, -42.1);
+    public static Vector2d rightWobble = new Vector2d(-42.3, -42.4);
 
     public Launcher launcher;
 
@@ -106,12 +106,13 @@ public class Robot {
         velocityController = new InterpLUT();
         sleepController = new InterpLUT();
         setVelocityController();
-        pwrShots[0] = new Vector2d(70.4725, -1.0725);
+        setSleepController();
+        pwrShots[0] = new Vector2d(70.4725, -0.8);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-3.7, -6.54);
-        pwrShotLocals[1] = new Vector2d(-3.7, -13);
-        pwrShotLocals[2] = new Vector2d(-3.7, -22.7);
+        pwrShotLocals[0] = new Vector2d(-4, -6.54);
+        pwrShotLocals[1] = new Vector2d(-4, -13);
+        pwrShotLocals[2] = new Vector2d(-4, -22.7);
         map = imported;
         int cameraMonitorViewId = this
                 .map
@@ -144,15 +145,15 @@ public class Robot {
         driveTrain.setTargetVeloCallable(()->launcher.getTargetVelo());
     }
     private void setVelocityController(){
-        velocityController.add(0,1700);
-        velocityController.add(75,1500);
-        velocityController.add(77.5,1320);
-        velocityController.add(80,1340);
+        velocityController.add(0,1400);
+        velocityController.add(75,1370);
+        velocityController.add(77.5,1360);
+        velocityController.add(80,1330);
         velocityController.add(85,1300);
-        velocityController.add(90, 1260);
-        velocityController.add(95,1220);
+        velocityController.add(90, 1230);
+        velocityController.add(95,1200);
         velocityController.add(100,1200);
-        velocityController.add(105,1200);
+        velocityController.add(105,1220);
         velocityController.add(110,1190);
         velocityController.add(115,1190);
         velocityController.add(120,1190);
@@ -161,11 +162,24 @@ public class Robot {
         velocityController.add(1000,1000);
         velocityController.createLUT();
     }
+    private void setSleepController(){
+        sleepController.add(0, 80);
+        sleepController.add(75, 80);
+        sleepController.add(77.5, 80);
+        sleepController.add(80, 80);
+        sleepController.add(85, 80);
+        sleepController.add(90, 100);
+        sleepController.add(95, 100);
+        sleepController.add(100, 110);
+        sleepController.add(105, 130);
+        sleepController.add(200, 150);
+        sleepController.createLUT();
+    }
     public double getPoseVelo(Pose2d pose2d){
-        return Range.clip(velocityController.get(pose2d.vec().distTo(goal)), 0, 1350);
+        return velocityController.get(pose2d.vec().distTo(goal));
     }
     public double getPoseVelo(Vector2d vec){
-        return Range.clip(velocityController.get(vec.distTo(goal)), 0, 1350);
+        return velocityController.get(vec.distTo(goal));
     }
     public Robot(HardwareMap imported) {
         robotPose = new Pose2d();
@@ -219,8 +233,8 @@ public class Robot {
         in1.setPower(intakeSpeed);
         in2.setPower(intakeSpeed);
     }
-    public void optimalShoot(){
-        launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), launcher.getRings());
+    public void optimalShoot(int rounds){
+        launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), rounds);
     }
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
