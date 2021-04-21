@@ -22,7 +22,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
-@TeleOp(name = "MTI TELE", group = "LinearOpMode")
+@TeleOp(name = "TeleOp", group = "LinearOpMode")
 public class TourneyTele extends LinearOpMode implements Runnable {
     Robot robot;
     enum WingState {
@@ -168,6 +168,8 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 }
                 robot.optimalShoot(3);
             } else if(gamepad1.right_trigger >= 0.2){
+                shooterDisabled = true;
+                robot.launcher.magUp();
                 Pose2d robotPose = robot.driveTrain.getPoseEstimate();
                 double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
                 double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
@@ -176,6 +178,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                         robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                     }
                 });
+                robot.optimalShoot(3);
             }
         }
     }
