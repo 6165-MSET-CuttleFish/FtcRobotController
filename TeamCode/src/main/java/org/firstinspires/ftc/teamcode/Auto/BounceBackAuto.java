@@ -77,13 +77,13 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.intake(0);
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
-                    Pose2d robotPose = robot.driveTrain.getPoseEstimate();
-                    double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
-                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-                    robot.driveTrain.turn(relAngleToPoint);
+//                    Pose2d robotPose = robot.driveTrain.getPoseEstimate();
+//                    double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
+//                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+                    robot.driveTrain.turn(robot.driveTrain.getPoseEstimate().getHeading() - Robot.shootingPose.getHeading());
                 })
                 .build();
-        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end())
+        Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(firstShot.end().plus(new Pose2d(0, 0, Math.toRadians(180))))
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-3)), new MinVelocityConstraint(
                                 Arrays.asList(
                                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -148,6 +148,7 @@ public class BounceBackAuto extends LinearOpMode {
         robot.wobbleArmUp();
         robot.launcher.setLauncherVelocity(907);
         robot.launcher.unlockIntake();
+        Async.start(this::generatePaths);
         sleep(800);
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);
@@ -185,5 +186,8 @@ public class BounceBackAuto extends LinearOpMode {
         robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobbleDrop2);
         robot.driveTrain.followTrajectory(park);
+    }
+    private void generatePaths(){
+
     }
 }

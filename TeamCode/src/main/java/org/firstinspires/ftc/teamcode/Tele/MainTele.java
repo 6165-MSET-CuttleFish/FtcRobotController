@@ -47,7 +47,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
         robot.init();
-        wingDefault = WingState.vertical;
+        wingDefault = WingState.out;
         waitForStart();
         Async.start(this);
         Async.start(() -> {

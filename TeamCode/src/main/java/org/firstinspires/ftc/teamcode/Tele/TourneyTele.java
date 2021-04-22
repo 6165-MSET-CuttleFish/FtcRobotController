@@ -44,7 +44,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
         robot.init();
-        wingDefault = WingState.vertical;
+        wingDefault = WingState.out;
         waitForStart();
         Async.start(this);
         Async.start(() -> {
@@ -168,6 +168,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                     }
                     robot.optimalShoot(3);
                 } else if (gamepad1.right_trigger >= 0.2) {
+                    wingDefault = WingState.out;
                     g1Check = true;
                     shooterDisabled = true;
                     robot.launcher.magUp();

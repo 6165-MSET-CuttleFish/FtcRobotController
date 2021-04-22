@@ -4,6 +4,8 @@ import java.lang.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -47,7 +49,7 @@ public class Robot {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final int HORIZON = 100; // horizon value to tune
-    private static final boolean DEBUG = false; // if debug is wanted, change to true
+    private static final boolean DEBUG = true; // if debug is wanted, change to true
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
 
     public static UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
@@ -59,6 +61,7 @@ public class Robot {
     private TFObjectDetector tfod;
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
+    private CustomPipeline bouncebacks;
 
     private InterpLUT velocityController;
     private InterpLUT sleepController;
@@ -200,7 +203,14 @@ public class Robot {
 
         UGContourRingPipeline.Config.setHORIZON(HORIZON);
 
+        CustomPipeline.CAMERA_WIDTH = CAMERA_WIDTH;
+
+        CustomPipeline.HORIZON = HORIZON;
+
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+    }
+    public void switchPipeline(){
+        webcam.setPipeline(bouncebacks = new CustomPipeline(linearOpMode));
     }
     public void scan(){
         height = pipeline.getHeight();
@@ -251,5 +261,58 @@ public class Robot {
         tfodParameters.minResultConfidence = 0.5f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+    public Trajectory ringPickup(){
+        TrajectoryBuilder builder = driveTrain.trajectoryBuilder(driveTrain.getPoseEstimate());
+        builder = builder
+                .addTemporalMarker(0.3, () -> {
+                    launcher.wingsVert();
+                    Async.set(() -> Robot.C.distTo(driveTrain.getPoseEstimate().vec()) <= 11, this::wobbleArmDown);
+                });
+        ArrayList<Vector2d> initialRings = new ArrayList<>();
+        ArrayList<Vector2d> enRouteRings = new ArrayList<>();
+        for(Vector2d wayPoint : bouncebacks.getVectors()){
+            if(wayPoint.getX() < 40){
+                initialRings.add(wayPoint);
+            } else if(wayPoint.getX() >= 40){
+                enRouteRings.add(wayPoint);
+            }
+        }
+        for(Vector2d wayPoint : initialRings){
+            builder = builder.splineTo(wayPoint, 0);
+        }
+        for(Vector2d wayPoint : enRouteRings){
+            if(wayPoint.getX() < 57) builder = builder.splineTo(wayPoint, Math.toRadians(-90));
+            else builder = builder.splineToSplineHeading(Coordinate.toPose(wayPoint, Math.toRadians(-85)), Math.toRadians(-90));
+        }
+        builder = builder
+                .splineToSplineHeading(Coordinate.toPose(getWayPoint(), Math.toRadians(-190)), Math.toRadians(-190))
+                .addDisplacementMarker(() -> {
+                    Async.start(() -> {
+                        release();
+                        sleep(400);
+                        wobbleArmUp();
+                    });
+                    launcher.setVelocity(getPoseVelo(shootingPose));
+                    launcher.flapDown();
+                    launcher.safeLeftOut();
+                });
+        return builder.build();
+    }
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    public Vector2d getWayPoint(){
+        if(height == UGContourRingPipeline.Height.FOUR){
+            return C;
+        } else if(height == UGContourRingPipeline.Height.ONE){
+            return B;
+        } else {
+            return A;
+        }
     }
 }

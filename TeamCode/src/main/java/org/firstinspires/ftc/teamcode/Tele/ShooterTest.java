@@ -43,7 +43,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 sleepTime += 20;
                 sleep(150);
             } else if(gamepad1.dpad_left){
-                sleepTime -= 10;
+                sleepTime -= 5;
                 sleep(150);
             }
             if(gamepad1.left_trigger >= 0.1) {
@@ -73,9 +73,9 @@ public class ShooterTest extends LinearOpMode implements Runnable{
     @Override
     public void run() {
         while(opModeIsActive() && !isStopRequested()){
-            telemetry.addData("targetVelo ", targetVelo);
-            telemetry.addData("current velo ", robot.launcher.getVelocity());
-            telemetry.addData("sleep time ", sleepTime);
+            telemetry.addData("Target Velocity", targetVelo);
+            telemetry.addData("Current Velocity", robot.launcher.getVelocity());
+            telemetry.addData("sleep time", sleepTime);
             telemetry.update();
         }
     }
