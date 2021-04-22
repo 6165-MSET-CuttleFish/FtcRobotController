@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -107,12 +108,12 @@ public class Robot {
         sleepController = new InterpLUT();
         setVelocityController();
         setSleepController();
-        pwrShots[0] = new Vector2d(70.4725, -0.8);
+        pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-4.3, -6.58);
-        pwrShotLocals[1] = new Vector2d(-4.3, -13);
-        pwrShotLocals[2] = new Vector2d(-4.3, -22.7);
+        pwrShotLocals[0] = new Vector2d(-6, -6.58);
+        pwrShotLocals[1] = new Vector2d(-6, -13);
+        pwrShotLocals[2] = new Vector2d(-6, -22.7);
         map = imported;
         int cameraMonitorViewId = this
                 .map
@@ -172,11 +173,12 @@ public class Robot {
         sleepController.add(95, 100);
         sleepController.add(100, 110);
         sleepController.add(105, 130);
-        sleepController.add(200, 150);
+        sleepController.add(2000, 150);
         sleepController.createLUT();
     }
     public double getPoseVelo(Pose2d pose2d){
-        return velocityController.get(pose2d.vec().distTo(goal));
+        return  velocityController.get(Range.clip(Coordinate.distanceToLine(pose2d, goal.getX()), 0, 140));
+        //return velocityController.get(pose2d.vec().distTo(goal));
     }
     public double getPoseVelo(Vector2d vec){
         return velocityController.get(vec.distTo(goal));

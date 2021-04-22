@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
-import com.acmerobotics.dashboard.config.Config;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
@@ -107,7 +104,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     double lxMult = 1;
     double lyMult = 1;
     double rxMult = 1;
-
+    boolean g1Check;
     @Override
     public void run() {
         while (opModeIsActive()) {
@@ -125,62 +122,68 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 setMultiplier();
                 robot.driveTrain.update();
             }
-            if (gamepad1.x) {
-                robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-                        .addDisplacementMarker(() -> {
-                            shooterDisabled = true;
-                            robot.launcher.setVelocity(1130);
-                            wingDefault = WingState.out;
-                        })
-                        .addTemporalMarker(0.5, ()-> robot.launcher.magUp())
-                        .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1].plus(new Vector2d(-8, 0)), 0))
-                        .build(), () -> {
-                    if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-                });
-                for (Vector2d pwrShot : Robot.pwrShots) {
-                    if (!gamepadIdle()) {
-                        break;
+            if(!g1Check) {
+                if (gamepad1.x) {
+                    g1Check = true;
+                    robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                            .addDisplacementMarker(() -> {
+                                shooterDisabled = true;
+                                robot.launcher.setVelocity(1130);
+                                wingDefault = WingState.out;
+                            })
+                            .addTemporalMarker(0.5, () -> robot.launcher.magUp())
+                            .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1].plus(new Vector2d(-8, 0)), 0))
+                            .build(), () -> {
+                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                    });
+                    for (Vector2d pwrShot : Robot.pwrShots) {
+                        if (!gamepadIdle()) {
+                            break;
+                        }
+                        Coordinate position = Coordinate.toPoint(robot.driveTrain.getPoseEstimate());
+                        position.polarAdd(robot.driveTrain.getPoseEstimate().getHeading() + Math.PI / 2, 4);
+                        double absAngleToTarget = Math.atan2(pwrShot.getY() - position.getY(), pwrShot.getX() - position.getX());
+                        double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+                        robot.driveTrain.turn(relAngleToPoint, () -> {
+                            if (!gamepadIdle()) {
+                                robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                            }
+                        });
+                        robot.launcher.singleRound();
                     }
-                    Coordinate position = Coordinate.toPoint(robot.driveTrain.getPoseEstimate());
-                    position.polarAdd(robot.driveTrain.getPoseEstimate().getHeading() + Math.PI/2, 4);
-                    double absAngleToTarget = Math.atan2(pwrShot.getY() - position.getY(), pwrShot.getX() - position.getX());
+                } else if (gamepad1.left_bumper) {
+                    g1Check = true;
+                    robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                            .addDisplacementMarker(() -> {
+                                shooterDisabled = true;
+                                robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
+                            })
+                            .addTemporalMarker(0.7, () -> robot.launcher.magUp())
+                            .splineToLinearHeading(Robot.shootingPoseTele, 0)
+                            .build(), () -> {
+                        if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+                    });
+                    while (gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2) {
+                        robot.driveTrain.update();
+                    }
+                    robot.optimalShoot(3);
+                } else if (gamepad1.right_trigger >= 0.2) {
+                    g1Check = true;
+                    shooterDisabled = true;
+                    robot.launcher.magUp();
+                    Pose2d robotPose = robot.driveTrain.getPoseEstimate();
+                    double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
                     robot.driveTrain.turn(relAngleToPoint, () -> {
                         if (!gamepadIdle()) {
                             robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                         }
                     });
-                    robot.launcher.singleRound();
+                    robot.optimalShoot(3);
                 }
-            } else if (gamepad1.left_bumper) {
-                robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
-                        .addDisplacementMarker(() -> {
-                            shooterDisabled = true;
-                            robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
-                        })
-                        .addTemporalMarker(0.7, () -> robot.launcher.magUp())
-                        .splineToLinearHeading(Robot.shootingPoseTele, 0)
-                        .build(), () -> {
-                    if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-                });
-                while (gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2) {
-                    robot.driveTrain.update();
-                }
-                robot.optimalShoot(3);
+            } if(gamepad1.right_trigger < 0.2 && !gamepad1.left_bumper && !gamepad1.x){
+                g1Check = false;
             }
-//            } else if(gamepad1.right_trigger >= 0.2){
-//                shooterDisabled = true;
-//                robot.launcher.magUp();
-//                Pose2d robotPose = robot.driveTrain.getPoseEstimate();
-//                double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
-//                double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-//                robot.driveTrain.turn(relAngleToPoint, () -> {
-//                    if (!gamepadIdle()) {
-//                        robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-//                    }
-//                });
-//                robot.optimalShoot(3);
-//            }
         }
     }
 
