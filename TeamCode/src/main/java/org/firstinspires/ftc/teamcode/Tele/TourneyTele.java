@@ -167,19 +167,20 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                     robot.driveTrain.update();
                 }
                 robot.optimalShoot(3);
-            } else if(gamepad1.right_trigger >= 0.2){
-                shooterDisabled = true;
-                robot.launcher.magUp();
-                Pose2d robotPose = robot.driveTrain.getPoseEstimate();
-                double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
-                double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-                robot.driveTrain.turn(relAngleToPoint, () -> {
-                    if (!gamepadIdle()) {
-                        robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
-                    }
-                });
-                robot.optimalShoot(3);
             }
+//            } else if(gamepad1.right_trigger >= 0.2){
+//                shooterDisabled = true;
+//                robot.launcher.magUp();
+//                Pose2d robotPose = robot.driveTrain.getPoseEstimate();
+//                double absAngleToTarget = Math.atan2(Robot.goal.getY() - robotPose.getY(), Robot.goal.getX() - robotPose.getX());
+//                double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+//                robot.driveTrain.turn(relAngleToPoint, () -> {
+//                    if (!gamepadIdle()) {
+//                        robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
+//                    }
+//                });
+//                robot.optimalShoot(3);
+//            }
         }
     }
 
@@ -252,11 +253,11 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             dpadToggle = false;
         }
         if (gamepad2.left_trigger >= 0.1) {
-            wasPressed = true;
             robot.launcher.magUp();
             wingDefault = WingState.out;
             robot.launcher.setVelocity(targetVelocity);
             if (Math.abs(robot.launcher.getError()) <= 30 && gamepadIdle() && !robot.driveTrain.isBusy() && !wasPressed) {
+                wasPressed = true;
                 sleep(180);
                 robot.optimalShoot(3);
             }
