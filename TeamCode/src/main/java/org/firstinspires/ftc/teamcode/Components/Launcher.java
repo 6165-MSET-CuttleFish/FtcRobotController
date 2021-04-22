@@ -52,7 +52,11 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
         magDown();
-        if(Robot.opModeType == OpModeType.auto) wingsIn();
+        flapDown();
+        if(Robot.opModeType == OpModeType.auto){
+            wingsIn();
+            flapUp();
+        }
         else if(Robot.opModeType == OpModeType.tele) {
             wingsVert();
             flapDown();
