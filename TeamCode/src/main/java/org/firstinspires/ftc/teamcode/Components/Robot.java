@@ -71,7 +71,7 @@ public class Robot {
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Pose2d shootingPose = new Pose2d(-14.4725, -53, Math.toRadians(1));
-    public static Pose2d shootingPoseTele = new Pose2d(-4.4725, -32.9725, Math.toRadians(-3));
+    public static Pose2d shootingPoseTele = new Pose2d(-5, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
@@ -110,9 +110,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -0.8);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-4, -6.54);
-        pwrShotLocals[1] = new Vector2d(-4, -13);
-        pwrShotLocals[2] = new Vector2d(-4, -22.7);
+        pwrShotLocals[0] = new Vector2d(-4.3, -6.58);
+        pwrShotLocals[1] = new Vector2d(-4.3, -13);
+        pwrShotLocals[2] = new Vector2d(-4.3, -22.7);
         map = imported;
         int cameraMonitorViewId = this
                 .map
