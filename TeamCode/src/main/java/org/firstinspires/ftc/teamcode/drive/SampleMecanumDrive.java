@@ -102,7 +102,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     private VoltageSensor batteryVoltageSensor;
 
     private Pose2d lastPoseOnTurn;
-    double constant;
     LinearOpMode opMode;
     public SampleMecanumDrive(HardwareMap hardwareMap, LinearOpMode opMode) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
