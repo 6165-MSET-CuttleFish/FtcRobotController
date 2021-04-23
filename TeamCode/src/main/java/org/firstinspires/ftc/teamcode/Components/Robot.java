@@ -74,7 +74,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-14.4725, -53, Math.toRadians(1));
+    public static Pose2d shootingPose = new Pose2d(-14.4725, -53, Math.toRadians(5));
     public static Pose2d shootingPoseTele = new Pose2d(-5, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -114,7 +114,7 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-6, -6.58);
+        pwrShotLocals[0] = new Vector2d(-6, -6.4);
         pwrShotLocals[1] = new Vector2d(-6, -13);
         pwrShotLocals[2] = new Vector2d(-6, -22.7);
         map = imported;
@@ -150,8 +150,8 @@ public class Robot {
     }
     private void setVelocityController(){
         velocityController.add(0,1400);
-        velocityController.add(75,1370);
-        velocityController.add(77.5,1360);
+        velocityController.add(75,1400);
+        velocityController.add(77.5,1390);
         velocityController.add(80,1330);
         velocityController.add(85,1300);
         velocityController.add(90, 1230);
