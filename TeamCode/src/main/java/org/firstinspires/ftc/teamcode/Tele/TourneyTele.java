@@ -77,7 +77,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             if (wingDefault == WingState.in) {
                 robot.launcher.wingsIn();
             } else if (wingDefault == WingState.out) {
-                if (robot.launcher.getRings() < 3) robot.launcher.wingsOut();
+                if (robot.launcher.getRings() < 1) robot.launcher.wingsOut();
                 else robot.launcher.wingsMid();
             } else if (wingDefault == WingState.safe) {
                 robot.launcher.wingsMid();
