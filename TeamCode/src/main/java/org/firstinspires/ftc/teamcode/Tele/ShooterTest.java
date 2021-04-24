@@ -67,6 +67,11 @@ public class ShooterTest extends LinearOpMode implements Runnable{
             if(gamepad1.right_trigger >= 0.1){
                 robot.launcher.customShoot(sleepTime, 3);
             }
+            if(gamepad1.a){
+                robot.launcher.flapDown();
+            } else if(gamepad1.b){
+                robot.launcher.flapUp();
+            }
         }
     }
 

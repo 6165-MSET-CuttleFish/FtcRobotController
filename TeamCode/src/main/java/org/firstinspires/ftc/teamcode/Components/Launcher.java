@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Launcher {
     public ColorRangeSensor colorRangeSensor;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.004, 0, 0);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
 
     public static double kV = 0.00054428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;

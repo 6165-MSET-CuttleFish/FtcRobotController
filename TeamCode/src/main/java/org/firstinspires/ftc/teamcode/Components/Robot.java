@@ -74,7 +74,7 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-14.4725, -53, Math.toRadians(5));
+    public static Pose2d shootingPose = new Pose2d(-14.4725, -52.5, Math.toRadians(2));
     public static Pose2d shootingPoseTele = new Pose2d(-5, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -85,7 +85,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-42.3, -42.4);
+    public static Vector2d rightWobble = new Vector2d(-40, -42.3);
 
     public Launcher launcher;
 
@@ -114,9 +114,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-6, -6.4);
-        pwrShotLocals[1] = new Vector2d(-6, -13);
-        pwrShotLocals[2] = new Vector2d(-6, -22.7);
+        pwrShotLocals[0] = new Vector2d(-6.03, -6.4);
+        pwrShotLocals[1] = new Vector2d(-6.03, -14.5);
+        pwrShotLocals[2] = new Vector2d(-6.03, -22.7);
         map = imported;
         int cameraMonitorViewId = this
                 .map
@@ -149,14 +149,15 @@ public class Robot {
         driveTrain.setTargetVeloCallable(()->launcher.getTargetVelo());
     }
     private void setVelocityController(){
-        velocityController.add(0,1400);
-        velocityController.add(75,1400);
-        velocityController.add(77.5,1390);
-        velocityController.add(80,1330);
-        velocityController.add(85,1300);
-        velocityController.add(90, 1230);
-        velocityController.add(95,1200);
-        velocityController.add(100,1200);
+        velocityController.add(0,1580);
+        velocityController.add(75,1580);
+        velocityController.add(77.5,1580);
+        velocityController.add(80,1500);
+        velocityController.add(85,1435);
+        velocityController.add(90, 1285);
+        //tbc
+        velocityController.add(95,1250);
+        velocityController.add(100,1250);
         velocityController.add(105,1220);
         velocityController.add(110,1190);
         velocityController.add(115,1190);
@@ -172,7 +173,7 @@ public class Robot {
         sleepController.add(77.5, 80);
         sleepController.add(80, 80);
         sleepController.add(85, 80);
-        sleepController.add(90, 100);
+        sleepController.add(90, 90);
         sleepController.add(95, 100);
         sleepController.add(100, 110);
         sleepController.add(105, 130);

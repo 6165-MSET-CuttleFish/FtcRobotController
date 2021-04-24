@@ -35,8 +35,8 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     ArrayList<Double> timer = new ArrayList<>();
     double currentMillis = 0;
     double lastMillis = 0;
-    double coastDownTime = 1000;
-    double setInterval = 5;
+    double coastDownTime = 500;
+    double setInterval = 10;
     int cycles = 0;
     Pose2d shootingPose = Robot.shootingPoseTele;
     public static double targetVelocity = 1330;
@@ -109,7 +109,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate());
+            targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec());
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
@@ -277,10 +277,10 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                     if (wasPressed) {
                         wasPressed = false;
                         coastTimer = System.currentTimeMillis();
-                        veloCadence = (robot.launcher.getVelocity() - 1000) * setInterval / coastDownTime;
+                        veloCadence = (robot.launcher.getVelocity() - 1250) * setInterval / coastDownTime;
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
-                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1000) {
+                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1250) {
                         coastTimer = System.currentTimeMillis();
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
