@@ -19,8 +19,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BounceBackPipeline extends OpenCvPipeline {
-    public BounceBackPipeline(LinearOpMode opMode){
+public class EllipsePipeline extends OpenCvPipeline {
+    public EllipsePipeline(LinearOpMode opMode){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;

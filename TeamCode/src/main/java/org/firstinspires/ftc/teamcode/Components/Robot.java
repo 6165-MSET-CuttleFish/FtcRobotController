@@ -19,27 +19,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Robot {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -61,7 +51,7 @@ public class Robot {
     private TFObjectDetector tfod;
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
-    private CustomPipeline bouncebacks;
+    private RingLocalizer bouncebacks;
 
     private InterpLUT velocityController;
     private InterpLUT sleepController;
@@ -114,9 +104,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-6.03, -6.4);
-        pwrShotLocals[1] = new Vector2d(-6.03, -14.5);
-        pwrShotLocals[2] = new Vector2d(-6.03, -22.7);
+        pwrShotLocals[0] = new Vector2d(-5.3, -6.4);
+        pwrShotLocals[1] = new Vector2d(-5.3, -14.2);
+        pwrShotLocals[2] = new Vector2d(-5.3, -23);
         map = imported;
         int cameraMonitorViewId = this
                 .map
@@ -204,14 +194,14 @@ public class Robot {
 
         UGContourRingPipeline.Config.setHORIZON(HORIZON);
 
-        CustomPipeline.CAMERA_WIDTH = CAMERA_WIDTH;
+        RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
-        CustomPipeline.HORIZON = HORIZON;
+        RingLocalizer.HORIZON = HORIZON;
 
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
     public void switchPipeline(){
-        webcam.setPipeline(bouncebacks = new CustomPipeline(linearOpMode));
+        webcam.setPipeline(bouncebacks = new RingLocalizer(linearOpMode));
     }
     public void scan(){
         height = pipeline.getHeight();

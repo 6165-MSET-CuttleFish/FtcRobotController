@@ -19,8 +19,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomPipeline extends OpenCvPipeline {
-    public CustomPipeline(LinearOpMode opMode){
+public class RingLocalizer extends OpenCvPipeline {
+    public RingLocalizer(LinearOpMode opMode){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;
@@ -43,6 +43,8 @@ public class CustomPipeline extends OpenCvPipeline {
     Scalar upperOrange = new Scalar(255.0, 230.0, 95.0);
     private double x;
     private double y;
+    double width;
+    double height;
 
     /** width of the camera in use, defaulted to 320 as that is most common in examples **/
     public static int CAMERA_WIDTH = 320;
@@ -89,11 +91,13 @@ public class CustomPipeline extends OpenCvPipeline {
                 Rect rect =  Imgproc.boundingRect(copy);
                 // checking if the rectangle is below the horizon
                 if (rect.y + rect.height > HORIZON) {
+                    width = rect.width;
+                    height = rect.height;
                     x = rect.x;
                     y = rect.y;
                     vectors.add(new Vector2d(xParser.get(rect.x), yParser.get(rect.y)));
                     maxRect = rect;
-                    Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
+                    //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
@@ -158,5 +162,8 @@ public class CustomPipeline extends OpenCvPipeline {
     }
     public double getY(){
         return y;
+    }
+    public double getArea(){
+        return width*height;
     }
 }
