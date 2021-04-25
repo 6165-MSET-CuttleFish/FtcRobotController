@@ -169,10 +169,6 @@ public class Launcher {
         for(int i = 0; i < rounds; i++){
             singleRound();
             Log.println(Log.INFO, "Shot Number: ", i + "");
-            if(Robot.opModeType == OpModeType.tele) Async.start(()->{
-                sleep(150);
-                wingsOut();
-            });
             if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
                 sleep(90);

@@ -237,6 +237,11 @@ public class Robot {
         in2.setPower(intakeSpeed);
     }
     public void optimalShoot(int rounds){
+        if(Robot.opModeType == OpModeType.tele) Async.start(()->{
+            sleep(300);
+            launcher.wingsOut();
+            intake(0.3);
+        });
         launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), rounds);
     }
     private void initVuforia() {
