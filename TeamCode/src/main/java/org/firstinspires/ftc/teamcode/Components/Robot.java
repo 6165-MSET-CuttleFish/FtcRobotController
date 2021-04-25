@@ -42,17 +42,23 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Robot {
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String VUFORIA_KEY = "AUw51u3/////AAABmS2SebfPGERUmfixnpbS89g79T2cQLWzcEcMv6u+RTGzrrvHwTVug45aIF3UiYJXKVzy/zhBFDleEJD2gEjPWWDQeYDV9k3htKwbHofAiOwRfivq8h2ZJIGcmUwiNT40UAEeUvQlKZXTcIYTrxiYmN4tAKEjmH5zKoAUfLefScv9gDDMwTYCKVm1M45M2a1VdIu0pMdoaJKo2DRZ3B+D+yZurFO/ymNtyAWME+1eE9PWyulZUmuUw/sDphp13KrdNHNbDUXwbunQN7voVm2HE5fWrFNtX5euVaPy/jedXTiM5KBeosXuemMeppimcTLHFvyhSwOMZMRhPT1Gus487FRWMt479sn2EhexfDCcd0JG";
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final int HORIZON = 100; // horizon value to tune
     private static final boolean DEBUG = true; // if debug is wanted, change to true
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
 
-    public static UGContourRingPipeline.Height height = UGContourRingPipeline.Height.FOUR;
+    public static UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
     public static OpModeType opModeType = OpModeType.none;
 
     private LinearOpMode linearOpMode;
 
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
     private CustomPipeline bouncebacks;
@@ -175,8 +181,8 @@ public class Robot {
         sleepController.createLUT();
     }
     public double getPoseVelo(Pose2d pose2d){
-        //return  velocityController.get(Range.clip(Coordinate.distanceToLine(pose2d, goal.getX()), 0, 140));
-        return velocityController.get(pose2d.vec().distTo(goal));
+        return  velocityController.get(Range.clip(Coordinate.distanceToLine(pose2d, goal.getX()), 0, 140));
+        //return velocityController.get(pose2d.vec().distTo(goal));
     }
     public double getPoseVelo(Vector2d vec){
         return velocityController.get(vec.distTo(goal));
@@ -211,7 +217,7 @@ public class Robot {
         height = pipeline.getHeight();
     }
     public void turnOffVision(){
-        if(webcam != null) webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
+        //webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
     }
     public void wobbleArmUp() {
         arm1.setPosition(0.1);
@@ -242,6 +248,20 @@ public class Robot {
     }
     public void optimalShoot(int rounds){
         launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), rounds);
+    }
+    private void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+    }
+    private void initTfod() {
+        int tfodMonitorViewId = map.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", map.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.5f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
     public Trajectory ringPickup(){
         TrajectoryBuilder builder = driveTrain.trajectoryBuilder(driveTrain.getPoseEstimate());
