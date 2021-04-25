@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.RingLocalizer;
+import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -24,9 +27,11 @@ public class BounceBackPipelineDetector extends LinearOpMode {
 
     private RingLocalizer pipeline;
     private OpenCvCamera camera;
+    Robot robot;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        robot = new Robot(hardwareMap);
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -56,9 +61,12 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("X >>", pipeline.getX());
-            telemetry.addData("Y >>", pipeline.getY());
-            telemetry.addData("Area >>", pipeline.getArea());
+            for(Vector2d vector2d : pipeline.getVectors()){
+                telemetry.addData("NEW VECTOR", "");
+                telemetry.addData("", "");
+                telemetry.addData("X >>", Coordinate.xCovered(vector2d.getX(), robot.driveTrain.getPoseEstimate().getHeading()));
+                telemetry.addData("Y >>", Coordinate.yCovered(vector2d.getY(), robot.driveTrain.getPoseEstimate().getHeading()));
+            }
             telemetry.update();
         }
     }

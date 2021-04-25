@@ -11,31 +11,64 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RingLocalizer extends OpenCvPipeline {
     public RingLocalizer(LinearOpMode opMode){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;
-        xParser = new InterpLUT();
-        yParser = new InterpLUT();
+        areaPerpendicular = new InterpLUT();
+        parallelDistance = new InterpLUT();
         createControlPoints();
     }
     private void createControlPoints(){
+        setAreaParser();
+    }
+    private void setAreaParser(){
+        areaPerpendicular.add(8000, 0);
+        areaPerpendicular.add(4838, 16);
+        areaPerpendicular.add(4180, 18);
+        areaPerpendicular.add(3600, 20);
+        areaPerpendicular.add(3102, 22);
+        areaPerpendicular.add(2752, 24);
+        areaPerpendicular.add(2460, 26);
+        areaPerpendicular.add(2204, 28);
+        areaPerpendicular.add(2072, 30);
+        areaPerpendicular.add(1836, 32);
+        areaPerpendicular.add(1716, 34);
+        areaPerpendicular.add(1536, 36);
+        areaPerpendicular.add(1380, 38);
+        areaPerpendicular.add(1320, 40);
+        areaPerpendicular.add(1276, 42);
+        areaPerpendicular.add(1176, 44);
+        areaPerpendicular.add(1176, 46);
+        areaPerpendicular.add(1040, 48);
+        areaPerpendicular.add(988, 50);
+        areaPerpendicular.add(936, 52);
+        areaPerpendicular.add(864, 54);
+        areaPerpendicular.add(864, 56);
+        areaPerpendicular.add(816, 58);
+        areaPerpendicular.add(736, 60);
+        areaPerpendicular.add(730, 62);
+        areaPerpendicular.add(720, 64);
+        areaPerpendicular.add(660, 66);
+        areaPerpendicular.add(630, 68);
+        areaPerpendicular.add(630, 70);
+        areaPerpendicular.add(0, 70);
+        areaPerpendicular.createLUT();
+    }
+    private void setParallelDistance(){
+
     }
     /** variables that will be reused for calculations **/
     private Mat mat;
     private Mat ret;
 
-    private final InterpLUT xParser;
-    private final InterpLUT yParser;
+    private final InterpLUT areaPerpendicular;
+    private final InterpLUT parallelDistance;
     private LinearOpMode linearOpMode;
     private ArrayList<Vector2d> vectors = new ArrayList<>();
 
@@ -82,9 +115,6 @@ public class RingLocalizer extends OpenCvPipeline {
 
             /**drawing contours to ret in green**/
             Imgproc.drawContours(ret, contours, -1, new Scalar(0.0, 255.0, 0.0), 3);
-
-            /**finding widths of each contour, comparing, and storing the widest**/
-            Rect maxRect = new Rect();
             vectors = new ArrayList<>();
             for (MatOfPoint c: contours) {
                 MatOfPoint2f copy = new MatOfPoint2f(c.toArray());
@@ -95,8 +125,7 @@ public class RingLocalizer extends OpenCvPipeline {
                     height = rect.height;
                     x = rect.x;
                     y = rect.y;
-                    vectors.add(new Vector2d(xParser.get(rect.x), yParser.get(rect.y)));
-                    maxRect = rect;
+                    vectors.add(new Vector2d(areaPerpendicular.get(rect.x), parallelDistance.get(rect.y)));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
