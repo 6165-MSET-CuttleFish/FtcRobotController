@@ -68,7 +68,7 @@ public class BounceBackAuto extends LinearOpMode {
                         sleep(400);
                         robot.wobbleArmUp();
                     });
-                    robot.launcher.setVelocity(1290);
+                    robot.launcher.setVelocity(1280);
                     telemetry.addData("distance", Coordinate.distanceToLine(Robot.shootingPose, Robot.goal.getX()));
                     telemetry.addData("velo", robot.launcher.getTargetVelo());
                     telemetry.update();
@@ -158,29 +158,34 @@ public class BounceBackAuto extends LinearOpMode {
         sleep(40);
         robot.launcher.setLauncherVelocity(0);
         robot.wobbleArmDown();
-        Async.set(() -> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) <= 16.5, () -> {
-            robot.grab();
-            sleep(1000);
-            robot.wobbleArmUp();
-        });
-        robot.driveTrain.followTrajectory(wobblePickup);
-        robot.intake(-1);
-        robot.launcher.magUp();
-        sleep(200);
-        robot.launcher.singleRound();
-        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
-        sleep(40);
-        robot.launcher.magDown();
-        robot.driveTrain.followTrajectory(finalShot);
-        robot.intake(-1);
-        robot.launcher.magUp();
-        sleep(190);
-        robot.optimalShoot(3);
-        sleep(60);
-        robot.intake(0);
-        robot.launcher.setLauncherVelocity(0);
-        robot.driveTrain.followTrajectory(wobbleDrop2);
-        robot.driveTrain.followTrajectory(park);
+        robot.driveTrain.followTrajectory(robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-3)),
+                        getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build());
+//        Async.set(() -> robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) <= 16.5, () -> {
+//            robot.grab();
+//            sleep(1000);
+//            robot.wobbleArmUp();
+//        });
+        //robot.driveTrain.followTrajectory(wobblePickup);
+//        robot.intake(-1);
+//        robot.launcher.magUp();
+//        sleep(200);
+//        robot.launcher.singleRound();
+//        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele));
+//        sleep(40);
+//        robot.launcher.magDown();
+//        robot.driveTrain.followTrajectory(finalShot);
+//        robot.intake(-1);
+//        robot.launcher.magUp();
+//        sleep(190);
+//        robot.optimalShoot(3);
+//        sleep(60);
+//        robot.intake(0);
+//        robot.launcher.setLauncherVelocity(0);
+//        robot.driveTrain.followTrajectory(wobbleDrop2);
+//        robot.driveTrain.followTrajectory(park);
     }
     private void generatePaths(){
 

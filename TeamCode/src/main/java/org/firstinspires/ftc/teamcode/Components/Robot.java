@@ -75,7 +75,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-40, -42.3);
+    public static Vector2d rightWobble = new Vector2d(-32, -50.3);
 
     public Launcher launcher;
 
