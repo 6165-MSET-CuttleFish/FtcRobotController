@@ -61,11 +61,12 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            telemetry.addData("X", pipeline.getX());
             for(Vector2d vector2d : pipeline.getVectors()){
                 telemetry.addData("NEW VECTOR", "");
                 telemetry.addData("", "");
-                telemetry.addData("X >>", Coordinate.xCovered(vector2d.getX(), robot.driveTrain.getPoseEstimate().getHeading()));
-                telemetry.addData("Y >>", Coordinate.yCovered(vector2d.getY(), robot.driveTrain.getPoseEstimate().getHeading()));
+                telemetry.addData("Vector X >>", Coordinate.xCovered(vector2d.getX(), robot.driveTrain.getPoseEstimate().getHeading()));
+                telemetry.addData("Vector Y >>", Coordinate.yCovered(vector2d.getY(), robot.driveTrain.getPoseEstimate().getHeading()));
             }
             telemetry.update();
         }

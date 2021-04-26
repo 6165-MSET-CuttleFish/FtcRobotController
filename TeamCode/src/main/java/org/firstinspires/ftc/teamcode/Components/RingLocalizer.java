@@ -28,40 +28,40 @@ public class RingLocalizer extends OpenCvPipeline {
         setAreaParser();
     }
     private void setAreaParser(){
-        areaPerpendicular.add(8000, 0);
-        areaPerpendicular.add(4838, 16);
-        areaPerpendicular.add(4180, 18);
-        areaPerpendicular.add(3600, 20);
-        areaPerpendicular.add(3102, 22);
-        areaPerpendicular.add(2752, 24);
-        areaPerpendicular.add(2460, 26);
-        areaPerpendicular.add(2204, 28);
-        areaPerpendicular.add(2072, 30);
-        areaPerpendicular.add(1836, 32);
-        areaPerpendicular.add(1716, 34);
-        areaPerpendicular.add(1536, 36);
-        areaPerpendicular.add(1380, 38);
-        areaPerpendicular.add(1320, 40);
-        areaPerpendicular.add(1276, 42);
-        areaPerpendicular.add(1176, 44);
-        areaPerpendicular.add(1176, 46);
-        areaPerpendicular.add(1040, 48);
-        areaPerpendicular.add(988, 50);
-        areaPerpendicular.add(936, 52);
-        areaPerpendicular.add(864, 54);
-        areaPerpendicular.add(864, 56);
-        areaPerpendicular.add(816, 58);
-        areaPerpendicular.add(736, 60);
-        areaPerpendicular.add(730, 62);
-        areaPerpendicular.add(720, 64);
-        areaPerpendicular.add(660, 66);
-        areaPerpendicular.add(630, 68);
-        areaPerpendicular.add(630, 70);
         areaPerpendicular.add(0, 70);
+        areaPerpendicular.add(500, 70);
+        areaPerpendicular.add(630, 68);
+        areaPerpendicular.add(660, 66);
+        areaPerpendicular.add(720, 64);
+        areaPerpendicular.add(730, 62);
+        areaPerpendicular.add(736, 60);
+        areaPerpendicular.add(816, 58);
+        areaPerpendicular.add(840, 56);
+        areaPerpendicular.add(864, 54);
+        areaPerpendicular.add(936, 52);
+        areaPerpendicular.add(988, 50);
+        areaPerpendicular.add(1040, 48);
+        areaPerpendicular.add(1176, 46);
+        areaPerpendicular.add(1190, 44);
+        areaPerpendicular.add(1276, 42);
+        areaPerpendicular.add(1320, 40);
+        areaPerpendicular.add(1380, 38);
+        areaPerpendicular.add(1536, 36);
+        areaPerpendicular.add(1716, 34);
+        areaPerpendicular.add(1836, 32);
+        areaPerpendicular.add(2072, 30);
+        areaPerpendicular.add(2204, 28);
+        areaPerpendicular.add(2460, 26);
+        areaPerpendicular.add(2752, 24);
+        areaPerpendicular.add(3102, 22);
+        areaPerpendicular.add(3600, 20);
+        areaPerpendicular.add(4180, 18);
+        areaPerpendicular.add(4838, 16);
+        areaPerpendicular.add(8000, 0);
         areaPerpendicular.createLUT();
     }
     private void setParallelDistance(){
-
+        parallelDistance.createLUT();
     }
     /** variables that will be reused for calculations **/
     private Mat mat;
@@ -125,7 +125,7 @@ public class RingLocalizer extends OpenCvPipeline {
                     height = rect.height;
                     x = rect.x;
                     y = rect.y;
-                    vectors.add(new Vector2d(areaPerpendicular.get(rect.x), parallelDistance.get(rect.y)));
+                    vectors.add(new Vector2d(areaPerpendicular.get(rect.area()), parallelDistance.get(rect.x)));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
