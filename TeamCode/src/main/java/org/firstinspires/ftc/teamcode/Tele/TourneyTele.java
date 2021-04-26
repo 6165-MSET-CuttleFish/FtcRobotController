@@ -76,21 +76,22 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             }
             if (wingDefault == WingState.in) {
                 robot.launcher.wingsIn();
+                robot.setSlappy(1);
             } else if (wingDefault == WingState.out) {
-                if (robot.launcher.getRings() < 1) robot.launcher.wingsOut();
-                else robot.launcher.wingsMid();
+                if (robot.launcher.getRings() < 1){
+                    robot.launcher.wingsOut();
+                    robot.setSlappy(1);
+                }
+                else {
+                    robot.launcher.wingsMid();
+                    robot.setSlappy(0);
+                }
             } else if (wingDefault == WingState.safe) {
                 robot.launcher.wingsMid();
+                robot.setSlappy(0);
             } else {
                 robot.launcher.wingsVert();
-            }
-            if(raiseCheck) {
-                raiseCheck = false;
-                if (gamepad2.dpad_up) {
-                    targetVelocity += 30;
-                } else if (gamepad2.dpad_down) {
-                    targetVelocity -= 30;
-                }
+                robot.setSlappy(1);
             }
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
@@ -105,11 +106,12 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     double lyMult = 1;
     double rxMult = 1;
     boolean g1Check;
+    boolean powershots = false;
     @Override
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec());
+            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec());
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
@@ -163,7 +165,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                             .build(), () -> {
                         if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
                     });
-                    while (gamepadIdle() || Math.abs(robot.launcher.getError()) <= 40 || gamepad2.right_trigger <= 0.2) {
+                    while (gamepadIdle() || Math.abs(robot.launcher.getError()) >= 40) {
                         robot.driveTrain.update();
                     }
                     robot.optimalShoot(3);
@@ -184,6 +186,13 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 }
             } if(gamepad1.right_trigger < 0.2 && !gamepad1.left_bumper && !gamepad1.x){
                 g1Check = false;
+            }
+            if (gamepad2.right_trigger >= 0.1) {
+                robot.launcher.singleRound();
+                robot.driveTrain.turn(Math.toRadians(8));
+                robot.launcher.singleRound();
+                robot.driveTrain.turn(Math.toRadians(5));
+                robot.launcher.singleRound();
             }
         }
     }
@@ -266,10 +275,12 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 robot.optimalShoot(3);
             }
         } else if (gamepad2.left_bumper) {
+            powershots = true;
             robot.launcher.magUp();
             robot.launcher.setVelocity(1130);
             wingDefault = WingState.out;
         } else {
+            powershots = false;
             robot.launcher.magDown();
             if (robot.launcher.getRings() > 0) robot.launcher.setVelocity(targetVelocity);
             else {
@@ -290,16 +301,6 @@ public class TourneyTele extends LinearOpMode implements Runnable {
         }
         if (gamepad2.right_bumper) {
             robot.launcher.singleRound();
-            storeCoordinate();
-        }
-        if (gamepad2.right_trigger >= 0.1) {
-            robot.launcher.magazineShoot();
-            if (cycles == 0) {
-                cycles++;
-            } else {
-                timer.add(currentMillis - lastMillis);
-            }
-            lastMillis = currentMillis;
             storeCoordinate();
         }
     }
