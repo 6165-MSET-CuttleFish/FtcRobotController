@@ -58,13 +58,13 @@ public class Robot {
 
     public DcMotor intakeR, intakeL;
 
-    public CRServo in1, in2;
+    public CRServo in1, in2, slappy;
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-14.4725, -52.5, Math.toRadians(2));
+    public static Pose2d shootingPose = new Pose2d(-14.4725, -53.5, Math.toRadians(2));
     public static Pose2d shootingPoseTele = new Pose2d(-5, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
@@ -75,7 +75,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-32, -50.3);
+    public static Vector2d rightWobble = new Vector2d(-34, -49);
 
     public Launcher launcher;
 
@@ -108,21 +108,22 @@ public class Robot {
         pwrShotLocals[1] = new Vector2d(-5.3, -14.2);
         pwrShotLocals[2] = new Vector2d(-5.3, -23);
         map = imported;
-        int cameraMonitorViewId = this
-                .map
-                .appContext
-                .getResources().getIdentifier(
-                        "cameraMonitorViewId",
-                        "id",
-                        map.appContext.getPackageName()
-                );
-        webcam = OpenCvCameraFactory
-                .getInstance()
-                .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+//        int cameraMonitorViewId = this
+//                .map
+//                .appContext
+//                .getResources().getIdentifier(
+//                        "cameraMonitorViewId",
+//                        "id",
+//                        map.appContext.getPackageName()
+//                );
+//        webcam = OpenCvCameraFactory
+//                .getInstance()
+//                .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.crservo.get("in1");
         in2 = map.crservo.get("in2");
+        slappy = map.crservo.get("slappy");
         in1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm1 = map.get(Servo.class, "wobbleArm1");
@@ -140,16 +141,16 @@ public class Robot {
     }
     private void setVelocityController(){
         velocityController.add(0,1580);
-        velocityController.add(75,1580);
-        velocityController.add(77.5,1580);
-        velocityController.add(80,1500);
-        velocityController.add(85,1435);
-        velocityController.add(90, 1285);
+        velocityController.add(75,1500);
+        velocityController.add(77.5,1490);
+        velocityController.add(80,1400);
+        velocityController.add(85,1350);
+        velocityController.add(90, 1300);
+        velocityController.add(95,1230);
+        velocityController.add(100,1210);
+        velocityController.add(105,1230);
+        velocityController.add(110,1220);
         //tbc
-        velocityController.add(95,1250);
-        velocityController.add(100,1250);
-        velocityController.add(105,1220);
-        velocityController.add(110,1190);
         velocityController.add(115,1190);
         velocityController.add(120,1190);
         velocityController.add(125,1210);
@@ -163,11 +164,11 @@ public class Robot {
         sleepController.add(77.5, 80);
         sleepController.add(80, 80);
         sleepController.add(85, 80);
-        sleepController.add(90, 90);
+        sleepController.add(90, 80);
         sleepController.add(95, 100);
         sleepController.add(100, 110);
         sleepController.add(105, 130);
-        sleepController.add(2000, 150);
+        sleepController.add(2000, 300);
         sleepController.createLUT();
     }
     public double getPoseVelo(Pose2d pose2d){
@@ -236,11 +237,15 @@ public class Robot {
         in1.setPower(intakeSpeed);
         in2.setPower(intakeSpeed);
     }
+    public void setSlappy(double speed){
+        slappy.setPower(speed);
+    }
     public void optimalShoot(int rounds){
         if(Robot.opModeType == OpModeType.tele) Async.start(()->{
             sleep(300);
             launcher.wingsOut();
-            intake(0.3);
+            intake(0.4);
+            slappy.setPower(1);
         });
         launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), rounds);
     }
