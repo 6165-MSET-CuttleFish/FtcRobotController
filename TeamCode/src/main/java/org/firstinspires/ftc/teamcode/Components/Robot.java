@@ -124,6 +124,7 @@ public class Robot {
         in1 = map.crservo.get("in1");
         in2 = map.crservo.get("in2");
         slappy = map.crservo.get("slappy");
+        slappy.setDirection(DcMotorSimple.Direction.REVERSE);
         in1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm1 = map.get(Servo.class, "wobbleArm1");
