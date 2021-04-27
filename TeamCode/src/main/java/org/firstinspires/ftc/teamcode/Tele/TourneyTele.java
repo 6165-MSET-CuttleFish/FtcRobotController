@@ -57,6 +57,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
         while (opModeIsActive()) {
             currentMillis = System.currentTimeMillis();
             wobble();
+            robot.setSlappy(1);
             robot.intake(gamepad2.right_stick_y);
             if (!shooterDisabled) shooter();
             if (gamepad2.y && !wingCheck) {
