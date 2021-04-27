@@ -26,6 +26,7 @@ public class RingLocalizer extends OpenCvPipeline {
     }
     private void createControlPoints(){
         setAreaParser();
+        setParallelDistance();
     }
     private void setAreaParser(){
         areaPerpendicular.add(0, 70);

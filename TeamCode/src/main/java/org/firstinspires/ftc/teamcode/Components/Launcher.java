@@ -55,7 +55,6 @@ public class Launcher {
         flapDown();
         if(Robot.opModeType == OpModeType.auto){
             wingsIn();
-            flapUp();
         }
         else if(Robot.opModeType == OpModeType.tele) {
             wingsVert();

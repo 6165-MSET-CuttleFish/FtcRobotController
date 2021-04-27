@@ -141,15 +141,18 @@ public class Robot {
         driveTrain.setTargetVeloCallable(()->launcher.getTargetVelo());
     }
     private void setVelocityController(){
-        velocityController.add(0,1580);
+        velocityController.add(0,1500);
         velocityController.add(75,1500);
-        velocityController.add(77.5,1490);
+        velocityController.add(77.5,1480);
+        velocityController.add(78, 1450);
+        velocityController.add(79, 1410);
         velocityController.add(80,1400);
         velocityController.add(85,1350);
         velocityController.add(90, 1300);
-        velocityController.add(95,1230);
-        velocityController.add(100,1210);
-        velocityController.add(105,1230);
+        velocityController.add(95,1210);
+        velocityController.add(100,1202);
+        velocityController.add(102, 1210);
+        velocityController.add(105,1220);
         velocityController.add(110,1220);
         //tbc
         velocityController.add(115,1190);
@@ -167,9 +170,9 @@ public class Robot {
         sleepController.add(85, 80);
         sleepController.add(90, 80);
         sleepController.add(95, 100);
-        sleepController.add(100, 110);
-        sleepController.add(105, 130);
-        sleepController.add(2000, 300);
+        sleepController.add(100, 120);
+        sleepController.add(105, 120);
+        sleepController.add(500, 300);
         sleepController.createLUT();
     }
     public double getPoseVelo(Pose2d pose2d){
