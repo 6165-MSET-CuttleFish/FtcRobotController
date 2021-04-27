@@ -64,8 +64,8 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-14.4725, -53.5, Math.toRadians(2));
-    public static Pose2d shootingPoseTele = new Pose2d(-5, -32.9725, Math.toRadians(-3));
+    public static Pose2d shootingPose = new Pose2d(-16, -53.5, Math.toRadians(2));
+    public static Pose2d shootingPoseTele = new Pose2d(-7, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
@@ -176,8 +176,8 @@ public class Robot {
         sleepController.createLUT();
     }
     public double getPoseVelo(Pose2d pose2d){
-        return  velocityController.get(Range.clip(Coordinate.distanceToLine(pose2d, goal.getX()), 0, 140));
-        //return velocityController.get(pose2d.vec().distTo(goal));
+        //return  velocityController.get(Range.clip(Coordinate.distanceToLine(pose2d, goal.getX()), 0, 140));
+        return velocityController.get(pose2d.vec().distTo(goal));
     }
     public double getPoseVelo(Vector2d vec){
         return velocityController.get(vec.distTo(goal));
