@@ -64,14 +64,14 @@ public class RingLocalizer extends OpenCvPipeline {
         areaPerpendicular.createLUT();
     }
     private void setAngleRegression(){
-        angleCalculator.add(104,-5.128191042);
-        angleCalculator.add(82,-2.202598162);
-        angleCalculator.add(64,0.7345210343);
-        angleCalculator.add(42,3.667788056);
-        angleCalculator.add(22,6.581944655);
-        angleCalculator.add(8,8.746162263);
-        angleCalculator.add(2,9.462322208);
         angleCalculator.add(0,10.88552705);
+        angleCalculator.add(2,9.462322208);
+        angleCalculator.add(8,8.746162263);
+        angleCalculator.add(22,6.581944655);
+        angleCalculator.add(42,3.667788056);
+        angleCalculator.add(64,0.7345210343);
+        angleCalculator.add(82,-2.202598162);
+        angleCalculator.add(104,-5.128191042);
         angleCalculator.add(112,-8.02723751);
         angleCalculator.add(126,-10.88552705);
         angleCalculator.add(144,-13.69004962);
@@ -213,6 +213,7 @@ public class RingLocalizer extends OpenCvPipeline {
         Coordinate current = new Coordinate(currentPose);
         for(Pose2d pose2d : vectors){
             Coordinate temp = current.toPoint();
+            temp.polarAdd(-Math.PI, 3.5);
             temp.polarAdd(pose2d.getHeading(), pose2d.getY());
             list.add(temp.toPose2d(0).vec());
         }

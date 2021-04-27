@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
@@ -346,6 +347,19 @@ public class SampleMecanumDrive extends MecanumDrive {
         DashboardUtil.drawRobot(fieldOverlay, currentPose);
 
         dashboard.sendTelemetryPacket(packet);
+    }
+
+    public void ringUpdate(ArrayList<Vector2d> rings){
+        updatePoseEstimate();
+        Pose2d currentPose = getPoseEstimate();
+        TelemetryPacket packet = new TelemetryPacket();
+        Canvas fieldOverlay = packet.fieldOverlay();
+        fieldOverlay.setStroke("#f57e0f");
+        for(Vector2d ring : rings) {
+            DashboardUtil.drawRing(fieldOverlay, ring);
+        }
+        fieldOverlay.setStroke("#3F51B5");
+        DashboardUtil.drawRobot(fieldOverlay, currentPose);
     }
 
     public void waitForIdle() {
