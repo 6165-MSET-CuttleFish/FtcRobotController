@@ -85,11 +85,11 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 }
                 else {
                     robot.launcher.wingsMid();
-                    robot.setSlappy(0);
+                    //robot.setSlappy(0);
                 }
             } else if (wingDefault == WingState.safe) {
                 robot.launcher.wingsMid();
-                robot.setSlappy(0);
+                //robot.setSlappy(0);
             } else {
                 robot.launcher.wingsVert();
                 robot.setSlappy(1);
