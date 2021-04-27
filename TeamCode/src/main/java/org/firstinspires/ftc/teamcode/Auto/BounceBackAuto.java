@@ -56,7 +56,7 @@ public class BounceBackAuto extends LinearOpMode {
         Trajectory wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
                 .addTemporalMarker(0.3, () -> {
                     robot.launcher.wingsVert();
-                    Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 11, () -> robot.wobbleArmDown());
+                    Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 14, () -> robot.wobbleArmDown());
                 })
                 .splineToConstantHeading(powerShotsTraj2.end().vec().plus(new Vector2d(5, 5)), 0)
                 .splineTo(new Vector2d(45, 10), 0)
@@ -84,7 +84,7 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.intake(0);
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
-                    robot.driveTrain.turn(Math.toRadians(-175));
+                    robot.driveTrain.turn(Math.toRadians(-172));
                 })
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
@@ -96,11 +96,11 @@ public class BounceBackAuto extends LinearOpMode {
                     robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-29, Robot.goal.getY())));
                 })
                 .splineToConstantHeading(new Vector2d(-37, -50), Math.toRadians(-6))
-                .splineToConstantHeading(new Vector2d(-33, Robot.goal.getY()), Math.toRadians(-6),
+                .splineToConstantHeading(new Vector2d(-37, Robot.goal.getY() + 1), Math.toRadians(-6),
                         getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineTo(new Vector2d(-29, Robot.goal.getY()), Math.toRadians(-3),
-                        getVelocityConstraint(14, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineTo(new Vector2d(-29, Robot.goal.getY()), Math.toRadians(-1),
+                        getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory finalShot = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
@@ -139,14 +139,14 @@ public class BounceBackAuto extends LinearOpMode {
         });
         //robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(890);
+        robot.launcher.setLauncherVelocity(908);
         robot.launcher.unlockIntake();
         //Async.start(this::generatePaths);
         sleep(700);
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);
         robot.driveTrain.followTrajectory(powerShotsTraj3);
-        sleep(40);
+        sleep(100);
         robot.launcher.setLauncherVelocity(0);
         robot.intake(1);
         robot.driveTrain.followTrajectory(wobbleDrop);
@@ -162,6 +162,7 @@ public class BounceBackAuto extends LinearOpMode {
             robot.wobbleArmUp();
         });
         robot.driveTrain.followTrajectory(wobblePickup);
+        sleep(120);
         robot.intake(-1);
         robot.launcher.magUp();
         sleep(200);
@@ -170,6 +171,7 @@ public class BounceBackAuto extends LinearOpMode {
         sleep(40);
         robot.launcher.magDown();
         robot.driveTrain.followTrajectory(finalShot);
+        sleep(120);
         robot.intake(-1);
         robot.launcher.magUp();
         sleep(190);

@@ -104,9 +104,9 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.3, -6.4);
-        pwrShotLocals[1] = new Vector2d(-5.3, -14.2);
-        pwrShotLocals[2] = new Vector2d(-5.3, -23);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.4);
+        pwrShotLocals[1] = new Vector2d(-5.8, -14.2);
+        pwrShotLocals[2] = new Vector2d(-5.8, -23);
         map = imported;
 //        int cameraMonitorViewId = this
 //                .map
