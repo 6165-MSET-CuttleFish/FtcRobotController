@@ -56,7 +56,7 @@ public class MainTele extends LinearOpMode implements Runnable {
         while (opModeIsActive()) {
             currentMillis = System.currentTimeMillis();
             wobble();
-            //robot.slappy.setPower(1);
+            robot.slappy.setPower(1);
             robot.intake(gamepad2.right_stick_y);
             if (!shooterDisabled) shooter();
             if (gamepad2.y && !wingCheck) {
@@ -77,11 +77,11 @@ public class MainTele extends LinearOpMode implements Runnable {
             }
             if (wingDefault == WingState.in) {
                 robot.launcher.wingsIn();
-                robot.setSlappy(1);
+                //robot.setSlappy(1);
             } else if (wingDefault == WingState.out) {
                 if (robot.launcher.getRings() < 1){
                     robot.launcher.wingsOut();
-                    robot.setSlappy(1);
+                    //robot.setSlappy(1);
                 }
                 else {
                     robot.launcher.wingsMid();
@@ -92,7 +92,7 @@ public class MainTele extends LinearOpMode implements Runnable {
                 //robot.setSlappy(0);
             } else {
                 robot.launcher.wingsVert();
-                robot.setSlappy(1);
+                //robot.setSlappy(1);
             }
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
