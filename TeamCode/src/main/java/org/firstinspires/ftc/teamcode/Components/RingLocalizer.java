@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -21,12 +23,12 @@ public class RingLocalizer extends OpenCvPipeline {
         mat = new Mat();
         this.linearOpMode = opMode;
         areaPerpendicular = new InterpLUT();
-        parallelDistance = new InterpLUT();
+        angleCalculator = new InterpLUT();
         createControlPoints();
     }
     private void createControlPoints(){
         setAreaParser();
-        setParallelDistance();
+        setAngleRegression();
     }
     private void setAreaParser(){
         areaPerpendicular.add(0, 70);
@@ -61,17 +63,37 @@ public class RingLocalizer extends OpenCvPipeline {
         areaPerpendicular.add(8000, 0);
         areaPerpendicular.createLUT();
     }
-    private void setParallelDistance(){
-        parallelDistance.createLUT();
+    private void setAngleRegression(){
+        angleCalculator.add(104,-5.128191042);
+        angleCalculator.add(82,-2.202598162);
+        angleCalculator.add(64,0.7345210343);
+        angleCalculator.add(42,3.667788056);
+        angleCalculator.add(22,6.581944655);
+        angleCalculator.add(8,8.746162263);
+        angleCalculator.add(2,9.462322208);
+        angleCalculator.add(0,10.88552705);
+        angleCalculator.add(112,-8.02723751);
+        angleCalculator.add(126,-10.88552705);
+        angleCalculator.add(144,-13.69004962);
+        angleCalculator.add(160,-16.42930145);
+        angleCalculator.add(174,-19.093492);
+//        angleCalculator.add(192,0);
+//        angleCalculator.add(208,0);
+//        angleCalculator.add(216,0);
+//        angleCalculator.add(232,0);
+//        angleCalculator.add(248,0);
+//        angleCalculator.add(264,0);
+//        angleCalculator.add(280,0);
+        angleCalculator.createLUT();
     }
     /** variables that will be reused for calculations **/
     private Mat mat;
     private Mat ret;
 
     private final InterpLUT areaPerpendicular;
-    private final InterpLUT parallelDistance;
+    private final InterpLUT angleCalculator;
     private LinearOpMode linearOpMode;
-    private ArrayList<Vector2d> vectors = new ArrayList<>();
+    private ArrayList<Pose2d> vectors = new ArrayList<>();
 
     Scalar lowerOrange = new Scalar(0.0, 141.0, 0.0);
     Scalar upperOrange = new Scalar(255.0, 230.0, 95.0);
@@ -126,7 +148,9 @@ public class RingLocalizer extends OpenCvPipeline {
                     height = rect.height;
                     x = rect.x;
                     y = rect.y;
-                    vectors.add(new Vector2d(areaPerpendicular.get(rect.area()), parallelDistance.get(rect.x)));
+                    double angle = Math.toRadians(angleCalculator.get(rect.x));
+                    double distance = areaPerpendicular.get(rect.area())/Math.cos(angle);
+                    vectors.add(new Pose2d(0, distance, angle));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
@@ -184,8 +208,15 @@ public class RingLocalizer extends OpenCvPipeline {
         }
         return ret;
     }
-    public ArrayList<Vector2d> getVectors(){
-        return vectors;
+    public ArrayList<Vector2d> getVectors(Pose2d currentPose){
+        ArrayList<Vector2d> list = new ArrayList<>();
+        Coordinate current = new Coordinate(currentPose);
+        for(Pose2d pose2d : vectors){
+            Coordinate temp = current.toPoint();
+            temp.polarAdd(pose2d.getHeading(), pose2d.getY());
+            list.add(temp.toPose2d(0).vec());
+        }
+        return list;
     }
     public double getX(){
         return x;

@@ -31,7 +31,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap);
+        robot = new Robot(hardwareMap, 0, 0, 0);
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -63,11 +63,11 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("X", pipeline.getX());
             telemetry.addData("Y", pipeline.getY());
-            for(Vector2d vector2d : pipeline.getVectors()){
+            for(Vector2d vector2d : pipeline.getVectors(robot.driveTrain.getPoseEstimate())){
                 telemetry.addData("NEW VECTOR", "");
                 telemetry.addData("", "");
-                telemetry.addData("Vector X >>", Coordinate.xCovered(vector2d.getX(), robot.driveTrain.getPoseEstimate().getHeading()));
-                telemetry.addData("Vector Y >>", Coordinate.yCovered(vector2d.getY(), robot.driveTrain.getPoseEstimate().getHeading()));
+                telemetry.addData("Vector X >>", vector2d.getX());
+                telemetry.addData("Vector Y >>", vector2d.getY());
             }
             telemetry.update();
         }
