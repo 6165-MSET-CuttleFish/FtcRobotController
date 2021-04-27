@@ -46,6 +46,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
         robot.init();
         wingDefault = WingState.out;
         waitForStart();
+        robot.driveTrain.setPoseEstimate(Robot.robotPose);
         Async.start(this);
         Async.start(() -> {
             while (opModeIsActive()) {
@@ -95,6 +96,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             }
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
+            telemetry.addData("Cadence", veloCadence);
             telemetry.addData("Target Velocity", targetVelocity);
             telemetry.addData("Distance To High Goal", Coordinate.distanceToLine(robot.driveTrain.getPoseEstimate(), Robot.goal.getX()));
             telemetry.update();
@@ -189,7 +191,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             }
             if (gamepad2.right_trigger >= 0.1) {
                 robot.launcher.singleRound();
-                robot.driveTrain.turn(Math.toRadians(8));
+                robot.driveTrain.turn(Math.toRadians(9));
                 robot.launcher.singleRound();
                 robot.driveTrain.turn(Math.toRadians(5));
                 robot.launcher.singleRound();
@@ -288,10 +290,10 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                     if (wasPressed) {
                         wasPressed = false;
                         coastTimer = System.currentTimeMillis();
-                        veloCadence = (robot.launcher.getVelocity() - 1250) * setInterval / coastDownTime;
+                        veloCadence = (robot.launcher.getVelocity() - 900) * setInterval / coastDownTime;
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
-                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1250) {
+                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 900) {
                         coastTimer = System.currentTimeMillis();
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }

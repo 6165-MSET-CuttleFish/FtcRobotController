@@ -95,6 +95,7 @@ public class MainTele extends LinearOpMode implements Runnable {
             }
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
+            telemetry.addData("Cadence", veloCadence);
             telemetry.addData("Target Velocity", targetVelocity);
             telemetry.addData("Distance To High Goal", Coordinate.distanceToLine(robot.driveTrain.getPoseEstimate(), Robot.goal.getX()));
             telemetry.update();
@@ -189,7 +190,7 @@ public class MainTele extends LinearOpMode implements Runnable {
             }
             if (gamepad2.right_trigger >= 0.1) {
                 robot.launcher.singleRound();
-                robot.driveTrain.turn(Math.toRadians(8));
+                robot.driveTrain.turn(Math.toRadians(9));
                 robot.launcher.singleRound();
                 robot.driveTrain.turn(Math.toRadians(5));
                 robot.launcher.singleRound();
