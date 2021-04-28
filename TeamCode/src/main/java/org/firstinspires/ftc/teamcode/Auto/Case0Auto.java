@@ -23,10 +23,9 @@ import java.util.Arrays;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.*;
 
-@Autonomous(name = "AutoCase4", group = "LinearOpMode")
-public class Case4Auto extends LinearOpMode {
+@Autonomous(name = "AutoCase0", group = "LinearOpMode")
+public class Case0Auto extends LinearOpMode {
     Robot robot;
-    Vector2d dropZone;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -116,8 +115,8 @@ public class Case4Auto extends LinearOpMode {
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         Trajectory wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
-                .addTemporalMarker(2.5, () -> robot.wobbleArmDown())
-                .lineToLinearHeading(Coordinate.toPose(Robot.C.plus(new Vector2d(-4.5, 8)), Math.toRadians(130)))
+                .addDisplacementMarker(2.5, () -> robot.wobbleArmDown())
+                .lineToLinearHeading(Coordinate.toPose(Robot.C.plus(new Vector2d(4, 8)), Math.toRadians(90)))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.launcher.leftOut();
                     robot.release();
@@ -126,7 +125,7 @@ public class Case4Auto extends LinearOpMode {
                 }))
                 .build();
         Trajectory park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
-                .lineToLinearHeading(new Pose2d(33, -54, Math.toRadians(120)))
+                .forward(7)
                 .build();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
@@ -169,16 +168,7 @@ public class Case4Auto extends LinearOpMode {
         robot.launcher.magUp();
         sleep(200);
         robot.launcher.singleRound();
-        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele) - 80);
         sleep(40);
-        robot.launcher.magDown();
-        robot.driveTrain.followTrajectory(finalShot);
-        sleep(120);
-        robot.intake(-1);
-        robot.launcher.magUp();
-        sleep(190);
-        robot.optimalShoot(3);
-        sleep(60);
         robot.intake(0);
         robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobbleDrop2);

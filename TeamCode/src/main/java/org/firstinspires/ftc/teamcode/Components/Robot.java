@@ -88,7 +88,6 @@ public class Robot {
         construct(imported);
     }
     private void construct(HardwareMap imported){
-        Async.setWatchDog(()->linearOpMode.opModeIsActive());
         velocityController = new InterpLUT();
         sleepController = new InterpLUT();
         setVelocityController();
@@ -246,7 +245,6 @@ public class Robot {
         builder = builder
                 .addTemporalMarker(1.5, () -> {
                     launcher.wingsVert();
-                    Async.set(() -> getDropZone().distTo(driveTrain.getPoseEstimate().vec()) <= 11, this::wobbleArmDown);
                 });
         ArrayList<Vector2d> initialRings = new ArrayList<>();
         ArrayList<Vector2d> enRouteRings = new ArrayList<>();
