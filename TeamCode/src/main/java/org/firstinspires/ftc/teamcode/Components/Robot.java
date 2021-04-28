@@ -64,18 +64,18 @@ public class Robot {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-16, -53.5, Math.toRadians(2));
+    public static Pose2d shootingPose = new Pose2d(-16, -55.5, Math.toRadians(4.5));
     public static Pose2d shootingPoseTele = new Pose2d(-7, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
 
     public static Vector2d A = new Vector2d(-5.4725, -50.4725);
-    public static Vector2d B = new Vector2d(16.7775, -35.4725);
+    public static Vector2d B = new Vector2d(18.7775, -35.4725);
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-34, -49);
+    public static Vector2d rightWobble = new Vector2d(-35, -48);
 
     public Launcher launcher;
 
@@ -97,6 +97,7 @@ public class Robot {
         construct(imported);
     }
     private void construct(HardwareMap imported){
+        Async.setWatchDog(()->linearOpMode.opModeIsActive());
         velocityController = new InterpLUT();
         sleepController = new InterpLUT();
         setVelocityController();
@@ -104,8 +105,8 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.4);
-        pwrShotLocals[1] = new Vector2d(-5.8, -14.2);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.5);
+        pwrShotLocals[1] = new Vector2d(-5.8, -14.3);
         pwrShotLocals[2] = new Vector2d(-5.8, -23);
         map = imported;
 //        int cameraMonitorViewId = this
@@ -276,7 +277,7 @@ public class Robot {
                 });
         ArrayList<Vector2d> initialRings = new ArrayList<>();
         ArrayList<Vector2d> enRouteRings = new ArrayList<>();
-        for(Vector2d wayPoint : bouncebacks.getVectors()){
+        for(Vector2d wayPoint : bouncebacks.getVectors(driveTrain.getPoseEstimate())){
             if(wayPoint.getX() < 40){
                 initialRings.add(wayPoint);
             } else if(wayPoint.getX() >= 40){

@@ -52,7 +52,6 @@ public class Launcher {
         rightIntakeHolder = map.get(Servo.class,"wallR");
         singleRound();
         magDown();
-        flapDown();
         if(Robot.opModeType == OpModeType.auto){
             wingsIn();
         }
@@ -183,6 +182,7 @@ public class Launcher {
     public void singleRound(){
         gunner.setPosition(0.34);
         sleep(145);
+        Log.println(Log.INFO,"Shot", "Single Round");
         gunner.setPosition(0.48);
     }
     public void flapUp(){
