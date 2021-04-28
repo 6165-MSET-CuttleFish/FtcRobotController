@@ -75,7 +75,7 @@ public class Robot {
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-35, -48);
+    public static Vector2d rightWobble = new Vector2d(-36, -48.5);
 
     public Launcher launcher;
 
@@ -107,7 +107,7 @@ public class Robot {
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
         pwrShotLocals[0] = new Vector2d(-5.8, -6.5);
         pwrShotLocals[1] = new Vector2d(-5.8, -14.3);
-        pwrShotLocals[2] = new Vector2d(-5.8, -23);
+        pwrShotLocals[2] = new Vector2d(-5.8, -23.4);
         map = imported;
 //        int cameraMonitorViewId = this
 //                .map
