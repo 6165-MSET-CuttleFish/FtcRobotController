@@ -64,8 +64,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.01, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7.4, 0, 0.008);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.001, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.0008);
 
     public static double LATERAL_MULTIPLIER = 1.2;
 
@@ -360,6 +360,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, currentPose);
+        dashboard.sendTelemetryPacket(packet);
     }
 
     public void waitForIdle() {

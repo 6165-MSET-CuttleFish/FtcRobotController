@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -57,6 +58,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         RingLocalizer.HORIZON = HORIZON;
 
         camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        robot.driveTrain.setPoseEstimate(new Pose2d(0, 0, 0));
 
         waitForStart();
 

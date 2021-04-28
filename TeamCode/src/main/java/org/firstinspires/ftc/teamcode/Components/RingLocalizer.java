@@ -149,7 +149,7 @@ public class RingLocalizer extends OpenCvPipeline {
                     x = rect.x;
                     y = rect.y;
                     double angle = Math.toRadians(angleCalculator.get(rect.x));
-                    double distance = areaPerpendicular.get(rect.area())/Math.cos(angle);
+                    double distance = (areaPerpendicular.get(rect.area())+ 8.5)/Math.cos(angle);
                     vectors.add(new Pose2d(0, distance, angle));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
@@ -213,8 +213,8 @@ public class RingLocalizer extends OpenCvPipeline {
         Coordinate current = new Coordinate(currentPose);
         for(Pose2d pose2d : vectors){
             Coordinate temp = current.toPoint();
-            temp.polarAdd(-Math.PI, 3.5);
-            temp.polarAdd(pose2d.getHeading(), pose2d.getY());
+            temp.polarAdd(currentPose.getHeading() - Math.PI, 3.5);
+            temp.polarAdd(pose2d.getHeading() + currentPose.getHeading(), pose2d.getY());
             list.add(temp.toPose2d(0).vec());
         }
         return list;
