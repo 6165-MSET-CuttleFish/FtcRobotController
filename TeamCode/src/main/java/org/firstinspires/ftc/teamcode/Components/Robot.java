@@ -19,16 +19,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class Robot {
@@ -47,8 +40,6 @@ public class Robot {
 
     private LinearOpMode linearOpMode;
 
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
@@ -242,42 +233,25 @@ public class Robot {
         in1.setPower(intakeSpeed);
         in2.setPower(intakeSpeed);
     }
-    public void setSlappy(double speed){
-        slappy.setPower(speed);
-    }
     public void optimalShoot(int rounds){
         if(Robot.opModeType == OpModeType.tele) Async.start(()->{
             sleep(300);
             launcher.wingsOut();
             intake(0.4);
-            slappy.setPower(1);
         });
         launcher.customShoot(sleepController.get(driveTrain.getPoseEstimate().vec().distTo(goal)), rounds);
-    }
-    private void initVuforia() {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-    private void initTfod() {
-        int tfodMonitorViewId = map.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", map.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.5f;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
     public Trajectory ringPickup(){
         TrajectoryBuilder builder = driveTrain.trajectoryBuilder(driveTrain.getPoseEstimate());
         builder = builder
-                .addTemporalMarker(0.3, () -> {
+                .addTemporalMarker(1.5, () -> {
                     launcher.wingsVert();
-                    Async.set(() -> Robot.C.distTo(driveTrain.getPoseEstimate().vec()) <= 11, this::wobbleArmDown);
+                    Async.set(() -> getDropZone().distTo(driveTrain.getPoseEstimate().vec()) <= 11, this::wobbleArmDown);
                 });
         ArrayList<Vector2d> initialRings = new ArrayList<>();
         ArrayList<Vector2d> enRouteRings = new ArrayList<>();
         for(Vector2d wayPoint : bouncebacks.getVectors(driveTrain.getPoseEstimate())){
+            wayPoint = new Vector2d(Range.clip(wayPoint.getX(), -5, 59), Range.clip(wayPoint.getY(), -55, 10));
             if(wayPoint.getX() < 40){
                 initialRings.add(wayPoint);
             } else if(wayPoint.getX() >= 40){
@@ -292,7 +266,7 @@ public class Robot {
             else builder = builder.splineToSplineHeading(Coordinate.toPose(wayPoint, Math.toRadians(-85)), Math.toRadians(-90));
         }
         builder = builder
-                .splineToSplineHeading(Coordinate.toPose(getWayPoint(), Math.toRadians(-190)), Math.toRadians(-190))
+                .splineToSplineHeading(Coordinate.toPose(getDropZone(), Math.toRadians(-190)), Math.toRadians(-190))
                 .addDisplacementMarker(() -> {
                     Async.start(() -> {
                         release();
@@ -312,7 +286,7 @@ public class Robot {
             Thread.currentThread().interrupt();
         }
     }
-    public Vector2d getWayPoint(){
+    public Vector2d getDropZone(){
         if(height == UGContourRingPipeline.Height.FOUR){
             return C;
         } else if(height == UGContourRingPipeline.Height.ONE){

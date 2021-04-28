@@ -24,11 +24,13 @@ public class RingLocalizer extends OpenCvPipeline {
         this.linearOpMode = opMode;
         areaPerpendicular = new InterpLUT();
         angleCalculator = new InterpLUT();
+        distanceCalculator = new InterpLUT();
         createControlPoints();
     }
     private void createControlPoints(){
         setAreaParser();
         setAngleRegression();
+        setDistanceCalculator();
     }
     private void setAreaParser(){
         areaPerpendicular.add(0, 70);
@@ -69,7 +71,7 @@ public class RingLocalizer extends OpenCvPipeline {
         angleCalculator.add(8,8.746162263);
         angleCalculator.add(22,6.581944655);
         angleCalculator.add(42,3.667788056);
-        angleCalculator.add(64,0.7345210343);
+        angleCalculator.add(62,0.7345210343);
         angleCalculator.add(82,-2.202598162);
         angleCalculator.add(104,-5.128191042);
         angleCalculator.add(112,-8.02723751);
@@ -77,14 +79,39 @@ public class RingLocalizer extends OpenCvPipeline {
         angleCalculator.add(144,-13.69004962);
         angleCalculator.add(160,-16.42930145);
         angleCalculator.add(174,-19.093492);
-//        angleCalculator.add(192,0);
-//        angleCalculator.add(208,0);
-//        angleCalculator.add(216,0);
-//        angleCalculator.add(232,0);
-//        angleCalculator.add(248,0);
-//        angleCalculator.add(264,0);
-//        angleCalculator.add(280,0);
+        angleCalculator.add(600,-60.093492);
         angleCalculator.createLUT();
+    }
+    private void setDistanceCalculator(){
+        distanceCalculator.add(177,16);
+        distanceCalculator.add(166,18);
+        distanceCalculator.add(156,20);
+        distanceCalculator.add(146,22);
+        distanceCalculator.add(138,24);
+        distanceCalculator.add(130,26);
+        distanceCalculator.add(123,28);
+        distanceCalculator.add(117,30);
+        distanceCalculator.add(112,32);
+        distanceCalculator.add(107,34);
+        distanceCalculator.add(102,36);
+        distanceCalculator.add(98,38);
+        distanceCalculator.add(93,40);
+        distanceCalculator.add(90,42);
+        distanceCalculator.add(86,44);
+        distanceCalculator.add(82,46);
+        distanceCalculator.add(79,48);
+        distanceCalculator.add(76,50);
+        distanceCalculator.add(75,52);
+        distanceCalculator.add(71,54);
+        distanceCalculator.add(68,56);
+        distanceCalculator.add(66,58);
+        distanceCalculator.add(64,60);
+        distanceCalculator.add(61,62);
+        distanceCalculator.add(59,64);
+        distanceCalculator.add(58,66);
+        distanceCalculator.add(56,68);
+        distanceCalculator.add(54,70);
+        distanceCalculator.createLUT();
     }
     /** variables that will be reused for calculations **/
     private Mat mat;
@@ -92,6 +119,7 @@ public class RingLocalizer extends OpenCvPipeline {
 
     private final InterpLUT areaPerpendicular;
     private final InterpLUT angleCalculator;
+    private final InterpLUT distanceCalculator;
     private LinearOpMode linearOpMode;
     private ArrayList<Pose2d> vectors = new ArrayList<>();
 
@@ -149,7 +177,7 @@ public class RingLocalizer extends OpenCvPipeline {
                     x = rect.x;
                     y = rect.y;
                     double angle = Math.toRadians(angleCalculator.get(rect.x));
-                    double distance = (areaPerpendicular.get(rect.area())+ 8.5)/Math.cos(angle);
+                    double distance = (distanceCalculator.get(rect.y)+ 8.5)/Math.cos(angle);
                     vectors.add(new Pose2d(0, distance, angle));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }

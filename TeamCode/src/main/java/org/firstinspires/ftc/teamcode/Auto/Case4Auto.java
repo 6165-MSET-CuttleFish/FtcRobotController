@@ -60,7 +60,6 @@ public class Case4Auto extends LinearOpMode {
                     robot.launcher.wingsVert();
                     Async.set(() -> Robot.C.distTo(robot.driveTrain.getPoseEstimate().vec()) <= 13, () -> robot.wobbleArmDown());
                 })
-                //.splineToConstantHeading(powerShotsTraj2.end().vec().plus(new Vector2d(10, 5)), 0)
                 .splineTo(new Vector2d(45, 10), 0)
                 .splineTo(new Vector2d(53, 10), 0)
                 .splineTo(new Vector2d(58, 6), Math.toRadians(-75))

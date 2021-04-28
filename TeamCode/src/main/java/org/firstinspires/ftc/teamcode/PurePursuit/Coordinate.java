@@ -127,6 +127,9 @@ public class Coordinate {
     public static Coordinate toPoint(Coordinate pt){
         return new Coordinate(pt.x, pt.y);
     }
+    public Vector2d toVector(){
+        return new Vector2d(x, y);
+    }
     public static Coordinate toPoint(Pose2d pt){
         return new Coordinate(pt.getX(), pt.getY());
     }

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -63,16 +65,34 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            robot.driveTrain.followTrajectory(pickup());
             telemetry.addData("X", pipeline.getX());
             telemetry.addData("Y", pipeline.getY());
             robot.driveTrain.ringUpdate(pipeline.getVectors(robot.driveTrain.getPoseEstimate()));
-            for(Vector2d vector2d : pipeline.getVectors(robot.driveTrain.getPoseEstimate())){
-                telemetry.addData("NEW VECTOR", "");
-                telemetry.addData("", "");
-                telemetry.addData("Vector X >>", vector2d.getX());
-                telemetry.addData("Vector Y >>", vector2d.getY());
-            }
             telemetry.update();
         }
+    }
+    Trajectory pickup(){
+        TrajectoryBuilder builder = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
+                .addDisplacementMarker(()-> robot.intake(1));
+        Vector2d[] wayPoints = pipeline.getVectors(robot.driveTrain.getPoseEstimate()).toArray(new Vector2d[0]);
+        bubbleSort(wayPoints);
+        for(Vector2d wayPoint: wayPoints){
+            builder = builder.splineTo(wayPoint, 0);
+        }
+        return builder.addDisplacementMarker(()-> robot.intake(0)).build();
+    }
+    void bubbleSort(Vector2d[] arr)
+    {
+        int n = arr.length;
+        for (int i = 0; i < n-1; i++)
+            for (int j = 0; j < n-i-1; j++)
+                if (arr[j].getY() < arr[j+1].getY())
+                {
+                    // swap arr[j+1] and arr[j]
+                    Coordinate temp = Coordinate.toPoint(arr[j]);
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp.toVector();
+                }
     }
 }
