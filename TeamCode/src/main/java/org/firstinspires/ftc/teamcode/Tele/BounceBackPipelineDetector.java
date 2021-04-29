@@ -65,12 +65,8 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if(gamepad1.y)
-            robot.driveTrain.followTrajectory(pickup());
-            telemetry.addData("X", pipeline.getX());
-            telemetry.addData("Y", pipeline.getY());
-            robot.driveTrain.ringUpdate(pipeline.getVectors(robot.driveTrain.getPoseEstimate()));
-            telemetry.update();
+            if(gamepad1.y) robot.driveTrain.followTrajectory(pickup());
+            //robot.driveTrain.ringUpdate(pipeline.getVectors(robot.driveTrain.getPoseEstimate()));
         }
     }
     Trajectory pickup(){

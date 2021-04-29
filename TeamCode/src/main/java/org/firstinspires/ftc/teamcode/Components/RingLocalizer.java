@@ -26,6 +26,7 @@ public class RingLocalizer extends OpenCvPipeline {
         areaPerpendicular = new InterpLUT();
         angleCalculator = new InterpLUT();
         distanceCalculator = new InterpLUT();
+        this.drive = drive;
         createControlPoints();
     }
     SampleMecanumDrive drive;
@@ -184,10 +185,10 @@ public class RingLocalizer extends OpenCvPipeline {
                     vectors.add(new Pose2d(0, distance, angle));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
-
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
             }
+            drive.ringUpdate(getVectors(drive.getPoseEstimate()));
             /** drawing a red line to show the horizon (any above the horizon is not checked to be a ring stack **/
             Imgproc.line(
                     ret,
@@ -256,8 +257,5 @@ public class RingLocalizer extends OpenCvPipeline {
     }
     public double getY(){
         return y;
-    }
-    public double getArea(){
-        return width*height;
     }
 }
