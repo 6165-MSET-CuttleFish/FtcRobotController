@@ -49,24 +49,24 @@ public class Robot {
 
     public DcMotor intakeR, intakeL;
 
-    public CRServo in1, in2, slappy;
+    public CRServo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-16, -55.5, Math.toRadians(4.5));
+    public static Pose2d shootingPose = new Pose2d(-12, -53.5, Math.toRadians(4.5));
     public static Pose2d shootingPoseTele = new Pose2d(-7, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
 
-    public static Vector2d A = new Vector2d(-5.4725, -50.4725);
+    public static Vector2d A = new Vector2d(-5.4725, -57.4725);
     public static Vector2d B = new Vector2d(18.7775, -35.4725);
     public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
-    public static Vector2d rightWobble = new Vector2d(-36, -48.5);
+    public static Vector2d rightWobble = new Vector2d(-32, -51);
 
     public Launcher launcher;
 
@@ -95,8 +95,8 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.5);
-        pwrShotLocals[1] = new Vector2d(-5.8, -14.3);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.7);
+        pwrShotLocals[1] = new Vector2d(-5.8, -14.4);
         pwrShotLocals[2] = new Vector2d(-5.8, -23.4);
         map = imported;
 //        int cameraMonitorViewId = this
@@ -114,8 +114,6 @@ public class Robot {
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.crservo.get("in1");
         in2 = map.crservo.get("in2");
-        slappy = map.crservo.get("slappy");
-        slappy.setDirection(DcMotorSimple.Direction.REVERSE);
         in1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm1 = map.get(Servo.class, "wobbleArm1");
@@ -197,7 +195,7 @@ public class Robot {
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
     }
     public void switchPipeline(){
-        webcam.setPipeline(bouncebacks = new RingLocalizer(linearOpMode));
+        webcam.setPipeline(bouncebacks = new RingLocalizer(linearOpMode, driveTrain));
     }
     public void scan(){
         height = pipeline.getHeight();

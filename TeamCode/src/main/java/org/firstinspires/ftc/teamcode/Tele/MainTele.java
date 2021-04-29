@@ -49,14 +49,12 @@ public class MainTele extends LinearOpMode implements Runnable {
         Async.start(this);
         Async.start(() -> {
             while (opModeIsActive()) {
-                robot.launcher.updatePID();
             }
         });
 
         while (opModeIsActive()) {
             currentMillis = System.currentTimeMillis();
             wobble();
-            robot.slappy.setPower(1);
             robot.intake(gamepad2.right_stick_y);
             if (!shooterDisabled) shooter();
             if (gamepad2.y && !wingCheck) {

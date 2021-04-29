@@ -60,9 +60,9 @@ public class Case0Auto extends LinearOpMode {
                 .splineTo(new Vector2d(53, 10), 0)
                 .splineTo(new Vector2d(58, 6), Math.toRadians(-75))
                 .splineToConstantHeading(new Vector2d(58.6, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(58.6, -43.4725), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(58.6, -30.4725), Math.toRadians(-90))
                 .addDisplacementMarker(()->robot.wobbleArmDown())
-                .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-185)), Math.toRadians(-185))
+                .splineTo(Robot.A, Math.toRadians(-185))
                 .addDisplacementMarker(() -> {
                     Async.start(() -> {
                         robot.release();
@@ -91,23 +91,15 @@ public class Case0Auto extends LinearOpMode {
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-30)),
-                        getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(()->Async.start(()->{
                     robot.grab();
                     sleep(800);
                     robot.wobbleArmUp();
                 }))
-                .addDisplacementMarker(()->{
-                    robot.intake(1);
-                    robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-29, Robot.goal.getY())) - 15);
-                })
-                .splineToConstantHeading(new Vector2d(-40, -40), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-37, Robot.goal.getY() + 1), Math.toRadians(0),
-                        getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineToSplineHeading(new Pose2d(-29, Robot.goal.getY(), Math.toRadians(-1)), Math.toRadians(0),
-                        getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToConstantHeading(new Vector2d(-40, -40), Math.toRadians(90),
+                        getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory finalShot = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
@@ -115,8 +107,8 @@ public class Case0Auto extends LinearOpMode {
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         Trajectory wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
-                .addDisplacementMarker(2.5, () -> robot.wobbleArmDown())
-                .lineToLinearHeading(Coordinate.toPose(Robot.C.plus(new Vector2d(4, 8)), Math.toRadians(90)))
+                .addDisplacementMarker(1, () -> robot.wobbleArmDown())
+                .lineToLinearHeading(Coordinate.toPose(Robot.A.plus(new Vector2d(6, 8)), Math.toRadians(90)))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.launcher.leftOut();
                     robot.release();
@@ -163,14 +155,6 @@ public class Case0Auto extends LinearOpMode {
         sleep(40);
         robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobblePickup);
-        sleep(120);
-        robot.intake(-1);
-        robot.launcher.magUp();
-        sleep(200);
-        robot.launcher.singleRound();
-        sleep(40);
-        robot.intake(0);
-        robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobbleDrop2);
         robot.driveTrain.followTrajectory(park);
     }
