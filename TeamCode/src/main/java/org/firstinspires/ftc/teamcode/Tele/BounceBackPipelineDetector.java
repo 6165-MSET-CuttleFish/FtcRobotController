@@ -53,7 +53,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new RingLocalizer(this));
+        camera.setPipeline(pipeline = new RingLocalizer(this, robot.driveTrain));
 
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
@@ -65,6 +65,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            if(gamepad1.y)
             robot.driveTrain.followTrajectory(pickup());
             telemetry.addData("X", pipeline.getX());
             telemetry.addData("Y", pipeline.getY());
@@ -75,10 +76,10 @@ public class BounceBackPipelineDetector extends LinearOpMode {
     Trajectory pickup(){
         TrajectoryBuilder builder = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(()-> robot.intake(1));
-        Vector2d[] wayPoints = pipeline.getVectors(robot.driveTrain.getPoseEstimate()).toArray(new Vector2d[0]);
+        Vector2d[] wayPoints = pipeline.getVectors(robot.driveTrain.getPoseEstimate()).toArray(new Vector2d[0]).clone();
         bubbleSort(wayPoints);
-        for(Vector2d wayPoint: wayPoints){
-            builder = builder.splineTo(wayPoint, 0);
+        for(int i = 0; i < wayPoints.length; i++){
+            builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : 0);
         }
         return builder.addDisplacementMarker(()-> robot.intake(0)).build();
     }
@@ -87,7 +88,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         int n = arr.length;
         for (int i = 0; i < n-1; i++)
             for (int j = 0; j < n-i-1; j++)
-                if (arr[j].getY() < arr[j+1].getY())
+                if (arr[j].distTo(robot.driveTrain.getPoseEstimate().vec()) > arr[j+1].distTo(robot.driveTrain.getPoseEstimate().vec()))
                 {
                     // swap arr[j+1] and arr[j]
                     Coordinate temp = Coordinate.toPoint(arr[j]);

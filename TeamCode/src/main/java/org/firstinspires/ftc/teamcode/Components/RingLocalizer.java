@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -18,7 +19,7 @@ import org.opencv.core.*;
 import java.util.ArrayList;
 
 public class RingLocalizer extends OpenCvPipeline {
-    public RingLocalizer(LinearOpMode opMode){
+    public RingLocalizer(LinearOpMode opMode, SampleMecanumDrive drive){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;
@@ -27,6 +28,7 @@ public class RingLocalizer extends OpenCvPipeline {
         distanceCalculator = new InterpLUT();
         createControlPoints();
     }
+    SampleMecanumDrive drive;
     private void createControlPoints(){
         setAreaParser();
         setAngleRegression();
@@ -83,34 +85,34 @@ public class RingLocalizer extends OpenCvPipeline {
         angleCalculator.createLUT();
     }
     private void setDistanceCalculator(){
-        distanceCalculator.add(177,16);
-        distanceCalculator.add(166,18);
-        distanceCalculator.add(156,20);
-        distanceCalculator.add(146,22);
-        distanceCalculator.add(138,24);
-        distanceCalculator.add(130,26);
-        distanceCalculator.add(123,28);
-        distanceCalculator.add(117,30);
-        distanceCalculator.add(112,32);
-        distanceCalculator.add(107,34);
-        distanceCalculator.add(102,36);
-        distanceCalculator.add(98,38);
-        distanceCalculator.add(93,40);
-        distanceCalculator.add(90,42);
-        distanceCalculator.add(86,44);
-        distanceCalculator.add(82,46);
-        distanceCalculator.add(79,48);
-        distanceCalculator.add(76,50);
-        distanceCalculator.add(75,52);
-        distanceCalculator.add(71,54);
-        distanceCalculator.add(68,56);
-        distanceCalculator.add(66,58);
-        distanceCalculator.add(64,60);
-        distanceCalculator.add(61,62);
-        distanceCalculator.add(59,64);
-        distanceCalculator.add(58,66);
-        distanceCalculator.add(56,68);
         distanceCalculator.add(54,70);
+        distanceCalculator.add(56,68);
+        distanceCalculator.add(58,66);
+        distanceCalculator.add(59,64);
+        distanceCalculator.add(61,62);
+        distanceCalculator.add(64,60);
+        distanceCalculator.add(66,58);
+        distanceCalculator.add(68,56);
+        distanceCalculator.add(71,54);
+        distanceCalculator.add(75,52);
+        distanceCalculator.add(76,50);
+        distanceCalculator.add(79,48);
+        distanceCalculator.add(82,46);
+        distanceCalculator.add(86,44);
+        distanceCalculator.add(90,42);
+        distanceCalculator.add(93,40);
+        distanceCalculator.add(98,38);
+        distanceCalculator.add(102,36);
+        distanceCalculator.add(107,34);
+        distanceCalculator.add(112,32);
+        distanceCalculator.add(117,30);
+        distanceCalculator.add(123,28);
+        distanceCalculator.add(130,26);
+        distanceCalculator.add(138,24);
+        distanceCalculator.add(146,22);
+        distanceCalculator.add(156,20);
+        distanceCalculator.add(166,18);
+        distanceCalculator.add(177,16);
         distanceCalculator.createLUT();
     }
     /** variables that will be reused for calculations **/
@@ -129,6 +131,7 @@ public class RingLocalizer extends OpenCvPipeline {
     private double y;
     double width;
     double height;
+    public boolean scannable;
 
     /** width of the camera in use, defaulted to 320 as that is most common in examples **/
     public static int CAMERA_WIDTH = 320;
@@ -181,6 +184,7 @@ public class RingLocalizer extends OpenCvPipeline {
                     vectors.add(new Pose2d(0, distance, angle));
                     //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
                 }
+
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
             }
