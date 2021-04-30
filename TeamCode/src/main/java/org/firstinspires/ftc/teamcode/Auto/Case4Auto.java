@@ -57,20 +57,21 @@ public class Case4Auto extends LinearOpMode {
                 .build();
         Trajectory wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
                 .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
-                .splineTo(new Vector2d(45, 10), 0)
-                .splineTo(new Vector2d(53, 10), 0)
-                .splineTo(new Vector2d(57, 2), Math.toRadians(-75))
-                .splineToConstantHeading(new Vector2d(58.4, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(58.4, -43.4725), Math.toRadians(-90))
-                .addDisplacementMarker(()->robot.wobbleArmDown())
-                .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-185)), Math.toRadians(-185))
-                .addDisplacementMarker(() -> {
-                    Async.start(() -> {
-                        robot.release();
-                        sleep(400);
-                        robot.wobbleArmUp();
-                    });
-                })
+                .splineTo(new Vector2d(42, 9), 0)
+                //.splineTo(new Vector2d(50, 10), 0)
+                .splineTo(new Vector2d(55.6, 4), Math.toRadians(-72))
+                .splineToConstantHeading(new Vector2d(55.6, -10.4725), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(55.6, -40.4725), Math.toRadians(-90))
+                .addDisplacementMarker(()->Async.start(()->{
+                    sleep(500);
+                    robot.wobbleArmDown();
+                }))
+                .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-193)), Math.toRadians(-193))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.release();
+                    sleep(400);
+                    robot.wobbleArmUp();
+                }))
                 .build();
         Trajectory firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .addTemporalMarker(0.5, ()->{
@@ -85,7 +86,7 @@ public class Case4Auto extends LinearOpMode {
                     robot.intake(0);
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
-                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -8));
+                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -11.5));
                     Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
@@ -118,7 +119,7 @@ public class Case4Auto extends LinearOpMode {
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         Trajectory wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
-                .addTemporalMarker(1.4, () -> robot.wobbleArmDown())
+                .addTemporalMarker(1.6, () -> robot.wobbleArmDown())
                 .lineToLinearHeading(Coordinate.toPose(Robot.C.plus(new Vector2d(-2, 8)), Math.toRadians(130)))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.launcher.leftOut();
@@ -149,7 +150,7 @@ public class Case4Auto extends LinearOpMode {
         });
         //robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(910);
+        robot.launcher.setLauncherVelocity(911);
         robot.launcher.unlockIntake();
         //Async.start(this::generatePaths);
         sleep(700);

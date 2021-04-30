@@ -26,6 +26,7 @@ import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.*;
 @Autonomous(name = "AutoCase0", group = "LinearOpMode")
 public class Case0Auto extends LinearOpMode {
     Robot robot;
+    Vector2d dropZone;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,33 +57,36 @@ public class Case0Auto extends LinearOpMode {
                 .build();
         Trajectory wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
                 .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
-                .splineTo(new Vector2d(45, 10), 0)
-                .splineTo(new Vector2d(53, 10), 0)
-                .splineTo(new Vector2d(58, 6), Math.toRadians(-75))
-                .splineToConstantHeading(new Vector2d(58.6, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(58.6, -30.4725), Math.toRadians(-90))
-                .addDisplacementMarker(()->robot.wobbleArmDown())
-                .splineTo(Robot.A, Math.toRadians(-185))
-                .addDisplacementMarker(() -> {
-                    Async.start(() -> {
-                        robot.release();
-                        sleep(400);
-                        robot.wobbleArmUp();
-                    });
+                .splineTo(new Vector2d(42, 9), 0)
+                //.splineTo(new Vector2d(50, 10), 0)
+                .splineTo(new Vector2d(55.6, 4), Math.toRadians(-72))
+                .splineToConstantHeading(new Vector2d(55.6, -10.4725), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(55.6, -40.4725), Math.toRadians(-90))
+                .addDisplacementMarker(()->Async.start(()->{
+                    sleep(500);
+                    robot.wobbleArmDown();
+                }))
+                .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-193)), Math.toRadians(-193))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.release();
+                    sleep(400);
+                    robot.wobbleArmUp();
+                }))
+                .build();
+        Trajectory firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
+                .addTemporalMarker(0.5, ()->{
                     robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 40);
                     telemetry.addData("distance", Coordinate.distanceToLine(Robot.shootingPose, Robot.goal.getX()));
                     telemetry.addData("velo", robot.launcher.getTargetVelo());
                     telemetry.update();
                     robot.launcher.flapDown();
                 })
-                .build();
-        Trajectory firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .lineToLinearHeading(Coordinate.toPose(Robot.shootingPose.vec(), Math.toRadians(180)))
                 .addDisplacementMarker(()-> {
                     robot.intake(0);
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
-                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -8));
+                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -11.5));
                     Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
@@ -91,7 +95,7 @@ public class Case0Auto extends LinearOpMode {
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-30)),
-                        getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(()->Async.start(()->{
                     robot.grab();
@@ -138,7 +142,7 @@ public class Case0Auto extends LinearOpMode {
         });
         //robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(910);
+        robot.launcher.setLauncherVelocity(911);
         robot.launcher.unlockIntake();
         //Async.start(this::generatePaths);
         sleep(700);
@@ -151,7 +155,7 @@ public class Case0Auto extends LinearOpMode {
         robot.driveTrain.followTrajectory(wobbleDrop);
         robot.driveTrain.followTrajectory(firstShot);
         robot.wobbleArmDown();
-        robot.optimalShoot(robot.launcher.getRings());
+        robot.optimalShoot(3);
         sleep(40);
         robot.launcher.setLauncherVelocity(0);
         robot.driveTrain.followTrajectory(wobblePickup);

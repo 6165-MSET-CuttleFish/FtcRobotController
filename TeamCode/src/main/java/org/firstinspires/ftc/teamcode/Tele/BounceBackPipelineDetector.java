@@ -65,17 +65,24 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if(gamepad1.y) robot.driveTrain.followTrajectory(pickup());
+            if(gamepad1.y) robot.driveTrain.followTrajectory(pickup(Math.toRadians(robot.driveTrain.getPoseEstimate().getHeading())));
             //robot.driveTrain.ringUpdate(pipeline.getVectors(robot.driveTrain.getPoseEstimate()));
+            robot.driveTrain.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
         }
     }
-    Trajectory pickup(){
+    Trajectory pickup(double endTangent){
         TrajectoryBuilder builder = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(()-> robot.intake(1));
         Vector2d[] wayPoints = pipeline.getVectors(robot.driveTrain.getPoseEstimate()).toArray(new Vector2d[0]).clone();
         bubbleSort(wayPoints);
         for(int i = 0; i < wayPoints.length; i++){
-            builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : 0);
+            builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
         }
         return builder.addDisplacementMarker(()-> robot.intake(0)).build();
     }

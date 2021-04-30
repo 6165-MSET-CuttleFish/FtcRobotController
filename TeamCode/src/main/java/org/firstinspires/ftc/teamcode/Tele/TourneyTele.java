@@ -114,7 +114,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 70;
+            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 60;
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(

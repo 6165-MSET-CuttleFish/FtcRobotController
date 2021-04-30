@@ -56,7 +56,7 @@ public class Robot {
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Pose2d shootingPose = new Pose2d(-12, -52, Math.toRadians(4.5));
-    public static Pose2d shootingPoseTele = new Pose2d(-7, -32.9725, Math.toRadians(-3));
+    public static Pose2d shootingPoseTele = new Pose2d(-7.5, -32.9725, Math.toRadians(-3));
 
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
@@ -95,8 +95,8 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.5);
-        pwrShotLocals[1] = new Vector2d(-5.8, -14.2);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.3);
+        pwrShotLocals[1] = new Vector2d(-5.8, -14);
         pwrShotLocals[2] = new Vector2d(-5.8, -23.4);
         map = imported;
 //        int cameraMonitorViewId = this
@@ -131,15 +131,15 @@ public class Robot {
     }
     private void setVelocityController(){
         velocityController.add(0,1500);
-        velocityController.add(75,1500);
-        velocityController.add(77.5,1480);
-        velocityController.add(78, 1450);
+        velocityController.add(75,1450);
+        velocityController.add(77.5,1440);
+        velocityController.add(78, 1420);
         velocityController.add(79, 1410);
         velocityController.add(80,1400);
-        velocityController.add(85,1350);
-        velocityController.add(90, 1300);
-        velocityController.add(95,1210);
-        velocityController.add(100,1202);
+        velocityController.add(85,1380);
+        velocityController.add(90, 1350);
+        velocityController.add(95,1230);
+        velocityController.add(100,1220);
         velocityController.add(102, 1210);
         velocityController.add(105,1220);
         velocityController.add(110,1220);
