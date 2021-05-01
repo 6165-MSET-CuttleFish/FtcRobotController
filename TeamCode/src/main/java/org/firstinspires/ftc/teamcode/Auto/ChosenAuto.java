@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -74,7 +75,7 @@ public class ChosenAuto extends LinearOpMode {
         });
         //robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(915);
+        robot.launcher.setLauncherVelocity(DriveConstants.BounceBackVelo);
         robot.launcher.unlockIntake();
         Async.start(this::generatePaths);
         sleep(700);
@@ -96,6 +97,63 @@ public class ChosenAuto extends LinearOpMode {
         robot.optimalShoot(3);
         sleep(40);
         robot.launcher.setLauncherVelocity(0);
+        if(Robot.height == UGContourRingPipeline.Height.FOUR){
+            case4();
+        } else if(Robot.height == UGContourRingPipeline.Height.ONE){
+            case1();
+        } else {
+            case0();
+        }
+    }
+    private void case0(){
+        robot.driveTrain.followTrajectory(wobblePickup, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
+                Async.start(()->{
+                    robot.grab();
+                    sleep(700);
+                    robot.wobbleArmUp();
+                    robot.launcher.wingsIn();
+                });
+            }
+        });
+        actionComplete.set(false);
+        robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.A) < 20 && !actionComplete.get()) {
+                robot.wobbleArmDown();
+                actionComplete.set(true);
+            }
+        });
+        robot.driveTrain.followTrajectory(park);
+    }
+    private void case1(){
+        robot.driveTrain.followTrajectory(wobblePickup, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
+                Async.start(()->{
+                    robot.grab();
+                    sleep(700);
+                    robot.wobbleArmUp();
+                    robot.launcher.wingsIn();
+                });
+            }
+        });
+        sleep(120);
+        robot.intake(-1);
+        robot.launcher.magUp();
+        sleep(200);
+        robot.launcher.singleRound();
+        sleep(40);
+        robot.intake(0);
+        robot.launcher.setLauncherVelocity(0);
+        actionComplete.set(false);
+        robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.B) < 13 && !actionComplete.get()) {
+                robot.wobbleArmDown();
+                actionComplete.set(true);
+            }
+        });
+        robot.driveTrain.followTrajectory(park);
+    }
+    private void case4(){
         robot.driveTrain.followTrajectory(wobblePickup, ()->{
             if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
                 Async.start(()->{
@@ -125,7 +183,7 @@ public class ChosenAuto extends LinearOpMode {
         robot.launcher.setLauncherVelocity(0);
         actionComplete.set(false);
         robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
-            if(robot.driveTrain.getPoseEstimate().vec().distTo(dropZone) < 13 && !actionComplete.get()) {
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.C) < 13 && !actionComplete.get()) {
                 robot.wobbleArmDown();
                 actionComplete.set(true);
             }
@@ -134,20 +192,50 @@ public class ChosenAuto extends LinearOpMode {
     }
     private void generatePaths(){
         dropZone = robot.getDropZone();
+        if(Robot.height == UGContourRingPipeline.Height.FOUR)
         wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
                 .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
                 .splineTo(new Vector2d(10, 8), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                 .splineTo(new Vector2d(42, 9), 0)
                 .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
                 .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(55, -38.4725), Math.toRadians(-90))
-                .splineTo(dropZone, Math.toRadians(-193))
+                .splineToConstantHeading(new Vector2d(55, -40.4725), Math.toRadians(-90))
+                .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-193))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.release();
                     sleep(400);
                     robot.wobbleArmUp();
                 }))
                 .build();
+        else if(Robot.height == UGContourRingPipeline.Height.ONE)
+            wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
+                    .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
+                    .splineTo(new Vector2d(10, 8), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
+                    .splineTo(new Vector2d(42, 9), 0)
+                    .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
+                    .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(55, -40.4725), Math.toRadians(-90))
+                    .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-193))
+                    .addDisplacementMarker(() -> Async.start(() -> {
+                        robot.release();
+                        sleep(400);
+                        robot.wobbleArmUp();
+                    }))
+                    .build();
+        else wobbleDrop = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
+                    .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
+                    .splineTo(new Vector2d(10, 8), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
+                    .splineTo(new Vector2d(42, 9), 0)
+                    .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
+                    .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(55, -40.4725), Math.toRadians(-90))
+                    .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-193))
+                    .addDisplacementMarker(() -> Async.start(() -> {
+                        robot.release();
+                        sleep(400);
+                        robot.wobbleArmUp();
+                    }))
+                    .build();
         firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .addTemporalMarker(0.5, ()->{
                     robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 40);
@@ -193,8 +281,8 @@ public class ChosenAuto extends LinearOpMode {
                 .addDisplacementMarker(() -> robot.intake(1))
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
-        wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
-                //.addTemporalMarker(1.6, () -> robot.wobbleArmDown())
+        if(Robot.height == UGContourRingPipeline.Height.FOUR)
+            wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
                 .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-2, 8)), Math.toRadians(130)))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.launcher.leftOut();
@@ -203,8 +291,31 @@ public class ChosenAuto extends LinearOpMode {
                     robot.wobbleArmUp();
                 }))
                 .build();
+        else if(Robot.height == UGContourRingPipeline.Height.ONE)
+            wobbleDrop2 = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
+                    .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-6, -5)), Math.toRadians(180)))
+                    .addDisplacementMarker(() -> Async.start(() -> {
+                        robot.launcher.leftOut();
+                        robot.release();
+                        sleep(60);
+                        robot.wobbleArmUp();
+                    }))
+                    .build();
+        else wobbleDrop2 = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
+                .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(10, 16)), Math.toRadians(90)))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.launcher.leftOut();
+                    robot.release();
+                    sleep(60);
+                    robot.wobbleArmUp();
+                }))
+                .build();
+        if(Robot.height == UGContourRingPipeline.Height.FOUR)
         park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
                 .lineToLinearHeading(new Pose2d(33, -54, Math.toRadians(120)))
+                .build();
+        else park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
+                .forward(10)
                 .build();
     }
 }

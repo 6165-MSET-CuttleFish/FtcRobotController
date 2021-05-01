@@ -66,7 +66,7 @@ public class Robot {
 
     public static Vector2d A = new Vector2d(-5.4725, -52.4);
     public static Vector2d B = new Vector2d(18.7775, -35.4725);
-    public static Vector2d C = new Vector2d(45.5275, -52.4);
+    public static Vector2d C = new Vector2d(45.5275, -57.4);
 
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
@@ -98,8 +98,8 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.2);
-        pwrShotLocals[1] = new Vector2d(-5.8, -13.9);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6);
+        pwrShotLocals[1] = new Vector2d(-5.8, -13.7);
         pwrShotLocals[2] = new Vector2d(-5.8, -23.3);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");

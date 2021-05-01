@@ -79,7 +79,7 @@ public class Case1Auto extends LinearOpMode {
                     Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-                    robot.driveTrain.turn(relAngleToPoint);
+                    robot.driveTrain.turn(robot.driveTrain.getPoseEstimate().vec().angleBetween(Robot.goal.plus(new Vector2d(0, -11))));
                 })
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)

@@ -55,7 +55,7 @@ public class Case0Auto extends LinearOpMode {
                 .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
                 .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(55, -28.4725), Math.toRadians(-90))
-                .splineTo(Robot.C, Math.toRadians(-180))
+                .splineTo(Robot.C.plus(new Vector2d(0, 5)), Math.toRadians(-180))
                 .splineTo(Robot.A, Math.toRadians(-193))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.release();
@@ -80,7 +80,7 @@ public class Case0Auto extends LinearOpMode {
                     Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-                    robot.driveTrain.turn(relAngleToPoint);
+                    robot.driveTrain.turn(robot.driveTrain.getPoseEstimate().vec().angleBetween(Robot.goal.plus(new Vector2d(0, -11))));
                 })
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
