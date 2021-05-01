@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
@@ -21,7 +20,6 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @TeleOp(name = "Driver Practice", group = "LinearOpMode")
-@Disabled
 public class MainTele extends LinearOpMode implements Runnable {
     Robot robot;
     enum WingState {
@@ -46,10 +44,16 @@ public class MainTele extends LinearOpMode implements Runnable {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
         wingDefault = WingState.out;
+        sleep(500);
+        robot.driveTrain.setPoseEstimate(Robot.robotPose);
+        robot.launcher.wingsOut();
+        telemetry.addData("Initialization", "Complete");
+        telemetry.update();
         waitForStart();
         Async.start(this);
         Async.start(() -> {
             while (opModeIsActive()) {
+                robot.launcher.updatePID();
             }
         });
 
@@ -76,11 +80,9 @@ public class MainTele extends LinearOpMode implements Runnable {
             }
             if (wingDefault == WingState.in) {
                 robot.launcher.wingsIn();
-                //robot.setSlappy(1);
             } else if (wingDefault == WingState.out) {
                 if (robot.launcher.getRings() < 1){
                     robot.launcher.wingsOut();
-                    //robot.setSlappy(1);
                 }
                 else {
                     robot.launcher.wingsMid();
@@ -91,7 +93,6 @@ public class MainTele extends LinearOpMode implements Runnable {
                 //robot.setSlappy(0);
             } else {
                 robot.launcher.wingsVert();
-                //robot.setSlappy(1);
             }
             if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
@@ -112,7 +113,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec());
+            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 15;
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(
@@ -289,10 +290,10 @@ public class MainTele extends LinearOpMode implements Runnable {
                     if (wasPressed) {
                         wasPressed = false;
                         coastTimer = System.currentTimeMillis();
-                        veloCadence = (robot.launcher.getVelocity() - 1250) * setInterval / coastDownTime;
+                        veloCadence = (robot.launcher.getVelocity() - 1000) * setInterval / coastDownTime;
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
-                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1250) {
+                    if (System.currentTimeMillis() > coastTimer + setInterval && robot.launcher.getTargetVelo() > 1000) {
                         coastTimer = System.currentTimeMillis();
                         robot.launcher.setVelocity(robot.launcher.getTargetVelo() - veloCadence);
                     }
