@@ -25,14 +25,13 @@ public class Case4Auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 8.5, 47.8125, 0, OpModeType.auto, this);
-        robot.autoInit();
         Trajectory powerShotsTraj1 = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
                 .addTemporalMarker(0.5, () -> {
                     robot.launcher.flapUp();
                     robot.launcher.safeLeftOut();
                 })
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[0],0),
-                        getVelocityConstraint(40, Math.toRadians(80), DriveConstants.TRACK_WIDTH),
+                        getVelocityConstraint(40, Math.toRadians(60), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
@@ -131,11 +130,9 @@ public class Case4Auto extends LinearOpMode {
                 Robot.robotPose = robot.driveTrain.getPoseEstimate();
             }
         });
-        //robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.launcher.setLauncherVelocity(915);
+        robot.launcher.setLauncherVelocity(DriveConstants.BounceBackVelo);
         robot.launcher.unlockIntake();
-        //Async.start(this::generatePaths);
         sleep(700);
         robot.driveTrain.followTrajectory(powerShotsTraj1);
         robot.driveTrain.followTrajectory(powerShotsTraj2);

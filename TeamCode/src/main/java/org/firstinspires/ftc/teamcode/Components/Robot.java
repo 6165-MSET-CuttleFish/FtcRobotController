@@ -64,9 +64,9 @@ public class Robot {
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
 
-    public static Vector2d A = new Vector2d(-5.4725, -57.4725);
+    public static Vector2d A = new Vector2d(-5.4725, -52.4);
     public static Vector2d B = new Vector2d(18.7775, -35.4725);
-    public static Vector2d C = new Vector2d(45.5275, -57.4);
+    public static Vector2d C = new Vector2d(45.5275, -52.4);
 
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
