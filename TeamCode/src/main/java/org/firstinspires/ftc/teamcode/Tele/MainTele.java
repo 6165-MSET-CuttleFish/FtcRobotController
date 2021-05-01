@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
@@ -20,6 +21,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap;
 
 @TeleOp(name = "Driver Practice", group = "LinearOpMode")
+@Disabled
 public class MainTele extends LinearOpMode implements Runnable {
     Robot robot;
     enum WingState {
@@ -43,7 +45,6 @@ public class MainTele extends LinearOpMode implements Runnable {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, 87, 32.75, Math.toRadians(180), OpModeType.tele, this);
-        robot.init();
         wingDefault = WingState.out;
         waitForStart();
         Async.start(this);

@@ -61,12 +61,12 @@ public class Case0Auto extends LinearOpMode {
                 //.splineTo(new Vector2d(50, 10), 0)
                 .splineTo(new Vector2d(55.6, 4), Math.toRadians(-72))
                 .splineToConstantHeading(new Vector2d(55.6, -10.4725), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(55.6, -40.4725), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(55.6, -20.4725), Math.toRadians(-90))
                 .addDisplacementMarker(()->Async.start(()->{
                     sleep(500);
                     robot.wobbleArmDown();
                 }))
-                .splineToSplineHeading(Coordinate.toPose(Robot.C, Math.toRadians(-193)), Math.toRadians(-193))
+                .splineToSplineHeading(Coordinate.toPose(Robot.A, Math.toRadians(-193)), Math.toRadians(-193))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.release();
                     sleep(400);

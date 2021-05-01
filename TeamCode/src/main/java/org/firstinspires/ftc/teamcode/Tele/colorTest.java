@@ -14,7 +14,6 @@ public class colorTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
-        robot.init();
         waitForStart();
         while(opModeIsActive()){
             tiltMag();

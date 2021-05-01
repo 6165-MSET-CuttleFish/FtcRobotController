@@ -19,9 +19,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class Robot {
@@ -95,21 +98,10 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.3);
-        pwrShotLocals[1] = new Vector2d(-5.8, -14);
-        pwrShotLocals[2] = new Vector2d(-5.8, -23.4);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.2);
+        pwrShotLocals[1] = new Vector2d(-5.8, -13.9);
+        pwrShotLocals[2] = new Vector2d(-5.8, -23.3);
         map = imported;
-//        int cameraMonitorViewId = this
-//                .map
-//                .appContext
-//                .getResources().getIdentifier(
-//                        "cameraMonitorViewId",
-//                        "id",
-//                        map.appContext.getPackageName()
-//                );
-//        webcam = OpenCvCameraFactory
-//                .getInstance()
-//                .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
         intakeR = map.get(DcMotor.class, "intakeR");
         intakeL = map.get(DcMotor.class, "intakeL");
         in1 = map.crservo.get("in1");
@@ -152,12 +144,12 @@ public class Robot {
         velocityController.createLUT();
     }
     private void setSleepController(){
-        sleepController.add(0, 80);
-        sleepController.add(75, 80);
-        sleepController.add(77.5, 80);
-        sleepController.add(80, 80);
-        sleepController.add(85, 80);
-        sleepController.add(90, 80);
+        sleepController.add(0, 85);
+        sleepController.add(75, 85);
+        sleepController.add(77.5, 85);
+        sleepController.add(80, 85);
+        sleepController.add(85, 85);
+        sleepController.add(90, 85);
         sleepController.add(95, 100);
         sleepController.add(100, 120);
         sleepController.add(105, 120);
@@ -178,11 +170,19 @@ public class Robot {
     public void unlockIntake(){
         launcher.unlockIntake();
     }
-    public void init(){
-    }
     public void autoInit(){
-        init();
-        webcam.setPipeline(pipeline = new UGContourRingPipeline(linearOpMode.telemetry, DEBUG));
+        int cameraMonitorViewId = this
+                .map
+                .appContext
+                .getResources().getIdentifier(
+                        "cameraMonitorViewId",
+                        "id",
+                        map.appContext.getPackageName()
+                );
+        webcam = OpenCvCameraFactory
+                .getInstance()
+                .createWebcam(map.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
+        webcam.setPipeline(pipeline = new UGContourRingPipeline(linearOpMode.telemetry, false));
 
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
 

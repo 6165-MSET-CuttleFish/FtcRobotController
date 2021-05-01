@@ -43,7 +43,6 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap, OpModeType.tele);
-        robot.init();
         wingDefault = WingState.out;
         sleep(500);
         robot.driveTrain.setPoseEstimate(Robot.robotPose);

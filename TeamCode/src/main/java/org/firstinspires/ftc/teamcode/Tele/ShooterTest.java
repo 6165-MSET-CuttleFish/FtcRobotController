@@ -18,7 +18,6 @@ public class ShooterTest extends LinearOpMode implements Runnable{
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot (hardwareMap);
-        robot.init();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         //wingDefault = ()->robot.launcher.wingsVert();
         // pidRotate = new PIDController(.07, 0.014, 0.0044);
