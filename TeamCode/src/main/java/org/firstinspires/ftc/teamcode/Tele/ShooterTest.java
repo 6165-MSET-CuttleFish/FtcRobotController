@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.Tele;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 @TeleOp(name="ShooterTest", group = "LinearOpMode")
 @Config
+@Disabled
 public class ShooterTest extends LinearOpMode implements Runnable{
     Robot robot;
     public static double targetVelo = 1000;

@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Async;
@@ -18,6 +19,7 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.*;
 
 @Autonomous(name = "AutoCase4", group = "LinearOpMode")
+@Disabled
 public class Case4Auto extends LinearOpMode {
     Robot robot;
     Vector2d dropZone;
@@ -64,7 +66,7 @@ public class Case4Auto extends LinearOpMode {
                 .build();
         Trajectory firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .addTemporalMarker(0.5, ()->{
-                    robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 40);
+                    robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 20);
                     telemetry.addData("distance", Coordinate.distanceToLine(Robot.shootingPose, Robot.goal.getX()));
                     telemetry.addData("velo", robot.launcher.getTargetVelo());
                     telemetry.update();
@@ -75,11 +77,12 @@ public class Case4Auto extends LinearOpMode {
                     robot.intake(0);
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
-//                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -11.5));
-//                    Pose2d position = robot.driveTrain.getPoseEstimate();
-//                    double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
-//                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
-                    robot.driveTrain.turn(robot.driveTrain.getPoseEstimate().vec().angleBetween(Robot.goal.plus(new Vector2d(0, -11))));
+                    robot.driveTrain.turn(Math.toRadians(-10));
+                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -11.5));
+                    Pose2d position = robot.driveTrain.getPoseEstimate();
+                    double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
+                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+                    robot.driveTrain.turn(relAngleToPoint);
                 })
                 .build();
         Trajectory wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
