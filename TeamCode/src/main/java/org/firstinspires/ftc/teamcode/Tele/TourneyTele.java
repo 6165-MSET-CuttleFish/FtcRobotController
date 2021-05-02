@@ -94,7 +94,6 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             } else {
                 robot.launcher.wingsVert();
             }
-            if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
             telemetry.addData("Cadence", veloCadence);
             telemetry.addData("Target Velocity", targetVelocity);
@@ -113,7 +112,8 @@ public class TourneyTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 15;
+            if(!powershots && !raiseCheck) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 70;
+           // if(raiseCheck) targetVelocity = 1380;
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(

@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -188,7 +189,7 @@ public class RingLocalizer extends OpenCvPipeline {
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
             }
-            drive.ringUpdate(getVectors(drive.getPoseEstimate()));
+            //drive.ringUpdate(getVectors(drive.getPoseEstimate()));
             /** drawing a red line to show the horizon (any above the horizon is not checked to be a ring stack **/
             Imgproc.line(
                     ret,
@@ -248,6 +249,7 @@ public class RingLocalizer extends OpenCvPipeline {
             Coordinate temp = current.toPoint();
             temp.polarAdd(currentPose.getHeading() - Math.PI, 3.5);
             temp.polarAdd(pose2d.getHeading() + currentPose.getHeading(), pose2d.getY());
+            temp.setPoint(Range.clip(temp.getX(), 0, 55.7), Range.clip(temp.getY(), -30, 5));
             list.add(temp.toPose2d(0).vec());
         }
         return list;

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  */
 @Config
 public class DriveConstants {
-    public static final double BounceBackVelo = 911;
+    public static final double BounceBackVelo = 918;
     /*
      * These are motor constants that should be listed online for your motors.
      */
@@ -91,8 +91,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 53;
     public static double MAX_ACCEL = 53;
-    public static double MAX_ANG_VEL = Math.toRadians(240);//258.56842376373623);
-    public static double MAX_ANG_ACCEL = Math.toRadians(240);
+    public static double MAX_ANG_VEL = Math.toRadians(210);//258.56842376373623);
+    public static double MAX_ANG_ACCEL = Math.toRadians(210);
 
 
     public static double encoderTicksToInches(double ticks) {

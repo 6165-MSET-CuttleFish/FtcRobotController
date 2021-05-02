@@ -44,14 +44,14 @@ public class ChosenAuto extends LinearOpMode {
                     robot.launcher.safeLeftOut();
                 })
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[0],0),
-                        getVelocityConstraint(40, Math.toRadians(80), DriveConstants.TRACK_WIDTH),
+                        getVelocityConstraint(40, Math.toRadians(78), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
         powerShotsTraj2 = robot.driveTrain.trajectoryBuilder(powerShotsTraj1.end())
                 .addTemporalMarker(0.3, ()->robot.launcher.wingsOut())
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1], 0),
-                        getVelocityConstraint(7, Math.toRadians(60), DriveConstants.TRACK_WIDTH),
+                        getVelocityConstraint(7, Math.toRadians(90), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
@@ -173,7 +173,7 @@ public class ChosenAuto extends LinearOpMode {
         robot.launcher.magUp();
         sleep(200);
         robot.launcher.singleRound();
-        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele) - 70);
+        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele) - 90);
         sleep(40);
         robot.launcher.magDown();
         robot.driveTrain.followTrajectory(finalShot);
@@ -204,7 +204,7 @@ public class ChosenAuto extends LinearOpMode {
                 .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
                 .splineToConstantHeading(new Vector2d(54.7, -10.4725), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(54.7, -40.4725), Math.toRadians(-90))
-                .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-200)), Math.toRadians(-180))
+                .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-180))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.release();
                     sleep(400);
@@ -218,7 +218,7 @@ public class ChosenAuto extends LinearOpMode {
                     .splineTo(new Vector2d(42, 9), 0)
                     .splineTo(new Vector2d(55.3, 4), Math.toRadians(-72))
                     .splineToConstantHeading(new Vector2d(54.7, -10.4725), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(54.7, -37.4725), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(54.7, -41.4725), Math.toRadians(-90))
                     .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-180),
                             getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                             getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -237,7 +237,7 @@ public class ChosenAuto extends LinearOpMode {
                     .splineToConstantHeading(new Vector2d(55, -20.4725), Math.toRadians(-90))
                     .splineTo(Robot.C.plus(new Vector2d(0, 10)), Math.toRadians(180))
                     .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-220)), Math.toRadians(-180),
-                            getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                            getVelocityConstraint(44, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                             getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                     .addDisplacementMarker(() -> Async.start(() -> {
                         robot.release();
@@ -247,7 +247,7 @@ public class ChosenAuto extends LinearOpMode {
                     .build();
         firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .addTemporalMarker(0.5, ()->{
-                    robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 20);
+                    robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 40);
                     telemetry.addData("distance", Coordinate.distanceToLine(Robot.shootingPose, Robot.goal.getX()));
                     telemetry.addData("velo", robot.launcher.getTargetVelo());
                     telemetry.update();
@@ -259,7 +259,7 @@ public class ChosenAuto extends LinearOpMode {
                     robot.launcher.magUp();
                     robot.launcher.safeLeftOut();
                     robot.driveTrain.turn(Math.toRadians(-20));
-                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -11.5));
+                    Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -10));
                     Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
                     double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
@@ -306,7 +306,7 @@ public class ChosenAuto extends LinearOpMode {
                 .build();
         if(Robot.height == UGContourRingPipeline.Height.FOUR)
             wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
-                .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(0, 6)), Math.toRadians(130)))
+                .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-4, 6)), Math.toRadians(130)))
                 .addDisplacementMarker(() -> Async.start(() -> {
                     robot.launcher.leftOut();
                     robot.release();

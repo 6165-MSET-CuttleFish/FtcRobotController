@@ -113,7 +113,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 15;
+            if(!powershots) targetVelocity = robot.getPoseVelo(robot.driveTrain.getPoseEstimate().vec()) - 40;
             if (!gamepadIdle()) robot.driveTrain.setMode(SampleMecanumDrive.Mode.IDLE);
             if (robot.driveTrain.getMode() == SampleMecanumDrive.Mode.IDLE) {
                 robot.driveTrain.setWeightedDrivePower(

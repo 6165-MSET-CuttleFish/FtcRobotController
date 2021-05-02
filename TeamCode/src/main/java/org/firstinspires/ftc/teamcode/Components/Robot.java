@@ -66,7 +66,7 @@ public class Robot {
 
     public static Vector2d A = new Vector2d(-5.4725, -55.4);
     public static Vector2d B = new Vector2d(23, -35.4725);
-    public static Vector2d C = new Vector2d(47.5275, -53.4);
+    public static Vector2d C = new Vector2d(45.5275, -53.4);
 
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
@@ -98,8 +98,8 @@ public class Robot {
         pwrShots[0] = new Vector2d(70.4725, -1.4725);
         pwrShots[1] = new Vector2d(70.4725, -10.4725);
         pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.3);
-        pwrShotLocals[1] = new Vector2d(-5.8, -11.6);
+        pwrShotLocals[0] = new Vector2d(-5.8, -6.6);
+        pwrShotLocals[1] = new Vector2d(-5.8, -12);
         pwrShotLocals[2] = new Vector2d(-5.8, -22);
         map = imported;
         intakeR = map.get(DcMotor.class, "intakeR");
@@ -193,6 +193,32 @@ public class Robot {
         RingLocalizer.HORIZON = HORIZON;
 
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+    }
+    public Trajectory pickup;
+    public void createTraj(double endTangent){
+        TrajectoryBuilder builder = driveTrain.trajectoryBuilder(Coordinate.toPose(pwrShotLocals[2], 0))
+                .addTemporalMarker(0.7, () -> launcher.wingsVert())
+                .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
+                .splineTo(new Vector2d(42, 7), 0);
+        Vector2d[] wayPoints = bouncebacks.getVectors(driveTrain.getPoseEstimate()).toArray(new Vector2d[0]).clone();
+        bubbleSort(wayPoints, new Vector2d());
+        for(int i = 0; i < wayPoints.length; i++){
+            builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
+        }
+        pickup = builder.splineTo(new Vector2d(55.7, -38), Math.toRadians(-75))
+                .build();
+    }
+    void bubbleSort(Vector2d[] arr, Vector2d referencePose) {
+        int n = arr.length;
+        for (int i = 0; i < n-1; i++)
+            for (int j = 0; j < n-i-1; j++)
+                if (arr[j].distTo(referencePose) > arr[j+1].distTo(referencePose))
+                {
+                    // swap arr[j+1] and arr[j]
+                    Coordinate temp = Coordinate.toPoint(arr[j]);
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp.toVector();
+                }
     }
     public void switchPipeline(){
         webcam.setPipeline(bouncebacks = new RingLocalizer(linearOpMode, driveTrain));
