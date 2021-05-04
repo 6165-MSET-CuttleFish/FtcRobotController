@@ -80,8 +80,8 @@ public class Robot extends MecanumDrive {
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
 
-    public static OpModeType opModeType = OpModeType.none;
-    public static UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
+    public OpModeType opModeType = OpModeType.none;
+    public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
     private LinearOpMode linearOpMode;
     HardwareMap hardwareMap;
@@ -323,7 +323,7 @@ public class Robot extends MecanumDrive {
         in2.setPower(intakeSpeed);
     }
     public void optimalShoot(int rounds){
-        if(Robot.opModeType == OpModeType.tele) Async.start(()->{
+        if(opModeType == OpModeType.tele) Async.start(()->{
             sleep(300);
             shooter.wingsOut();
             intake(0.4);

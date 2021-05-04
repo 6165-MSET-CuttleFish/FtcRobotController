@@ -36,7 +36,7 @@ public class BounceBacksOnly extends LinearOpMode {
     Trajectory wobbleDrop2;
     Trajectory park;
     private double getDistance(){
-        if(Robot.height == UGContourRingPipeline.Height.FOUR) return 4;
+        if(robot.height == UGContourRingPipeline.Height.FOUR) return 4;
         else return 10;
     }
     @Override
@@ -72,7 +72,7 @@ public class BounceBacksOnly extends LinearOpMode {
         robot.grab();
         while (!opModeIsActive()) {
             robot.scan();
-            telemetry.addData("Stack Height", Robot.height.toString());
+            telemetry.addData("Stack Height", robot.height.toString());
             telemetry.update();
         }
         waitForStart();
@@ -106,9 +106,9 @@ public class BounceBacksOnly extends LinearOpMode {
         robot.optimalShoot(3);
         sleep(40);
         robot.shooter.setLauncherVelocity(0);
-        if(Robot.height == UGContourRingPipeline.Height.FOUR){
+        if(robot.height == UGContourRingPipeline.Height.FOUR){
             case4();
-        } else if(Robot.height == UGContourRingPipeline.Height.ONE){
+        } else if(robot.height == UGContourRingPipeline.Height.ONE){
             case1();
         } else {
             case0();
@@ -208,7 +208,7 @@ public class BounceBacksOnly extends LinearOpMode {
                 .splineTo(new Vector2d(54, 4), Math.toRadians(-80))
                 .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(55, -40.4725), Math.toRadians(-90));
-        if(Robot.height == UGContourRingPipeline.Height.FOUR)
+        if(robot.height == UGContourRingPipeline.Height.FOUR)
             wobbleDrop = tempBuilder
                     .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-185)), Math.toRadians(-180))
                     .addDisplacementMarker(() -> Async.start(() -> {
@@ -217,7 +217,7 @@ public class BounceBacksOnly extends LinearOpMode {
                         robot.wobbleArmUp();
                     }))
                     .build();
-        else if(Robot.height == UGContourRingPipeline.Height.ONE)
+        else if(robot.height == UGContourRingPipeline.Height.ONE)
             wobbleDrop = tempBuilder
                     .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-180),
                             getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -260,7 +260,7 @@ public class BounceBacksOnly extends LinearOpMode {
                     robot.turn(relAngleToPoint);
                 })
                 .build();
-        if(Robot.height == UGContourRingPipeline.Height.ZERO) wobblePickup = robot.trajectoryBuilder(Robot.shootingPose)
+        if(robot.height == UGContourRingPipeline.Height.ZERO) wobblePickup = robot.trajectoryBuilder(Robot.shootingPose)
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-30)),
                         getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -299,7 +299,7 @@ public class BounceBacksOnly extends LinearOpMode {
                 .addDisplacementMarker(() -> robot.intake(1))
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
-        if(Robot.height == UGContourRingPipeline.Height.FOUR)
+        if(robot.height == UGContourRingPipeline.Height.FOUR)
             wobbleDrop2 = robot.trajectoryBuilder(finalShot.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-4, 6)), Math.toRadians(130)))
                     .addDisplacementMarker(() -> Async.start(() -> {
@@ -309,7 +309,7 @@ public class BounceBacksOnly extends LinearOpMode {
                         robot.wobbleArmUp();
                     }))
                     .build();
-        else if(Robot.height == UGContourRingPipeline.Height.ONE)
+        else if(robot.height == UGContourRingPipeline.Height.ONE)
             wobbleDrop2 = robot.trajectoryBuilder(wobblePickup.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-8, -5)), Math.toRadians(180)))
                     .addDisplacementMarker(() -> Async.start(() -> {
@@ -328,7 +328,7 @@ public class BounceBacksOnly extends LinearOpMode {
                         robot.wobbleArmUp();
                     }))
                     .build();
-        if(Robot.height == UGContourRingPipeline.Height.FOUR)
+        if(robot.height == UGContourRingPipeline.Height.FOUR)
             park = robot.trajectoryBuilder(wobbleDrop2.end())
                     .lineToLinearHeading(new Pose2d(33, -54, Math.toRadians(120)))
                     .build();

@@ -41,8 +41,10 @@ public class Shooter {
     public Servo rightIntakeHolder, leftIntakeHolder;
     public double targetVelo;
     private final InterpLUT veloRegression;
+    Robot robot;
 
     public Shooter(HardwareMap map, Robot robot){
+        this.robot = robot;
         veloRegression = new InterpLUT();
         setVelocityController();
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
@@ -61,10 +63,10 @@ public class Shooter {
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         singleRound();
         magDown();
-        if(Robot.opModeType == OpModeType.auto){
+        if(robot.opModeType == OpModeType.auto){
             wingsIn();
         }
-        else if(Robot.opModeType == OpModeType.tele) {
+        else if(robot.opModeType == OpModeType.tele) {
             wingsVert();
             flapDown();
         }
@@ -117,6 +119,9 @@ public class Shooter {
     }
     public void setVelocity(Vector2d vector2d){
         targetVelo = veloRegression.get(vector2d.distTo(Robot.goal));
+    }
+    public double getPoseVelo(Vector2d vector2d){
+        return veloRegression.get(vector2d.distTo(Robot.goal));
     }
     public void setLauncherVelocity(double v){
         targetVelo = v;
@@ -180,7 +185,7 @@ public class Shooter {
         for(int i = 0; i < rounds; i++){
             singleRound();
             Log.println(Log.INFO, "Shot Number: ", i + "");
-            if(i != rounds-1 || Robot.opModeType == OpModeType.auto)sleep((long)sleep);
+            if(i != rounds-1 || robot.opModeType == OpModeType.auto)sleep((long)sleep);
             if(i == rounds - 2){
                 sleep(90);
             }
