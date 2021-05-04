@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  */
 @Config
 public class DriveConstants {
-    public static final double BounceBackVelo = 930;
+    public static final double BounceBackVelo = 913;
     /*
      * These are motor constants that should be listed online for your motors.
      */
