@@ -36,7 +36,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, 0, 0, 0);
+        robot = new Robot(this, 0, 0, 0);
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext

@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.Arrays;
@@ -51,11 +52,11 @@ public class StandardTwoWheelTracker extends TwoTrackingWheelLocalizer {
     public static double X_MULTIPLIER = 0.99083441; // Multiplier in the X direction
     public static double Y_MULTIPLIER = 0.97440337; // Multiplier in the Y direction
 
-    private Encoder parallelEncoder, perpendicularEncoder;
+    private final Encoder parallelEncoder, perpendicularEncoder;
 
-    private SampleMecanumDrive drive;
+    private final Robot drive;
 
-    public StandardTwoWheelTracker(HardwareMap hardwareMap, SampleMecanumDrive drive) {
+    public StandardTwoWheelTracker(HardwareMap hardwareMap, Robot drive) {
         super(Arrays.asList(
                 new Pose2d(PARALLEL_X, PARALLEL_Y, 0),
                 new Pose2d(PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians(90))

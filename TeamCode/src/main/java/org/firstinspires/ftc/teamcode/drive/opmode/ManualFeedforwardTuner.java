@@ -76,7 +76,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         //drive = new SampleMecanumDrive(hardwareMap);
-        robot = new Robot(hardwareMap);
+        robot = new Robot(this);
         mode = Mode.TUNING_MODE;
 
         NanoClock clock = NanoClock.system();

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(hardwareMap);
+        Robot robot = new Robot(this);
 
         robot.driveTrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
