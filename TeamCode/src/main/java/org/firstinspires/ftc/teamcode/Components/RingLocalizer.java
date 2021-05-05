@@ -20,10 +20,9 @@ import org.opencv.core.*;
 import java.util.ArrayList;
 
 public class RingLocalizer extends OpenCvPipeline {
-    public RingLocalizer(LinearOpMode opMode){
+    public RingLocalizer(){
         ret = new Mat();
         mat = new Mat();
-        this.linearOpMode = opMode;
         areaPerpendicular = new InterpLUT();
         angleCalculator = new InterpLUT();
         distanceCalculator = new InterpLUT();
@@ -122,7 +121,6 @@ public class RingLocalizer extends OpenCvPipeline {
     private final InterpLUT areaPerpendicular;
     private final InterpLUT angleCalculator;
     private final InterpLUT distanceCalculator;
-    private LinearOpMode linearOpMode;
     private ArrayList<Pose2d> vectors = new ArrayList<>();
 
     Scalar lowerOrange = new Scalar(0.0, 141.0, 0.0);
@@ -131,16 +129,8 @@ public class RingLocalizer extends OpenCvPipeline {
     private double y;
     double width;
     double height;
-    public boolean scannable;
-
-    /** width of the camera in use, defaulted to 320 as that is most common in examples **/
     public static int CAMERA_WIDTH = 320;
-
-    /** Horizon value in use, anything above this value (less than the value) since
-     * (0, 0) is the top left of the camera frame **/
     public static int HORIZON = (int)((100.0 / 320.0) * CAMERA_WIDTH);
-    /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
-    final double BOUND_RATIO = 0.7;
 
     @Override
     public Mat processFrame(Mat input) {

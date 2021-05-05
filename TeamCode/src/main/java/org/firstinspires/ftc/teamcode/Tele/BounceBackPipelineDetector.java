@@ -36,7 +36,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, 0, 0, 0);
+        robot = new Robot(this);
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -55,7 +55,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new RingLocalizer(this));
+        camera.setPipeline(pipeline = new RingLocalizer());
 
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 

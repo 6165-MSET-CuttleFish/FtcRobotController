@@ -41,7 +41,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     public static double targetVelocity = 1330;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, 87, 32.75, Math.toRadians(180), OpModeType.tele);
+        robot = new Robot(this, new Pose2d(87, 32.75, Math.toRadians(180)), OpModeType.tele);
         wingDefault = WingState.out;
         sleep(500);
         robot.setPoseEstimate(Robot.robotPose);
@@ -169,7 +169,7 @@ public class MainTele extends LinearOpMode implements Runnable {
                     while (gamepadIdle() || Math.abs(robot.shooter.getError()) >= 40) {
                         robot.update();
                     }
-                    robot.optimalShoot(3);
+                    robot.optimalShoot();
                 } else if (gamepad1.right_trigger >= 0.2) {
                     wingDefault = WingState.out;
                     g1Check = true;
@@ -183,7 +183,7 @@ public class MainTele extends LinearOpMode implements Runnable {
                             robot.setMode(Robot.Mode.IDLE);
                         }
                     });
-                    robot.optimalShoot(3);
+                    robot.optimalShoot();
                 }
             } if(gamepad1.right_trigger < 0.2 && !gamepad1.left_bumper && !gamepad1.x){
                 g1Check = false;
@@ -273,7 +273,7 @@ public class MainTele extends LinearOpMode implements Runnable {
             if (Math.abs(robot.shooter.getError()) <= 30 && gamepadIdle() && !robot.isBusy() && !wasPressed) {
                 wasPressed = true;
                 sleep(180);
-                robot.optimalShoot(3);
+                robot.optimalShoot();
             }
         } else if (gamepad2.left_bumper) {
             powershots = true;

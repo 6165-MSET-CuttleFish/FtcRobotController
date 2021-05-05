@@ -26,9 +26,6 @@ public class StackAuto extends LinearOpMode {
     Vector2d dropZone;
     AtomicBoolean actionComplete = new AtomicBoolean(false);
 
-    Trajectory powerShotsTraj1;
-    Trajectory powerShotsTraj2;
-    Trajectory powerShotsTraj3;
     Trajectory wobbleDrop;
     Trajectory firstShot;
     Trajectory wobblePickup;
@@ -41,31 +38,8 @@ public class StackAuto extends LinearOpMode {
     }
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, 8.5, 47.8125, 0, OpModeType.auto);
+        robot = new Robot(this, new Pose2d(8.5, 47.8125, 0), OpModeType.auto);
         robot.autoInit();
-        powerShotsTraj1 = robot.trajectoryBuilder(Robot.robotPose)
-                .addTemporalMarker(0.5, () -> {
-                    robot.shooter.flapUp();
-                    robot.shooter.safeLeftOut();
-                })
-                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[0],0),
-                        getVelocityConstraint(40, Math.toRadians(190), DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
-                .build();
-        powerShotsTraj2 = robot.trajectoryBuilder(powerShotsTraj1.end())
-                .addTemporalMarker(0.3, ()->robot.shooter.wingsOut())
-                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1], 0),
-                        getVelocityConstraint(7, Math.toRadians(240), DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
-                .build();
-        powerShotsTraj3 = robot.trajectoryBuilder(powerShotsTraj2.end())
-                .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0),
-                        getVelocityConstraint(8, Math.toRadians(220), DriveConstants.TRACK_WIDTH),
-                        getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
-                .build();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         robot.shooter.magUp();
@@ -85,12 +59,9 @@ public class StackAuto extends LinearOpMode {
         robot.turnOffVision();
         robot.wobbleArmUp();
         robot.shooter.setLauncherVelocity(DriveConstants.BounceBackVelo);
-        robot.shooter.unlockIntake();
+        robot.wings.unlockIntake();
         Async.start(this::generatePaths);
         sleep(200);
-        robot.followTrajectory(powerShotsTraj1);
-        robot.followTrajectory(powerShotsTraj2);
-        robot.followTrajectory(powerShotsTraj3);
         sleep(80);
         robot.shooter.setLauncherVelocity(0);
         robot.intake(1);
@@ -103,7 +74,7 @@ public class StackAuto extends LinearOpMode {
         });
         robot.followTrajectory(firstShot);
         robot.wobbleArmDown();
-        robot.optimalShoot(3);
+        robot.optimalShoot();
         sleep(40);
         robot.shooter.setLauncherVelocity(0);
         if(robot.height == UGContourRingPipeline.Height.FOUR){
@@ -121,7 +92,7 @@ public class StackAuto extends LinearOpMode {
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.wings.allIn();
                 });
             }
         });
@@ -141,7 +112,7 @@ public class StackAuto extends LinearOpMode {
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.wings.allIn();
                 });
             }
         });
@@ -169,7 +140,7 @@ public class StackAuto extends LinearOpMode {
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.wings.allIn();
                 });
             }
         });
@@ -186,7 +157,7 @@ public class StackAuto extends LinearOpMode {
         robot.intake(-1);
         robot.shooter.magUp();
         sleep(190);
-        robot.optimalShoot(3);
+        robot.optimalShoot();
         sleep(40);
         robot.intake(0);
         robot.shooter.setLauncherVelocity(0);
@@ -201,8 +172,8 @@ public class StackAuto extends LinearOpMode {
     }
     private void generatePaths(){
         dropZone = robot.getDropZone();
-        TrajectoryBuilder tempBuilder = robot.trajectoryBuilder(powerShotsTraj3.end())
-                .addTemporalMarker(0.7, () -> robot.shooter.wingsVert())
+        TrajectoryBuilder tempBuilder = robot.trajectoryBuilder()
+                .addTemporalMarker(0.7, () -> robot.wings.vert())
                 .splineTo(new Vector2d(15, 10), new Vector2d(10, 8).angleBetween(new Vector2d(42, 10)))
                 .splineTo(new Vector2d(42, 10), 0)
                 .splineTo(new Vector2d(54, 4), Math.toRadians(-80))
@@ -251,7 +222,7 @@ public class StackAuto extends LinearOpMode {
                 .addDisplacementMarker(()-> {
                     robot.intake(0);
                     robot.shooter.magUp();
-                    robot.shooter.safeLeftOut();
+                    robot.wings.safeLeftOut();
                     robot.turn(Math.toRadians(-18));
                     Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -10));
                     Pose2d position = robot.getPoseEstimate();
@@ -303,7 +274,7 @@ public class StackAuto extends LinearOpMode {
             wobbleDrop2 = robot.trajectoryBuilder(finalShot.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-4, 6)), Math.toRadians(130)))
                     .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
+                        robot.wings.leftOut();
                         robot.release();
                         sleep(60);
                         robot.wobbleArmUp();
@@ -313,7 +284,7 @@ public class StackAuto extends LinearOpMode {
             wobbleDrop2 = robot.trajectoryBuilder(wobblePickup.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-8, -5)), Math.toRadians(180)))
                     .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
+                        robot.wings.leftOut();
                         robot.release();
                         sleep(60);
                         robot.wobbleArmUp();
@@ -322,7 +293,7 @@ public class StackAuto extends LinearOpMode {
         else wobbleDrop2 = robot.trajectoryBuilder(wobblePickup.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(15, 14)), Math.toRadians(90)))
                     .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
+                        robot.wings.leftOut();
                         robot.release();
                         sleep(60);
                         robot.wobbleArmUp();

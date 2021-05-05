@@ -44,7 +44,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
         wingDefault = WingState.out;
         sleep(500);
         robot.setPoseEstimate(Robot.robotPose);
-        robot.shooter.wingsOut();
+        robot.wings.allOut();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         waitForStart();
@@ -77,20 +77,20 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                 wingCheck = false;
             }
             if (wingDefault == WingState.in) {
-                robot.shooter.wingsIn();
+                robot.wings.allIn();
             } else if (wingDefault == WingState.out) {
                 if (robot.shooter.getRings() < 1){
-                    robot.shooter.wingsOut();
+                    robot.wings.allOut();
                 }
                 else {
-                    robot.shooter.wingsMid();
+                    robot.wings.wingsMid();
                     //robot.setSlappy(0);
                 }
             } else if (wingDefault == WingState.safe) {
-                robot.shooter.wingsMid();
+                robot.wings.wingsMid();
                 //robot.setSlappy(0);
             } else {
-                robot.shooter.wingsVert();
+                robot.wings.vert();
             }
             telemetry.addData("Coast", wantsCoastDown);
             telemetry.addData("Cadence", veloCadence);
@@ -166,7 +166,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
                             robot.setMode(Robot.Mode.IDLE);
                         }
                     });
-                    robot.optimalShoot(3);
+                    robot.optimalShoot();
                 }
             } if(gamepad1.right_trigger < 0.2 && !gamepad1.left_bumper && !gamepad1.x){
                 g1Check = false;
@@ -256,7 +256,7 @@ public class TourneyTele extends LinearOpMode implements Runnable {
             if (Math.abs(robot.shooter.getError()) <= 30 && gamepadIdle() && !robot.isBusy() && !wasPressed) {
                 wasPressed = true;
                 sleep(180);
-                robot.optimalShoot(3);
+                robot.optimalShoot();
             }
         } else if (gamepad2.left_bumper) {
             powershots = true;
