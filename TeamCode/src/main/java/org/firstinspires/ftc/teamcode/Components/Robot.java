@@ -401,7 +401,6 @@ public class Robot extends MecanumDrive {
         followTrajectoryAsync(trajectory);
         waitForIdle(block);
     }
-
     public Pose2d getLastError() {
         switch (mode) {
             case FOLLOW_TRAJECTORY:
@@ -417,6 +416,7 @@ public class Robot extends MecanumDrive {
         updatePoseEstimate();
         shooter.update();
         Pose2d currentPose = getPoseEstimate();
+        robotPose = currentPose;
         Pose2d lastError = getLastError();
 
         poseHistory.add(currentPose);
@@ -509,11 +509,9 @@ public class Robot extends MecanumDrive {
             update();
         }
     }
-
     public boolean isBusy() {
-        return mode != Mode.IDLE;
+        return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() != WobbleArm.State.IN;
     }
-
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {
             motor.setMode(runMode);

@@ -39,19 +39,19 @@ public class BackAndForth extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
 
-        Trajectory trajectoryForward = robot.driveTrain.trajectoryBuilder(new Pose2d())
+        Trajectory trajectoryForward = robot.trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)
                 .build();
 
-        Trajectory trajectoryBackward = robot.driveTrain.trajectoryBuilder(trajectoryForward.end())
+        Trajectory trajectoryBackward = robot.trajectoryBuilder(trajectoryForward.end())
                 .back(DISTANCE)
                 .build();
 
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
-            robot.driveTrain.followTrajectory(trajectoryForward);
-            robot.driveTrain.followTrajectory(trajectoryBackward);
+            robot.followTrajectory(trajectoryForward);
+            robot.followTrajectory(trajectoryBackward);
         }
     }
 }

@@ -23,7 +23,7 @@ public class StrafeTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
 
-        Trajectory trajectory = robot.driveTrain.trajectoryBuilder(new Pose2d())
+        Trajectory trajectory = robot.trajectoryBuilder(new Pose2d())
                 .strafeRight(DISTANCE)
                 .build();
 
@@ -31,9 +31,9 @@ public class StrafeTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        robot.driveTrain.followTrajectory(trajectory);
+        robot.followTrajectory(trajectory);
 
-        Pose2d poseEstimate = robot.driveTrain.getPoseEstimate();
+        Pose2d poseEstimate = robot.getPoseEstimate();
         telemetry.addData("finalX", poseEstimate.getX());
         telemetry.addData("finalY", poseEstimate.getY());
         telemetry.addData("finalHeading", poseEstimate.getHeading());

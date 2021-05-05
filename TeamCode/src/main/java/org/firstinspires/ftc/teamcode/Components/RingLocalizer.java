@@ -162,23 +162,21 @@ public class RingLocalizer extends OpenCvPipeline {
             vectors = new ArrayList<>();
             for (MatOfPoint c: contours) {
                 MatOfPoint2f copy = new MatOfPoint2f(c.toArray());
-                Rect rect =  Imgproc.boundingRect(copy);
+                RotatedRect ellipse =  Imgproc.fitEllipse(copy);
                 // checking if the rectangle is below the horizon
-                if (rect.y + rect.height > HORIZON) {
-                    width = rect.width;
-                    height = rect.height;
-                    x = rect.x;
-                    y = rect.y;
-                    double angle = Math.toRadians(angleCalculator.get(rect.x));
-                    double distance = (distanceCalculator.get(rect.y)+ 8.5)/Math.cos(angle);
+                if (ellipse.center.y + ellipse.size.height > HORIZON) {
+                    width = ellipse.size.width;
+                    height = ellipse.size.height;
+                    x = ellipse.center.x;
+                    y = ellipse.center.y;
+                    double angle = Math.toRadians(angleCalculator.get(ellipse.center.x));
+                    double distance = (distanceCalculator.get(ellipse.center.y)+ 8.5)/Math.cos(angle);
                     vectors.add(new Pose2d(0, distance, angle));
-                    //Imgproc.rectangle(ret, maxRect, new Scalar(0.0, 0.0, 255.0), 2);
+                    Imgproc.ellipse(ret, ellipse, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
             }
-            //drive.ringUpdate(getVectors(drive.getPoseEstimate()));
-            /** drawing a red line to show the horizon (any above the horizon is not checked to be a ring stack **/
             Imgproc.line(
                     ret,
                     new Point(
@@ -194,33 +192,6 @@ public class RingLocalizer extends OpenCvPipeline {
                             .0,
                             255.0)
             );
-
-//            if (debug) telemetry?.addData("Vision: maxW", maxWidth)
-
-            /** checking if widest width is greater than equal to minimum width
-             * using Kotlin if expression (Java ternary) to set height variable
-             *
-             * height = maxWidth >= MIN_WIDTH ? aspectRatio > BOUND_RATIO ? FOUR : ONE : ZERO
-             **/
-//            height = if (maxWidth >= MIN_WIDTH) {
-//                val aspectRatio: Double = maxRect.height.toDouble() / maxRect.width.toDouble()
-//
-//                if(debug) telemetry?.addData("Vision: Aspect Ratio", aspectRatio)
-//
-//                /** checks if aspectRatio is greater than BOUND_RATIO
-//                 * to determine whether stack is ONE or FOUR
-//                 */
-//                if (aspectRatio > BOUND_RATIO)
-//                    Height.FOUR // height variable is now FOUR
-//                else
-//                    Height.ONE // height variable is now ONE
-//            } else {
-//                Height.ZERO // height variable is now ZERO
-//            }
-//
-//            if (debug) telemetry?.addData("Vision: Height", height)
-
-            // releasing all mats after use
             mat.release();
             mask.release();
             hierarchy.release();

@@ -6,12 +6,10 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 public class Coordinate {
     public double x;
     public double y;
-
     public Coordinate(double x, double y) {
         this.x = x;
         this.y = y;
     }
-
     public Coordinate(Coordinate point) {
         this.x = point.getX();
         this.y = point.getY();
@@ -35,20 +33,16 @@ public class Coordinate {
     public void setX(double x) {
         this.x = x;
     }
-
     public void setY(double y) {
         this.y = y;
     }
-
     public double[] getPoint() {
         double[] arr = {x, y};
         return arr;
     }
-
     public double getX() {
         return x;
     }
-
     public double getY() {
         return y;
     }
@@ -56,7 +50,6 @@ public class Coordinate {
     public String toString() {
         return "[" + x + ", " + y + "]";
     }
-
     public void addX(double x) {
         this.x += x;
     }

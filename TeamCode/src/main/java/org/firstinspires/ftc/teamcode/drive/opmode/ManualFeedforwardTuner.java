@@ -116,10 +116,10 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     MotionState motionState = activeProfile.get(profileTime);
                     double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
 
-                    robot.driveTrain.setDrivePower(new Pose2d(targetPower, 0, 0));
-                    robot.driveTrain.updatePoseEstimate();
+                    robot.setDrivePower(new Pose2d(targetPower, 0, 0));
+                    robot.updatePoseEstimate();
 
-                    Pose2d poseVelo = Objects.requireNonNull(robot.driveTrain.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
+                    Pose2d poseVelo = Objects.requireNonNull(robot.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
                     double currentVelo = poseVelo.getX();
 
                     // update telemetry
@@ -135,7 +135,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                         profileStart = clock.seconds();
                     }
 
-                    robot.driveTrain.setWeightedDrivePower(
+                    robot.setWeightedDrivePower(
                             new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -gamepad1.left_stick_x,

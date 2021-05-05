@@ -11,7 +11,7 @@ public class Gunner {
     private final StateMachine singleShot;
     private final ElapsedTime externalTimer = new ElapsedTime();
     private static double gunTime = 85.0/1000.0;
-    private Servo gunner;
+    private final Servo gunner;
     enum State {
         TRIGGER,
         IN,
@@ -55,10 +55,10 @@ public class Gunner {
                 .build();
     }
     public void tripleShot(){
-        tripleShot.start();
+        if(!tripleShot.getRunning()) tripleShot.start();
     }
     public void shoot(){
-        singleShot.start();
+        if(!singleShot.getRunning()) singleShot.start();
     }
     public void update(){
         tripleShot.update();
