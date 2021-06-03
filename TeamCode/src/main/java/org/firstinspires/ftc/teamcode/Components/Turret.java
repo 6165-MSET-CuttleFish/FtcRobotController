@@ -18,7 +18,8 @@ public class Turret {
         MOVING,
         IDLE
     }
-    public Turret(HardwareMap hardwareMap, Robot robot){
+    public Turret(Robot robot){
+        HardwareMap hardwareMap = robot.hardwareMap;
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         this.robot = robot;
         if(robot.opModeType == OpModeType.auto) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -29,6 +30,9 @@ public class Turret {
         turret.setPower(power);
     }
     public State getState(){
+        if(turret.getVelocity() > 1){
+            return State.MOVING;
+        }
         return State.IDLE;
     }
     public double getRelativeAngle(){

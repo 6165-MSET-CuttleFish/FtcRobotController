@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
@@ -20,7 +21,7 @@ public class StraightTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap, this);
+        Robot drive = new Robot(this);
 
         Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)

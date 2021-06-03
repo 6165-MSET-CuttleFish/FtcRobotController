@@ -41,8 +41,9 @@ public class Shooter {
     Robot robot;
     public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
-    public Shooter(HardwareMap map, Robot robot) {
+    public Shooter(Robot robot) {
         this.robot = robot;
+        HardwareMap map  = robot.hardwareMap;
         veloRegression = new InterpLUT();
         setVelocityController();
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");

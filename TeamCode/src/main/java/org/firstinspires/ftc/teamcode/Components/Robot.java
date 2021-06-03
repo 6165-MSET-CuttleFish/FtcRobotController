@@ -37,19 +37,26 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.spartronics4915.lib.T265Camera;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
@@ -84,9 +91,10 @@ public class Robot extends MecanumDrive {
     public OpModeType opModeType;
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
-    private final LinearOpMode linearOpMode;
-    HardwareMap hardwareMap;
-    Telemetry telemetry;
+    public final LinearOpMode linearOpMode;
+    public HardwareMap hardwareMap;
+    public Telemetry telemetry;
+    T265Camera t265;
 
     public DcMotor intakeR, intakeL;
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
@@ -222,7 +230,7 @@ public class Robot extends MecanumDrive {
         leftIntakeHolder = hardwareMap.get(Servo.class,"wallL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"wallR");
         intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter = new Shooter(hardwareMap, this);
+        shooter = new Shooter(this);
         setPoseEstimate(robotPose);
     }
     public void autoInit(){
@@ -591,7 +599,7 @@ public class Robot extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).firstAngle;
     }
 
     @Override

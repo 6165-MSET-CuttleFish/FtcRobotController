@@ -4,6 +4,7 @@ repositories {
     google() // Needed for androidx
     jcenter()  // Needed for tensorflow-lite
     maven { url = 'https://maven.brott.dev/' }
+    maven { url = "https://maven.0x778.tk" } //this one was added lmao
     flatDir {
         dirs rootProject.file('libs')
     }
@@ -21,5 +22,6 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite:1.10.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.2'
+    implementation 'com.spartronics4915.lib:ftc265:2.1.8'
 }
 
