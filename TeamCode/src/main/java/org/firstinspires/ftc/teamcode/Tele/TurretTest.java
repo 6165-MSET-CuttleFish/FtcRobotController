@@ -16,7 +16,7 @@ public class TurretTest extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         turret = new Turret(hardwareMap);
-        double angle = 45;
+        double angle = 90;
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         waitForStart();
         while (opModeIsActive()){
@@ -24,6 +24,9 @@ public class TurretTest extends LinearOpMode {
             turret.update();
             telemetry.addData("Current Angle", Math.toDegrees(turret.getAbsoluteAngle()));
             telemetry.addData("target angle", angle);
+            telemetry.addData("d", turret.lastKd);
+            telemetry.addData("i", turret.lastKi);
+            telemetry.addData("p", turret.lastKp);
             telemetry.update();
         }
     }
