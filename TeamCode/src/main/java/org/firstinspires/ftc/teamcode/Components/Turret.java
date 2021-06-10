@@ -56,8 +56,8 @@ public class Turret {
     public void setTargetAngle(double targetAngle){
         this.targetAngle = targetAngle;
     }
-    public void power(double power){
+    /*public void power(double power){
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turret.setPower(power);
-    }
+    }*/
 }
