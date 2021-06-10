@@ -7,15 +7,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 
 @Config
-@TeleOp
+@TeleOp(name = "TurretTest", group = "LinearOpMode")
 public class TurretTest extends LinearOpMode {
     Turret turret;
-    @Override
+
+    private double angle = 1;
     public void runOpMode() throws InterruptedException {
         turret = new Turret(hardwareMap);
         waitForStart();
         while (opModeIsActive()){
+            turret.setTargetAngle(angle+60);
             turret.update();
+
         }
     }
 }
