@@ -13,13 +13,13 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 public class Turret {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.0002, 0, 0);
-    public static double kV = 0.00002;
+    public static double kV = 0.5;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
     PIDFController angleControl = new PIDFController(ANGLE_PID, kV);
     static double targetAngle;
     //Robot robot;
-    public static final double TICKS_PER_REVOLUTION = 2;
-    public static final double GEAR_RATIO = 2;
+    public static final double TICKS_PER_REVOLUTION = 1120;
+    public static final double GEAR_RATIO = 30;
     public enum State{
         MOVING,
         IDLE
@@ -29,6 +29,7 @@ public class Turret {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         //this.robot = robot;
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void update(){
 
@@ -39,6 +40,7 @@ public class Turret {
             lastKv = kV;
             angleControl = new PIDFController(ANGLE_PID, kV);
         }
+
     }
     public State getState(){
         if(turret.getVelocity() > 1){
