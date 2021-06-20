@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //http://192.168.43.1:8080/dash
 @Config
 public class Shooter {
+    public ColorRangeSensor colorRangeSensor;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.0002, 0, 0);
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
@@ -36,12 +37,12 @@ public class Shooter {
 
     private final ElapsedTime veloTimer = new ElapsedTime();
     public DcMotorEx flywheel, flywheel1, turret;
-    public Servo flap, mag;
+    public Servo gunner, flap, mag;
+    public Servo rightIntakeHolder, leftIntakeHolder;
     public double targetVelo;
     private final InterpLUT veloRegression;
     Robot robot;
-    public ColorRangeSensor colorRangeSensor;
-    public Gunner gunner;
+
     public Shooter(HardwareMap map, Robot robot){
         this.robot = robot;
         veloRegression = new InterpLUT();
@@ -53,19 +54,20 @@ public class Shooter {
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        gunner = new Gunner(map);
-        //gunner = map.get(Servo.class, "mag");
+        gunner = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         mag = map.get(Servo.class, "tilt");
+        leftIntakeHolder = map.get(Servo.class,"wallL");
+        rightIntakeHolder = map.get(Servo.class,"wallR");
         turret = map.get(DcMotorEx.class, "turret");
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         singleRound();
         magDown();
         if(robot.opModeType == OpModeType.auto){
-            robot.wings.allIn();
+            wingsIn();
         }
         else if(robot.opModeType == OpModeType.tele) {
-            robot.wings.vert();
+            wingsVert();
             flapDown();
         }
         for (LynxModule module : map.getAll(LynxModule.class)) {
@@ -75,7 +77,6 @@ public class Shooter {
     }
 
     public void update(){
-        gunner.update();
         veloController.setTargetVelocity(targetVelo);
         veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
         veloTimer.reset();
@@ -140,27 +141,80 @@ public class Shooter {
     public double getError(){
         return getTargetVelo() - getVelocity();
     }
+    public void wingsOut() {
+        leftIntakeHolder.setPosition(0.96);
+        rightIntakeHolder.setPosition(0.18);
+    }
+    public void wingsIn() {
+        leftIntakeHolder.setPosition(.3);
+        rightIntakeHolder.setPosition(.84);
+    }
+    public void wingsMid() {
+        leftIntakeHolder.setPosition(.85);
+        rightIntakeHolder.setPosition(0.3);
+    }
+    public void wingsVert(){
+        leftIntakeHolder.setPosition(0.6);
+        rightIntakeHolder.setPosition(0.6);
+    }
+    public void leftOut() {
+        leftIntakeHolder.setPosition(.96);
+        rightIntakeHolder.setPosition(0.84);
+    }
+    public void safeLeftOut(){
+        leftIntakeHolder.setPosition(.75);
+        rightIntakeHolder.setPosition(.64);
+    }
+    public void rightOut() {
+        leftIntakeHolder.setPosition(.3);
+        rightIntakeHolder.setPosition(0.18);
+    }
+    public void unlockIntake(){
+        rightIntakeHolder.setPosition(0.4);
+    }
     public void magUp(){
         mag.setPosition(0.75);
     }
     public void magDown(){
         mag.setPosition(0.56);
     }
+    public void magazineShoot(){
+        customShoot(sleepTime, getRings());
+    }
+    public void customShoot(double sleep, int rounds){
+        for(int i = 0; i < rounds; i++){
+            singleRound();
+            Log.println(Log.INFO, "Shot Number: ", i + "");
+            if(i != rounds-1 || robot.opModeType == OpModeType.auto)sleep((long)sleep);
+            if(i == rounds - 2){
+                sleep(90);
+            }
+        }
+    }
+    public void safeShoot(){
+        customShoot(300, getRings());
+    }
     public void tripleShot(){
-        gunner.tripleShot();
+        customShoot(sleepTime, 3);
     }
     public void singleRound(){
-        gunner.shoot();
-        //gunner.setPosition(0.34);
-        //sleep(145);
+        gunner.setPosition(0.34);
+        sleep(145);
         Log.println(Log.INFO,"Shot", "Single Round");
-        //gunner.setPosition(0.48);
+        gunner.setPosition(0.48);
     }
     public void flapUp(){
         flap.setPosition(0.43);
     }
     public void flapDown(){
         flap.setPosition(0.35);
+    }
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
     private void setVelocityController(){
         veloRegression.add(0,1500);

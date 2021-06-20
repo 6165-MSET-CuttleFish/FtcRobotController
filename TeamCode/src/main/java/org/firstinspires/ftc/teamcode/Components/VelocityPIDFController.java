@@ -87,6 +87,7 @@ public class VelocityPIDFController {
 
     public void reset() {
         controller.reset();
+
         lastPosition = Double.NaN;
         lastVelocity = Double.NaN;
     }

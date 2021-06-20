@@ -20,6 +20,9 @@ public class colorTest extends LinearOpMode {
             telemetry.addData("rings", robot.shooter.getRings());
             telemetry.addData("distance", robot.shooter.getDistance());
             telemetry.update();
+            if(gamepad1.a){
+                robot.shooter.wingsOut();
+            } if(gamepad1.b) robot.shooter.wingsVert();
         }
     }
     public void tiltMag() {

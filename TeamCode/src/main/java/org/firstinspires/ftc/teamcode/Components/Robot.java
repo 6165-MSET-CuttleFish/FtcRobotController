@@ -4,7 +4,6 @@ import java.lang.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -41,13 +40,13 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
@@ -75,20 +74,22 @@ public class Robot extends MecanumDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final int HORIZON = 100; // horizon value to tune
+    private static final boolean DEBUG = true; // if debug is wanted, change to true
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
 
-    public OpModeType opModeType;
+    public OpModeType opModeType = OpModeType.none;
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
-    private final LinearOpMode linearOpMode;
+    private LinearOpMode linearOpMode;
     HardwareMap hardwareMap;
-    Telemetry telemetry;
+
+
 
     public DcMotor intakeR, intakeL;
-    private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
+
     public CRServo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
@@ -97,8 +98,10 @@ public class Robot extends MecanumDrive {
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Pose2d shootingPose = new Pose2d(-12, -52, Math.toRadians(4.5));
     public static Pose2d shootingPoseTele = new Pose2d(-7.5, -32.9725, Math.toRadians(1));
+
     public static Vector2d[] pwrShotLocals = new Vector2d[3];
     public static Vector2d[] pwrShots = new Vector2d[3];
+
     public static Vector2d A = new Vector2d(-5.4725, -55.4);
     public static Vector2d B = new Vector2d(23, -35.4725);
     public static Vector2d C = new Vector2d(45.5275, -57);
@@ -107,9 +110,8 @@ public class Robot extends MecanumDrive {
     public static Vector2d rightWobble = new Vector2d(-32, -51);
 
     public Shooter shooter;
-    public WobbleArm wobbleArm;
-    public Claw claw;
-    public Wings wings;
+
+
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6.9, 0, 0.1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(4.4, 0, 0);
@@ -128,40 +130,48 @@ public class Robot extends MecanumDrive {
         FOLLOW_TRAJECTORY
     }
 
-    private final FtcDashboard dashboard;
-    private final NanoClock clock;
+    private FtcDashboard dashboard;
+    private NanoClock clock;
     private Mode mode;
-    private final PIDFController turnController;
+    private PIDFController turnController;
     private MotionProfile turnProfile;
     private double turnStart;
-    private final TrajectoryVelocityConstraint velConstraint;
-    private final TrajectoryAccelerationConstraint accelConstraint;
-    private final TrajectoryFollower follower;
-    private final LinkedList<Pose2d> poseHistory;
-    private final List<DcMotorEx> motors;
-    private final BNO055IMU imu;
-    private final VoltageSensor batteryVoltageSensor;
+    private TrajectoryVelocityConstraint velConstraint;
+    private TrajectoryAccelerationConstraint accelConstraint;
+    private TrajectoryFollower follower;
+    private LinkedList<Pose2d> poseHistory;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private List<DcMotorEx> motors;
+    private BNO055IMU imu;
+    private VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
 
-    public Robot(LinearOpMode opMode, Pose2d pose2d) {
-        this(opMode, pose2d, OpModeType.none);
+    public Robot(LinearOpMode opMode, double x, double y, double robotOrientation) {
+        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        robotPose = new Pose2d(x - 70.4725, y - 70.4725, robotOrientation);
+        construct(opMode);
     }
-    public Robot(LinearOpMode opMode, OpModeType type){
-        this(opMode, robotPose, type);
-    }
-    public Robot(LinearOpMode opMode) {
-        this(opMode, new Pose2d(0,0,0), OpModeType.none);
-    }
-    public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
+    public Robot(LinearOpMode opMode, double x, double y, double robotOrientation, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         opModeType = type;
-        robotPose = pose2d.plus(new Pose2d(-70.4725, -70.4725, 0));
+        robotPose = new Pose2d(x - 70.4725, y - 70.4725, robotOrientation);
+        construct(opMode);
+    }
+    public Robot(LinearOpMode opMode, OpModeType type){
+        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        opModeType = type;
+        construct(opMode);
+    }
+    public Robot(LinearOpMode opMode) {
+        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        robotPose = new Pose2d();
+        construct(opMode);
+    }
+    private void construct(LinearOpMode opMode){
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
-        telemetry = opMode.telemetry;
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         clock = NanoClock.system();
         mode = Mode.IDLE;
         turnController = new PIDFController(new PIDCoefficients(7, 0, 0));
@@ -215,6 +225,7 @@ public class Robot extends MecanumDrive {
         in1 = hardwareMap.crservo.get("in1");
         in2 = hardwareMap.crservo.get("in2");
         in1.setDirection(DcMotorSimple.Direction.REVERSE);
+
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
         grabber = hardwareMap.get(Servo.class, "wobbleGrabber1");
@@ -248,12 +259,11 @@ public class Robot extends MecanumDrive {
         RingLocalizer.HORIZON = HORIZON;
 
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-        dashboard.startCameraStream(webcam, 30);
     }
     public Trajectory pickup;
     public void createTraj(double endTangent){
         TrajectoryBuilder builder = trajectoryBuilder(Coordinate.toPose(pwrShotLocals[2], 0))
-                .addTemporalMarker(0.7, () -> wings.vert())
+                .addTemporalMarker(0.7, () -> shooter.wingsVert())
                 .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                 .splineTo(new Vector2d(42, 7), 0);
         Vector2d[] wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
@@ -277,14 +287,13 @@ public class Robot extends MecanumDrive {
                 }
     }
     public void switchPipeline(){
-        webcam.setPipeline(bouncebacks = new RingLocalizer());
+        webcam.setPipeline(bouncebacks = new RingLocalizer(linearOpMode));
     }
     public void scan(){
         height = pipeline.getHeight();
     }
     public void turnOffVision(){
-        webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
-        dashboard.stopCameraStream();
+        //webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
     }
     public void wobbleArmUp() {
         arm1.setPosition(0.1);
@@ -313,13 +322,50 @@ public class Robot extends MecanumDrive {
         in1.setPower(intakeSpeed);
         in2.setPower(intakeSpeed);
     }
-    public void optimalShoot(){
+    public void optimalShoot(int rounds){
         if(opModeType == OpModeType.tele) Async.start(()->{
             sleep(300);
-            wings.allOut();
+            shooter.wingsOut();
             intake(0.4);
         });
-        shooter.tripleShot();
+        shooter.customShoot(85, rounds);
+    }
+    public Trajectory ringPickup(){
+        TrajectoryBuilder builder = trajectoryBuilder(getPoseEstimate());
+        builder = builder
+                .addTemporalMarker(1.5, () -> {
+                    shooter.wingsVert();
+                });
+        ArrayList<Vector2d> initialRings = new ArrayList<>();
+        ArrayList<Vector2d> enRouteRings = new ArrayList<>();
+        for(Vector2d wayPoint : bouncebacks.getVectors(getPoseEstimate())){
+            wayPoint = new Vector2d(Range.clip(wayPoint.getX(), -5, 59), Range.clip(wayPoint.getY(), -55, 10));
+            if(wayPoint.getX() < 40){
+                initialRings.add(wayPoint);
+            } else if(wayPoint.getX() >= 40){
+                enRouteRings.add(wayPoint);
+            }
+        }
+        for(Vector2d wayPoint : initialRings){
+            builder = builder.splineTo(wayPoint, 0);
+        }
+        for(Vector2d wayPoint : enRouteRings){
+            if(wayPoint.getX() < 57) builder = builder.splineTo(wayPoint, Math.toRadians(-90));
+            else builder = builder.splineToSplineHeading(Coordinate.toPose(wayPoint, Math.toRadians(-85)), Math.toRadians(-90));
+        }
+        builder = builder
+                .splineToSplineHeading(Coordinate.toPose(getDropZone(), Math.toRadians(-190)), Math.toRadians(-190))
+                .addDisplacementMarker(() -> {
+                    Async.start(() -> {
+                        release();
+                        sleep(400);
+                        wobbleArmUp();
+                    });
+                    shooter.setVelocity(shootingPose.vec());
+                    shooter.flapDown();
+                    shooter.safeLeftOut();
+                });
+        return builder.build();
     }
     public final void sleep(long milliseconds) {
         try {
@@ -504,7 +550,7 @@ public class Robot extends MecanumDrive {
         waitForIdle(()->{});
     }
     private void waitForIdle(Runnable block) {
-        while (!Thread.currentThread().isInterrupted() && isBusy() && linearOpMode.opModeIsActive()) {
+        while (!Thread.currentThread().isInterrupted() && isBusy()) {
             block.run();
             update();
         }
