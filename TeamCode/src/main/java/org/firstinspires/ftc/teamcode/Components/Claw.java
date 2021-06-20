@@ -16,12 +16,10 @@ public class Claw extends SubsystemBase {
         grabber2 = hardwareMap.servo.get("grabber2");
     }
     public void grab(){
-        grabber.setPosition(0.13);
-        grabber2.setPosition(0.83);
+
     }
     public void release(){
-        grabber.setPosition(0.63);
-        grabber2.setPosition(0.29);
+
     }
     public State getState(){
         return state;
