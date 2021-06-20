@@ -56,10 +56,9 @@ public class Turret {
         return getRelativeAngle();
     }
     public void setTargetAngle(double targetAngle){
+        // if((getRelativeAngle() + targetAngle) > (2 * Math.PI)) targetAngle -= 2 * Math.PI;
         this.targetAngle = targetAngle;
     }
-    /*public void power(double power){
-        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        turret.setPower(power);
-    }*/
+    
+
 }
