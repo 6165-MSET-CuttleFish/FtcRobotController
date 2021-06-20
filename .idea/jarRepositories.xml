@@ -41,10 +41,5 @@
       <option name="name" value="maven3" />
       <option name="url" value="https://maven.0x778.tk" />
     </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven" />
-      <option name="name" value="maven" />
-      <option name="url" value="https://jitpack.io" />
-    </remote-repository>
   </component>
 </project>
