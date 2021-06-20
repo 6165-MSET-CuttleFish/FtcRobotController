@@ -19,13 +19,13 @@ public class ShooterTest extends LinearOpMode implements Runnable{
     boolean isMagUp;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot (this);
+        robot = new Robot (hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         //wingDefault = ()->robot.launcher.wingsVert();
         // pidRotate = new PIDController(.07, 0.014, 0.0044);
         Thread shooterThread = new Thread(()->{
             while(opModeIsActive() && !isStopRequested()){
-                robot.shooter.update();
+                robot.launcher.updatePID();
             }
         });
         Thread otherThread = new Thread(this);
@@ -48,30 +48,30 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 sleep(150);
             }
             if(gamepad1.left_trigger >= 0.1) {
-                robot.shooter.magUp();
-                robot.shooter.setVelocity(targetVelo);
+                robot.launcher.magUp();
+                robot.launcher.setVelocity(targetVelo);
             } else {
-                robot.shooter.setVelocity(0);
+                robot.launcher.setVelocity(0);
                 if (gamepad1.left_bumper && !magCheck){
                     magCheck = true;
                     if(!isMagUp) {
-                        robot.shooter.magUp();
+                        robot.launcher.magUp();
                         isMagUp = true;
                     }
                     else {
-                        robot.shooter.magDown();
+                        robot.launcher.magDown();
                         isMagUp = false;
                     }
                 }
                 if (!gamepad1.left_bumper) magCheck = false;
             }
             if(gamepad1.right_trigger >= 0.1){
-                robot.shooter.customShoot(sleepTime, 3);
+                robot.launcher.customShoot(sleepTime, 3);
             }
             if(gamepad1.a){
-                robot.shooter.flapDown();
+                robot.launcher.flapDown();
             } else if(gamepad1.b){
-                robot.shooter.flapUp();
+                robot.launcher.flapUp();
             }
         }
     }
@@ -80,7 +80,7 @@ public class ShooterTest extends LinearOpMode implements Runnable{
     public void run() {
         while(opModeIsActive() && !isStopRequested()){
             telemetry.addData("Target Velocity", targetVelo);
-            telemetry.addData("Current Velocity", robot.shooter.getVelocity());
+            telemetry.addData("Current Velocity", robot.launcher.getVelocity());
             telemetry.addData("sleep time", sleepTime);
             telemetry.update();
         }

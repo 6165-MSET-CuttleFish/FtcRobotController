@@ -19,7 +19,7 @@ public class TurnTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        Robot robot = new Robot(hardwareMap);
 
         waitForStart();
 

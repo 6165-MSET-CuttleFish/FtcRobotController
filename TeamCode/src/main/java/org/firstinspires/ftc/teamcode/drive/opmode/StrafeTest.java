@@ -21,7 +21,7 @@ public class StrafeTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        Robot robot = new Robot(hardwareMap);
 
         Trajectory trajectory = robot.driveTrain.trajectoryBuilder(new Pose2d())
                 .strafeRight(DISTANCE)

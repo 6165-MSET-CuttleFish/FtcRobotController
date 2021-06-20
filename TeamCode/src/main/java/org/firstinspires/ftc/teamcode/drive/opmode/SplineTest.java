@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        Robot robot = new Robot(hardwareMap);
 
         waitForStart();
 

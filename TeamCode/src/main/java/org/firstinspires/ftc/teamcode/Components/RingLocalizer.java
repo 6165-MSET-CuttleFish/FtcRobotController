@@ -20,15 +20,17 @@ import org.opencv.core.*;
 import java.util.ArrayList;
 
 public class RingLocalizer extends OpenCvPipeline {
-    public RingLocalizer(LinearOpMode opMode){
+    public RingLocalizer(LinearOpMode opMode, SampleMecanumDrive drive){
         ret = new Mat();
         mat = new Mat();
         this.linearOpMode = opMode;
         areaPerpendicular = new InterpLUT();
         angleCalculator = new InterpLUT();
         distanceCalculator = new InterpLUT();
+        this.drive = drive;
         createControlPoints();
     }
+    SampleMecanumDrive drive;
     private void createControlPoints(){
         setAreaParser();
         setAngleRegression();

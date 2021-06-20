@@ -20,8 +20,8 @@ import static org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions.AngleWrap
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.getAccelerationConstraint;
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.getVelocityConstraint;
 
-@Autonomous(name = "Stack Auto", group = "Op")
-public class StackAuto extends LinearOpMode {
+@Autonomous(name = "Tourney Auto", group = "Op")
+public class ChosenAuto extends LinearOpMode {
     Robot robot;
     Vector2d dropZone;
     AtomicBoolean actionComplete = new AtomicBoolean(false);
@@ -41,34 +41,34 @@ public class StackAuto extends LinearOpMode {
     }
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, 8.5, 47.8125, 0, OpModeType.auto);
+        robot = new Robot(hardwareMap, 8.5, 47.8125, 0, OpModeType.auto, this);
         robot.autoInit();
-        powerShotsTraj1 = robot.trajectoryBuilder(Robot.robotPose)
+        powerShotsTraj1 = robot.driveTrain.trajectoryBuilder(Robot.robotPose)
                 .addTemporalMarker(0.5, () -> {
-                    robot.shooter.flapUp();
-                    robot.shooter.safeLeftOut();
+                    robot.launcher.flapUp();
+                    robot.launcher.safeLeftOut();
                 })
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[0],0),
                         getVelocityConstraint(40, Math.toRadians(190), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
+                .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
-        powerShotsTraj2 = robot.trajectoryBuilder(powerShotsTraj1.end())
-                .addTemporalMarker(0.3, ()->robot.shooter.wingsOut())
+        powerShotsTraj2 = robot.driveTrain.trajectoryBuilder(powerShotsTraj1.end())
+                .addTemporalMarker(0.3, ()->robot.launcher.wingsOut())
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[1], 0),
                         getVelocityConstraint(7, Math.toRadians(240), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
+                .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
-        powerShotsTraj3 = robot.trajectoryBuilder(powerShotsTraj2.end())
+        powerShotsTraj3 = robot.driveTrain.trajectoryBuilder(powerShotsTraj2.end())
                 .lineToLinearHeading(Coordinate.toPose(Robot.pwrShotLocals[2], 0),
                         getVelocityConstraint(8, Math.toRadians(220), DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> Async.start(() -> robot.shooter.singleRound()))
+                .addDisplacementMarker(() -> Async.start(() -> robot.launcher.singleRound()))
                 .build();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
-        robot.shooter.magUp();
+        robot.launcher.magUp();
         robot.grab();
         while (!opModeIsActive()) {
             robot.scan();
@@ -78,34 +78,34 @@ public class StackAuto extends LinearOpMode {
         waitForStart();
         Async.start(()-> {
             while (opModeIsActive()) {
-                robot.shooter.update();
-                Robot.robotPose = robot.getPoseEstimate();
+                robot.launcher.updatePID();
+                Robot.robotPose = robot.driveTrain.getPoseEstimate();
             }
         });
         robot.turnOffVision();
         robot.wobbleArmUp();
-        robot.shooter.setLauncherVelocity(DriveConstants.BounceBackVelo);
-        robot.shooter.unlockIntake();
+        robot.launcher.setLauncherVelocity(DriveConstants.BounceBackVelo);
+        robot.launcher.unlockIntake();
         Async.start(this::generatePaths);
         sleep(200);
-        robot.followTrajectory(powerShotsTraj1);
-        robot.followTrajectory(powerShotsTraj2);
-        robot.followTrajectory(powerShotsTraj3);
+        robot.driveTrain.followTrajectory(powerShotsTraj1);
+        robot.driveTrain.followTrajectory(powerShotsTraj2);
+        robot.driveTrain.followTrajectory(powerShotsTraj3);
         sleep(80);
-        robot.shooter.setLauncherVelocity(0);
+        robot.launcher.setLauncherVelocity(0);
         robot.intake(1);
         actionComplete.set(false);
-        robot.followTrajectory(wobbleDrop, ()-> {
-            if(robot.getPoseEstimate().vec().distTo(dropZone) < getDistance() && !actionComplete.get()) {
+        robot.driveTrain.followTrajectory(wobbleDrop, ()-> {
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(dropZone) < getDistance() && !actionComplete.get()) {
                 robot.wobbleArmDown();
                 actionComplete.set(true);
             }
         });
-        robot.followTrajectory(firstShot);
+        robot.driveTrain.followTrajectory(firstShot);
         robot.wobbleArmDown();
         robot.optimalShoot(3);
         sleep(40);
-        robot.shooter.setLauncherVelocity(0);
+        robot.launcher.setLauncherVelocity(0);
         if(Robot.height == UGContourRingPipeline.Height.FOUR){
             case4();
         } else if(Robot.height == UGContourRingPipeline.Height.ONE){
@@ -115,108 +115,108 @@ public class StackAuto extends LinearOpMode {
         }
     }
     private void case0(){
-        robot.followTrajectory(wobblePickup, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
+        robot.driveTrain.followTrajectory(wobblePickup, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
                 Async.start(()->{
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.launcher.wingsIn();
                 });
             }
         });
         actionComplete.set(false);
-        robot.followTrajectory(wobbleDrop2, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.A) < 27 && !actionComplete.get()) {
+        robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.A) < 27 && !actionComplete.get()) {
                 robot.wobbleArmDown();
                 actionComplete.set(true);
             }
         });
-        robot.followTrajectory(park);
+        robot.driveTrain.followTrajectory(park);
     }
     private void case1(){
-        robot.followTrajectory(wobblePickup, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
+        robot.driveTrain.followTrajectory(wobblePickup, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
                 Async.start(()->{
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.launcher.wingsIn();
                 });
             }
         });
         sleep(110);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.launcher.magUp();
         sleep(200);
-        robot.shooter.singleRound();
+        robot.launcher.singleRound();
         sleep(40);
         robot.intake(0);
-        robot.shooter.setLauncherVelocity(0);
+        robot.launcher.setLauncherVelocity(0);
         actionComplete.set(false);
-        robot.followTrajectory(wobbleDrop2, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.B) < 27 && !actionComplete.get()) {
+        robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.B) < 27 && !actionComplete.get()) {
                 robot.wobbleArmDown();
                 actionComplete.set(true);
             }
         });
-        robot.followTrajectory(park);
+        robot.driveTrain.followTrajectory(park);
     }
     private void case4(){
-        robot.followTrajectory(wobblePickup, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
+        robot.driveTrain.followTrajectory(wobblePickup, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.rightWobble) < 8){
                 Async.start(()->{
                     robot.grab();
                     sleep(700);
                     robot.wobbleArmUp();
-                    robot.shooter.wingsIn();
+                    robot.launcher.wingsIn();
                 });
             }
         });
         sleep(120);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.launcher.magUp();
         sleep(200);
-        robot.shooter.singleRound();
-        robot.shooter.setVelocity(Robot.shootingPoseTele.vec());
+        robot.launcher.singleRound();
+        robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPoseTele) - 80);
         sleep(40);
-        robot.shooter.magDown();
-        robot.followTrajectory(finalShot);
+        robot.launcher.magDown();
+        robot.driveTrain.followTrajectory(finalShot);
         sleep(100);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.launcher.magUp();
         sleep(190);
         robot.optimalShoot(3);
         sleep(40);
         robot.intake(0);
-        robot.shooter.setLauncherVelocity(0);
+        robot.launcher.setLauncherVelocity(0);
         actionComplete.set(false);
-        robot.followTrajectory(wobbleDrop2, ()->{
-            if(robot.getPoseEstimate().vec().distTo(Robot.C) < 20 && !actionComplete.get()) {
+        robot.driveTrain.followTrajectory(wobbleDrop2, ()->{
+            if(robot.driveTrain.getPoseEstimate().vec().distTo(Robot.C) < 20 && !actionComplete.get()) {
                 robot.wobbleArmDown();
                 actionComplete.set(true);
             }
         });
-        robot.followTrajectory(park);
+        robot.driveTrain.followTrajectory(park);
     }
     private void generatePaths(){
         dropZone = robot.getDropZone();
-        TrajectoryBuilder tempBuilder = robot.trajectoryBuilder(powerShotsTraj3.end())
-                .addTemporalMarker(0.7, () -> robot.shooter.wingsVert())
+        TrajectoryBuilder tempBuilder = robot.driveTrain.trajectoryBuilder(powerShotsTraj3.end())
+                .addTemporalMarker(0.7, () -> robot.launcher.wingsVert())
                 .splineTo(new Vector2d(15, 10), new Vector2d(10, 8).angleBetween(new Vector2d(42, 10)))
                 .splineTo(new Vector2d(42, 10), 0)
                 .splineTo(new Vector2d(54, 4), Math.toRadians(-80))
                 .splineToConstantHeading(new Vector2d(55, -10.4725), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(55, -40.4725), Math.toRadians(-90));
         if(Robot.height == UGContourRingPipeline.Height.FOUR)
-            wobbleDrop = tempBuilder
-                    .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-185)), Math.toRadians(-180))
-                    .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.release();
-                        sleep(400);
-                        robot.wobbleArmUp();
-                    }))
-                    .build();
+        wobbleDrop = tempBuilder
+                .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-185)), Math.toRadians(-180))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.release();
+                    sleep(400);
+                    robot.wobbleArmUp();
+                }))
+                .build();
         else if(Robot.height == UGContourRingPipeline.Height.ONE)
             wobbleDrop = tempBuilder
                     .splineToSplineHeading(Coordinate.toPose(dropZone, Math.toRadians(-193)), Math.toRadians(-180),
@@ -239,28 +239,28 @@ public class StackAuto extends LinearOpMode {
                         robot.wobbleArmUp();
                     }))
                     .build();
-        firstShot = robot.trajectoryBuilder(wobbleDrop.end())
+        firstShot = robot.driveTrain.trajectoryBuilder(wobbleDrop.end())
                 .addTemporalMarker(0.5, ()->{
-                    robot.shooter.setVelocity(Robot.shootingPose.vec());
+                    robot.launcher.setVelocity(robot.getPoseVelo(Robot.shootingPose) - 40);
                     telemetry.addData("distance", Coordinate.distanceToLine(Robot.shootingPose, Robot.goal.getX()));
-                    telemetry.addData("velo", robot.shooter.getTargetVelo());
+                    telemetry.addData("velo", robot.launcher.getTargetVelo());
                     telemetry.update();
-                    robot.shooter.flapDown();
+                    robot.launcher.flapDown();
                 })
                 .lineToLinearHeading(Coordinate.toPose(Robot.shootingPose.vec(), Math.toRadians(180)))
                 .addDisplacementMarker(()-> {
                     robot.intake(0);
-                    robot.shooter.magUp();
-                    robot.shooter.safeLeftOut();
-                    robot.turn(Math.toRadians(-18));
+                    robot.launcher.magUp();
+                    robot.launcher.safeLeftOut();
+                    robot.driveTrain.turn(Math.toRadians(-18));
                     Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -10));
-                    Pose2d position = robot.getPoseEstimate();
+                    Pose2d position = robot.driveTrain.getPoseEstimate();
                     double absAngleToTarget = Math.atan2(goalPost.getY() - position.getY(), goalPost.getX() - position.getX());
-                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.getPoseEstimate().getHeading());
-                    robot.turn(relAngleToPoint);
+                    double relAngleToPoint = AngleWrap(absAngleToTarget - robot.driveTrain.getPoseEstimate().getHeading());
+                    robot.driveTrain.turn(relAngleToPoint);
                 })
                 .build();
-        if(Robot.height == UGContourRingPipeline.Height.ZERO) wobblePickup = robot.trajectoryBuilder(Robot.shootingPose)
+        if(Robot.height == UGContourRingPipeline.Height.ZERO) wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-30)),
                         getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -273,7 +273,7 @@ public class StackAuto extends LinearOpMode {
                         getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
-        else wobblePickup = robot.trajectoryBuilder(Robot.shootingPose)
+        else wobblePickup = robot.driveTrain.trajectoryBuilder(Robot.shootingPose)
                 .lineToSplineHeading(Coordinate.toPose(Robot.rightWobble, Math.toRadians(-30)),
                         getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -284,7 +284,7 @@ public class StackAuto extends LinearOpMode {
                 }))
                 .addDisplacementMarker(()->{
                     robot.intake(1);
-                    robot.shooter.setVelocity(new Vector2d(-29, Robot.goal.getY()));
+                    robot.launcher.setVelocity(robot.getPoseVelo(new Vector2d(-29, Robot.goal.getY())) - 15);
                 })
                 .splineToConstantHeading(new Vector2d(-40, -40), Math.toRadians(90),
                         getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -295,44 +295,44 @@ public class StackAuto extends LinearOpMode {
                         getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
-        finalShot = robot.trajectoryBuilder(wobblePickup.end())
+        finalShot = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
                 .addDisplacementMarker(() -> robot.intake(1))
                 .lineToLinearHeading(Robot.shootingPoseTele)
                 .build();
         if(Robot.height == UGContourRingPipeline.Height.FOUR)
-            wobbleDrop2 = robot.trajectoryBuilder(finalShot.end())
-                    .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-4, 6)), Math.toRadians(130)))
-                    .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
-                        robot.release();
-                        sleep(60);
-                        robot.wobbleArmUp();
-                    }))
-                    .build();
+            wobbleDrop2 = robot.driveTrain.trajectoryBuilder(finalShot.end())
+                .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-4, 6)), Math.toRadians(130)))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.launcher.leftOut();
+                    robot.release();
+                    sleep(60);
+                    robot.wobbleArmUp();
+                }))
+                .build();
         else if(Robot.height == UGContourRingPipeline.Height.ONE)
-            wobbleDrop2 = robot.trajectoryBuilder(wobblePickup.end())
+            wobbleDrop2 = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
                     .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(-8, -5)), Math.toRadians(180)))
                     .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
+                        robot.launcher.leftOut();
                         robot.release();
                         sleep(60);
                         robot.wobbleArmUp();
                     }))
                     .build();
-        else wobbleDrop2 = robot.trajectoryBuilder(wobblePickup.end())
-                    .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(15, 14)), Math.toRadians(90)))
-                    .addDisplacementMarker(() -> Async.start(() -> {
-                        robot.shooter.leftOut();
-                        robot.release();
-                        sleep(60);
-                        robot.wobbleArmUp();
-                    }))
-                    .build();
+        else wobbleDrop2 = robot.driveTrain.trajectoryBuilder(wobblePickup.end())
+                .lineToLinearHeading(Coordinate.toPose(dropZone.plus(new Vector2d(15, 14)), Math.toRadians(90)))
+                .addDisplacementMarker(() -> Async.start(() -> {
+                    robot.launcher.leftOut();
+                    robot.release();
+                    sleep(60);
+                    robot.wobbleArmUp();
+                }))
+                .build();
         if(Robot.height == UGContourRingPipeline.Height.FOUR)
-            park = robot.trajectoryBuilder(wobbleDrop2.end())
-                    .lineToLinearHeading(new Pose2d(33, -54, Math.toRadians(120)))
-                    .build();
-        else park = robot.trajectoryBuilder(wobbleDrop2.end())
+        park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
+                .lineToLinearHeading(new Pose2d(33, -54, Math.toRadians(120)))
+                .build();
+        else park = robot.driveTrain.trajectoryBuilder(wobbleDrop2.end())
                 .forward(10)
                 .build();
     }

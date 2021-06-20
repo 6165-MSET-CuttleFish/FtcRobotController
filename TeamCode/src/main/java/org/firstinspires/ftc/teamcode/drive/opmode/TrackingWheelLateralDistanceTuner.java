@@ -71,7 +71,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        Robot robot = new Robot(hardwareMap);
 
         if (!(robot.driveTrain.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "

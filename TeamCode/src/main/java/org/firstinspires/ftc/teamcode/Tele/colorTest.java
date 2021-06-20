@@ -13,21 +13,21 @@ public class colorTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this);
+        robot = new Robot(hardwareMap);
         waitForStart();
         while(opModeIsActive()){
             tiltMag();
-            telemetry.addData("rings", robot.shooter.getRings());
-            telemetry.addData("distance", robot.shooter.getDistance());
+            telemetry.addData("rings", robot.launcher.getRings());
+            telemetry.addData("distance", robot.launcher.getDistance());
             telemetry.update();
             if(gamepad1.a){
-                robot.shooter.wingsOut();
-            } if(gamepad1.b) robot.shooter.wingsVert();
+                robot.launcher.wingsOut();
+            } if(gamepad1.b) robot.launcher.wingsVert();
         }
     }
     public void tiltMag() {
-        if(gamepad2.left_bumper) robot.shooter.magDown();
-        else if(gamepad2.right_bumper) robot.shooter.magUp();
+        if(gamepad2.left_bumper) robot.launcher.magDown();
+        else if(gamepad2.right_bumper) robot.launcher.magUp();
     }
 
     private boolean gamepadIdle(){
