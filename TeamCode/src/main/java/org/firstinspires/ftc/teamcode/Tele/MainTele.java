@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Components.Async;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class MainTele extends LinearOpMode implements Runnable {
         wingDefault = WingState.out;
         sleep(500);
         robot.setPoseEstimate(Robot.robotPose);
-        robot.wings.allOut();
+        robot.shooter.wingsOut();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
         waitForStart();
@@ -77,21 +78,22 @@ public class MainTele extends LinearOpMode implements Runnable {
                 wingCheck = false;
             }
             if (wingDefault == WingState.in) {
-                robot.wings.allIn();
+                robot.shooter.wingsIn();
             } else if (wingDefault == WingState.out) {
                 if (robot.shooter.getRings() < 1){
-                    robot.wings.allOut();
+                    robot.shooter.wingsOut();
                 }
                 else {
-                    robot.wings.wingsMid();
+                    robot.shooter.wingsMid();
                     //robot.setSlappy(0);
                 }
             } else if (wingDefault == WingState.safe) {
-                robot.wings.wingsMid();
+                robot.shooter.wingsMid();
                 //robot.setSlappy(0);
             } else {
-                robot.wings.vert();
+                robot.shooter.wingsVert();
             }
+            if(!(gamepad2.dpad_up || gamepad2.dpad_down)) raiseCheck = true;
             telemetry.addData("Coast", wantsCoastDown);
             telemetry.addData("Cadence", veloCadence);
             telemetry.addData("Target Velocity", targetVelocity);
@@ -110,8 +112,7 @@ public class MainTele extends LinearOpMode implements Runnable {
     public void run() {
         while (opModeIsActive()) {
             shooterDisabled = false;
-            if(!powershots && !raiseCheck) targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec()) - 70;
-            // if(raiseCheck) targetVelocity = 1380;
+            if(!powershots) targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec()) - 40;
             if (!gamepadIdle()) robot.setMode(Robot.Mode.IDLE);
             if (robot.getMode() == Robot.Mode.IDLE) {
                 robot.setWeightedDrivePower(
@@ -153,6 +154,22 @@ public class MainTele extends LinearOpMode implements Runnable {
                         });
                         robot.shooter.singleRound();
                     }
+                } else if (gamepad1.left_bumper) {
+                    g1Check = true;
+                    robot.followTrajectory(robot.trajectoryBuilder(robot.getPoseEstimate())
+                            .addDisplacementMarker(() -> {
+                                shooterDisabled = true;
+                                robot.shooter.setVelocity(Robot.shootingPoseTele.vec());
+                            })
+                            .addTemporalMarker(0.7, () -> robot.shooter.magUp())
+                            .splineToLinearHeading(Robot.shootingPoseTele, 0)
+                            .build(), () -> {
+                        if (!gamepadIdle()) robot.setMode(Robot.Mode.IDLE);
+                    });
+                    while (gamepadIdle() || Math.abs(robot.shooter.getError()) >= 40) {
+                        robot.update();
+                    }
+                    robot.optimalShoot();
                 } else if (gamepad1.right_trigger >= 0.2) {
                     wingDefault = WingState.out;
                     g1Check = true;
