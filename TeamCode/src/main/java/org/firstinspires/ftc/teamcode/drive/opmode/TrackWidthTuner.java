@@ -54,20 +54,20 @@ public class TrackWidthTuner extends LinearOpMode {
 
         MovingStatistics trackWidthStats = new MovingStatistics(NUM_TRIALS);
         for (int i = 0; i < NUM_TRIALS; i++) {
-            robot.setPoseEstimate(new Pose2d());
+            robot.driveTrain.setPoseEstimate(new Pose2d());
 
             // it is important to handle heading wraparounds
             double headingAccumulator = 0;
             double lastHeading = 0;
 
-            robot.turnAsync(Math.toRadians(ANGLE));
+            robot.driveTrain.turnAsync(Math.toRadians(ANGLE));
 
-            while (!isStopRequested() && robot.isBusy()) {
-                double heading = robot.getPoseEstimate().getHeading();
+            while (!isStopRequested() && robot.driveTrain.isBusy()) {
+                double heading = robot.driveTrain.getPoseEstimate().getHeading();
                 headingAccumulator += Angle.norm(heading - lastHeading);
                 lastHeading = heading;
 
-                robot.update();
+                robot.driveTrain.update();
             }
 
             double trackWidth = DriveConstants.TRACK_WIDTH * Math.toRadians(ANGLE) / headingAccumulator;

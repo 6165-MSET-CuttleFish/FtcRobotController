@@ -35,18 +35,18 @@ public class FollowerPIDTuner extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 
-        robot.setPoseEstimate(startPose);
+        robot.driveTrain.setPoseEstimate(startPose);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            Trajectory traj = robot.trajectoryBuilder(startPose)
+            Trajectory traj = robot.driveTrain.trajectoryBuilder(startPose)
                     .forward(DISTANCE)
                     .build();
-            robot.followTrajectory(traj);
-            robot.turn(Math.toRadians(90));
+            robot.driveTrain.followTrajectory(traj);
+            robot.driveTrain.turn(Math.toRadians(90));
 
             startPose = traj.end().plus(new Pose2d(0, 0, Math.toRadians(90)));
         }

@@ -73,7 +73,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
 
-        if (!(robot.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
+        if (!(robot.driveTrain.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "
                     + "drive class. Ensure that \"setLocalizer(new StandardTrackingWheelLocalizer"
                     + "(hardwareMap));\" is called in SampleMecanumDrive.java");
@@ -100,11 +100,11 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
         while (!isStopRequested() && !tuningFinished) {
             Pose2d vel = new Pose2d(0, 0, -gamepad1.right_stick_x);
-            robot.setDrivePower(vel);
+            robot.driveTrain.setDrivePower(vel);
 
-            robot.update();
+            robot.driveTrain.update();
 
-            double heading = robot.getPoseEstimate().getHeading();
+            double heading = robot.driveTrain.getPoseEstimate().getHeading();
             double deltaHeading = heading - lastHeading;
 
             headingAccumulator += Angle.normDelta(deltaHeading);
@@ -113,7 +113,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             telemetry.clearAll();
             telemetry.addLine("Total Heading (deg): " + Math.toDegrees(headingAccumulator));
             telemetry.addLine("Raw Heading (deg): " + Math.toDegrees(heading));
-            telemetry.addLine("IMU Heading: " + Math.toDegrees(robot.getRawExternalHeading()));
+            telemetry.addLine("IMU Heading: " + Math.toDegrees(robot.driveTrain.getRawExternalHeading()));
             telemetry.addLine();
             telemetry.addLine("Press Y/△ to conclude routine");
             telemetry.update();

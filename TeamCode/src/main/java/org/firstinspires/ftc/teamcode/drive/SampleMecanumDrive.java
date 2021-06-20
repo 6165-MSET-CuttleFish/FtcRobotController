@@ -172,7 +172,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        //setLocalizer(new StandardTwoWheelTracker(hardwareMap));
+        setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
+    }
+    Callable<Double> veloCallable;
+    Callable<Double> targetVeloCallable;
+    public void setVelocityCallable(Callable<Double> veloCallable){
+        this.veloCallable = veloCallable;
+    }
+    public void setTargetVeloCallable(Callable<Double> callable){
+        this.targetVeloCallable = callable;
     }
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
@@ -268,6 +276,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         packet.put("x", currentPose.getX());
         packet.put("y", currentPose.getY());
         packet.put("heading (deg)", Math.toDegrees(currentPose.getHeading()));
+        try {
+            packet.put("Velocity", veloCallable.call());
+            packet.put("Target Velocity", targetVeloCallable.call());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         packet.put("xError", lastError.getX());
         packet.put("yError", lastError.getY());

@@ -24,12 +24,12 @@ public class LocalizationTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
 
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.driveTrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
         //StandardTrackingWheelLocalizer localizer = new StandardTrackingWheelLocalizer(hardwareMap);
         while (!isStopRequested()) {
-            robot.setWeightedDrivePower(
+            robot.driveTrain.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
                             -gamepad1.left_stick_x,
@@ -37,9 +37,9 @@ public class LocalizationTest extends LinearOpMode {
                     )
             );
 
-            robot.update();
+            robot.driveTrain.update();
 
-            Pose2d poseEstimate = robot.getPoseEstimate();
+            Pose2d poseEstimate = robot.driveTrain.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
