@@ -55,21 +55,21 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new RingLocalizer(this));
+        camera.setPipeline(pipeline = new RingLocalizer(this, robot.driveTrain));
 
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
         RingLocalizer.HORIZON = HORIZON;
 
         camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-        robot.setPoseEstimate(new Pose2d(0, 0, 0));
+        robot.driveTrain.setPoseEstimate(new Pose2d(0, 0, 0));
 
         waitForStart();
 
         while (opModeIsActive()) {
-            if(gamepad1.y) robot.followTrajectory(pickup(Math.toRadians(robot.getPoseEstimate().getHeading())));
-            //robot.ringUpdate(pipeline.getVectors(robot.getPoseEstimate()));
-            robot.setWeightedDrivePower(
+            if(gamepad1.y) robot.driveTrain.followTrajectory(pickup(Math.toRadians(robot.driveTrain.getPoseEstimate().getHeading())));
+            //robot.driveTrain.ringUpdate(pipeline.getVectors(robot.driveTrain.getPoseEstimate()));
+            robot.driveTrain.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
                             -gamepad1.left_stick_x,
@@ -79,9 +79,9 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         }
     }
     Trajectory pickup(double endTangent){
-        TrajectoryBuilder builder = robot.trajectoryBuilder(robot.getPoseEstimate())
+        TrajectoryBuilder builder = robot.driveTrain.trajectoryBuilder(robot.driveTrain.getPoseEstimate())
                 .addDisplacementMarker(()-> robot.intake(1));
-        Vector2d[] wayPoints = pipeline.getVectors(robot.getPoseEstimate()).toArray(new Vector2d[0]).clone();
+        Vector2d[] wayPoints = pipeline.getVectors(robot.driveTrain.getPoseEstimate()).toArray(new Vector2d[0]).clone();
         bubbleSort(wayPoints);
         for(int i = 0; i < wayPoints.length; i++){
             builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
@@ -93,7 +93,7 @@ public class BounceBackPipelineDetector extends LinearOpMode {
         int n = arr.length;
         for (int i = 0; i < n-1; i++)
             for (int j = 0; j < n-i-1; j++)
-                if (arr[j].distTo(robot.getPoseEstimate().vec()) > arr[j+1].distTo(robot.getPoseEstimate().vec()))
+                if (arr[j].distTo(robot.driveTrain.getPoseEstimate().vec()) > arr[j+1].distTo(robot.driveTrain.getPoseEstimate().vec()))
                 {
                     // swap arr[j+1] and arr[j]
                     Coordinate temp = Coordinate.toPoint(arr[j]);
