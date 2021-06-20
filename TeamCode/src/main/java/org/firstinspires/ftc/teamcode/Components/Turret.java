@@ -31,7 +31,6 @@ public class Turret {
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void update(){
-
         angleControl.setTargetPosition(targetAngle);
         double power = angleControl.update(getAbsoluteAngle());
         turret.setPower(power);
@@ -55,9 +54,5 @@ public class Turret {
     }
     public void setTargetAngle(double targetAngle){
         this.targetAngle = targetAngle;
-    }
-    public void power(double power){
-        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        turret.setPower(power);
     }
 }
