@@ -108,6 +108,7 @@ public class Robot extends MecanumDrive {
 
     public Shooter shooter;
     public WobbleArm wobbleArm;
+    public Claw claw;
     public Wings wings;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6.9, 0, 0.1);
@@ -509,7 +510,7 @@ public class Robot extends MecanumDrive {
         }
     }
     public boolean isBusy() {
-        return mode != Mode.IDLE || shooter.magazine.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT;
+        return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() != WobbleArm.State.IN;
     }
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {

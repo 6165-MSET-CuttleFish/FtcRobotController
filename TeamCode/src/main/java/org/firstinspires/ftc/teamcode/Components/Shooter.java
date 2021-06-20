@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 @Config
 public class Shooter {
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.0002, 0, 0);
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
@@ -31,17 +32,17 @@ public class Shooter {
     double lastKa = kA;
     double lastKstatic = kStatic;
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
+    PIDFController angleControl = new PIDFController(ANGLE_PID);
 
     private final ElapsedTime veloTimer = new ElapsedTime();
-    public DcMotorEx flywheel, flywheel1;
+    public DcMotorEx flywheel, flywheel1, turret;
     public Servo flap, mag;
     public double targetVelo;
-    public double targetAngle;
     private final InterpLUT veloRegression;
     Robot robot;
     public ColorRangeSensor colorRangeSensor;
-    public Magazine magazine;
-    public Shooter(HardwareMap map, Robot robot) {
+    public Gunner gunner;
+    public Shooter(HardwareMap map, Robot robot){
         this.robot = robot;
         veloRegression = new InterpLUT();
         setVelocityController();
@@ -52,10 +53,12 @@ public class Shooter {
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        magazine = new Magazine(map);
+        gunner = new Gunner(map);
         //gunner = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
         mag = map.get(Servo.class, "tilt");
+        turret = map.get(DcMotorEx.class, "turret");
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         singleRound();
         magDown();
         if(robot.opModeType == OpModeType.auto){
@@ -72,6 +75,7 @@ public class Shooter {
     }
 
     public void update(){
+        gunner.update();
         veloController.setTargetVelocity(targetVelo);
         veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
         veloTimer.reset();
@@ -143,10 +147,10 @@ public class Shooter {
         mag.setPosition(0.56);
     }
     public void tripleShot(){
-        magazine.gunner.tripleShot();
+        gunner.tripleShot();
     }
     public void singleRound(){
-        magazine.gunner.shoot();
+        gunner.shoot();
         //gunner.setPosition(0.34);
         //sleep(145);
         Log.println(Log.INFO,"Shot", "Single Round");
@@ -172,6 +176,7 @@ public class Shooter {
         veloRegression.add(102, 1210);
         veloRegression.add(105,1220);
         veloRegression.add(110,1220);
+        //tbc
         veloRegression.add(115,1190);
         veloRegression.add(120,1190);
         veloRegression.add(125,1210);

@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Wings {
+public class Wings extends SubsystemBase {
     Servo left, right;
     State wingState = State.IDLE;
-    public enum State {
+    enum State {
         ALL_OUT,
         ALL_IN,
         LEFT,
