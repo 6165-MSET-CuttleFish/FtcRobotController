@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 @Config
 public class Turret {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 3.75, 0.00001, 0);
-    public static double kV = 1;
-    public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
-    PIDFController angleControl = new PIDFController(ANGLE_PID);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.0002, 0, 0);
+    public static double kV = 0.5;
+    private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
+    PIDFController angleControl = new PIDFController(ANGLE_PID, kV);
     static double targetAngle;
     //Robot robot;
     public static final double TICKS_PER_REVOLUTION = 1120;
-    public static final double GEAR_RATIO = 6;
+    public static final double GEAR_RATIO = 30;
     public enum State{
         MOVING,
         IDLE
