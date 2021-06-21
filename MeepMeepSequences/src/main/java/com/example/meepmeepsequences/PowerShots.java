@@ -1,10 +1,11 @@
 package com.example.meepmeepsequences;
 
-import com.acmerobotics.roadrunner.geometry.*;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 
-public class MeepMeepSequences {
+public class PowerShots {
     public static void main(String[] args) {
         // Declare a MeepMeep instance
         // With a field size of 800 pixels
@@ -19,14 +20,6 @@ public class MeepMeepSequences {
                 .setConstraints(60, 60, Math.toRadians(220), Math.toRadians(220), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
-                                .splineTo(new Vector2d(50.5275, -22.7), Math.toRadians(0))
-                                .splineTo(new Vector2d(65.5275, -22.7), Math.toRadians(90))
-                                .splineTo(new Vector2d(67, 10), Math.toRadians(90))
-                                .splineTo(new Vector2d(63.5, 20), Math.toRadians(90))
-                                .splineTo(new Vector2d(20, 20), Math.toRadians(180))
-                                .splineTo(new Vector2d(-5, -16), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot Boinked Rings
-                                .lineTo(new Vector2d(-62, -22.7)) // Intake starter rings
                                 .lineToLinearHeading(new Pose2d(-5, -16))
                                 .waitSeconds(0.8) // Shoot powershots
                                 .lineToLinearHeading(new Pose2d(65.5275, -10.7, Math.toRadians(-90)))
