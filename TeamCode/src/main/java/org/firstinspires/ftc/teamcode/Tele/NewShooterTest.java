@@ -28,11 +28,11 @@ public class NewShooterTest extends LinearOpMode {
                 s2.setPower(0);
             }
             if(gamepad1.a && mag.getPosition() > 0.9) {
-                mag.setPosition(0.8);
+                mag.setPosition(0.8); //push ring in
                 sleep(50);
             }
             else if(gamepad1.a && mag.getPosition() < 0.9){
-                mag.setPosition(1);
+                mag.setPosition(1); // open position
                 sleep(50);
             }
         }
