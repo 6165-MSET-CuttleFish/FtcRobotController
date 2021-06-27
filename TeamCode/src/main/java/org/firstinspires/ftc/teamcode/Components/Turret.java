@@ -59,6 +59,6 @@ public class Turret {
         // if((getRelativeAngle() + targetAngle) > (2 * Math.PI)) targetAngle -= 2 * Math.PI;
         this.targetAngle = targetAngle;
     }
-    
+
 
 }
