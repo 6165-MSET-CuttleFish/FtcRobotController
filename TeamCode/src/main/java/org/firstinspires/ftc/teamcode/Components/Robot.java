@@ -43,7 +43,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.spartronics4915.lib.T265Camera;
+//import com.spartronics4915.lib.T265Camera;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +94,7 @@ public class Robot extends MecanumDrive {
     public final LinearOpMode linearOpMode;
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
-    T265Camera t265;
+    //T265Camera t265;
 
     public DcMotor intakeR, intakeL;
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;

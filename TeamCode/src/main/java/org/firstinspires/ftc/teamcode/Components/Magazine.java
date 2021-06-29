@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Magazine {
-    Servo mag;
+    Servo magLeft1, magLeft2;
+    Servo magRight1, magRight2;
     public Gunner gunner;
     private final ElapsedTime externalTimer = new ElapsedTime();
     StateMachine liftMag;
@@ -19,8 +20,11 @@ public class Magazine {
         UP
     }
     public Magazine(HardwareMap hardwareMap){
-        gunner = new Gunner(hardwareMap);
-        mag = hardwareMap.servo.get("mag");
+        //gunner = new Gunner(hardwareMap);
+        magLeft1 = hardwareMap.servo.get("magLeftBottom");
+        magLeft2 = hardwareMap.servo.get("magLeftTop");
+        magRight1 = hardwareMap.servo.get("magRightBottom");
+        magRight2 = hardwareMap.servo.get("magRightTop");
         liftMag = new StateMachineBuilder<State>()
                 .state(State.MOVING_UP)
                 .onEnter(()->{
@@ -41,10 +45,18 @@ public class Magazine {
                 .build();
     }
     private void up(){
-        mag.setPosition(0.3);
+        magLeft1.setPosition(0.75);
+        magLeft2.setPosition(0.75);
+
+        magRight1.setPosition(0.23);
+        magRight2.setPosition(0.23);
     }
     private void down(){
-        mag.setPosition(0);
+        magLeft1.setPosition(0.97);
+        magLeft2.setPosition(0.97);
+
+        magRight1.setPosition(0.01);
+        magRight2.setPosition(0.01);
     }
     public State getState(){
        if(!liftMag.getRunning()) return (State) liftMag.getState();
