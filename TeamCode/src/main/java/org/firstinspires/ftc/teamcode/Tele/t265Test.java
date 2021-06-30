@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
@@ -18,6 +19,7 @@ public class t265Test extends OpMode {
 
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         if (slamra == null) {
             slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
         }
@@ -51,6 +53,9 @@ public class t265Test extends OpMode {
         double x1 = translation.getX() + arrowX  / 2, y1 = translation.getY() + arrowY / 2;
         double x2 = translation.getX() + arrowX, y2 = translation.getY() + arrowY;
         field.strokeLine(x1, y1, x2, y2);
+        telemetry.addData("x", translation.getX());
+        telemetry.addData("y", translation.getY());
+        telemetry.update();
 
         dashboard.sendTelemetryPacket(packet);
     }
