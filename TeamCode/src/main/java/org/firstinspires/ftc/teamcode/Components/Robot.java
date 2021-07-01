@@ -97,8 +97,16 @@ public class Robot extends MecanumDrive {
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Pose2d shootingPose = new Pose2d(-12, -52, Math.toRadians(4.5));
     public static Pose2d shootingPoseTele = new Pose2d(-7.5, -32.9725, Math.toRadians(1));
-    public static Vector2d[] pwrShotLocals = new Vector2d[3];
-    public static Vector2d[] pwrShots = new Vector2d[3];
+    public static Vector2d[] pwrShotLocals = {
+            new Vector2d(-5.8, -6.3),
+            new Vector2d(-5.8, -16),
+            new Vector2d(-5.8, -22)
+    };
+    public static Vector2d[] pwrShots = {
+            new Vector2d(70.4725, -1.4725),
+            new Vector2d(70.4725, -10.4725),
+            new Vector2d(70.4725, -19.4725)
+    };
     public static Vector2d A = new Vector2d(-5.4725, -55.4);
     public static Vector2d B = new Vector2d(23, -35.4725);
     public static Vector2d C = new Vector2d(45.5275, -57);
@@ -203,12 +211,6 @@ public class Robot extends MecanumDrive {
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
-        pwrShots[0] = new Vector2d(70.4725, -1.4725);
-        pwrShots[1] = new Vector2d(70.4725, -10.4725);
-        pwrShots[2] = new Vector2d(70.4725, -19.4725);
-        pwrShotLocals[0] = new Vector2d(-5.8, -6.3);
-        pwrShotLocals[1] = new Vector2d(-5.8, -16);
-        pwrShotLocals[2] = new Vector2d(-5.8, -22);
         intakeR = hardwareMap.get(DcMotor.class, "intakeR");
         intakeL = hardwareMap.get(DcMotor.class, "intakeL");
         in1 = hardwareMap.crservo.get("in1");

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Claw extends SubsystemBase {
-    public Servo grabber, grabber2;
+    public Servo grabber;
     public State state;
     public enum State{
         GRIP,
@@ -13,15 +13,14 @@ public class Claw extends SubsystemBase {
     }
     public Claw(HardwareMap hardwareMap){
         grabber = hardwareMap.servo.get("grabber");
-        grabber2 = hardwareMap.servo.get("grabber2");
     }
     public void grab(){
+        state = State.GRIP;
         grabber.setPosition(0.13);
-        grabber2.setPosition(0.83);
     }
     public void release(){
+        state = State.RELEASE;
         grabber.setPosition(0.63);
-        grabber2.setPosition(0.29);
     }
     public State getState(){
         return state;

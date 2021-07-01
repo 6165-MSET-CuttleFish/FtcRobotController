@@ -11,8 +11,7 @@ public class Magazine {
     Servo magRight1, magRight2;
     public Gunner gunner;
     private final ElapsedTime externalTimer = new ElapsedTime();
-    StateMachine liftMag;
-    StateMachine lowerMag;
+    StateMachine magMacro;
     public enum State{
         DOWN,
         MOVING_UP,
@@ -25,22 +24,14 @@ public class Magazine {
         magLeft2 = hardwareMap.servo.get("magLeftTop");
         magRight1 = hardwareMap.servo.get("magRightBottom");
         magRight2 = hardwareMap.servo.get("magRightTop");
-        liftMag = new StateMachineBuilder<State>()
+        magMacro = new StateMachineBuilder<State>()
+                .state(State.DOWN)
                 .state(State.MOVING_UP)
-                .onEnter(()->{
-                    externalTimer.reset();
-                    up();
-                })
-                .transitionTimed(0.4)
-                .exit(State.UP)
-                .build();
-        lowerMag = new StateMachineBuilder<State>()
+                .onEnter(this::up)
+                .transitionTimed(0.3)
                 .state(State.MOVING_DOWN)
-                .onEnter(()->{
-                    externalTimer.reset();
-                    down();
-                })
-                .transitionTimed(0.4)
+                .onEnter(this::down)
+                .transitionTimed(0.3)
                 .exit(State.DOWN)
                 .build();
     }
@@ -59,17 +50,12 @@ public class Magazine {
         magRight2.setPosition(0.01);
     }
     public State getState(){
-       if(!liftMag.getRunning()) return (State) liftMag.getState();
-        return (State) lowerMag.getState();
+       return (State) magMacro.getState();
     }
-    public void liftMag(){
-        liftMag.start();
-    }
-    public void lowerMag(){
-        lowerMag.start();
+    public void magMacro() {
+        magMacro.start();
     }
     public void update(){
-        liftMag.update();
-        lowerMag.update();
+        magMacro.update();
     }
 }

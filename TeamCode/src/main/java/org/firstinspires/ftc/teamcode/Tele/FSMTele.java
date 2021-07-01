@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
@@ -105,7 +104,7 @@ public class FSMTele extends LinearOpMode {
     }
     public void shooter() {
         if (riya.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.1) {
-            robot.shooter.magUp();
+            robot.shooter.magMacro();
             robot.shooter.setVelocity(targetVelocity);
             if (Math.abs(robot.shooter.getError()) <= 30 && !robot.isBusy() && !wasPressed) {
                 wasPressed = true;
@@ -113,9 +112,8 @@ public class FSMTele extends LinearOpMode {
                 robot.optimalShoot();
             }
         } else if (riya.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-            robot.shooter.magUp();
+            robot.shooter.magMacro();
         } else {
-            robot.shooter.magDown();
             if (robot.shooter.getRings() > 0) robot.shooter.setVelocity(targetVelocity);
         }
         if (riya.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {

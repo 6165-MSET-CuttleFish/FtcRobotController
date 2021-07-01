@@ -4,23 +4,27 @@ import android.util.Log;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 
 //http://192.168.43.1:8080/dash
 @Config
 public class Shooter {
+    enum State {
+        continuous,
+        rev_to_velo,
+
+    }
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
@@ -33,32 +37,32 @@ public class Shooter {
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
 
     private final ElapsedTime veloTimer = new ElapsedTime();
-    public DcMotorEx flywheel, flywheel1;
-    public Servo flap, mag;
+    public DcMotor flywheel, flywheel1;
+    public Encoder veloTracker;
+    public Servo flap;
     public double targetVelo;
     public double targetAngle;
     private final InterpLUT veloRegression;
     Robot robot;
     public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
+    public Gunner gunner;
     public Shooter(Robot robot) {
         this.robot = robot;
         HardwareMap map  = robot.hardwareMap;
         veloRegression = new InterpLUT();
         setVelocityController();
         colorRangeSensor = map.get(ColorRangeSensor.class, "range");
-        flywheel = map.get(DcMotorEx.class, "fw");
-        flywheel1 = map.get(DcMotorEx.class, "fw1");
-        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel = map.get(DcMotor.class, "fw");
+        flywheel1 = map.get(DcMotor.class, "fw1");
+        flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        magazine = new Magazine(map);
+        //magazine = new Magazine(map);
         //gunner = map.get(Servo.class, "mag");
         flap = map.get(Servo.class, "flap");
-        mag = map.get(Servo.class, "tilt");
-        singleRound();
-        magDown();
+       // mag = map.get(Servo.class, "tilt");
         if(robot.opModeType == OpModeType.auto){
             robot.wings.allIn();
         }
@@ -78,7 +82,7 @@ public class Shooter {
         veloTimer.reset();
         lastTargetVelo = targetVelo;
         double motorPos = flywheel.getCurrentPosition();
-        double motorVelo = flywheel.getVelocity();
+        double motorVelo = veloTracker.getCorrectedVelocity();
         double power = veloController.update(motorPos, motorVelo);
         if (targetVelo == 0) {
             flywheel.setPower(0);
@@ -121,15 +125,9 @@ public class Shooter {
     }
     public void setLauncherVelocity(double v){
         targetVelo = v;
-        if(v > 0){
-            magUp();
-        }
-        else {
-            magDown();
-        }
     }
     public double getVelocity(){
-        return flywheel.getVelocity();
+        return veloTracker.getCorrectedVelocity();
     }
     public double getTargetVelo(){
         return targetVelo;
@@ -137,11 +135,8 @@ public class Shooter {
     public double getError(){
         return getTargetVelo() - getVelocity();
     }
-    public void magUp(){
-        mag.setPosition(0.75);
-    }
-    public void magDown(){
-        mag.setPosition(0.56);
+    public void magMacro(){
+
     }
     public void tripleShot(){
         magazine.gunner.tripleShot();

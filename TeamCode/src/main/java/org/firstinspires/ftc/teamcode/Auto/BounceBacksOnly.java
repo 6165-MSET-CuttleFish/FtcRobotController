@@ -68,7 +68,7 @@ public class BounceBacksOnly extends LinearOpMode {
                 .build();
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
-        robot.shooter.magUp();
+        robot.shooter.magMacro();
         robot.grab();
         while (!opModeIsActive()) {
             robot.scan();
@@ -147,7 +147,7 @@ public class BounceBacksOnly extends LinearOpMode {
         });
         sleep(110);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.shooter.magMacro();
         sleep(200);
         robot.shooter.singleRound();
         sleep(40);
@@ -175,16 +175,16 @@ public class BounceBacksOnly extends LinearOpMode {
         });
         sleep(120);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.shooter.magMacro();
         sleep(200);
         robot.shooter.singleRound();
         robot.shooter.setVelocity(Robot.shootingPoseTele.vec());
         sleep(40);
-        robot.shooter.magDown();
+        robot.shooter.magMacro();
         robot.followTrajectory(finalShot);
         sleep(100);
         robot.intake(-1);
-        robot.shooter.magUp();
+        robot.shooter.magMacro();
         sleep(190);
         robot.optimalShoot();
         sleep(40);
@@ -250,7 +250,7 @@ public class BounceBacksOnly extends LinearOpMode {
                 .lineToLinearHeading(Coordinate.toPose(Robot.shootingPose.vec(), Math.toRadians(180)))
                 .addDisplacementMarker(()-> {
                     robot.intake(0);
-                    robot.shooter.magUp();
+                    robot.shooter.magMacro();
                     robot.wings.safeLeftOut();
                     robot.turn(Math.toRadians(-18));
                     Vector2d goalPost = Robot.goal.plus(new Vector2d(0, -10));

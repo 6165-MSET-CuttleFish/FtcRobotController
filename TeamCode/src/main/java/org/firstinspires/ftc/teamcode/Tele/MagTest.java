@@ -14,10 +14,7 @@ public class MagTest extends LinearOpMode {
         while(opModeIsActive()){
             magazine.update();
             if(gamepad1.a){
-                magazine.liftMag();
-            }
-            if(gamepad1.b) {
-                magazine.lowerMag();
+                magazine.magMacro();
             }
         }
     }

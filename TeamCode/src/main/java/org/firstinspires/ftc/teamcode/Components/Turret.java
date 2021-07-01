@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
-
 @Config
 public class Turret {
     DcMotorEx turret;
@@ -22,7 +20,8 @@ public class Turret {
     public static final double GEAR_RATIO = 6;
     public enum State{
         MOVING,
-        IDLE
+        TARGET_REACHED,
+        IDLE,
     }
     public Turret(HardwareMap hardwareMap){
         //HardwareMap hardwareMap = robot.hardwareMap;
@@ -46,7 +45,7 @@ public class Turret {
         if(turret.getVelocity() > 1){
             return State.MOVING;
         }
-        return State.IDLE;
+        return State.TARGET_REACHED;
     }
     public double getRelativeAngle(){
         return turret.getCurrentPosition() * (2*Math.PI/(TICKS_PER_REVOLUTION * GEAR_RATIO));

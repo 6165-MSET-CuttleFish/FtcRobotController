@@ -16,15 +16,10 @@ public class colorTest extends LinearOpMode {
         robot = new Robot(this);
         waitForStart();
         while(opModeIsActive()){
-            tiltMag();
             telemetry.addData("rings", robot.shooter.getRings());
             telemetry.addData("distance", robot.shooter.getDistance());
             telemetry.update();
         }
-    }
-    public void tiltMag() {
-        if(gamepad2.left_bumper) robot.shooter.magDown();
-        else if(gamepad2.right_bumper) robot.shooter.magUp();
     }
 
     private boolean gamepadIdle(){
