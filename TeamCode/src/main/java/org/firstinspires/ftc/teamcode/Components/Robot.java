@@ -87,9 +87,8 @@ public class Robot extends MecanumDrive {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    public DcMotor intakeR, intakeL;
+    public DcMotor intake;
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    public CRServo in1, in2;
     public Servo arm1, arm2;
     public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
@@ -211,18 +210,12 @@ public class Robot extends MecanumDrive {
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
-        intakeR = hardwareMap.get(DcMotor.class, "intakeR");
-        intakeL = hardwareMap.get(DcMotor.class, "intakeL");
-        in1 = hardwareMap.crservo.get("in1");
-        in2 = hardwareMap.crservo.get("in2");
-        in1.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake = hardwareMap.get(DcMotor.class, "intake");
         arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
         arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
-        grabber = hardwareMap.get(Servo.class, "wobbleGrabber1");
-        grabber2 = hardwareMap.get(Servo.class, "wobbleGrabber2");
-        leftIntakeHolder = hardwareMap.get(Servo.class,"wallL");
-        rightIntakeHolder = hardwareMap.get(Servo.class,"wallR");
-        intakeL.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
+        rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter = new Shooter(this);
         setPoseEstimate(robotPose);
     }
@@ -309,10 +302,7 @@ public class Robot extends MecanumDrive {
         grabber2.setPosition(0.29);
     }
     public void intake(double intakeSpeed){
-        intakeL.setPower(-intakeSpeed);
-        intakeR.setPower(-intakeSpeed);
-        in1.setPower(intakeSpeed);
-        in2.setPower(intakeSpeed);
+        intake.setPower(-intakeSpeed);
     }
     public void optimalShoot(){
         if(opModeType == OpModeType.tele) Async.start(()->{
@@ -511,7 +501,7 @@ public class Robot extends MecanumDrive {
         }
     }
     public boolean isBusy() {
-        return mode != Mode.IDLE || shooter.magazine.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT;
+        return mode != Mode.IDLE;//|| shooter.magazine.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT;
     }
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {
@@ -592,7 +582,7 @@ public class Robot extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).firstAngle;
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.RADIANS).firstAngle;
     }
 
     @Override
@@ -615,7 +605,7 @@ public class Robot extends MecanumDrive {
         // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
         // flat on a surface
 
-        return (double) imu.getAngularVelocity().zRotationRate;
+        return (double) imu.getAngularVelocity().yRotationRate;
     }
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
         return new MinVelocityConstraint(Arrays.asList(

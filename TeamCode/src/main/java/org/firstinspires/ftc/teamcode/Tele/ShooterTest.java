@@ -48,18 +48,18 @@ public class ShooterTest extends LinearOpMode implements Runnable{
                 sleep(150);
             }
             if(gamepad1.left_trigger >= 0.1) {
-                robot.shooter.magUp();
+                //robot.shooter.magUp();
                 robot.shooter.setVelocity(targetVelo);
             } else {
                 robot.shooter.setVelocity(0);
                 if (gamepad1.left_bumper && !magCheck){
                     magCheck = true;
                     if(!isMagUp) {
-                        robot.shooter.magUp();
+                        //robot.shooter.magUp();
                         isMagUp = true;
                     }
                     else {
-                        robot.shooter.magDown();
+                       // robot.shooter.magDown();
                         isMagUp = false;
                     }
                 }

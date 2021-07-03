@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class WobbleArm extends SubsystemBase {
     State state = State.IN;
-    public Servo arm1;
+    public Servo arm1, arm2;
     public Claw claw;
     StateMachine wobbleDropMacro;
     public enum State{

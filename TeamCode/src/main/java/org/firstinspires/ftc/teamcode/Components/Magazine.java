@@ -25,29 +25,28 @@ public class Magazine {
         magRight1 = hardwareMap.servo.get("magRightBottom");
         magRight2 = hardwareMap.servo.get("magRightTop");
         magMacro = new StateMachineBuilder<State>()
-                .state(State.DOWN)
                 .state(State.MOVING_UP)
                 .onEnter(this::up)
-                .transitionTimed(0.3)
+                .transitionTimed(0.8)
                 .state(State.MOVING_DOWN)
                 .onEnter(this::down)
-                .transitionTimed(0.3)
+                .transitionTimed(0.8)
                 .exit(State.DOWN)
                 .build();
     }
-    private void up(){
-        magLeft1.setPosition(0.75);
-        magLeft2.setPosition(0.75);
+    public void up(){
+        magLeft1.setPosition(0.4);
+        magLeft2.setPosition(0.4);
 
-        magRight1.setPosition(0.23);
-        magRight2.setPosition(0.23);
+        magRight1.setPosition(0.58);
+        magRight2.setPosition(0.58);
     }
-    private void down(){
-        magLeft1.setPosition(0.97);
-        magLeft2.setPosition(0.97);
+    public void down(){
+        magLeft1.setPosition(0.71);
+        magLeft2.setPosition(0.71);
 
-        magRight1.setPosition(0.01);
-        magRight2.setPosition(0.01);
+        magRight1.setPosition(0.27);
+        magRight2.setPosition(0.27);
     }
     public State getState(){
        return (State) magMacro.getState();
