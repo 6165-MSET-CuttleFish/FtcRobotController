@@ -89,8 +89,6 @@ public class Robot extends MecanumDrive {
 
     public DcMotor intake;
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    public Servo arm1, arm2;
-    public Servo grabber, grabber2;
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
@@ -115,12 +113,11 @@ public class Robot extends MecanumDrive {
 
     public Shooter shooter;
     public WobbleArm wobbleArm;
-    public Wings wings;
-
+    public Magazine magazine;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.2;
+    public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -194,6 +191,9 @@ public class Robot extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "bl");
         rightRear = hardwareMap.get(DcMotorEx.class, "br");
         rightFront = hardwareMap.get(DcMotorEx.class, "fr");
+        wobbleArm = new WobbleArm(hardwareMap);
+        shooter = new Shooter(this);
+        magazine = new Magazine(hardwareMap);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -208,15 +208,11 @@ public class Robot extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-        setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
+        //setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
         intake = hardwareMap.get(DcMotor.class, "intake");
-        arm1 = hardwareMap.get(Servo.class, "wobbleArm1");
-        arm2 = hardwareMap.get(Servo.class, "wobbleArm2");
         leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter = new Shooter(this);
         setPoseEstimate(robotPose);
     }
     public void autoInit(){
@@ -247,7 +243,6 @@ public class Robot extends MecanumDrive {
     public Trajectory pickup;
     public void createTraj(double endTangent){
         TrajectoryBuilder builder = trajectoryBuilder(Coordinate.toPose(pwrShotLocals[2], 0))
-                .addTemporalMarker(0.7, () -> wings.vert())
                 .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                 .splineTo(new Vector2d(42, 7), 0);
         Vector2d[] wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
@@ -281,35 +276,25 @@ public class Robot extends MecanumDrive {
         dashboard.stopCameraStream();
     }
     public void wobbleArmUp() {
-        arm1.setPosition(0.1);
-        arm2.setPosition (0.88);
+        wobbleArm.dropMacro();
     }
     public void wobbleArmDown() {
-        arm1.setPosition(0.93);
-        arm2.setPosition (0.07);
+        wobbleArm.dropMacro();
 
     }
     public void wobbleArmVertical(){
-        arm1.setPosition(0.5);
-        arm2.setPosition (0.5);
+        wobbleArm.dropMacro();
     }
     public void grab(){
-        grabber.setPosition(0.13);
-        grabber2.setPosition(0.83);
+        wobbleArm.claw.grab();
     }
     public void release(){
-        grabber.setPosition(0.63);
-        grabber2.setPosition(0.29);
+        wobbleArm.claw.release();
     }
     public void intake(double intakeSpeed){
         intake.setPower(-intakeSpeed);
     }
     public void optimalShoot(){
-        if(opModeType == OpModeType.tele) Async.start(()->{
-            sleep(300);
-            wings.allOut();
-            intake(0.4);
-        });
         shooter.tripleShot();
     }
     public final void sleep(long milliseconds) {

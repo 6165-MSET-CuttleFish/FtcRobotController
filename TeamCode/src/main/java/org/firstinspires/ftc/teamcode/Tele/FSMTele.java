@@ -10,12 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
-import org.firstinspires.ftc.teamcode.Components.Wings;
 
 @TeleOp
 public class FSMTele extends LinearOpMode {
     Robot robot;
-    Wings.State wingDefault = Wings.State.ALL_OUT;
     GamepadEx allen;
     GamepadEx riya;
     double lxMult = 1;
@@ -46,7 +44,7 @@ public class FSMTele extends LinearOpMode {
                     new Pose2d(
                             -allen.getLeftY() * lyMult,
                             -allen.getLeftX() * lxMult,
-                            -allen.getRightX() * 0.92 * rxMult
+                            allen.getRightX() * 0.92 * rxMult
                     )
             );
             setMultiplier();

@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Turret {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 3.75, 0.00001, 0);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.028, 0, 0);
     public static double kV = 1;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
     PIDFController angleControl = new PIDFController(ANGLE_PID);
-    static double targetAngle;
+    public static double targetAngle = 0;
     //Robot robot;
-    public static final double TICKS_PER_REVOLUTION = 1120;
-    public static final double GEAR_RATIO = 6;
+    public static double TICKS_PER_REVOLUTION = 28;
+    public static double GEAR_RATIO = (68.0/13.0) * (110.0/24.0);
     public enum State{
         MOVING,
         TARGET_REACHED,
@@ -33,10 +33,13 @@ public class Turret {
     public void update(){
 
         angleControl.setTargetPosition(targetAngle);
-        double power = angleControl.update(getAbsoluteAngle());
+        double power = angleControl.update(Math.toDegrees(getAbsoluteAngle()));
         turret.setPower(power);
         if(lastKv != kV || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
             lastKv = kV;
+            lastKp = ANGLE_PID.kP;
+            lastKi = ANGLE_PID.kI;
+            lastKd = ANGLE_PID.kD;
             angleControl = new PIDFController(ANGLE_PID, kV);
         }
 

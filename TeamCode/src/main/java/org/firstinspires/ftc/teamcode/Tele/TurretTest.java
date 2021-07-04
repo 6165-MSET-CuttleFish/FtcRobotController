@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.Turret;
 
-@Config
+
 @TeleOp(name = "TurretTest", group = "LinearOpMode")
 public class TurretTest extends LinearOpMode {
     Turret turret;
@@ -16,17 +16,14 @@ public class TurretTest extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         turret = new Turret(hardwareMap);
-        double angle = 90;
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         waitForStart();
         while (opModeIsActive()){
-            turret.setTargetAngle(Math.toRadians(angle));
             turret.update();
             telemetry.addData("Current Angle", Math.toDegrees(turret.getAbsoluteAngle()));
-            telemetry.addData("target angle", angle);
-            telemetry.addData("d", turret.lastKd);
-            telemetry.addData("i", turret.lastKi);
-            telemetry.addData("p", turret.lastKp);
+            telemetry.addData("d", Turret.ANGLE_PID.kD);
+            telemetry.addData("i", Turret.ANGLE_PID.kI);
+            telemetry.addData("p", Turret.ANGLE_PID.kP);
             telemetry.update();
         }
     }

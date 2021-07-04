@@ -21,7 +21,7 @@ public class Gunner {
         IDLE
     }
     public Gunner(HardwareMap hardwareMap){
-        gunner = hardwareMap.servo.get("gunner");
+        gunner = hardwareMap.servo.get("spanker");
         StateMachineBuilder<State> tripleShotBuilder = new StateMachineBuilder<State>();
         for(int i = 0; i < 3; i ++) {
                 tripleShotBuilder = tripleShotBuilder
@@ -70,9 +70,9 @@ public class Gunner {
         return (State) singleShot.getState();
     }
     private void in(){
-        gunner.setPosition(0.34);
+        gunner.setPosition(0.8);
     }
     private void out(){
-        gunner.setPosition(0.48);
+        gunner.setPosition(1);
     }
 }
