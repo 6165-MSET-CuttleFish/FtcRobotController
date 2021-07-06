@@ -131,7 +131,7 @@ public class Shooter {
 
     }
     public void tripleShot(){
-        magazine.gunner.tripleShot();
+        magazine.gunner.tripleShot(3);
     }
     public void singleRound(){
         magazine.gunner.shoot();

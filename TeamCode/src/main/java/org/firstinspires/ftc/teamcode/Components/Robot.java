@@ -44,6 +44,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.Components.localizer.IntelLocalizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
@@ -208,7 +209,7 @@ public class Robot extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        //setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
+        setLocalizer(new IntelLocalizer(hardwareMap, robotPose));
         intake = hardwareMap.get(DcMotor.class, "intake");
         leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
@@ -296,6 +297,14 @@ public class Robot extends MecanumDrive {
     }
     public void optimalShoot(){
         shooter.tripleShot();
+    }
+    public void shieldUp() {
+        leftIntakeHolder.setPosition(0);
+        rightIntakeHolder.setPosition(1);
+    }
+    public void shieldDown(){
+        leftIntakeHolder.setPosition(0.12);
+        rightIntakeHolder.setPosition(0.88);
     }
     public final void sleep(long milliseconds) {
         try {

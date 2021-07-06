@@ -8,11 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Gunner {
     private final StateMachine tripleShot;
-    private final StateMachine singleShot;
-    private final ElapsedTime externalTimer = new ElapsedTime();
     private static double gunTime = 85.0/1000.0;
+    private int shotRounds = 0;
+    private int targetRounds = 1;
     private final Servo gunner;
-    State state = State.IDLE;
     public enum State {
         TRIGGER,
         IN,
@@ -22,57 +21,56 @@ public class Gunner {
     }
     public Gunner(HardwareMap hardwareMap){
         gunner = hardwareMap.servo.get("spanker");
-        StateMachineBuilder<State> tripleShotBuilder = new StateMachineBuilder<State>();
-        for(int i = 0; i < 3; i ++) {
-                tripleShotBuilder = tripleShotBuilder
-                        .state(State.TRIGGER)
-                        .transitionTimed(gunTime)
-                        .onEnter(()->{
-                                externalTimer.reset();
-                                in();
-                        })
-                        .state(State.IN)
-                        .onEnter(externalTimer::reset)
-                        .state(State.PULLOUT)
-                        .transitionTimed(gunTime)
-                        .onEnter(()->{
-                            externalTimer.reset();
-                            out();
-                        })
-                .state(State.OUT);
-        }
-        tripleShotBuilder = tripleShotBuilder.exit(State.IDLE);
-        tripleShot = tripleShotBuilder.build();
-        singleShot = new StateMachineBuilder<State>()
+        tripleShot = new StateMachineBuilder<State>()
+                .state(State.IDLE)
+                .transitionTimed(0)
+
                 .state(State.TRIGGER)
                 .transitionTimed(gunTime)
-                .onEnter(externalTimer::reset)
+                .onEnter(() -> {
+                    this.in();
+                    shotRounds++;
+                })
+
                 .state(State.IN)
-                .onEnter(externalTimer::reset)
+                .transitionTimed(0)
+
                 .state(State.PULLOUT)
                 .transitionTimed(gunTime)
-                .onEnter(externalTimer::reset)
+                .onEnter(this::out)
+
                 .exit(State.IDLE)
                 .build();
     }
-    public void tripleShot(){
-        if(!tripleShot.getRunning()) tripleShot.start();
+    public void tripleShot(int rounds){
+        if(!tripleShot.getRunning()) {
+            shotRounds = 0;
+            targetRounds = rounds;
+            tripleShot.setLooping(true);
+            tripleShot.start();
+        }
     }
-    public void shoot(){
-        if(!singleShot.getRunning()) singleShot.start();
+    public void shoot() {
+        if(!tripleShot.getRunning()) {
+            tripleShot.setLooping(true);
+            tripleShot.start();
+        }
     }
     public void update(){
         tripleShot.update();
-        singleShot.update();
+        if(targetRounds != 0 && shotRounds == targetRounds){
+            shotRounds = 0;
+            targetRounds = 1;
+            tripleShot.setLooping(false);
+        }
     }
     public State getState(){
-        if(tripleShot.getRunning()) return (State) tripleShot.getState();
-        return (State) singleShot.getState();
+        return (State) tripleShot.getState();
     }
     private void in(){
         gunner.setPosition(0.8);
     }
     private void out(){
-        gunner.setPosition(1);
+        gunner.setPosition(0.91);
     }
 }
