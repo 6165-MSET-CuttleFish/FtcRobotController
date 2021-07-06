@@ -127,4 +127,9 @@ public class FSMTele extends LinearOpMode {
         reverseMode = new ToggleButtonReader(allen, GamepadKeys.Button.RIGHT_BUMPER);
         highGoalTrigger = new TriggerReader(riya, GamepadKeys.Trigger.LEFT_TRIGGER);
     }
+    private void update(){
+        clawButton.readValue();
+        reverseMode.readValue();
+        highGoalTrigger.readValue();
+    }
 }
