@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:
@@ -38,10 +39,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double Y_MULTIPLIER = 0.97440337; // Multiplier in the Y direction
 
     public Encoder leftEncoder, rightEncoder, frontEncoder;
-    SampleMecanumDrive drive;
     double constant;
 
-    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap, SampleMecanumDrive drive) {
+    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, 0), // right
@@ -54,8 +54,6 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         rightEncoder.setDirection(Encoder.Direction.REVERSE);
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
         frontEncoder.setDirection(Encoder.Direction.REVERSE);
-        this.drive = drive;
-        constant = drive.getRawExternalHeading();
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
     }
 

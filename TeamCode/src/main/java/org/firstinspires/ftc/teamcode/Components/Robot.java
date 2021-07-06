@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
@@ -28,7 +26,6 @@ import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -37,17 +34,18 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-//import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.Components.localizer.IntelLocalizer;
+import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
-import org.firstinspires.ftc.teamcode.util.DashboardUtil;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -81,7 +79,7 @@ public class Robot extends MecanumDrive {
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
 
-    public OpModeType opModeType;
+    public static OpModeType opModeType = OpModeType.none;
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
     public final LinearOpMode linearOpMode;
@@ -124,8 +122,6 @@ public class Robot extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    public static int POSE_HISTORY_LIMIT = 100;
-
     public enum Mode {
         IDLE,
         TURN,
@@ -138,15 +134,21 @@ public class Robot extends MecanumDrive {
     private final PIDFController turnController;
     private MotionProfile turnProfile;
     private double turnStart;
-    private final TrajectoryVelocityConstraint velConstraint;
-    private final TrajectoryAccelerationConstraint accelConstraint;
+    private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+    private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
+    private TrajectorySequenceRunner trajectorySequenceRunner;
     private final TrajectoryFollower follower;
     private final LinkedList<Pose2d> poseHistory;
     private final List<DcMotorEx> motors;
     private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
-
+    Component[] components = {
+            magazine,
+            shooter,
+            wobbleArm
+    };
+    LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.none);
     }
@@ -170,12 +172,6 @@ public class Robot extends MecanumDrive {
         mode = Mode.IDLE;
         turnController = new PIDFController(new PIDCoefficients(7, 0, 0));
         turnController.setInputBounds(0, 2 * Math.PI);
-
-        velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new AngularVelocityConstraint(MAX_ANG_VEL),
-                new MecanumVelocityConstraint(MAX_VEL, TRACK_WIDTH)
-        ));
-        accelConstraint = new ProfileAccelerationConstraint(MAX_ACCEL);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         poseHistory = new LinkedList<>();
@@ -193,7 +189,7 @@ public class Robot extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "br");
         rightFront = hardwareMap.get(DcMotorEx.class, "fr");
         wobbleArm = new WobbleArm(hardwareMap);
-        shooter = new Shooter(this);
+        shooter = new Shooter(hardwareMap);
         magazine = new Magazine(hardwareMap);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
@@ -209,7 +205,10 @@ public class Robot extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        setLocalizer(new IntelLocalizer(hardwareMap, robotPose));
+        switch (opModeType) {
+            case tele: setLocalizer(new t265Localizer(hardwareMap));
+            default: setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        }
         intake = hardwareMap.get(DcMotor.class, "intake");
         leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
@@ -324,19 +323,27 @@ public class Robot extends MecanumDrive {
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
-        return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
+        return new TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose, boolean reversed) {
-        return new TrajectoryBuilder(startPose, reversed, velConstraint, accelConstraint);
+        return new TrajectoryBuilder(startPose, reversed, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose, double startHeading) {
-        return new TrajectoryBuilder(startPose, startHeading, velConstraint, accelConstraint);
+        return new TrajectoryBuilder(startPose, startHeading, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
-        return new TrajectoryBuilder(Robot.robotPose, velConstraint, accelConstraint);
+        return new TrajectoryBuilder(Robot.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
+    }
+
+    public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
+        return new TrajectorySequenceBuilder(
+                startPose,
+                VEL_CONSTRAINT, ACCEL_CONSTRAINT,
+                MAX_ANG_VEL, MAX_ANG_ACCEL
+        );
     }
 
     public void turnAsync(double angle) {
@@ -366,124 +373,39 @@ public class Robot extends MecanumDrive {
     }
 
     public void followTrajectoryAsync(Trajectory trajectory) {
-        follower.followTrajectory(trajectory);
-        mode = Mode.FOLLOW_TRAJECTORY;
+        trajectorySequenceRunner.followTrajectorySequenceAsync(
+                trajectorySequenceBuilder(trajectory.start())
+                        .addTrajectory(trajectory)
+                        .build()
+        );
     }
 
     public void followTrajectory(Trajectory trajectory) {
         followTrajectoryAsync(trajectory);
         waitForIdle();
     }
-    public void followTrajectory(Trajectory trajectory, double distanceTolerance, Runnable block){
-        followTrajectoryAsync(trajectory);
-        waitForIdle(()->{
-            if(Coordinate.toPoint(getPoseEstimate()).distanceTo(Coordinate.toPoint(trajectory.end())) < distanceTolerance)
-                block.run();
-        });
+
+    public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
+        trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);
     }
 
-    public void followTrajectory(Trajectory trajectory, Runnable block){
-        followTrajectoryAsync(trajectory);
-        waitForIdle(block);
+    public void followTrajectorySequence(TrajectorySequence trajectorySequence) {
+        followTrajectorySequenceAsync(trajectorySequence);
+        waitForIdle();
     }
+
     public Pose2d getLastError() {
-        switch (mode) {
-            case FOLLOW_TRAJECTORY:
-                return follower.getLastError();
-            case TURN:
-                return new Pose2d(0, 0, turnController.getLastError());
-            case IDLE:
-                return new Pose2d();
-        }
-        throw new AssertionError();
+        return trajectorySequenceRunner.getLastPoseError();
     }
+
     public void update() {
         updatePoseEstimate();
-        shooter.update();
-        Pose2d currentPose = getPoseEstimate();
-        robotPose = currentPose;
-        Pose2d lastError = getLastError();
-
-        poseHistory.add(currentPose);
-
-        if (POSE_HISTORY_LIMIT > -1 && poseHistory.size() > POSE_HISTORY_LIMIT) {
-            poseHistory.removeFirst();
+        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        if (signal != null) setDriveSignal(signal);
+        for(Component component : components){
+            component.update();
         }
-
-        TelemetryPacket packet = new TelemetryPacket();
-        Canvas fieldOverlay = packet.fieldOverlay();
-
-        packet.put("mode", mode);
-
-        packet.put("x", currentPose.getX());
-        packet.put("y", currentPose.getY());
-        packet.put("heading (deg)", Math.toDegrees(currentPose.getHeading()));
-        packet.put("Velocity", shooter.getVelocity());
-        packet.put("Target Velocity", shooter.getTargetVelo());
-
-        packet.put("xError", lastError.getX());
-        packet.put("yError", lastError.getY());
-        packet.put("headingError (deg)", Math.toDegrees(lastError.getHeading()));
-
-        switch (mode) {
-            case IDLE:
-                // do nothing
-                break;
-            case TURN: {
-                double t = clock.seconds() - turnStart;
-
-                MotionState targetState = turnProfile.get(t);
-
-                turnController.setTargetPosition(targetState.getX());
-
-                double correction = turnController.update(currentPose.getHeading());
-
-                double targetOmega = targetState.getV();
-                double targetAlpha = targetState.getA();
-                setDriveSignal(new DriveSignal(new Pose2d(
-                        0, 0, targetOmega + correction
-                ), new Pose2d(
-                        0, 0, targetAlpha
-                )));
-
-                Pose2d newPose = lastPoseOnTurn.copy(lastPoseOnTurn.getX(), lastPoseOnTurn.getY(), targetState.getX());
-
-                fieldOverlay.setStroke("#4CAF50");
-                DashboardUtil.drawRobot(fieldOverlay, newPose);
-
-                if (t >= turnProfile.duration()) {
-                    mode = Mode.IDLE;
-                    setDriveSignal(new DriveSignal());
-                }
-
-                break;
-            }
-            case FOLLOW_TRAJECTORY: {
-                setDriveSignal(follower.update(currentPose, getPoseVelocity()));
-
-                Trajectory trajectory = follower.getTrajectory();
-
-                fieldOverlay.setStrokeWidth(1);
-                fieldOverlay.setStroke("#4CAF50");
-                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.getPath());
-                double t = follower.elapsedTime();
-                DashboardUtil.drawRobot(fieldOverlay, trajectory.get(t));
-
-                fieldOverlay.setStroke("#3F51B5");
-                DashboardUtil.drawPoseHistory(fieldOverlay, poseHistory);
-
-                if (!follower.isFollowing()) {
-                    mode = Mode.IDLE;
-                    setDriveSignal(new DriveSignal());
-                }
-                break;
-            }
-        }
-
-        fieldOverlay.setStroke("#3F51B5");
-        DashboardUtil.drawRobot(fieldOverlay, currentPose);
-
-        dashboard.sendTelemetryPacket(packet);
+        if(!isBusy())actionQueue.pop().run();
     }
     public void waitForIdle() {
         waitForIdle(()->{});
@@ -495,7 +417,10 @@ public class Robot extends MecanumDrive {
         }
     }
     public boolean isBusy() {
-        return mode != Mode.IDLE;//|| shooter.magazine.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT;
+        return mode != Mode.IDLE || shooter.magazine.gunner.getState() != Gunner.State.IDLE;
+    }
+    public boolean actionsRunningAreFatal(){
+        return shooter.magazine.gunner.getState() != Gunner.State.IDLE;
     }
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {

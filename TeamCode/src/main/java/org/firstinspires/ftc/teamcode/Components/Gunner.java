@@ -4,9 +4,8 @@ import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class Gunner {
+public class Gunner extends Component{
     private final StateMachine tripleShot;
     private static double gunTime = 85.0/1000.0;
     private int shotRounds = 0;
@@ -22,7 +21,7 @@ public class Gunner {
     public Gunner(HardwareMap hardwareMap){
         gunner = hardwareMap.servo.get("spanker");
         tripleShot = new StateMachineBuilder<State>()
-                .state(State.IDLE)
+                .state(State.OUT)
                 .transitionTimed(0)
 
                 .state(State.TRIGGER)
@@ -39,7 +38,7 @@ public class Gunner {
                 .transitionTimed(gunTime)
                 .onEnter(this::out)
 
-                .exit(State.IDLE)
+                .exit(State.OUT)
                 .build();
     }
     public void tripleShot(int rounds){

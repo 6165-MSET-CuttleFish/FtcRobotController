@@ -1,29 +1,38 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class WobbleArm extends SubsystemBase {
-    State state = State.IN;
+public class WobbleArm extends Component {
+    State state = State.UP;
     public Servo arm1, arm2;
     public Claw claw;
     StateMachine wobbleDropMacro;
     public enum State{
-        OUT,
-        IN,
+        DOWN,
+        UP,
         MID,
-        TRANSIT
+        WOBBLE_DROP,
     }
     public WobbleArm(HardwareMap hardwareMap){
         claw = new Claw(hardwareMap);
         arm1 = hardwareMap.servo.get("wobbleArm1");
         arm2 = hardwareMap.servo.get("wobbleArm2");
         wobbleDropMacro = new StateMachineBuilder<State>()
-                .state(state)
-                .exit(State.IN)
+                .state(State.UP)
+                .transitionTimed(0)
+
+                .state(State.MID)
+                .transitionTimed(0.3)
+                .onEnter(this::mid)
+
+                .exit(State.UP)
+                .onExit(() -> {
+                    claw.release();
+                    up();
+                })
                 .build();
     }
     public void dropMacro(){

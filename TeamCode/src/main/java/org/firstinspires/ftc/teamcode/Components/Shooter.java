@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 
 //http://192.168.43.1:8080/dash
 @Config
-public class Shooter {
+public class Shooter extends Component{
     enum State {
         continuous,
         rev_to_velo,
@@ -43,34 +43,30 @@ public class Shooter {
     public double targetVelo;
     public double targetAngle;
     private final InterpLUT veloRegression;
-    Robot robot;
     public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
     public Gunner gunner;
-    public Shooter(Robot robot) {
-        this.robot = robot;
-        HardwareMap map  = robot.hardwareMap;
+    public Shooter(HardwareMap hardwareMap) {
         veloRegression = new InterpLUT();
         setVelocityController();
-        //colorRangeSensor = map.get(ColorRangeSensor.class, "range");
-        flywheel = map.get(DcMotor.class, "fw");
-        flywheel1 = map.get(DcMotor.class, "fw1");
+        flywheel = hardwareMap.get(DcMotor.class, "fw");
+        flywheel1 = hardwareMap.get(DcMotor.class, "fw1");
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        //magazine = new Magazine(map);
-        //gunner = map.get(Servo.class, "mag");
-        flap = map.get(Servo.class, "flap");
+        magazine = new Magazine(hardwareMap);
+        gunner = new Gunner(hardwareMap);
+        flap = hardwareMap.get(Servo.class, "flap");
        // mag = map.get(Servo.class, "tilt");
-        if(robot.opModeType == OpModeType.auto){
+        if(Robot.opModeType == OpModeType.auto){
             //robot.wings.allIn();
         }
-        else if(robot.opModeType == OpModeType.tele) {
+        else if(Robot.opModeType == OpModeType.tele) {
             //robot.wings.vert();
             flapDown();
         }
-        for (LynxModule module : map.getAll(LynxModule.class)) {
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         veloTimer.reset();
