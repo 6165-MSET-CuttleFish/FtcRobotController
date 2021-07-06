@@ -16,11 +16,11 @@ public class Claw extends SubsystemBase {
     }
     public void grab(){
         state = State.GRIP;
-        grabber.setPosition(0.65);
+        grabber.setPosition(0.62);
     }
     public void release(){
         state = State.RELEASE;
-        grabber.setPosition(0.9);
+        grabber.setPosition(0.92);
     }
     public State getState(){
         return state;

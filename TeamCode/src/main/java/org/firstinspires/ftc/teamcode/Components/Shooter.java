@@ -52,7 +52,7 @@ public class Shooter {
         HardwareMap map  = robot.hardwareMap;
         veloRegression = new InterpLUT();
         setVelocityController();
-        colorRangeSensor = map.get(ColorRangeSensor.class, "range");
+        //colorRangeSensor = map.get(ColorRangeSensor.class, "range");
         flywheel = map.get(DcMotor.class, "fw");
         flywheel1 = map.get(DcMotor.class, "fw1");
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -64,10 +64,10 @@ public class Shooter {
         flap = map.get(Servo.class, "flap");
        // mag = map.get(Servo.class, "tilt");
         if(robot.opModeType == OpModeType.auto){
-            robot.wings.allIn();
+            //robot.wings.allIn();
         }
         else if(robot.opModeType == OpModeType.tele) {
-            robot.wings.vert();
+            //robot.wings.vert();
             flapDown();
         }
         for (LynxModule module : map.getAll(LynxModule.class)) {
@@ -82,7 +82,7 @@ public class Shooter {
         veloTimer.reset();
         lastTargetVelo = targetVelo;
         double motorPos = flywheel.getCurrentPosition();
-        double motorVelo = veloTracker.getCorrectedVelocity();
+        double motorVelo = 0;//veloTracker.getCorrectedVelocity();
         double power = veloController.update(motorPos, motorVelo);
         if (targetVelo == 0) {
             flywheel.setPower(0);
@@ -100,16 +100,7 @@ public class Shooter {
         if(getVelocity() > 100) Log.println(Log.INFO, "Velocity: ", getVelocity() + "");
     }
     public int getRings(){
-        double range = colorRangeSensor.getDistance(DistanceUnit.INCH);
-            if (range < 2.6) {
-                return 3;
-            } else if (range < 4.1) {
-                return 2;
-            } else if (range < 7) {
-                return 1;
-            } else {
-                return 0;
-            }
+        return 0;
     }
     public double getDistance(){
         return colorRangeSensor.getDistance(DistanceUnit.INCH);
@@ -127,7 +118,8 @@ public class Shooter {
         targetVelo = v;
     }
     public double getVelocity(){
-        return veloTracker.getCorrectedVelocity();
+        return 0;
+        //return veloTracker.getCorrectedVelocity();
     }
     public double getTargetVelo(){
         return targetVelo;
@@ -139,7 +131,7 @@ public class Shooter {
 
     }
     public void tripleShot(){
-        magazine.gunner.tripleShot();
+        magazine.gunner.tripleShot(3);
     }
     public void singleRound(){
         magazine.gunner.shoot();
@@ -149,10 +141,10 @@ public class Shooter {
         //gunner.setPosition(0.48);
     }
     public void flapUp(){
-        flap.setPosition(0.43);
+        flap.setPosition(0.75);
     }
     public void flapDown(){
-        flap.setPosition(0.35);
+        flap.setPosition(1);
     }
     private void setVelocityController(){
         veloRegression.add(0,1500);

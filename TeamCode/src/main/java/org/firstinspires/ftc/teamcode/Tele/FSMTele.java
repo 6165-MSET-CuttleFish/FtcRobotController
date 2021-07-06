@@ -10,12 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
-import org.firstinspires.ftc.teamcode.Components.Wings;
 
 @TeleOp
 public class FSMTele extends LinearOpMode {
     Robot robot;
-    Wings.State wingDefault = Wings.State.ALL_OUT;
     GamepadEx allen;
     GamepadEx riya;
     double lxMult = 1;
@@ -35,18 +33,37 @@ public class FSMTele extends LinearOpMode {
 
         while (opModeIsActive()){
             robot.update();
-            if(riya.getButton(GamepadKeys.Button.LEFT_BUMPER)){
-                targetVelocity = 1100;
-                powershots = true;
-            } else {
-                targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec());
-                powershots = false;
+//            if(riya.getButton(GamepadKeys.Button.LEFT_BUMPER)){
+//                targetVelocity = 1100;
+//                powershots = true;
+//            } else {
+//                targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec());
+//                powershots = false;
+//            }
+            if(allen.gamepad.a){
+                robot.shieldDown();
+            } else if (allen.gamepad.b){
+                robot.shieldUp();
             }
+            if(allen.gamepad.x) {
+                robot.wobbleArm.down();
+            }
+            if(allen.gamepad.y) {
+                robot.wobbleArm.up();
+            }
+            if(allen.gamepad.left_bumper) {
+                robot.wobbleArm.claw.grab();
+                robot.wobbleArm.mid();
+            }
+            if(allen.gamepad.right_bumper) {
+                robot.wobbleArm.claw.release();
+            }
+            robot.intake.setPower(allen.gamepad.right_trigger - allen.gamepad.left_trigger);
             robot.setWeightedDrivePower(
                     new Pose2d(
                             -allen.getLeftY() * lyMult,
                             -allen.getLeftX() * lxMult,
-                            -allen.getRightX() * 0.92 * rxMult
+                            allen.getRightX() * 0.92 * rxMult
                     )
             );
             setMultiplier();
