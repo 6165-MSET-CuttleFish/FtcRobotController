@@ -93,9 +93,11 @@ public class FSMTele extends LinearOpMode {
             wobbleCheck = true;
             robot.wobbleArmUp();
             switch (robot.wobbleArm.getState()){
-                case IN: break;
+                case UP:
+                    robot.wobbleArm.down();
+                    break;
                 case MID: break;
-                case OUT: break;
+                case DOWN: break;
             }
         }  else if(!riya.getButton(GamepadKeys.Button.B)){
             wobbleCheck = false;

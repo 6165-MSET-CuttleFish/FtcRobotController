@@ -112,7 +112,6 @@ public class Robot extends MecanumDrive {
 
     public Shooter shooter;
     public WobbleArm wobbleArm;
-    public Magazine magazine;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -125,7 +124,6 @@ public class Robot extends MecanumDrive {
     public enum Mode {
         IDLE,
         TURN,
-        FOLLOW_TRAJECTORY
     }
 
     private final FtcDashboard dashboard;
@@ -144,7 +142,6 @@ public class Robot extends MecanumDrive {
     private final VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
     Component[] components = {
-            magazine,
             shooter,
             wobbleArm
     };
@@ -190,7 +187,6 @@ public class Robot extends MecanumDrive {
         rightFront = hardwareMap.get(DcMotorEx.class, "fr");
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap);
-        magazine = new Magazine(hardwareMap);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -214,6 +210,7 @@ public class Robot extends MecanumDrive {
         rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         setPoseEstimate(robotPose);
+        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
     public void autoInit(){
         int cameraMonitorViewId = this
@@ -304,13 +301,6 @@ public class Robot extends MecanumDrive {
     public void shieldDown(){
         leftIntakeHolder.setPosition(0.12);
         rightIntakeHolder.setPosition(0.88);
-    }
-    public final void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
     public Vector2d getDropZone(){
         if(height == UGContourRingPipeline.Height.FOUR){
