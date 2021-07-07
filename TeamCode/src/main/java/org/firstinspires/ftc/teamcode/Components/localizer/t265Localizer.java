@@ -12,17 +12,21 @@ import org.firstinspires.ftc.teamcode.util.PoseUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+
 public class t265Localizer implements Localizer {
     T265Camera cam;
+    Consumer<T265Camera.CameraUpdate> consumer = update -> cameraUpdate = update;
+    T265Camera.CameraUpdate cameraUpdate;
     public t265Localizer(HardwareMap hardwareMap) {
-        cam = new T265Camera(new Transform2d(new Translation2d(-8.875 / 39.3701, 0.5 / 39.3701), new Rotation2d(Math.toRadians(180))), 0, hardwareMap.appContext);
+        cam = new T265Camera(new Transform2d(new Translation2d(-8.875 / 39.3701, 0.5 / 39.3701), new Rotation2d(Math.toRadians(180))), 1, hardwareMap.appContext);
         //odo = new StandardTrackingWheelLocalizer(hardwareMap);
-        cam.start();
+        cam.start(consumer);
     }
     @NotNull
     @Override
     public Pose2d getPoseEstimate() {
-        return PoseUtil.toInches(PoseUtil.toRRPose2d(cam.getLastReceivedCameraUpdate().pose));
+        return PoseUtil.toInches(PoseUtil.toRRPose2d(cameraUpdate.pose));
     }
 
     @Override
@@ -33,7 +37,7 @@ public class t265Localizer implements Localizer {
     @Nullable
     @Override
     public Pose2d getPoseVelocity() {
-        return PoseUtil.toInches(PoseUtil.toRRPoseVelo(cam.getLastReceivedCameraUpdate().velocity));
+        return PoseUtil.toInches(PoseUtil.toRRPoseVelo(cameraUpdate.velocity));
     }
 
     @Override

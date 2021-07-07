@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Gunner extends Component{
-    private final StateMachine tripleShot;
+    private final StateMachine shoot;
     private static double gunTime = 85.0/1000.0;
     private int shotRounds = 0;
     private int targetRounds = 1;
@@ -16,23 +16,21 @@ public class Gunner extends Component{
         IN,
         PULLOUT,
         OUT,
-        IDLE
+        IDLE,
     }
     public Gunner(HardwareMap hardwareMap){
         gunner = hardwareMap.servo.get("spanker");
-        tripleShot = new StateMachineBuilder<State>()
+        shoot = new StateMachineBuilder<State>()
                 .state(State.OUT)
                 .transitionTimed(0)
 
                 .state(State.TRIGGER)
                 .transitionTimed(gunTime)
-                .onEnter(() -> {
-                    this.in();
-                    shotRounds++;
-                })
+                .onEnter(this::in)
 
                 .state(State.IN)
                 .transitionTimed(0)
+                .onEnter(() -> shotRounds++)
 
                 .state(State.PULLOUT)
                 .transitionTimed(gunTime)
@@ -41,30 +39,30 @@ public class Gunner extends Component{
                 .exit(State.OUT)
                 .build();
     }
-    public void tripleShot(int rounds){
-        if(!tripleShot.getRunning()) {
+    public void shoot(int rounds){
+        if(!shoot.getRunning()) {
             shotRounds = 0;
             targetRounds = rounds;
-            tripleShot.setLooping(true);
-            tripleShot.start();
+            shoot.setLooping(true);
+            shoot.start();
         }
     }
     public void shoot() {
-        if(!tripleShot.getRunning()) {
-            tripleShot.setLooping(true);
-            tripleShot.start();
+        if(!shoot.getRunning()) {
+            shoot.setLooping(true);
+            shoot.start();
         }
     }
     public void update(){
-        tripleShot.update();
+        shoot.update();
         if(targetRounds != 0 && shotRounds == targetRounds){
             shotRounds = 0;
             targetRounds = 1;
-            tripleShot.setLooping(false);
+            shoot.setLooping(false);
         }
     }
     public State getState(){
-        return (State) tripleShot.getState();
+        return shoot.getRunning() ? (State) shoot.getState() : State.IDLE;
     }
     private void in(){
         gunner.setPosition(0.8);

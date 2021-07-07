@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.Gunner;
-import org.firstinspires.ftc.teamcode.Components.Turret;
 
 
 @TeleOp(name = "GunnerTest", group = "LinearOpMode")
@@ -22,7 +20,7 @@ public class GunnerTest extends LinearOpMode {
         while (opModeIsActive()){
             gunner.update();
             if(gamepad1.a){
-                gunner.tripleShot(1);
+                gunner.shoot(1);
             }
         }
     }

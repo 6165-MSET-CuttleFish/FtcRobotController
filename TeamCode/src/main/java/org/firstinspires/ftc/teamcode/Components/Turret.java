@@ -29,14 +29,14 @@ public class Turret {
         //HardwareMap hardwareMap = robot.hardwareMap;
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         //this.robot = robot;
-        if(Robot.opModeType != OpModeType.tele) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(Robot.opModeType != OpModeType.TELE) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void update(){
         switch (state){
             case TARGET_LOCK:
                 angleControl.setTargetPosition(targetAngle - Robot.robotPose.getHeading());
-                if(target != null) angleControl.setTargetPosition(Robot.robotPose.vec().angleBetween(target) - Robot.robotPose.getHeading());
+                if(target != null) angleControl.setTargetPosition(Math.toDegrees(Robot.robotPose.vec().angleBetween(target) - Robot.robotPose.getHeading()));
                 break;
             case IDLE:
                 angleControl.setTargetPosition(0);
@@ -66,14 +66,19 @@ public class Turret {
     public double getAbsoluteAngle(){
         return Robot.robotPose.getHeading() + getRelativeAngle();
     }
-    public void setTargetAngle(double targetAngle){
-        target = null;
-        Turret.targetAngle = targetAngle;
-    }
-
     public void setTarget(Vector2d vector2d) {
         target = vector2d;
     }
-
-
+    public double getVelocity() {
+        return turret.getVelocity();
+    }
+    public double getError() {
+        return angleControl.getLastError();
+    }
+    public double getAbsError() {
+        return Math.abs(getError());
+    }
+    public boolean isIdle() {
+        return turret.getVelocity() < 100 && getAbsError() < 5;
+    }
 }

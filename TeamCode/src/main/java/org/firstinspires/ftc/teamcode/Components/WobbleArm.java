@@ -15,7 +15,7 @@ public class WobbleArm extends Component {
         DOWN,
         UP,
         MID,
-        WOBBLE_DROP,
+        TRANSIT,
     }
     public WobbleArm(HardwareMap hardwareMap){
         claw = new Claw(hardwareMap);
@@ -41,7 +41,7 @@ public class WobbleArm extends Component {
                 .onEnter(claw::grab)
 
                 .state(State.MID)
-                .transitionTimed(0.3)
+                .transitionTimed(0)
                 .onEnter(this::mid)
 
                 .exit(State.DOWN)
@@ -54,19 +54,22 @@ public class WobbleArm extends Component {
         wobblePickupMacro.start();
     }
     public void up() {
+        state = State.UP;
         arm1.setPosition(0);
         arm2.setPosition(1);
     }
     public void down() {
+        state = State.DOWN;
         arm1.setPosition(0.6);
         arm2.setPosition(0.4);
     }
     public void mid(){
-        arm1.setPosition(0.4);
-        arm2.setPosition(0.6);
+        state = State.MID;
+        arm1.setPosition(0.3);
+        arm2.setPosition(0.7);
     }
     public State getState() {
-        if(wobbleDropMacro.getRunning()) return (State) wobbleDropMacro.getState();
+        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.TRANSIT;
         return state;
     }
     public void update(){

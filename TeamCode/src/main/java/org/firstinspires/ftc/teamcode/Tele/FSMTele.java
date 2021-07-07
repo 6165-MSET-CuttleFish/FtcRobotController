@@ -25,7 +25,7 @@ public class FSMTele extends LinearOpMode {
     TriggerReader highGoalTrigger, powerShotsTrigger;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, OpModeType.tele);
+        robot = new Robot(this, OpModeType.TELE);
         initialize();
         waitForStart();
 

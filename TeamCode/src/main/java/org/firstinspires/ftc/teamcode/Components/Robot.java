@@ -42,7 +42,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -58,17 +57,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.*;
 
 public class Robot extends MecanumDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
@@ -79,7 +68,8 @@ public class Robot extends MecanumDrive {
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
 
-    public static OpModeType opModeType = OpModeType.none;
+    public static OpModeType opModeType = OpModeType.NONE;
+    public static Side side = Side.RED;
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
     public final LinearOpMode linearOpMode;
@@ -143,13 +133,13 @@ public class Robot extends MecanumDrive {
     private Pose2d lastPoseOnTurn;
     LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
-        this(opMode, pose2d, OpModeType.none);
+        this(opMode, pose2d, OpModeType.NONE);
     }
     public Robot(LinearOpMode opMode, OpModeType type){
         this(opMode, robotPose, type);
     }
     public Robot(LinearOpMode opMode) {
-        this(opMode, new Pose2d(0,0,0), OpModeType.none);
+        this(opMode, new Pose2d(0,0,0), OpModeType.NONE);
     }
     public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -402,7 +392,7 @@ public class Robot extends MecanumDrive {
         return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE;
     }
     public boolean actionsRunningAreFatal(){
-        return shooter.gunner.getState() != Gunner.State.IDLE;
+        return shooter.gunner.getState() != Gunner.State.OUT;
     }
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {
