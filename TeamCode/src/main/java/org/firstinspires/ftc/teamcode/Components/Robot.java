@@ -141,10 +141,6 @@ public class Robot extends MecanumDrive {
     private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
-    Component[] components = {
-            shooter,
-            wobbleArm
-    };
     LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.none);
@@ -201,10 +197,7 @@ public class Robot extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        switch (opModeType) {
-            case tele: setLocalizer(new t265Localizer(hardwareMap));
-            default: setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
-        }
+        setLocalizer(new t265Localizer(hardwareMap));
         intake = hardwareMap.get(DcMotor.class, "intake");
         leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
         rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
@@ -390,12 +383,11 @@ public class Robot extends MecanumDrive {
 
     public void update() {
         updatePoseEstimate();
+        shooter.update();
+        wobbleArm.update();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        for(Component component : components){
-            component.update();
-        }
-        if(!isBusy())actionQueue.pop().run();
+        if(!isBusy()) actionQueue.pop().run();
     }
     public void waitForIdle() {
         waitForIdle(()->{});
@@ -407,10 +399,10 @@ public class Robot extends MecanumDrive {
         }
     }
     public boolean isBusy() {
-        return mode != Mode.IDLE || shooter.magazine.gunner.getState() != Gunner.State.IDLE;
+        return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE;
     }
     public boolean actionsRunningAreFatal(){
-        return shooter.magazine.gunner.getState() != Gunner.State.IDLE;
+        return shooter.gunner.getState() != Gunner.State.IDLE;
     }
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {

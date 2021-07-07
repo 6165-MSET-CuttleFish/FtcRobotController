@@ -10,6 +10,7 @@ public class WobbleArm extends Component {
     public Servo arm1, arm2;
     public Claw claw;
     StateMachine wobbleDropMacro;
+    StateMachine wobblePickupMacro;
     public enum State{
         DOWN,
         UP,
@@ -34,9 +35,23 @@ public class WobbleArm extends Component {
                     up();
                 })
                 .build();
+        wobblePickupMacro = new StateMachineBuilder<State>()
+                .state(State.DOWN)
+                .transitionTimed(0.25)
+                .onEnter(claw::grab)
+
+                .state(State.MID)
+                .transitionTimed(0.3)
+                .onEnter(this::mid)
+
+                .exit(State.DOWN)
+                .build();
     }
     public void dropMacro(){
         wobbleDropMacro.start();
+    }
+    public void pickUp(){
+        wobblePickupMacro.start();
     }
     public void up() {
         arm1.setPosition(0);
@@ -56,5 +71,6 @@ public class WobbleArm extends Component {
     }
     public void update(){
         wobbleDropMacro.update();
+        wobblePickupMacro.update();
     }
 }

@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Magazine extends Component{
     Servo magLeft1, magLeft2;
     Servo magRight1, magRight2;
-    public Gunner gunner;
     private final ElapsedTime externalTimer = new ElapsedTime();
     StateMachine stateMachine;
     public enum State{

@@ -46,6 +46,7 @@ public class Shooter extends Component{
     public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
     public Gunner gunner;
+    public Turret turret;
     public Shooter(HardwareMap hardwareMap) {
         veloRegression = new InterpLUT();
         setVelocityController();
@@ -57,6 +58,7 @@ public class Shooter extends Component{
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         magazine = new Magazine(hardwareMap);
         gunner = new Gunner(hardwareMap);
+        turret = new Turret(hardwareMap);
         flap = hardwareMap.get(Servo.class, "flap");
        // mag = map.get(Servo.class, "tilt");
         if(Robot.opModeType == OpModeType.auto){
@@ -127,10 +129,10 @@ public class Shooter extends Component{
 
     }
     public void tripleShot(){
-        magazine.gunner.tripleShot(3);
+        gunner.tripleShot(3);
     }
     public void singleRound(){
-        magazine.gunner.shoot();
+        gunner.shoot();
         //gunner.setPosition(0.34);
         //sleep(145);
         Log.println(Log.INFO,"Shot", "Single Round");

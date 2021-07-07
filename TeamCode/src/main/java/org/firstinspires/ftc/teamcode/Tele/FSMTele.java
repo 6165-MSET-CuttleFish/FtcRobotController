@@ -52,8 +52,7 @@ public class FSMTele extends LinearOpMode {
                 robot.wobbleArm.up();
             }
             if(allen.gamepad.left_bumper) {
-                robot.wobbleArm.claw.grab();
-                robot.wobbleArm.mid();
+                robot.wobbleArm.pickUp();
             }
             if(allen.gamepad.right_bumper) {
                 robot.wobbleArm.claw.release();
