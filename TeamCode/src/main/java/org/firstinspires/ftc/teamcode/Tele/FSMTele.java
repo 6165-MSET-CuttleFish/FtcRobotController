@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
-import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,52 +9,46 @@ import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.UniversalGamepad;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 
 @TeleOp(name = "RedTele", group = "Red")
 public class FSMTele extends LinearOpMode {
     enum DriveState {
-        normal,
-        wobble
+        NORMAL,
+        WOBBLE
     }
     Robot robot;
-    DriveState driveState = DriveState.normal;
+    DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
     Shooter shooter;
     Magazine magazine;
     Intake intake;
-    GamepadEx allen;
-    GamepadEx riya;
-    double lxMult = 1;
-    double lyMult = 1;
-    double rxMult = 1;
+    UniversalGamepad universalGamepad;
     double targetVelocity;
-    boolean wobbleCheck, powershots, wasPressed;
-    ToggleButtonReader clawButton, wobbleButton, reverseMode, turret, shieldButton;
-    TriggerReader magButton;
-    TriggerReader powerShotsTrigger;
     @Override
     public void runOpMode() throws InterruptedException {
+        universalGamepad = new UniversalGamepad(this);
         robot = new Robot(this, OpModeType.TELE);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
         magazine = shooter.magazine;
         intake = robot.intake;
-        initialize();
         waitForStart();
 
         // WHILE LOOP
 
         while (opModeIsActive()){
             robot.update();
-//            if(riya.getButton(GamepadKeys.Button.LEFT_BUMPER)){
+            universalGamepad.update();
+//            if(universalGamepad.g2.getButton(GamepadKeys.Button.LEFT_BUMPER)){
 //                targetVelocity = 1100;
 //                powershots = true;
 //            } else {
 //                targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec());
 //                powershots = false;
 //            }
-            if(shieldButton.wasJustPressed()){
+            if(universalGamepad.shieldButton.wasJustPressed()){
                 switch (intake.getState()) {
                     case UP:
                         intake.setState(Intake.State.DOWN);
@@ -68,63 +58,55 @@ public class FSMTele extends LinearOpMode {
                         break;
                 }
             }
-            if(allen.gamepad.x) {
-                robot.wobbleArm.down();
-            }
-            if(allen.gamepad.y) {
-                robot.wobbleArm.up();
-            }
-            if(allen.gamepad.left_bumper) {
+            if(universalGamepad.g1.gamepad.left_bumper) {
                 robot.wobbleArm.pickUp();
             }
-            if(allen.gamepad.right_bumper) {
+            if(universalGamepad.g1.gamepad.right_bumper) {
                 if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
             }
-            robot.intake.setPower(allen.gamepad.right_trigger - allen.gamepad.left_trigger);
+            robot.intake.setPower(universalGamepad.g1.gamepad.right_trigger - universalGamepad.g1.gamepad.left_trigger);
             switch (driveState) {
-                case normal: robot.setWeightedDrivePower(
+                case NORMAL: robot.setWeightedDrivePower(
                         new Pose2d(
-                                allen.getLeftY(),
-                                -allen.getLeftX(),
-                                -allen.getRightX() * 0.92
+                                universalGamepad.g1.getLeftY(),
+                                -universalGamepad.g1.getLeftX(),
+                                -universalGamepad.g1.getRightX() * 0.92
                             )
                         );
                         break;
-                case wobble: robot.setWeightedDrivePower(
+                case WOBBLE: robot.setWeightedDrivePower(
                         new Pose2d(
-                                allen.getLeftY(),
-                                allen.getLeftX(),
-                                -allen.getRightX() * 0.92
+                                universalGamepad.g1.getLeftY(),
+                                universalGamepad.g1.getLeftX(),
+                                -universalGamepad.g1.getRightX() * 0.92
                         )
                 );
                 break;
             }
-            telemetry.addData("leftY" , allen.getLeftY());
+            telemetry.addData("leftY" , universalGamepad.g1.getLeftY());
             telemetry.update();
             wobble();
-            update();
         }
 
         //WHILE LOOP
 
     }
     public void wobble() {
-        if (riya.getButton(GamepadKeys.Button.B) && !wobbleCheck) {
-            wobbleCheck = true;
+        if (universalGamepad.wobbleButton.wasJustPressed()) {
             switch (robot.wobbleArm.getState()){
                 case UP:
-                    robot.wobbleArm.down();
+                    robot.wobbleArm.setState(WobbleArm.State.DOWN);
                     break;
-                case MID: break;
-                case DOWN: break;
+                case MID:
+                case DOWN:
+                    robot.wobbleArm.setState(WobbleArm.State.UP);
+                    break;
             }
-        }  else if(!riya.getButton(GamepadKeys.Button.B)){
-            wobbleCheck = false;
         }
-        if (clawButton.wasJustPressed()) {
+        if (universalGamepad.clawButton.wasJustPressed()) {
             switch(robot.wobbleArm.claw.getState()){
                 case GRIP: {
-                    robot.wobbleArm.claw.release();
+                    if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
                     break;
                 }
                 case RELEASE:{
@@ -133,35 +115,5 @@ public class FSMTele extends LinearOpMode {
                 }
             }
         }
-    }
-    public void shooter() {
-        if (riya.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.1) {
-            robot.shooter.magMacro();
-            robot.shooter.setVelocity(targetVelocity);
-            if (Math.abs(robot.shooter.getError()) <= 30 && !robot.isBusy() && !wasPressed) {
-                wasPressed = true;
-                sleep(180);
-                robot.optimalShoot();
-            }
-        } else if (riya.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-            robot.shooter.magMacro();
-        } else {
-            if (robot.shooter.getRings() > 0) robot.shooter.setVelocity(targetVelocity);
-        }
-        if (riya.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            robot.shooter.singleRound();
-        }
-    }
-    private void initialize(){
-        allen = new GamepadEx(gamepad1);
-        riya = new GamepadEx(gamepad2);
-        clawButton = new ToggleButtonReader(riya, GamepadKeys.Button.A);
-        reverseMode = new ToggleButtonReader(allen, GamepadKeys.Button.RIGHT_BUMPER);
-        magButton = new TriggerReader(allen, GamepadKeys.Trigger.LEFT_TRIGGER);
-        shieldButton = new ToggleButtonReader(allen, GamepadKeys.Button.DPAD_DOWN);
-    }
-    private void update(){
-        clawButton.readValue();
-        shieldButton.readValue();
     }
 }

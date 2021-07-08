@@ -15,7 +15,7 @@ public class WobbleArm implements Component {
         DOWN,
         UP,
         MID,
-        TRANSIT,
+        MACRO,
     }
     public WobbleArm(HardwareMap hardwareMap){
         claw = new Claw(hardwareMap);
@@ -32,7 +32,7 @@ public class WobbleArm implements Component {
                 .exit(State.UP)
                 .onExit(() -> {
                     claw.release();
-                    up();
+                    state = State.UP;
                 })
                 .build();
         wobblePickupMacro = new StateMachineBuilder<State>()
@@ -45,6 +45,7 @@ public class WobbleArm implements Component {
                 .onEnter(this::mid)
 
                 .exit(State.DOWN)
+                .onExit(() -> state = State.DOWN)
                 .build();
     }
     public void dropMacro(){
@@ -53,27 +54,43 @@ public class WobbleArm implements Component {
     public void pickUp(){
         wobblePickupMacro.start();
     }
-    public void up() {
-        state = State.UP;
+    private void up() {
         arm1.setPosition(0);
         arm2.setPosition(1);
     }
-    public void down() {
-        state = State.DOWN;
+    private void down() {
         arm1.setPosition(0.6);
         arm2.setPosition(0.4);
     }
-    public void mid(){
-        state = State.MID;
+    private void mid(){
         arm1.setPosition(0.3);
         arm2.setPosition(0.7);
     }
     public State getState() {
-        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.TRANSIT;
+        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.MACRO;
         return state;
     }
-    public void update(){
+    public void setState(State state) {
+        this.state = state;
+    }
+    public void update() {
+        if(!getRunning()) {
+            switch (state) {
+                case UP:
+                    up();
+                    break;
+                case MID:
+                    mid();
+                    break;
+                case DOWN:
+                    down();
+                    break;
+            }
+        }
         wobbleDropMacro.update();
         wobblePickupMacro.update();
+    }
+    public boolean getRunning() {
+        return wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning();
     }
 }
