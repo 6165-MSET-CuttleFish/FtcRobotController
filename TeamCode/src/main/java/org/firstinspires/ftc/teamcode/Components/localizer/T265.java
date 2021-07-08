@@ -14,17 +14,13 @@ import static java.lang.Math.PI;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class T265 {
-
-    // Electronics
     private static T265Camera t265Cam;
 
-    // Constants
     public final double ODOMETRY_COVARIANCE = 0.1;
     private final double INCH_TO_METER = 0.0254;
     private final double xOffset = -9;
     private final double yOffset = 2;
 
-    // State Variables
     private double x, y, theta;
     public int confidence = 0;
 

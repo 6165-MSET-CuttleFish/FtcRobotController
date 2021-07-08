@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 //http://192.168.43.1:8080/dash
 @Config
 public class Shooter extends Component{
-    enum State {
+    public enum State {
         CONTINUOUS,
         POWERSHOTS,
         IDLE,
@@ -80,7 +80,7 @@ public class Shooter extends Component{
         powerShotsController = new StateMachineBuilder<Integer>()
                 .state(0)
                 .transition(() -> turret.isIdle())
-                .onEnter(() -> turret.setTarget(Robot.pwrShots[0]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots[0]))
 
                 .state(1)
                 .transition(() -> gunner.getState() != Gunner.State.IN)
@@ -88,7 +88,7 @@ public class Shooter extends Component{
 
                 .state(2)
                 .transition(() -> turret.isIdle())
-                .onEnter(() -> turret.setTarget(Robot.pwrShots[1]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots[1]))
 
                 .state(3)
                 .transition(() -> gunner.getState() != Gunner.State.IN)
@@ -96,7 +96,7 @@ public class Shooter extends Component{
 
                 .state(4)
                 .transition(() -> turret.isIdle())
-                .onEnter(() -> turret.setTarget(Robot.pwrShots[2]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots[2]))
 
                 .state(5)
                 .transition(() -> gunner.getState() != Gunner.State.IN)

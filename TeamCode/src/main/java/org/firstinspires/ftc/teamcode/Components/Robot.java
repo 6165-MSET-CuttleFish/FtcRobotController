@@ -81,21 +81,21 @@ public class Robot extends MecanumDrive {
     public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
-    public static Pose2d shootingPose = new Pose2d(-12, -52, Math.toRadians(4.5));
-    public static Pose2d shootingPoseTele = new Pose2d(-7.5, -32.9725, Math.toRadians(1));
-    public static Vector2d[] pwrShotLocals = {
+    public static Vector2d[] powerShotLocals = {
             new Vector2d(-5.8, -6.3),
             new Vector2d(-5.8, -16),
             new Vector2d(-5.8, -22)
     };
-    public static Vector2d[] pwrShots = {
+    public static Vector2d[] powerShots = {
             new Vector2d(70.4725, -1.4725),
             new Vector2d(70.4725, -10.4725),
             new Vector2d(70.4725, -19.4725)
     };
-    public static Vector2d A = new Vector2d(-5.4725, -55.4);
-    public static Vector2d B = new Vector2d(23, -35.4725);
-    public static Vector2d C = new Vector2d(45.5275, -57);
+    public static Vector2d[] dropZones = {
+            new Vector2d(-5.4725, -55.4),
+            new Vector2d(23, -35.4725),
+            new Vector2d(45.5275, -57)
+    };
 
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
@@ -194,6 +194,10 @@ public class Robot extends MecanumDrive {
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         setPoseEstimate(robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        switch (side) {
+            case RED: break;
+            case BLUE: break;
+        }
     }
     public void autoInit(){
         int cameraMonitorViewId = this
@@ -222,7 +226,7 @@ public class Robot extends MecanumDrive {
     }
     public Trajectory pickup;
     public void createTraj(double endTangent){
-        TrajectoryBuilder builder = trajectoryBuilder(Coordinate.toPose(pwrShotLocals[2], 0))
+        TrajectoryBuilder builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
                 .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                 .splineTo(new Vector2d(42, 7), 0);
         Vector2d[] wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
@@ -287,11 +291,11 @@ public class Robot extends MecanumDrive {
     }
     public Vector2d getDropZone(){
         if(height == UGContourRingPipeline.Height.FOUR){
-            return C;
+            return dropZones[2];
         } else if(height == UGContourRingPipeline.Height.ONE){
-            return B;
+            return dropZones[1];
         } else {
-            return A;
+            return dropZones[0];
         }
     }
 
@@ -382,6 +386,12 @@ public class Robot extends MecanumDrive {
     public void waitForIdle() {
         waitForIdle(()->{});
     }
+    public void waitForActionsCompleted() {
+        while(shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
+                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT){
+            update();
+        }
+    }
     private void waitForIdle(Runnable block) {
         while (!Thread.currentThread().isInterrupted() && isBusy() && linearOpMode.opModeIsActive()) {
             block.run();
@@ -391,9 +401,7 @@ public class Robot extends MecanumDrive {
     public boolean isBusy() {
         return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE;
     }
-    public boolean actionsRunningAreFatal(){
-        return shooter.gunner.getState() != Gunner.State.OUT;
-    }
+
     public void setMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {
             motor.setMode(runMode);

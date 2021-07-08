@@ -10,10 +10,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 
-@TeleOp
+@TeleOp(name = "RedTele", group = "Red")
 public class FSMTele extends LinearOpMode {
     Robot robot;
+    WobbleArm wobbleArm;
+    Shooter shooter;
     GamepadEx allen;
     GamepadEx riya;
     double lxMult = 1;
@@ -21,11 +25,13 @@ public class FSMTele extends LinearOpMode {
     double rxMult = 1;
     double targetVelocity;
     boolean wobbleCheck, powershots, wasPressed;
-    ToggleButtonReader clawButton, wobbleButton, reverseMode;
-    TriggerReader highGoalTrigger, powerShotsTrigger;
+    ToggleButtonReader clawButton, wobbleButton, reverseMode, turret;
+    TriggerReader powerShotsTrigger;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
+        wobbleArm = robot.wobbleArm;
+        shooter = robot.shooter;
         initialize();
         waitForStart();
 
@@ -55,14 +61,14 @@ public class FSMTele extends LinearOpMode {
                 robot.wobbleArm.pickUp();
             }
             if(allen.gamepad.right_bumper) {
-                robot.wobbleArm.claw.release();
+                if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
             }
             robot.intake.setPower(allen.gamepad.right_trigger - allen.gamepad.left_trigger);
             robot.setWeightedDrivePower(
                     new Pose2d(
                             -allen.getLeftY() * lyMult,
                             -allen.getLeftX() * lxMult,
-                            allen.getRightX() * 0.92 * rxMult
+                            - allen.getRightX() * 0.92 * rxMult
                     )
             );
             setMultiplier();
@@ -73,15 +79,6 @@ public class FSMTele extends LinearOpMode {
 
     }
     private void setMultiplier() {
-        if (allen.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.3) {
-            lxMult = 0.5;
-            rxMult = 0.5;
-            lyMult = 0.5;
-        } else {
-            lxMult = 1;
-            rxMult = 1;
-            lyMult = 1;
-        }
         if (reverseMode.wasJustPressed()) {
             lxMult = -lxMult;
             lyMult = -lyMult;
@@ -100,12 +97,6 @@ public class FSMTele extends LinearOpMode {
             }
         }  else if(!riya.getButton(GamepadKeys.Button.B)){
             wobbleCheck = false;
-        } if (riya.getButton(GamepadKeys.Button.A)) {
-//            robot.wobbleArmVertical();
-//            sleep(300);
-//            robot.release();
-//            sleep(200);
-//            robot.wobbleArmUp();
         }
         if (clawButton.wasJustPressed()) {
             switch(robot.wobbleArm.claw.getState()){
@@ -143,11 +134,9 @@ public class FSMTele extends LinearOpMode {
         riya = new GamepadEx(gamepad2);
         clawButton = new ToggleButtonReader(riya, GamepadKeys.Button.A);
         reverseMode = new ToggleButtonReader(allen, GamepadKeys.Button.RIGHT_BUMPER);
-        highGoalTrigger = new TriggerReader(riya, GamepadKeys.Trigger.LEFT_TRIGGER);
     }
     private void update(){
         clawButton.readValue();
         reverseMode.readValue();
-        highGoalTrigger.readValue();
     }
 }
