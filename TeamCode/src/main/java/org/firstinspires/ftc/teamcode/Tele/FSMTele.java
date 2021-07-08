@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
@@ -8,6 +9,8 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Components.Intake;
+import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
@@ -15,9 +18,16 @@ import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 
 @TeleOp(name = "RedTele", group = "Red")
 public class FSMTele extends LinearOpMode {
+    enum DriveState {
+        normal,
+        wobble
+    }
     Robot robot;
+    DriveState driveState = DriveState.normal;
     WobbleArm wobbleArm;
     Shooter shooter;
+    Magazine magazine;
+    Intake intake;
     GamepadEx allen;
     GamepadEx riya;
     double lxMult = 1;
@@ -25,13 +35,16 @@ public class FSMTele extends LinearOpMode {
     double rxMult = 1;
     double targetVelocity;
     boolean wobbleCheck, powershots, wasPressed;
-    ToggleButtonReader clawButton, wobbleButton, reverseMode, turret;
+    ToggleButtonReader clawButton, wobbleButton, reverseMode, turret, shieldButton;
+    TriggerReader magButton;
     TriggerReader powerShotsTrigger;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
+        magazine = shooter.magazine;
+        intake = robot.intake;
         initialize();
         waitForStart();
 
@@ -46,10 +59,15 @@ public class FSMTele extends LinearOpMode {
 //                targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec());
 //                powershots = false;
 //            }
-            if(allen.gamepad.a){
-                robot.shieldDown();
-            } else if (allen.gamepad.b){
-                robot.shieldUp();
+            if(shieldButton.wasJustPressed()){
+                switch (intake.getState()) {
+                    case UP:
+                        intake.setState(Intake.State.DOWN);
+                        break;
+                    case DOWN:
+                        intake.setState(Intake.State.UP);
+                        break;
+                }
             }
             if(allen.gamepad.x) {
                 robot.wobbleArm.down();
@@ -64,25 +82,32 @@ public class FSMTele extends LinearOpMode {
                 if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
             }
             robot.intake.setPower(allen.gamepad.right_trigger - allen.gamepad.left_trigger);
-            robot.setWeightedDrivePower(
-                    new Pose2d(
-                            -allen.getLeftY() * lyMult,
-                            -allen.getLeftX() * lxMult,
-                            - allen.getRightX() * 0.92 * rxMult
-                    )
-            );
-            setMultiplier();
+            switch (driveState) {
+                case normal: robot.setWeightedDrivePower(
+                        new Pose2d(
+                                allen.getLeftY(),
+                                -allen.getLeftX(),
+                                -allen.getRightX() * 0.92
+                            )
+                        );
+                        break;
+                case wobble: robot.setWeightedDrivePower(
+                        new Pose2d(
+                                allen.getLeftY(),
+                                allen.getLeftX(),
+                                -allen.getRightX() * 0.92
+                        )
+                );
+                break;
+            }
+            telemetry.addData("leftY" , allen.getLeftY());
+            telemetry.update();
             wobble();
+            update();
         }
 
         //WHILE LOOP
 
-    }
-    private void setMultiplier() {
-        if (reverseMode.wasJustPressed()) {
-            lxMult = -lxMult;
-            lyMult = -lyMult;
-        }
     }
     public void wobble() {
         if (riya.getButton(GamepadKeys.Button.B) && !wobbleCheck) {
@@ -134,9 +159,11 @@ public class FSMTele extends LinearOpMode {
         riya = new GamepadEx(gamepad2);
         clawButton = new ToggleButtonReader(riya, GamepadKeys.Button.A);
         reverseMode = new ToggleButtonReader(allen, GamepadKeys.Button.RIGHT_BUMPER);
+        magButton = new TriggerReader(allen, GamepadKeys.Trigger.LEFT_TRIGGER);
+        shieldButton = new ToggleButtonReader(allen, GamepadKeys.Button.DPAD_DOWN);
     }
     private void update(){
         clawButton.readValue();
-        reverseMode.readValue();
+        shieldButton.readValue();
     }
 }

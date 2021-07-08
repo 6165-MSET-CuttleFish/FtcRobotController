@@ -20,7 +20,7 @@ public class GunnerTest extends LinearOpMode {
         while (opModeIsActive()){
             gunner.update();
             if(gamepad1.a){
-                gunner.shoot(1);
+                gunner.shoot(3);
             }
         }
     }

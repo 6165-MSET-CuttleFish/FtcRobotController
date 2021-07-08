@@ -20,7 +20,7 @@ public class Turret {
     //Robot robot;
     public static double TICKS_PER_REVOLUTION = 28;
     public static double GEAR_RATIO = (68.0/13.0) * (110.0/24.0);
-    private State state;
+    private State state = State.IDLE;
     public enum State{
         TARGET_LOCK,
         IDLE,

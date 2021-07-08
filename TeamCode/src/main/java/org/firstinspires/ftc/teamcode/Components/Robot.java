@@ -76,9 +76,8 @@ public class Robot extends MecanumDrive {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    public DcMotor intake;
+    public Intake intake;
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    public Servo rightIntakeHolder, leftIntakeHolder;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Vector2d[] powerShotLocals = {
@@ -173,11 +172,13 @@ public class Robot extends MecanumDrive {
         rightFront = hardwareMap.get(DcMotorEx.class, "fr");
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        intake = new Intake(hardwareMap);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -186,12 +187,8 @@ public class Robot extends MecanumDrive {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
         setLocalizer(new t265Localizer(hardwareMap));
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        leftIntakeHolder = hardwareMap.get(Servo.class,"intakeL");
-        rightIntakeHolder = hardwareMap.get(Servo.class,"intakeR");
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         setPoseEstimate(robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         switch (side) {
@@ -282,12 +279,10 @@ public class Robot extends MecanumDrive {
         shooter.tripleShot();
     }
     public void shieldUp() {
-        leftIntakeHolder.setPosition(0);
-        rightIntakeHolder.setPosition(1);
+        intake.shieldUp();
     }
     public void shieldDown(){
-        leftIntakeHolder.setPosition(0.12);
-        rightIntakeHolder.setPosition(0.88);
+        intake.shieldDown();
     }
     public Vector2d getDropZone(){
         if(height == UGContourRingPipeline.Height.FOUR){
@@ -379,9 +374,10 @@ public class Robot extends MecanumDrive {
         updatePoseEstimate();
         shooter.update();
         wobbleArm.update();
+        intake.update();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        if(!isBusy()) actionQueue.pop().run();
+        //if(!isBusy()) actionQueue.pop().run();
     }
     public void waitForIdle() {
         waitForIdle(()->{});

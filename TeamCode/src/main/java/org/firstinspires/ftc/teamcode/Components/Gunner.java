@@ -7,10 +7,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Gunner extends Component{
     private final StateMachine shoot;
-    private static double gunTime = 85.0/1000.0;
+    private static double gunTime = 100.0/1000.0;
     private int shotRounds = 0;
     private int targetRounds = 1;
     private final Servo gunner;
+    boolean first = true;
     public enum State {
         TRIGGER,
         IN,
@@ -40,6 +41,8 @@ public class Gunner extends Component{
                 .build();
     }
     public void shoot(int rounds){
+        if(first) rounds ++;
+        first = false;
         if(!shoot.getRunning()) {
             shotRounds = 0;
             targetRounds = rounds;
@@ -48,10 +51,7 @@ public class Gunner extends Component{
         }
     }
     public void shoot() {
-        if(!shoot.getRunning()) {
-            shoot.setLooping(true);
-            shoot.start();
-        }
+        shoot(1);
     }
     public void update(){
         shoot.update();
@@ -65,7 +65,7 @@ public class Gunner extends Component{
         return shoot.getRunning() ? (State) shoot.getState() : State.IDLE;
     }
     private void in(){
-        gunner.setPosition(0.8);
+        gunner.setPosition(0.79);
     }
     private void out(){
         gunner.setPosition(0.91);

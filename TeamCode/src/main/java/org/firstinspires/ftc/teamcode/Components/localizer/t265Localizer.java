@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components.localizer;
 
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
@@ -15,37 +17,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class t265Localizer implements Localizer {
-    T265Camera cam;
-    Consumer<T265Camera.CameraUpdate> consumer = update -> cameraUpdate = update;
-    T265Camera.CameraUpdate cameraUpdate;
+    T265 cam;
+    @SuppressLint("SdCardPath")
     public t265Localizer(HardwareMap hardwareMap) {
-        cam = new T265Camera(new Transform2d(new Translation2d(-8.875 / 39.3701, 0.5 / 39.3701), new Rotation2d(Math.toRadians(180))), 1, hardwareMap.appContext);
+        cam = new T265(hardwareMap, 0, 0, 0);
         //odo = new StandardTrackingWheelLocalizer(hardwareMap);
-        cam.start(consumer);
+        if(!cam.isStarted()) cam.startCam();
     }
     @NotNull
     @Override
     public Pose2d getPoseEstimate() {
-        return PoseUtil.toInches(PoseUtil.toRRPose2d(cameraUpdate.pose));
+        return cam.getPose();
     }
 
     @Override
     public void setPoseEstimate(@NotNull Pose2d pose2d) {
-        cam.setPose(PoseUtil.toFTCLibPos2d(PoseUtil.toMeters(pose2d)));
+        cam.setCameraPose(pose2d.getX(), pose2d.getY(), pose2d.getHeading());
+    }
+
+
+    @Override
+    public void update() {
+        cam.updateCamPose();
     }
 
     @Nullable
     @Override
     public Pose2d getPoseVelocity() {
-        return PoseUtil.toInches(PoseUtil.toRRPoseVelo(cameraUpdate.velocity));
-    }
-
-    @Override
-    public void update() {
-        //odo.update();
-//        Pose2d poseVelo = odo.getPoseVelocity();
-//        assert poseVelo != null;
-//        com.arcrobotics.ftclib.geometry.Pose2d velo = PoseUtil.toMeters(PoseUtil.toFTCLibPos2d(poseVelo));
-//        cam.sendOdometry(velo.getX(), velo.getY());
+        return null;
     }
 }

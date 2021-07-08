@@ -27,7 +27,7 @@ public class Shooter extends Component{
         POWERSHOTS,
         IDLE,
     }
-    State state;
+    State state = State.IDLE;
     public StateMachine powerShotsController;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
     public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
@@ -47,6 +47,7 @@ public class Shooter extends Component{
     public Encoder veloTracker;
     public Servo flap;
     public double targetVelo;
+    public double power;
     public double targetAngle;
     private final InterpLUT veloRegression;
     public ColorRangeSensor colorRangeSensor;
@@ -133,8 +134,8 @@ public class Shooter extends Component{
         double motorVelo = 0;//veloTracker.getCorrectedVelocity();
         double power = veloController.update(motorPos, motorVelo);
         if (targetVelo == 0) {
-            flywheel.setPower(0);
-            flywheel1.setPower(0);
+            flywheel.setPower(this.power);
+            flywheel1.setPower(this.power);
         } else {
             flywheel.setPower(power);
             flywheel1.setPower(power);

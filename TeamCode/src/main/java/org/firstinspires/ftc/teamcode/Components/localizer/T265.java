@@ -6,7 +6,10 @@ import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
+
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import java.io.File;
 
@@ -18,8 +21,8 @@ public class T265 {
 
     public final double ODOMETRY_COVARIANCE = 0.1;
     private final double INCH_TO_METER = 0.0254;
-    private final double xOffset = -9;
-    private final double yOffset = 2;
+    private final double xOffset = -8.875;
+    private final double yOffset = 0.5;
 
     private double x, y, theta;
     public int confidence = 0;
@@ -29,20 +32,17 @@ public class T265 {
     public boolean isEmpty = false;
     private boolean exportingMap = true;
 
-    public T265(LinearOpMode op, double startX, double startY, double startTheta) {
+    public T265(HardwareMap hardwareMap, double startX, double startY, double startTheta) {
         File file = new File(mapPath);
         if (!file.exists() || file.length() == 0) {
             isEmpty = true;
         }
 
-       // Robot.log(isEmpty ? "T265 Localization Map Not Found" : "Found T265 Localization Map");
-       // Robot.log(t265Cam == null ? "Instantiating new T265" : "Using static T265");
-
         if (t265Cam == null) {
             if (!isEmpty) {
-                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, mapPath, op.hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(xOffset / 39.3701, yOffset / 39.3701), new Rotation2d(Math.toRadians(180))), 1, mapPath, hardwareMap.appContext);
             } else {
-                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, op.hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(xOffset / 39.3701, yOffset / 39.3701), new Rotation2d(Math.toRadians(180))), 1, hardwareMap.appContext);
             }
         }
         setCameraPose(startX, startY, startTheta);
@@ -82,10 +82,9 @@ public class T265 {
         Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
 
-        x = -translation.getY() - xOffset * Math.sin(theta) - yOffset * Math.cos(theta);
+        x = -translation.getY() * Math.sin(theta) - yOffset * Math.cos(theta);
         y = translation.getX() + xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
-        theta = rotation.getRadians();
-
+        theta = rotation.getRadians() + Math.toRadians(180);
         if (state.confidence == T265Camera.PoseConfidence.High) {
             confidence = 3;
         } else if (state.confidence == T265Camera.PoseConfidence.Medium) {
@@ -97,16 +96,8 @@ public class T265 {
         }
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getTheta() {
-        return theta;
+    public com.acmerobotics.roadrunner.geometry.Pose2d getPose() {
+        return new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta);
     }
 
     public String confidenceColor() {
@@ -120,5 +111,8 @@ public class T265 {
             default :
                 return "red";
         }
+    }
+    public boolean isStarted() {
+        return t265Cam.isStarted();
     }
 }
