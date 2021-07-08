@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Gunner;
 
 
-@TeleOp(name = "GunnerTest", group = "LinearOpMode")
+@TeleOp(name = "GunnerTest", group = "Test")
 public class GunnerTest extends LinearOpMode {
     Gunner gunner;
     FtcDashboard dashboard = FtcDashboard.getInstance();

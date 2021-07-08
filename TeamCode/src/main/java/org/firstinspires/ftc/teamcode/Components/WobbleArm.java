@@ -5,7 +5,7 @@ import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class WobbleArm extends Component {
+public class WobbleArm implements Component {
     State state = State.UP;
     public Servo arm1, arm2;
     public Claw claw;

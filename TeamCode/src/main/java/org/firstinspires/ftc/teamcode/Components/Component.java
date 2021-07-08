@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-public abstract class Component {
-    public abstract void update();
+import com.acmerobotics.dashboard.FtcDashboard;
+
+public interface Component {
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    void update();
 }

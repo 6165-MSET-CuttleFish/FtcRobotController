@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
@@ -112,7 +111,6 @@ public class FSMTele extends LinearOpMode {
     public void wobble() {
         if (riya.getButton(GamepadKeys.Button.B) && !wobbleCheck) {
             wobbleCheck = true;
-            robot.wobbleArmUp();
             switch (robot.wobbleArm.getState()){
                 case UP:
                     robot.wobbleArm.down();

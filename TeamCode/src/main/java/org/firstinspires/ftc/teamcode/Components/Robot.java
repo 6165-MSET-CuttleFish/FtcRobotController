@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -31,7 +30,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -49,17 +47,29 @@ import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.*;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 
-public class Robot extends MecanumDrive {
+public class Robot extends MecanumDrive implements Component {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final int HORIZON = 100; // horizon value to tune
@@ -75,9 +85,6 @@ public class Robot extends MecanumDrive {
     public final LinearOpMode linearOpMode;
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
-
-    public Intake intake;
-    private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
     public static Vector2d goal = new Vector2d(70.5275, -32.9725);
     public static Vector2d[] powerShotLocals = {
@@ -99,8 +106,11 @@ public class Robot extends MecanumDrive {
     public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
 
+    private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public Intake intake;
     public Shooter shooter;
     public WobbleArm wobbleArm;
+    private HashSet<Component> components;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -115,7 +125,6 @@ public class Robot extends MecanumDrive {
         TURN,
     }
 
-    private final FtcDashboard dashboard;
     private final NanoClock clock;
     private Mode mode;
     private final PIDFController turnController;
@@ -131,15 +140,19 @@ public class Robot extends MecanumDrive {
     private final VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
     LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
+
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.NONE);
     }
-    public Robot(LinearOpMode opMode, OpModeType type){
+
+    public Robot(LinearOpMode opMode, OpModeType type) {
         this(opMode, robotPose, type);
     }
+
     public Robot(LinearOpMode opMode) {
-        this(opMode, new Pose2d(0,0,0), OpModeType.NONE);
+        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE);
     }
+
     public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         opModeType = type;
@@ -147,12 +160,11 @@ public class Robot extends MecanumDrive {
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
-        dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         clock = NanoClock.system();
         mode = Mode.IDLE;
-        turnController = new PIDFController(new PIDCoefficients(7, 0, 0));
+        turnController = new PIDFController(HEADING_PID);
         turnController.setInputBounds(0, 2 * Math.PI);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -173,6 +185,7 @@ public class Robot extends MecanumDrive {
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
+        components = new HashSet<>(Arrays.asList(intake, shooter, wobbleArm));
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -191,12 +204,18 @@ public class Robot extends MecanumDrive {
         setLocalizer(new t265Localizer(hardwareMap));
         setPoseEstimate(robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+    }
+
+    public void setVectors() {
         switch (side) {
-            case RED: break;
-            case BLUE: break;
+            case RED:
+                break;
+            case BLUE:
+                break;
         }
     }
-    public void autoInit(){
+
+    public void autoInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -221,73 +240,90 @@ public class Robot extends MecanumDrive {
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         dashboard.startCameraStream(webcam, 30);
     }
-    public Trajectory pickup;
-    public void createTraj(double endTangent){
-        TrajectoryBuilder builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
-                .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
-                .splineTo(new Vector2d(42, 7), 0);
-        Vector2d[] wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
-        bubbleSort(wayPoints, new Vector2d());
-        for(int i = 0; i < wayPoints.length; i++){
-            builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
-        }
-        pickup = builder.splineTo(new Vector2d(55.7, -38), Math.toRadians(-75))
-                .build();
-    }
-    void bubbleSort(Vector2d[] arr, Vector2d referencePose) {
-        int n = arr.length;
-        for (int i = 0; i < n-1; i++)
-            for (int j = 0; j < n-i-1; j++)
-                if (arr[j].distTo(referencePose) > arr[j+1].distTo(referencePose))
-                {
-                    // swap arr[j+1] and arr[j]
-                    Coordinate temp = Coordinate.toPoint(arr[j]);
-                    arr[j] = arr[j+1];
-                    arr[j+1] = temp.toVector();
+
+    public Trajectory ringPickup;
+
+    public void createTraj(double endTangent) {
+        TrajectoryBuilder builder;
+        Vector2d[] wayPoints;
+        switch (side) {
+            case RED:
+                builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
+                        .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
+                        .splineTo(new Vector2d(42, 7), 0);
+                wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
+                bubbleSort(wayPoints, robotPose.vec());
+                for (int i = 0; i < wayPoints.length; i++) {
+                    builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
                 }
-    }
-    public void switchPipeline(){
-        webcam.setPipeline(bouncebacks = new RingLocalizer());
-    }
-    public void scan(){
-        height = pipeline.getHeight();
-    }
-    public void turnOffVision(){
-        webcam.closeCameraDeviceAsync(()-> webcam.stopStreaming());
-        dashboard.stopCameraStream();
-    }
-    public void wobbleArmUp() {
-        wobbleArm.dropMacro();
-    }
-    public void wobbleArmDown() {
-        wobbleArm.dropMacro();
+                ringPickup = builder.splineTo(new Vector2d(55.7, -38), Math.toRadians(-75))
+                        .build();
+                break;
+            case BLUE:
+                builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
+                        .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
+                        .splineTo(new Vector2d(42, 7), 0);
+                wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
+                bubbleSort(wayPoints, new Vector2d());
+                for (int i = 0; i < wayPoints.length; i++) {
+                    builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
+                }
+                ringPickup = builder.splineTo(new Vector2d(55.7, -38), Math.toRadians(-75))
+                        .build();
+                break;
+        }
 
     }
-    public void wobbleArmVertical(){
-        wobbleArm.dropMacro();
+
+    void bubbleSort(Vector2d[] arr, Vector2d referencePose) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr[j].distTo(referencePose) > arr[j + 1].distTo(referencePose)) {
+                    // swap arr[j+1] and arr[j]
+                    Coordinate temp = Coordinate.toPoint(arr[j]);
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp.toVector();
+                }
     }
-    public void grab(){
-        wobbleArm.claw.grab();
+
+    public void switchPipeline(OpenCvPipeline pipeline) {
+        webcam.setPipeline(pipeline);
     }
-    public void release(){
+
+    public void scan() {
+        height = pipeline.getHeight();
+    }
+
+    public void turnOffVision() {
+        webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
+        dashboard.stopCameraStream();
+    }
+
+    public void release() {
         wobbleArm.claw.release();
     }
-    public void intake(double intakeSpeed){
+
+    public void intake(double intakeSpeed) {
         intake.setPower(-intakeSpeed);
     }
-    public void optimalShoot(){
+
+    public void optimalShoot() {
         shooter.tripleShot();
     }
+
     public void shieldUp() {
         intake.shieldUp();
     }
-    public void shieldDown(){
+
+    public void shieldDown() {
         intake.shieldDown();
     }
-    public Vector2d getDropZone(){
-        if(height == UGContourRingPipeline.Height.FOUR){
+
+    public Vector2d getDropZone() {
+        if (height == UGContourRingPipeline.Height.FOUR) {
             return dropZones[2];
-        } else if(height == UGContourRingPipeline.Height.ONE){
+        } else if (height == UGContourRingPipeline.Height.ONE) {
             return dropZones[1];
         } else {
             return dropZones[0];
@@ -339,7 +375,7 @@ public class Robot extends MecanumDrive {
         waitForIdle();
     }
 
-    public void turn(double angle, Runnable runnable){
+    public void turn(double angle, Runnable runnable) {
         turnAsync(angle);
         waitForIdle(runnable);
     }
@@ -372,28 +408,33 @@ public class Robot extends MecanumDrive {
 
     public void update() {
         updatePoseEstimate();
-        shooter.update();
-        wobbleArm.update();
-        intake.update();
+        for (Component component : components) {
+            component.update();
+        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        //if(!isBusy()) actionQueue.pop().run();
+        if(!isBusy() && actionQueue.size() != 0) actionQueue.pop().run();
     }
+
     public void waitForIdle() {
-        waitForIdle(()->{});
+        waitForIdle(() -> {
+        });
     }
+
     public void waitForActionsCompleted() {
-        while(shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
-                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT){
+        while (shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
+                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.TRANSIT) {
             update();
         }
     }
+
     private void waitForIdle(Runnable block) {
         while (!Thread.currentThread().isInterrupted() && isBusy() && linearOpMode.opModeIsActive()) {
             block.run();
             update();
         }
     }
+
     public boolean isBusy() {
         return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE;
     }
@@ -440,11 +481,11 @@ public class Robot extends MecanumDrive {
         setDrivePower(vel);
     }
 
-    public void setMode(Mode mode){
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 
-    public Mode getMode(){
+    public Mode getMode() {
         return mode;
     }
 
@@ -502,6 +543,7 @@ public class Robot extends MecanumDrive {
 
         return (double) imu.getAngularVelocity().yRotationRate;
     }
+
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
         return new MinVelocityConstraint(Arrays.asList(
                 new AngularVelocityConstraint(maxAngularVel),
