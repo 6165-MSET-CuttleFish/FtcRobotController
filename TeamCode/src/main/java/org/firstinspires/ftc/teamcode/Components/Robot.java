@@ -139,7 +139,7 @@ public class Robot extends MecanumDrive implements Component {
     private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
     private Pose2d lastPoseOnTurn;
-    LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
+    public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
 
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.NONE);

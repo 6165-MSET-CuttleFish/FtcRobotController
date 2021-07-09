@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -16,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -55,7 +54,7 @@ public class Shooter implements Component {
     double lastKstatic = kStatic;
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
     TuningController tuner;
-
+    VoltageSensor batteryVoltageSensor;
     private final ElapsedTime veloTimer = new ElapsedTime();
     private final ElapsedTime coastTimer = new ElapsedTime();
     final double coastTime = 2;
@@ -83,8 +82,12 @@ public class Shooter implements Component {
         flywheel1.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         veloTracker = new Encoder(hardwareMap.get(DcMotorEx.class, "fw1"));
         veloTracker.setDirection(Encoder.Direction.REVERSE);
+
+
         magazine = new Magazine(hardwareMap);
         gunner = new Gunner(hardwareMap);
         turret = new Turret(hardwareMap);
@@ -131,6 +134,7 @@ public class Shooter implements Component {
         tuner = new TuningController();
         veloTimer.reset();
         coastTimer.reset();
+        setPIDCoeffecients();
     }
 
     public void update() {
@@ -189,6 +193,10 @@ public class Shooter implements Component {
         dashboard.sendTelemetryPacket(packet);
     }
 
+    private void setPIDCoeffecients() {
+        veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage());
+    }
+
     public int getRings() {
         return 0;
     }
@@ -222,28 +230,21 @@ public class Shooter implements Component {
         return getTargetVelo() - getVelocity();
     }
 
-    public void magMacro() {
-
+    public double getAbsError() {
+        return Math.abs(getError());
     }
 
     public void tripleShot() {
         gunner.shoot(3);
     }
 
-    public void singleRound() {
-        gunner.shoot();
-        //gunner.setPosition(0.34);
-        //sleep(145);
-        Log.println(Log.INFO, "Shot", "Single Round");
-        //gunner.setPosition(0.48);
-    }
 
     public void flapUp() {
         flap.setPosition(0.75);
     }
 
     public void flapDown() {
-        flap.setPosition(0.9);
+        flap.setPosition(0.93);
     }
 
     public void flapWayDown() {

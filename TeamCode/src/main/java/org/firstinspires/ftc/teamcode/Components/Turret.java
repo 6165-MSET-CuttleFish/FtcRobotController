@@ -4,11 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
 @Config
@@ -17,7 +20,7 @@ public class Turret implements Component {
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.045, 0, 0.0018);
     public static double kV = 1;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
-    PIDFController angleControl = new PIDFController(ANGLE_PID);
+    PIDFController angleControl = new PIDFController(ANGLE_PID, kV);
     public static double targetAngle = 0;
     public Vector2d target;
     TurretTuner turretTuner;
@@ -40,8 +43,8 @@ public class Turret implements Component {
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
-                targetAng = targetAngle - Robot.robotPose.getHeading();
-                if(target != null) targetAng = Math.toDegrees(Robot.robotPose.vec().angleBetween(target) - Robot.robotPose.getHeading());
+                targetAng = Math.toDegrees(MathFunctions.AngleWrap(targetAngle - Robot.robotPose.getHeading()));
+                if(target != null) targetAng = Math.toDegrees(MathFunctions.AngleWrap(Robot.robotPose.vec().angleBetween(target) - Robot.robotPose.getHeading()));
                 break;
             case IDLE:
                 targetAng = 0;
@@ -64,6 +67,7 @@ public class Turret implements Component {
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
+        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Robot.robotPose.getX(), Robot.robotPose.getY(), getAbsoluteAngle()));
         dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){

@@ -4,11 +4,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Components.Gunner;
 import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.UniversalGamepad;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 
@@ -22,6 +24,8 @@ public class FSMTele extends LinearOpMode {
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
     Shooter shooter;
+    Turret turret;
+    Gunner gunner;
     Magazine magazine;
     Intake intake;
     UniversalGamepad universalGamepad;
@@ -34,6 +38,8 @@ public class FSMTele extends LinearOpMode {
         shooter = robot.shooter;
         magazine = shooter.magazine;
         intake = robot.intake;
+        turret = shooter.turret;
+        gunner = shooter.gunner;
         waitForStart();
 
         // WHILE LOOP
@@ -41,13 +47,6 @@ public class FSMTele extends LinearOpMode {
         while (opModeIsActive()){
             robot.update();
             universalGamepad.update();
-//            if(universalGamepad.g2.getButton(GamepadKeys.Button.LEFT_BUMPER)){
-//                targetVelocity = 1100;
-//                powershots = true;
-//            } else {
-//                targetVelocity = robot.shooter.getPoseVelo(robot.getPoseEstimate().vec());
-//                powershots = false;
-//            }
             if(universalGamepad.shieldButton.wasJustPressed()){
                 switch (intake.getState()) {
                     case UP:
@@ -58,13 +57,18 @@ public class FSMTele extends LinearOpMode {
                         break;
                 }
             }
-            if(universalGamepad.g1.gamepad.left_bumper) {
-                robot.wobbleArm.pickUp();
-            }
-            if(universalGamepad.g1.gamepad.right_bumper) {
-                if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
-            }
             robot.intake.setPower(universalGamepad.g1.gamepad.right_trigger - universalGamepad.g1.gamepad.left_trigger);
+            if(Robot.robotPose.getX() > 20) {
+                turret.setState(Turret.State.IDLE);
+            } else {
+                switch (turret.getState()) {
+                    case TARGET_LOCK:
+                        if(turret.getError() < 3 && shooter.getAbsError() < 50 && Robot.robotPose.getX() < -10) {
+                            gunner.shoot();
+                        }
+                        break;
+                }
+            }
             switch (driveState) {
                 case NORMAL: robot.setWeightedDrivePower(
                         new Pose2d(
@@ -83,8 +87,6 @@ public class FSMTele extends LinearOpMode {
                 );
                 break;
             }
-            telemetry.addData("leftY" , universalGamepad.g1.getLeftY());
-            telemetry.update();
             wobble();
         }
 
@@ -95,16 +97,16 @@ public class FSMTele extends LinearOpMode {
         if (universalGamepad.wobbleButton.wasJustPressed()) {
             switch (robot.wobbleArm.getState()){
                 case UP:
-                    robot.wobbleArm.setState(WobbleArm.State.DOWN);
+                    wobbleArm.dropMacro();
                     break;
                 case MID:
                 case DOWN:
-                    robot.wobbleArm.setState(WobbleArm.State.UP);
+                    wobbleArm.setState(WobbleArm.State.UP);
                     break;
             }
         }
         if (universalGamepad.clawButton.wasJustPressed()) {
-            switch(robot.wobbleArm.claw.getState()){
+            switch(wobbleArm.claw.getState()){
                 case GRIP: {
                     if(wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
                     break;
@@ -114,6 +116,9 @@ public class FSMTele extends LinearOpMode {
                     break;
                 }
             }
+        }
+        if(universalGamepad.g2.gamepad.right_bumper) {
+            robot.wobbleArm.pickUp();
         }
     }
 }

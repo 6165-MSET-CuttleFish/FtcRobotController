@@ -52,7 +52,17 @@ public class DashboardUtil {
         canvas.strokeLine(x1, y1, x2, y2);
     }
 
+    public static void drawTurret(Canvas canvas, Pose2d pose) {
+        canvas.setStroke("#FF0000");
+        canvas.strokeCircle(pose.getX(), pose.getY(), ROBOT_RADIUS/2);
+        Vector2d v = pose.headingVec().times(ROBOT_RADIUS/2);
+        double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
+        double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
+        canvas.strokeLine(x1, y1, x2, y2);
+    }
+
     public static void drawRing(Canvas canvas, Vector2d pose){
+        canvas.setStroke("#FF9E00");
         canvas.strokeCircle(pose.getX(), pose.getY(), 3);
     }
 }

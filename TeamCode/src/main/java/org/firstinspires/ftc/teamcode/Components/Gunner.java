@@ -41,6 +41,7 @@ public class Gunner implements Component {
 
                 .exit(State.OUT)
                 .build();
+        out();
     }
 
     public void shoot(int rounds) {

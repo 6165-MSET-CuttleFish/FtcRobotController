@@ -5,11 +5,9 @@ import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
-
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 
 import java.io.File;
 
@@ -17,7 +15,7 @@ import static java.lang.Math.PI;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class T265 {
-    private static T265Camera t265Cam;
+    public static T265Camera t265Cam;
 
     public final double ODOMETRY_COVARIANCE = 0.1;
     private final double INCH_TO_METER = 0.0254;
@@ -31,6 +29,7 @@ public class T265 {
     private final String mapPath = "/data/user/0/com.qualcomm.ftcrobotcontroller/cache/map.bin";
     public boolean isEmpty = false;
     private boolean exportingMap = true;
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
     public T265(HardwareMap hardwareMap, double startX, double startY, double startTheta) {
         File file = new File(mapPath);
@@ -82,6 +81,8 @@ public class T265 {
         Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
 
+        chassisSpeeds = state.velocity;
+
         x = -translation.getY() * Math.sin(theta) - yOffset * Math.cos(theta);
         y = translation.getX() + xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
         theta = rotation.getRadians() + Math.toRadians(180);
@@ -114,5 +115,9 @@ public class T265 {
     }
     public boolean isStarted() {
         return t265Cam.isStarted();
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return chassisSpeeds;
     }
 }
