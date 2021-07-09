@@ -41,6 +41,8 @@ public class FSMTele extends LinearOpMode {
         intake = robot.intake;
         turret = shooter.turret;
         gunner = shooter.gunner;
+        telemetry.addData("Initialized", true);
+        telemetry.update();
         waitForStart();
 
         // WHILE LOOP
