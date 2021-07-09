@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.Shooter;
 
-@TeleOp(name="VeloRegression", group = "Test")
+@TeleOp(name="ShooterTest", group = "Test")
 public class ShooterTest extends LinearOpMode {
     Shooter shooter;
     @Override

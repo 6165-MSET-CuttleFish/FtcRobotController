@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.util.TurretTuner;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.028, 0, 0);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.045, 0, 0.0018);
     public static double kV = 1;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
     PIDFController angleControl = new PIDFController(ANGLE_PID);
@@ -47,7 +47,8 @@ public class Turret implements Component {
                 targetAng = 0;
                 break;
             case TUNING:
-                if(!turretTuner.getRunning()) targetAng = turretTuner.update();
+                if(!turretTuner.getRunning()) turretTuner.start();
+                targetAng = turretTuner.update();
                 break;
         }
         angleControl.setTargetPosition(targetAng);
@@ -63,6 +64,7 @@ public class Turret implements Component {
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
+        dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){
         return state;

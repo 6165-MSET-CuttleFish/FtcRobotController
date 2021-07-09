@@ -26,6 +26,9 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_GEAR_RATIO;
+import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_TICKS_PER_REV;
+
 //http://192.168.43.1:8080/dash
 @Config
 public class Shooter implements Component {
@@ -38,12 +41,15 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0036, 0, 0);
-    public static double kV = 0.00052428571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0004, 0, 0);
+    public static double kV = 0.0001828571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.0003;
     public static double kStatic = 0;
+    public static double threshold = 800;
 
     double lastTargetVelo = 0.0;
+    double lastMotorPos = 0;
+    double lastMotorVelo = 0;
     double lastKv = kV;
     double lastKa = kA;
     double lastKstatic = kStatic;
@@ -70,14 +76,15 @@ public class Shooter implements Component {
         setVelocityController();
         flywheel = hardwareMap.get(DcMotor.class, "fw");
         flywheel1 = hardwareMap.get(DcMotor.class, "fw1");
+        flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel1.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        veloTracker = new Encoder(hardwareMap.get(DcMotorEx.class, "fw"));
-
+        veloTracker = new Encoder(hardwareMap.get(DcMotorEx.class, "fw1"));
+        veloTracker.setDirection(Encoder.Direction.REVERSE);
         magazine = new Magazine(hardwareMap);
         gunner = new Gunner(hardwareMap);
         turret = new Turret(hardwareMap);
@@ -151,9 +158,19 @@ public class Shooter implements Component {
         veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
         veloTimer.reset();
         lastTargetVelo = targetVelo;
-        double motorPos = flywheel.getCurrentPosition();
-        double motorVelo = veloTracker.getCorrectedVelocity();
-        double power = veloController.update(motorPos, motorVelo);
+        double motorPos = veloTracker.getCurrentPosition();
+        double motorVelo = (veloTracker.getCorrectedVelocity()/8192)*60;
+        double power;
+        if(Math.abs(motorVelo - lastMotorVelo) < threshold) {
+            power = veloController.update(motorPos, motorVelo);
+            lastMotorVelo = motorVelo;
+            lastMotorPos = motorPos;
+            packet.put("Shooter Velocity", motorVelo);
+        }
+        else {
+            power = veloController.update(lastMotorPos, lastMotorVelo);
+            packet.put("Shooter Velocity", lastMotorVelo);
+        }
         if (targetVelo == 0) {
             flywheel.setPower(this.power);
             flywheel1.setPower(this.power);
@@ -167,8 +184,8 @@ public class Shooter implements Component {
             lastKstatic = kStatic;
             veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
-        packet.put("Shooter Velocity", motorVelo);
         packet.put("Target Velocity", targetVelo);
+        packet.put("Motor Power", power);
         dashboard.sendTelemetryPacket(packet);
     }
 
@@ -254,6 +271,10 @@ public class Shooter implements Component {
         veloRegression.add(200, 1400);
         veloRegression.add(1000, 1400);
         veloRegression.createLUT();
+    }
+
+    public static double rpmToTicksPerSecond(double rpm) {
+        return rpm * MOTOR_TICKS_PER_REV / MOTOR_GEAR_RATIO / 60;
     }
 
     public State getState() {

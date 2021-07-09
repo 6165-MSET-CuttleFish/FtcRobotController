@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class TurretTuner {
     public static double MAX_ANGLE = 220;
-    public static double MIN_ANGLE = -220;
+    public static double MIN_ANGLE = 0;
 
 
     // These are prefixed with "STATE1", "STATE2", etc. because Dashboard displays variables in
