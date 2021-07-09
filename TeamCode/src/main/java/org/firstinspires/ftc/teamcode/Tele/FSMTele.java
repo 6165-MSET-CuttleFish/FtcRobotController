@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -56,6 +57,9 @@ public class FSMTele extends LinearOpMode {
                         intake.setState(Intake.State.UP);
                         break;
                 }
+            }
+            if(universalGamepad.g1.getButton(GamepadKeys.Button.A)) {
+                robot.setPoseEstimate(new Pose2d());
             }
             robot.intake.setPower(universalGamepad.g1.gamepad.right_trigger - universalGamepad.g1.gamepad.left_trigger);
             if(Robot.robotPose.getX() > 20) {
