@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
 @Config
-public class Turret implements Component{
+public class Turret implements Component {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.028, 0, 0);
     public static double kV = 1;

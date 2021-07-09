@@ -408,6 +408,9 @@ public class Robot extends MecanumDrive implements Component {
 
     public void update() {
         updatePoseEstimate();
+        if (!Thread.currentThread().isInterrupted()) {
+            robotPose = getPoseEstimate();
+        }
         for (Component component : components) {
             component.update();
         }
