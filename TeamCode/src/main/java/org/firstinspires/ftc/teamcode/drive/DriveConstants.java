@@ -21,8 +21,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 537.6;
-    public static final double MAX_RPM = 312.5;
+    public static final double TICKS_PER_REV = 424.233421752;
+    public static final double MAX_RPM = 397.088021178;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -45,7 +45,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.8898; // in
-    public static double GEAR_RATIO = 5.23; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 21.0/24.0; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 16; // in
 
     /*
@@ -98,8 +98,8 @@ public class DriveConstants {
      * https://github.com/acmerobotics/road-runner-quickstart/issues/91
 
      */
-    public static double MAX_VEL = 55;
-    public static double MAX_ACCEL = 55;
+    public static double MAX_VEL = 70;
+    public static double MAX_ACCEL = 70;
     public static double MAX_ANG_VEL = Math.toRadians(200);
     public static double MAX_ANG_ACCEL = Math.toRadians(200);
 

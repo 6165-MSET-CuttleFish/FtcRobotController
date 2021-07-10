@@ -27,6 +27,8 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.packet;
+
 @Config
 public class TrajectorySequenceRunner {
     public static String COLOR_INACTIVE_TRAJECTORY = "#4caf507a";
@@ -81,7 +83,6 @@ public class TrajectorySequenceRunner {
         Pose2d targetPose = null;
         DriveSignal driveSignal = null;
 
-        TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
         SequenceSegment currentSegment = null;
@@ -195,6 +196,8 @@ public class TrajectorySequenceRunner {
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
         dashboard.sendTelemetryPacket(packet);
+
+        packet = new TelemetryPacket();
 
         return driveSignal;
     }

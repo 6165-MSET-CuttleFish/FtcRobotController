@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -10,9 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
+
+import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
 @Config
 public class Turret implements Component {
@@ -39,12 +39,11 @@ public class Turret implements Component {
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void update(){
-        TelemetryPacket packet = new TelemetryPacket();
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
-                targetAng = Math.toDegrees(MathFunctions.AngleWrap(targetAngle - Details.robotPose.getHeading()));
-                if(target != null) targetAng = Math.toDegrees(MathFunctions.AngleWrap(Details.robotPose.vec().angleBetween(target) - Details.robotPose.getHeading()));
+                targetAng = Math.toDegrees(targetAngle - Details.robotPose.getHeading());
+                if(target != null) targetAng = Math.toDegrees(Details.robotPose.vec().angleBetween(target) - Details.robotPose.getHeading());
                 break;
             case IDLE:
                 targetAng = 0;
@@ -53,6 +52,11 @@ public class Turret implements Component {
                 if(!turretTuner.getRunning()) turretTuner.start();
                 targetAng = turretTuner.update();
                 break;
+        }
+        if (targetAng > 360) {
+            targetAng -= 360;
+        } else if(targetAng < -360) {
+            targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
         double currAngle = Math.toDegrees(getRelativeAngle());

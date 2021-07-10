@@ -3,16 +3,12 @@ package org.firstinspires.ftc.teamcode.Components;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -21,7 +17,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.acmerobotics.roadrunner.util.NanoClock;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -39,7 +34,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -109,7 +103,7 @@ public class Robot extends MecanumDrive implements Component {
     public Intake intake;
     public Shooter shooter;
     public WobbleArm wobbleArm;
-    private HashSet<Component> components;
+    private final HashSet<Component> components;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -118,26 +112,12 @@ public class Robot extends MecanumDrive implements Component {
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
-
-    public enum Mode {
-        IDLE,
-        TURN,
-    }
-
-    private final NanoClock clock;
-    private Mode mode;
-    private final PIDFController turnController;
-    private MotionProfile turnProfile;
-    private double turnStart;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
-    private TrajectorySequenceRunner trajectorySequenceRunner;
-    private final TrajectoryFollower follower;
-    private final LinkedList<Pose2d> poseHistory;
+    private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final List<DcMotorEx> motors;
     private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
-    private Pose2d lastPoseOnTurn;
     public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
 
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
@@ -161,13 +141,8 @@ public class Robot extends MecanumDrive implements Component {
         telemetry = opMode.telemetry;
         dashboard.setTelemetryTransmissionInterval(25);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        clock = NanoClock.system();
-        mode = Mode.IDLE;
-        turnController = new PIDFController(HEADING_PID);
-        turnController.setInputBounds(0, 2 * Math.PI);
-        follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
+        TrajectoryFollower follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        poseHistory = new LinkedList<>();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -472,14 +447,6 @@ public class Robot extends MecanumDrive implements Component {
         }
 
         setDrivePower(vel);
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public Mode getMode() {
-        return mode;
     }
 
     @NonNull

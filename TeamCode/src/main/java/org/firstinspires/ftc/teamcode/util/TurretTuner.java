@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class TurretTuner {
-    public static double MAX_ANGLE = 220;
+    public static double MAX_ANGLE = 360;
     public static double MIN_ANGLE = 0;
 
 
@@ -47,9 +47,7 @@ public class TurretTuner {
                 .onEnter(externalTimer::reset)
                 .loop(() -> {
                     double progress = externalTimer.seconds() / ZSTATE1_RAMPING_UP_DURATION;
-                    double target = progress * (MAX_ANGLE - MIN_ANGLE) + MAX_ANGLE;
-
-                    currentTargetAngle = target;
+                    currentTargetAngle = progress * (MAX_ANGLE - MIN_ANGLE) + MAX_ANGLE;
                 })
 
                 .state(State.COASTING_1)
@@ -61,9 +59,7 @@ public class TurretTuner {
                 .onEnter(externalTimer::reset)
                 .loop(() -> {
                     double progress = externalTimer.seconds() / ZSTATE3_RAMPING_DOWN_DURATION;
-                    double target = MAX_ANGLE - progress * (MAX_ANGLE - MIN_ANGLE);
-
-                    currentTargetAngle = target;
+                    currentTargetAngle = MAX_ANGLE - progress * (MAX_ANGLE - MIN_ANGLE);
                 })
 
                 .state(State.COASTING_2)

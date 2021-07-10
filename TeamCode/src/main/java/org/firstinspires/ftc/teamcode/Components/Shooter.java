@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
@@ -25,6 +24,7 @@ import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_GEAR_RATIO;
 import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_TICKS_PER_REV;
 
@@ -138,7 +138,6 @@ public class Shooter implements Component {
     }
 
     public void update() {
-        TelemetryPacket packet = new TelemetryPacket();
         for (Component component : components) {
             component.update();
         }
