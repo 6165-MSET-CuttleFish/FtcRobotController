@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Components.Details;
 import org.firstinspires.ftc.teamcode.Components.Gunner;
 import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.Magazine;
@@ -64,12 +65,12 @@ public class FSMTele extends LinearOpMode {
                 robot.setPoseEstimate(new Pose2d());
             }
             robot.intake.setPower(universalGamepad.g1.gamepad.right_trigger - universalGamepad.g1.gamepad.left_trigger);
-            if(Robot.robotPose.getX() > 20) {
+            if(Details.robotPose.getX() > 20) {
                 turret.setState(Turret.State.IDLE);
             } else {
                 switch (turret.getState()) {
                     case TARGET_LOCK:
-                        if(turret.getError() < 3 && shooter.getAbsError() < 50 && Robot.robotPose.getX() < -10) {
+                        if(turret.getError() < 3 && shooter.getAbsError() < 50 && Details.robotPose.getX() < -10) {
                             gunner.shoot();
                         }
                         break;

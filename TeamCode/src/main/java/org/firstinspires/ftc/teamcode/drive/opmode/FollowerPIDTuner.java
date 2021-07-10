@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -24,7 +25,6 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
  */
 @Config
 @Autonomous(group = "drive")
-@Disabled
 public class FollowerPIDTuner extends LinearOpMode {
     public static double DISTANCE = 48; // in
 
@@ -41,13 +41,17 @@ public class FollowerPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            Trajectory traj = robot.trajectoryBuilder(startPose)
+            TrajectorySequence trajSeq = robot.trajectorySequenceBuilder(startPose)
                     .forward(DISTANCE)
+                    .turn(Math.toRadians(90))
+                    .forward(DISTANCE)
+                    .turn(Math.toRadians(90))
+                    .forward(DISTANCE)
+                    .turn(Math.toRadians(90))
+                    .forward(DISTANCE)
+                    .turn(Math.toRadians(90))
                     .build();
-            robot.followTrajectory(traj);
-            robot.turn(Math.toRadians(90));
-
-            startPose = traj.end().plus(new Pose2d(0, 0, Math.toRadians(90)));
+            robot.followTrajectorySequence(trajSeq);
         }
     }
 }

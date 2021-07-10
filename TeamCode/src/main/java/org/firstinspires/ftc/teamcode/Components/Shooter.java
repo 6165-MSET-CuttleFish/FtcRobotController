@@ -94,7 +94,7 @@ public class Shooter implements Component {
         components = new HashSet<>(Arrays.asList(magazine, gunner, turret));
         flap = hardwareMap.get(Servo.class, "flap");
 
-        if (Robot.opModeType == OpModeType.AUTO) {
+        if (Details.opModeType == OpModeType.AUTO) {
             flapWayDown();
         } else {
             flapDown();
@@ -144,7 +144,7 @@ public class Shooter implements Component {
         }
         switch (state) {
             case CONTINUOUS:
-                targetVelo = veloRegression.get(Robot.robotPose.vec().distTo(Robot.goal));
+                targetVelo = veloRegression.get(Details.robotPose.vec().distTo(Robot.goal));
                 break;
             case POWERSHOTS:
                 targetVelo = 1000;
@@ -190,7 +190,7 @@ public class Shooter implements Component {
         }
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
-        dashboard.sendTelemetryPacket(packet);
+        //dashboard.sendTelemetryPacket(packet);
     }
 
     private void setPIDCoeffecients() {

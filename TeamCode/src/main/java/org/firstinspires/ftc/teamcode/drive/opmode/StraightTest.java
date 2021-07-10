@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
  */
 @Config
 @Autonomous(group = "drive")
-@Disabled
 public class StraightTest extends LinearOpMode {
     public static double DISTANCE = 72; // in
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -40,6 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -57,6 +59,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -68,7 +71,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-
+@Config
 public class Robot extends MecanumDrive implements Component {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
@@ -78,8 +81,6 @@ public class Robot extends MecanumDrive implements Component {
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
 
-    public static OpModeType opModeType = OpModeType.NONE;
-    public static Side side = Side.RED;
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
     public final LinearOpMode linearOpMode;
@@ -102,8 +103,6 @@ public class Robot extends MecanumDrive implements Component {
             new Vector2d(23, -35.4725),
             new Vector2d(45.5275, -57)
     };
-
-    public static Pose2d robotPose = new Pose2d();
     public static Vector2d rightWobble = new Vector2d(-32, -51);
 
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
@@ -146,7 +145,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public Robot(LinearOpMode opMode, OpModeType type) {
-        this(opMode, robotPose, type);
+        this(opMode, Details.robotPose, type);
     }
 
     public Robot(LinearOpMode opMode) {
@@ -155,8 +154,8 @@ public class Robot extends MecanumDrive implements Component {
 
     public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
-        opModeType = type;
-        robotPose = pose2d.plus(new Pose2d(-70.4725, -70.4725, 0));
+        Details.opModeType = type;
+        Details.robotPose = pose2d.plus(new Pose2d(0, 0, 0));
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
@@ -201,8 +200,8 @@ public class Robot extends MecanumDrive implements Component {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.FORWARD);
-        setLocalizer(new t265Localizer(hardwareMap));
-        setPoseEstimate(robotPose);
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        setPoseEstimate(Details.robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
 
@@ -252,7 +251,7 @@ public class Robot extends MecanumDrive implements Component {
                         .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                         .splineTo(new Vector2d(42, 7), 0);
                 wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
-                bubbleSort(wayPoints, robotPose.vec());
+                bubbleSort(wayPoints, Details.robotPose.vec());
                 for (int i = 0; i < wayPoints.length; i++) {
                     builder = builder.splineTo(wayPoints[i], i < wayPoints.length - 2 ? wayPoints[i].angleBetween(wayPoints[i + 1]) : endTangent);
                 }
@@ -343,7 +342,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
-        return new TrajectoryBuilder(Robot.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
+        return new TrajectoryBuilder(Details.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
@@ -355,19 +354,11 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public void turnAsync(double angle) {
-        double heading = getPoseEstimate().getHeading();
-
-        lastPoseOnTurn = getPoseEstimate();
-
-        turnProfile = MotionProfileGenerator.generateSimpleMotionProfile(
-                new MotionState(heading, 0, 0, 0),
-                new MotionState(heading + angle, 0, 0, 0),
-                MAX_ANG_VEL,
-                MAX_ANG_ACCEL
+        trajectorySequenceRunner.followTrajectorySequenceAsync(
+                trajectorySequenceBuilder(getPoseEstimate())
+                        .turn(angle)
+                        .build()
         );
-
-        turnStart = clock.seconds();
-        mode = Mode.TURN;
     }
 
     public void turn(double angle) {
@@ -384,8 +375,7 @@ public class Robot extends MecanumDrive implements Component {
         trajectorySequenceRunner.followTrajectorySequenceAsync(
                 trajectorySequenceBuilder(trajectory.start())
                         .addTrajectory(trajectory)
-                        .build()
-        );
+                        .build());
     }
 
     public void followTrajectory(Trajectory trajectory) {
@@ -409,7 +399,7 @@ public class Robot extends MecanumDrive implements Component {
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
-            robotPose = getPoseEstimate();
+            Details.robotPose = getPoseEstimate();
         }
         for (Component component : components) {
             component.update();
@@ -439,7 +429,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public boolean isBusy() {
-        return mode != Mode.IDLE || shooter.gunner.getState() != Gunner.State.IDLE;
+        return trajectorySequenceRunner.isBusy();// || shooter.gunner.getState() != Gunner.State.IDLE;
     }
 
     public void setMode(DcMotor.RunMode runMode) {

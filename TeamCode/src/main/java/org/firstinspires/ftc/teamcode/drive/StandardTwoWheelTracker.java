@@ -34,7 +34,6 @@ import java.util.List;
  *    \--------------/
  *
  */
-@Config
 public class StandardTwoWheelTracker extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 1.5/2;// in

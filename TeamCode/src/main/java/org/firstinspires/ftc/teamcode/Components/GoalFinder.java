@@ -45,7 +45,7 @@ public class GoalFinder extends OpenCvPipeline {
 
             /**checking if any pixel is within the orange bounds to make a black and white mask**/
             Mat mask = new Mat(mat.rows(), mat.cols(), CvType.CV_8UC1); // variable to store mask in
-            switch (Robot.side){
+            switch (Details.side){
                 case BLUE: Core.inRange(mat, lowerBlue, upperBlue, mask);
                 case RED: Core.inRange(mat, lowerRed, upperRed, mask);
             }

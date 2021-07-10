@@ -16,7 +16,7 @@ public class Intake implements Component {
     Servo intakeL, intakeR;
 
     public Intake(HardwareMap hardwareMap) {
-        switch (Robot.opModeType) {
+        switch (Details.opModeType) {
             case AUTO:
                 state = State.UP;
                 break;

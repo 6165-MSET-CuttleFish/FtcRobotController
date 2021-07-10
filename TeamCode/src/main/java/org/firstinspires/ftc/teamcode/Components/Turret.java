@@ -35,7 +35,7 @@ public class Turret implements Component {
     public Turret(HardwareMap hardwareMap){
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
-        if(Robot.opModeType != OpModeType.TELE) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(Details.opModeType != OpModeType.TELE) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void update(){
@@ -43,8 +43,8 @@ public class Turret implements Component {
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
-                targetAng = Math.toDegrees(MathFunctions.AngleWrap(targetAngle - Robot.robotPose.getHeading()));
-                if(target != null) targetAng = Math.toDegrees(MathFunctions.AngleWrap(Robot.robotPose.vec().angleBetween(target) - Robot.robotPose.getHeading()));
+                targetAng = Math.toDegrees(MathFunctions.AngleWrap(targetAngle - Details.robotPose.getHeading()));
+                if(target != null) targetAng = Math.toDegrees(MathFunctions.AngleWrap(Details.robotPose.vec().angleBetween(target) - Details.robotPose.getHeading()));
                 break;
             case IDLE:
                 targetAng = 0;
@@ -67,8 +67,8 @@ public class Turret implements Component {
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
-        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Robot.robotPose.getX(), Robot.robotPose.getY(), getAbsoluteAngle()));
-        dashboard.sendTelemetryPacket(packet);
+        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
+        //dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){
         return state;
@@ -80,7 +80,7 @@ public class Turret implements Component {
         return turret.getCurrentPosition() * (2*Math.PI/(TICKS_PER_REVOLUTION * GEAR_RATIO));
     }
     public double getAbsoluteAngle(){
-        return Robot.robotPose.getHeading() + getRelativeAngle();
+        return Details.robotPose.getHeading() + getRelativeAngle();
     }
     public void setTarget(Vector2d vector2d) {
         target = vector2d;
