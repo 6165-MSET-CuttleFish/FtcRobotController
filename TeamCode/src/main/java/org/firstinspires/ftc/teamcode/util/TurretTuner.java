@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class TurretTuner {
-    public static double MAX_ANGLE = 360;
+    public static double MAX_ANGLE = 90;
     public static double MIN_ANGLE = 0;
 
 

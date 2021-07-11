@@ -33,6 +33,7 @@ import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_TICKS_P
 public class Shooter implements Component {
     public enum State {
         CONTINUOUS,
+        CUSTOMVELO,
         POWERSHOTS,
         TUNING,
         IDLE,
@@ -40,15 +41,16 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0004, 0, 0);
-    public static double kV = 0.0001828571428572;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
-    public static double kA = 0.0003;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.002, 0, 0);
+    public static double kV = 0.000162;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static double kA = 0.00027;
     public static double kStatic = 0;
-    public static double threshold = 800;
+    public static double threshold = 300;
 
     double lastTargetVelo = 0.0;
     double lastMotorPos = 0;
     double lastMotorVelo = 0;
+    double lastAccel = 0;
     double lastKv = kV;
     double lastKa = kA;
     double lastKstatic = kStatic;
@@ -163,17 +165,21 @@ public class Shooter implements Component {
         lastTargetVelo = targetVelo;
         double motorPos = veloTracker.getCurrentPosition();
         double motorVelo = (veloTracker.getCorrectedVelocity()/8192)*60;
+        double accel = motorVelo - lastMotorVelo;
         double power;
-        if(Math.abs(motorVelo - lastMotorVelo) < threshold) {
+        if(Math.abs(accel - lastAccel) < threshold) {
             power = veloController.update(motorPos, motorVelo);
             lastMotorVelo = motorVelo;
             lastMotorPos = motorPos;
             packet.put("Shooter Velocity", motorVelo);
+            packet.put("Shooter Accel", accel);
         }
         else {
             power = veloController.update(lastMotorPos, lastMotorVelo);
             packet.put("Shooter Velocity", lastMotorVelo);
+            packet.put("Shooter Accel", lastAccel);
         }
+        lastAccel = accel;
         if (targetVelo == 0) {
             flywheel.setPower(this.power);
             flywheel1.setPower(this.power);

@@ -71,7 +71,7 @@ public class Turret implements Component {
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
-        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
+        //DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
         //dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){

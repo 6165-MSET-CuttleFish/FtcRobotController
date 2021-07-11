@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+@Config
 public class Gunner implements Component {
     private final StateMachine shoot;
-    private static double gunTime = 100.0 / 1000.0;
+    private static double gunTime = 120.0 / 1000.0;
     private int shotRounds = 0;
     private int targetRounds = 1;
     private final Servo gunner;
@@ -45,8 +46,6 @@ public class Gunner implements Component {
     }
 
     public void shoot(int rounds) {
-        if (first) rounds++;
-        first = false;
         if (!shoot.getRunning()) {
             shotRounds = 0;
             targetRounds = rounds;
@@ -73,7 +72,7 @@ public class Gunner implements Component {
     }
 
     private void in() {
-        gunner.setPosition(0.79);
+        gunner.setPosition(0.77);
     }
 
     private void out() {
