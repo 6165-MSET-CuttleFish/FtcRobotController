@@ -12,7 +12,6 @@ public class Gunner implements Component {
     private int shotRounds = 0;
     private int targetRounds = 1;
     private final Servo gunner;
-    boolean first = true;
 
     public enum State {
         TRIGGER,
