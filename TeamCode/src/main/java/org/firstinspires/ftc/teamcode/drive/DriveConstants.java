@@ -98,10 +98,10 @@ public class DriveConstants {
      * https://github.com/acmerobotics/road-runner-quickstart/issues/91
 
      */
-    public static double MAX_VEL = 70;
-    public static double MAX_ACCEL = 70;
-    public static double MAX_ANG_VEL = Math.toRadians(200);
-    public static double MAX_ANG_ACCEL = Math.toRadians(200);
+    public static double MAX_VEL = 58;
+    public static double MAX_ACCEL = 58;
+    public static double MAX_ANG_VEL = Math.toRadians(180);
+    public static double MAX_ANG_ACCEL = Math.toRadians(180);
 
 
     public static double encoderTicksToInches(double ticks) {

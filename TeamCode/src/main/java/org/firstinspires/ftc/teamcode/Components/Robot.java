@@ -34,6 +34,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.Components.localizer.T265;
+import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -53,6 +55,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.Components.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -104,8 +107,8 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final HashSet<Component> components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(25, 1.3, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -175,7 +178,14 @@ public class Robot extends MecanumDrive implements Component {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         leftFront.setDirection(DcMotor.Direction.FORWARD);
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        switch(opModeType) {
+            case TELE:
+                setLocalizer(new t265Localizer(hardwareMap));
+                break;
+            default:
+                setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+                break;
+        }
         setPoseEstimate(Details.robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }

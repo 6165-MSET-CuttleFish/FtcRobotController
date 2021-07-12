@@ -31,11 +31,10 @@ public class FSMTele extends LinearOpMode {
     Magazine magazine;
     Intake intake;
     UniversalGamepad universalGamepad;
-    double targetVelocity;
     @Override
     public void runOpMode() throws InterruptedException {
         universalGamepad = new UniversalGamepad(this);
-        robot = new Robot(this, OpModeType.TELE);
+        robot = new Robot(this);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
         magazine = shooter.magazine;
@@ -87,7 +86,7 @@ public class FSMTele extends LinearOpMode {
                         break;
                 case WOBBLE: robot.setWeightedDrivePower(
                         new Pose2d(
-                                universalGamepad.g1.getLeftY(),
+                                -universalGamepad.g1.getLeftY(),
                                 universalGamepad.g1.getLeftX(),
                                 -universalGamepad.g1.getRightX() * 0.92
                         )

@@ -23,7 +23,7 @@ public class SplineTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         Trajectory traj = robot.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), Math.toRadians(90))
+                .splineTo(new Vector2d(30, 30), Math.toRadians(0))
                 .build();
 
         robot.followTrajectory(traj);

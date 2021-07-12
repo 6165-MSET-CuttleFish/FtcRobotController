@@ -9,19 +9,25 @@ import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
+
 import java.io.File;
 
 import static java.lang.Math.PI;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class T265 {
+
+    // Electronics
     public static T265Camera t265Cam;
 
-    public final double ODOMETRY_COVARIANCE = 0.1;
+    // Constants
+    public final double ODOMETRY_COVARIANCE = 0.5;
     private final double INCH_TO_METER = 0.0254;
     private final double xOffset = -8.875;
     private final double yOffset = 0.5;
 
+    // State Variables
     private double x, y, theta;
     public int confidence = 0;
 
@@ -36,12 +42,11 @@ public class T265 {
         if (!file.exists() || file.length() == 0) {
             isEmpty = true;
         }
-
         if (t265Cam == null) {
             if (!isEmpty) {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(xOffset / 39.3701, yOffset / 39.3701), new Rotation2d(Math.toRadians(180))), 1, mapPath, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
             } else {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(xOffset / 39.3701, yOffset / 39.3701), new Rotation2d(Math.toRadians(180))), 1, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, hardwareMap.appContext);
             }
         }
         setCameraPose(startX, startY, startTheta);
@@ -85,7 +90,7 @@ public class T265 {
 
         x = -translation.getY() * Math.sin(theta) - yOffset * Math.cos(theta);
         y = translation.getX() + xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
-        theta = rotation.getRadians() + Math.toRadians(180);
+        theta = MathFunctions.AngleWrap(rotation.getRadians() + Math.toRadians(180));
         if (state.confidence == T265Camera.PoseConfidence.High) {
             confidence = 3;
         } else if (state.confidence == T265Camera.PoseConfidence.Medium) {
@@ -101,18 +106,6 @@ public class T265 {
         return new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta);
     }
 
-    public String confidenceColor() {
-        switch (confidence) {
-            case 3:
-                return "green";
-            case 2:
-                return "yellow";
-            case 1:
-                return "orange";
-            default :
-                return "red";
-        }
-    }
     public boolean isStarted() {
         return t265Cam.isStarted();
     }
