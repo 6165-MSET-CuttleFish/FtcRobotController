@@ -4,7 +4,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Claw extends SubsystemBase {
+public class Claw {
     public Servo grabber;
     public State state;
     public enum State{

@@ -19,8 +19,9 @@ public class Turret implements Component {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.045, 0, 0.0018);
     public static double kV = 1;
+    public static double kStatic = 0.01;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
-    PIDFController angleControl = new PIDFController(ANGLE_PID, kV);
+    PIDFController angleControl = new PIDFController(ANGLE_PID, kV, 0, kStatic);
     public static double targetAngle = 0;
     public Vector2d target;
     TurretTuner turretTuner;
@@ -71,7 +72,7 @@ public class Turret implements Component {
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
-        //DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
+        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
         //dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){
@@ -99,6 +100,6 @@ public class Turret implements Component {
         return Math.abs(getError());
     }
     public boolean isIdle() {
-        return turret.getVelocity() < 100 && getAbsError() < 5;
+        return turret.getVelocity() < 100 && getAbsError() < 2;
     }
 }

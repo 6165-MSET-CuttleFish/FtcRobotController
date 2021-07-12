@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -122,6 +123,7 @@ public class Robot extends MecanumDrive implements Component {
     private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
     public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
+    FtcDashboard dashboard;
 
     public Robot(LinearOpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.NONE);
@@ -138,10 +140,11 @@ public class Robot extends MecanumDrive implements Component {
     public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         Details.opModeType = type;
-        Details.robotPose = pose2d.plus(new Pose2d(0, 0, 0));
+        Details.robotPose = pose2d;
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
+        dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         TrajectoryFollower follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,

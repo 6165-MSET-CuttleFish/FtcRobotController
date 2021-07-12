@@ -6,11 +6,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
+
 public class Magazine implements Component{
     Servo magLeft1, magLeft2;
     Servo magRight1, magRight2;
     private final ElapsedTime externalTimer = new ElapsedTime();
     StateMachine stateMachine;
+    public static double currentRings;
     public enum State{
         DOWN,
         MOVING_UP,
@@ -32,6 +35,7 @@ public class Magazine implements Component{
                 .onEnter(this::up)
 
                 .state(State.UP)
+                .onEnter(() -> currentRings = 3)
                 .transitionTimed(0.08)
 
                 .state(State.MOVING_DOWN)
@@ -41,6 +45,9 @@ public class Magazine implements Component{
                 .exit(State.DOWN)
 
                 .build();
+        if(opModeType == OpModeType.AUTO) {
+            currentRings = 3;
+        }
     }
     public void up(){
         magLeft1.setPosition(0.4);

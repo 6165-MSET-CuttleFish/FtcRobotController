@@ -5,18 +5,21 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
+
 public class Intake implements Component {
     public enum State {
         UP,
         DOWN
     }
-
+    public static double TICKS_PER_REV;
+    public static double GEAR_RATIO;
     State state = State.UP;
     DcMotor intakeMotor;
     Servo intakeL, intakeR;
 
     public Intake(HardwareMap hardwareMap) {
-        switch (Details.opModeType) {
+        switch (opModeType) {
             case AUTO:
                 state = State.UP;
                 break;
@@ -26,6 +29,8 @@ public class Intake implements Component {
         }
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (opModeType == OpModeType.AUTO) intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeL = hardwareMap.get(Servo.class, "intakeL");
         intakeR = hardwareMap.get(Servo.class, "intakeR");
     }

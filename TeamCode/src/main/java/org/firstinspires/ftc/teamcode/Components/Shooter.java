@@ -59,7 +59,6 @@ public class Shooter implements Component {
     VoltageSensor batteryVoltageSensor;
     private final ElapsedTime veloTimer = new ElapsedTime();
     private final ElapsedTime coastTimer = new ElapsedTime();
-    final double coastTime = 2;
     public DcMotor flywheel, flywheel1;
     public Encoder veloTracker;
     public Servo flap;
@@ -193,6 +192,7 @@ public class Shooter implements Component {
             lastKstatic = kStatic;
             veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
+        setVelocityController();
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
         //dashboard.sendTelemetryPacket(packet);
@@ -239,6 +239,10 @@ public class Shooter implements Component {
         return Math.abs(getError());
     }
 
+    public double getPercentError() {
+        return getAbsError() / getTargetVelo();
+    }
+
     public void tripleShot() {
         gunner.shoot(3);
     }
@@ -277,10 +281,6 @@ public class Shooter implements Component {
         veloRegression.add(200, 1400);
         veloRegression.add(1000, 1400);
         veloRegression.createLUT();
-    }
-
-    public static double rpmToTicksPerSecond(double rpm) {
-        return rpm * MOTOR_TICKS_PER_REV / MOTOR_GEAR_RATIO / 60;
     }
 
     public State getState() {

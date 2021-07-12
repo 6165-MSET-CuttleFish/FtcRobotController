@@ -5,6 +5,8 @@ import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+
 @Config
 public class Gunner implements Component {
     private final StateMachine shoot;
@@ -33,7 +35,11 @@ public class Gunner implements Component {
 
                 .state(State.IN)
                 .transitionTimed(0)
-                .onEnter(() -> shotRounds++)
+                .onEnter(() -> {
+                    shotRounds++;
+                    Magazine.currentRings--;
+                    Magazine.currentRings = Range.clip(Magazine.currentRings, 0, 3);
+                })
 
                 .state(State.PULLOUT)
                 .transitionTimed(gunTime)
