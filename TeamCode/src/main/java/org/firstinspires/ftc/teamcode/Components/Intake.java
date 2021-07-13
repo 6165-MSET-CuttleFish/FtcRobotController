@@ -61,6 +61,10 @@ public class Intake implements Component {
         intakeR.setPosition(1);
     }
 
+    public double getNoodleDelta() {
+        return intakeMotor.getCurrentPosition() * (2*Math.PI/(TICKS_PER_REV * GEAR_RATIO));
+    }
+
     public void shieldDown() {
         state = State.DOWN;
         intakeL.setPosition(0.12);

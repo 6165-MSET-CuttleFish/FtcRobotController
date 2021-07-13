@@ -22,7 +22,7 @@ public class Turret implements Component {
     public static double kStatic = 0.03;
     public static double kA = 0.007;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
-    PIDFController angleControl = new PIDFController(ANGLE_PID, kV, 0, kStatic);
+    PIDFController angleControl = new PIDFController(ANGLE_PID, kV, kA, kStatic);
     public static double targetAngle = 0;
     public Vector2d target;
     TurretTuner turretTuner;
@@ -39,9 +39,9 @@ public class Turret implements Component {
         turretTuner = new TurretTuner();
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        angleControl.setInputBounds(-300, 300);
     }
     public void update(){
+        angleControl.setInputBounds(-900, 900);
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
