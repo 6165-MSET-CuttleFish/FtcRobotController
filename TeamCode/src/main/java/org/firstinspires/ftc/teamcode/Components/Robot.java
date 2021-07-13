@@ -108,10 +108,10 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final HashSet<Component> components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(25, 1.3, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.2;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -182,9 +182,9 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         switch(opModeType) {
-            case TELE:
-                setLocalizer(new t265Localizer(hardwareMap));
-                break;
+//            case TELE:
+//                setLocalizer(new t265Localizer(hardwareMap));
+//                break;
             default:
                 setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
                 break;

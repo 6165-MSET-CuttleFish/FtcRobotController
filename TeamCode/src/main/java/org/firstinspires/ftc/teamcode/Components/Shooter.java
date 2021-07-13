@@ -192,7 +192,7 @@ public class Shooter implements Component {
             lastKstatic = kStatic;
             veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         }
-        setVelocityController();
+        setPIDCoeffecients();
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
         //dashboard.sendTelemetryPacket(packet);

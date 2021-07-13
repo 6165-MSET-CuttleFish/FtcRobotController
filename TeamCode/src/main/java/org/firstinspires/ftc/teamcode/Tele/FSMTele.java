@@ -46,7 +46,9 @@ public class FSMTele extends LinearOpMode {
         telemetry.addData("Initialized", true);
         telemetry.update();
         shooter.setState(Shooter.State.CUSTOMVELO);
+        turret.setTarget(Robot.goal);
         waitForStart();
+        robot.setPoseEstimate(new Pose2d());
 
         // WHILE LOOP
 
@@ -115,6 +117,7 @@ public class FSMTele extends LinearOpMode {
             } if (turret.getState() == Turret.State.TARGET_LOCK && turret.getError() < 3 && shooter.getPercentError() < 0.1 && robotPose.getX() < -10) {
                 gunner.shoot();
             }
+            turret.setState(Turret.State.TARGET_LOCK);
         }
     }
 

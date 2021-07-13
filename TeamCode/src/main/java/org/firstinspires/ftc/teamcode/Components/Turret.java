@@ -17,10 +17,11 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.045, 0, 0.0018);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.12, 0, 0.0009);
     public static double kV = 1;
-    public static double kStatic = 0.01;
-    public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD;
+    public static double kStatic = 0.03;
+    public static double kA = 0.007;
+    public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl = new PIDFController(ANGLE_PID, kV, 0, kStatic);
     public static double targetAngle = 0;
     public Vector2d target;
@@ -36,8 +37,9 @@ public class Turret implements Component {
     public Turret(HardwareMap hardwareMap){
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
-        if(Details.opModeType != OpModeType.TELE) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        angleControl.setInputBounds(-300, 300);
     }
     public void update(){
         double targetAng = 0;
@@ -63,12 +65,14 @@ public class Turret implements Component {
         double currAngle = Math.toDegrees(getRelativeAngle());
         double power = angleControl.update(currAngle);
         turret.setPower(power);
-        if(lastKv != kV || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
+        if(lastKv != kV || lastKa != kA || lastKStatic != kStatic || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
             lastKv = kV;
+            lastKa = kA;
+            lastKStatic = kStatic;
             lastKp = ANGLE_PID.kP;
             lastKi = ANGLE_PID.kI;
             lastKd = ANGLE_PID.kD;
-            angleControl = new PIDFController(ANGLE_PID, kV);
+            angleControl = new PIDFController(ANGLE_PID, kV, kA, kStatic);
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
