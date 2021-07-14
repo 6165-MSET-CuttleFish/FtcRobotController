@@ -38,6 +38,6 @@ public class t265Localizer implements Localizer {
     @Nullable
     @Override
     public Pose2d getPoseVelocity() {
-        return PoseUtil.toInches(PoseUtil.toRRPoseVelo(cam.getChassisSpeeds()));
+        return null;//PoseUtil.toInches(PoseUtil.toRRPoseVelo(cam.getChassisSpeeds()));
     }
 }

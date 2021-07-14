@@ -109,7 +109,7 @@ public class Robot extends MecanumDrive implements Component {
     public WobbleArm wobbleArm;
     private final HashSet<Component> components;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(24, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1.2;
 
@@ -182,9 +182,9 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         switch(opModeType) {
-//            case TELE:
-//                setLocalizer(new t265Localizer(hardwareMap));
-//                break;
+            case TELE:
+                setLocalizer(new t265Localizer(hardwareMap));
+                break;
             default:
                 setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
                 break;

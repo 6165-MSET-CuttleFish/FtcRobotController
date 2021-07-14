@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
@@ -41,12 +42,11 @@ public class Turret implements Component {
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void update(){
-        angleControl.setInputBounds(-900, 900);
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
                 targetAng = Math.toDegrees(targetAngle - Details.robotPose.getHeading());
-                if(target != null) targetAng = Math.toDegrees(Details.robotPose.vec().angleBetween(target) - Details.robotPose.getHeading());
+                if(target != null) targetAng = Coordinate.toPoint(Details.robotPose).angleTo(Coordinate.toPoint(Robot.goal)) - Math.toDegrees(Details.robotPose.getHeading());
                 break;
             case IDLE:
                 targetAng = 0;
@@ -56,9 +56,9 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        if (targetAng > 360) {
+        if (targetAng > 180) {
             targetAng -= 360;
-        } else if(targetAng < -360) {
+        } else if(targetAng < -180) {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);

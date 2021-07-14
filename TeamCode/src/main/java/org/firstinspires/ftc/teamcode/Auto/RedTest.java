@@ -16,29 +16,29 @@ public class RedTest extends LinearOpMode {
     Robot robot;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(), OpModeType.AUTO);
+        robot = new Robot(this, new Pose2d(-62, -22.7, 0), OpModeType.AUTO);
         TrajectorySequence mainSequence = robot.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
-                .splineTo(new Vector2d(50.5275, -22.7), Math.toRadians(0))
-                .splineTo(new Vector2d(65.5275, -22.7), Math.toRadians(90))
+                .splineTo(new Vector2d(40.5275, -22.7), Math.toRadians(90))
+                //.splineTo(new Vector2d(65.5275, -22.7), Math.toRadians(90))
 
-                .splineTo(new Vector2d(67, 10), Math.toRadians(90))
-                .splineTo(new Vector2d(63.5, 20), Math.toRadians(90))
+                .splineTo(new Vector2d(40, 10), Math.toRadians(90))
+                .splineTo(new Vector2d(40, 20), Math.toRadians(90))
                 .splineTo(new Vector2d(20, 20), Math.toRadians(180))
                 .splineTo(new Vector2d(-5, -16), Math.toRadians(180))
-                .addDisplacementMarker(() -> {
-                    robot.shooter.tripleShot();
-                    robot.waitForActionsCompleted();
-                }) // Shoot Boinked Rings
-                .lineTo(new Vector2d(-62, -22.7)) // Intake starter rings
-                .addDisplacementMarker(() -> {
-                    robot.shooter.setState(Shooter.State.POWERSHOTS);
-                    robot.shooter.turret.setTarget(Robot.powerShots[0]);
-                })
+//                .addDisplacementMarker(() -> {
+//                    robot.shooter.tripleShot();
+//                    robot.waitForActionsCompleted();
+//                }) // Shoot Boinked Rings
+                .lineTo(new Vector2d(-55, -22.7)) // Intake starter rings
+//                .addDisplacementMarker(() -> {
+//                    robot.shooter.setState(Shooter.State.POWERSHOTS);
+//                    robot.shooter.turret.setTarget(Robot.powerShots[0]);
+//                })
                 .lineToLinearHeading(new Pose2d(-5, -16))
-                .addDisplacementMarker(() -> {
-                    robot.shooter.powerShots();
-                    robot.waitForActionsCompleted();
-                })// Shoot powershots
+//                .addDisplacementMarker(() -> {
+//                    robot.shooter.powerShots();
+//                    robot.waitForActionsCompleted();
+//                })// Shoot powershots
                 .lineToLinearHeading(new Pose2d(65.5275, -10.7, Math.toRadians(-90)))
                 .addTemporalMarker(2, this::generatePath)
                 .lineToSplineHeading(new Pose2d(60.5275, -57, Math.toRadians(-90)))

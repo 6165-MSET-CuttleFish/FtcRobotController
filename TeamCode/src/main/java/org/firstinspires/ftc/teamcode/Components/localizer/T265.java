@@ -19,10 +19,10 @@ import static java.lang.Math.PI;
 public class T265 {
 
     // Electronics
-    public static T265Camera t265Cam;
+    private static T265Camera t265Cam;
 
     // Constants
-    public final double ODOMETRY_COVARIANCE = 0.5;
+    public final double ODOMETRY_COVARIANCE = 1;
     private final double INCH_TO_METER = 0.0254;
     private final double xOffset = -8.875;
     private final double yOffset = 0.5;
@@ -44,9 +44,9 @@ public class T265 {
         }
         if (t265Cam == null) {
             if (!isEmpty) {
-                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.5 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
             } else {
-                t265Cam = new T265Camera(new Transform2d(), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.5 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
             }
         }
         setCameraPose(startX, startY, startTheta);
@@ -68,10 +68,10 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        x -= -xOffset * Math.sin(theta) - yOffset * Math.cos(theta);
-        y -= xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
+//        x -= -xOffset * Math.sin(theta) - yOffset * Math.cos(theta);
+//        y -= xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
 
-        t265Cam.setPose(new Pose2d(y * INCH_TO_METER, -x * INCH_TO_METER, new Rotation2d(theta)));
+        t265Cam.setPose(new Pose2d(x * INCH_TO_METER, y * INCH_TO_METER, new Rotation2d(theta)));
     }
 
     public void sendOdometryData(double vx, double vy, double theta, double w) {
@@ -88,9 +88,9 @@ public class T265 {
 
         chassisSpeeds = state.velocity;
 
-        x = -translation.getY() * Math.sin(theta) - yOffset * Math.cos(theta);
-        y = translation.getX() + xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
-        theta = MathFunctions.AngleWrap(rotation.getRadians() + Math.toRadians(180));
+        x = -translation.getX(); //* Math.sin(theta) - yOffset * Math.cos(theta);
+        y = translation.getY(); //+ xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
+        theta = rotation.getRadians();
         if (state.confidence == T265Camera.PoseConfidence.High) {
             confidence = 3;
         } else if (state.confidence == T265Camera.PoseConfidence.Medium) {

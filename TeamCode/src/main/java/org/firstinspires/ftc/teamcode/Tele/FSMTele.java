@@ -46,14 +46,14 @@ public class FSMTele extends LinearOpMode {
         telemetry.addData("Initialized", true);
         telemetry.update();
         shooter.setState(Shooter.State.CUSTOMVELO);
-        turret.setTarget(Robot.goal);
+
         waitForStart();
         robot.setPoseEstimate(new Pose2d());
 
         // WHILE LOOP
 
         while (opModeIsActive()) {
-            shooter.setVelocity(3000);
+            turret.setTarget(Robot.goal);
             universalGamepad.update();
             if (universalGamepad.shieldButton.wasJustPressed()) {
                 switch (intake.getState()) {
