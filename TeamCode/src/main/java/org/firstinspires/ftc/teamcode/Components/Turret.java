@@ -56,9 +56,9 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        if (targetAng > 180) {
+        if (targetAng > 200) {
             targetAng -= 360;
-        } else if(targetAng < -180) {
+        } else if(targetAng < -200) {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);

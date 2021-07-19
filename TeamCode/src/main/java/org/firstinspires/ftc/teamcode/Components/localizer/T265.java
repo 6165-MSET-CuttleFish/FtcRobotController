@@ -44,9 +44,9 @@ public class T265 {
         }
         if (t265Cam == null) {
             if (!isEmpty) {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.5 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.875 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
             } else {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.5 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.875 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
             }
         }
         setCameraPose(startX, startY, startTheta);

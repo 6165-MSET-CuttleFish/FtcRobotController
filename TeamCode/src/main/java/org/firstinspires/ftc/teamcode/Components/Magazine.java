@@ -48,6 +48,7 @@ public class Magazine implements Component{
         if(opModeType == OpModeType.AUTO) {
             currentRings = 3;
         }
+        down();
     }
     public void up(){
         magLeft1.setPosition(0.4);

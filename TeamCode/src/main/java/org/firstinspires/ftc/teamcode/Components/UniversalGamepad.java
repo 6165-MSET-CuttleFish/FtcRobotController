@@ -15,7 +15,7 @@ public class UniversalGamepad implements Component{
     public GamepadEx g2;
     HashSet<KeyReader> readers;
     public ToggleButtonReader clawButton, reverseMode, shieldButton, turretButton, wobbleButton, magButton;
-    public TriggerReader intakeButton;
+    public TriggerReader intakeButton, outtakeButton;
 
     public UniversalGamepad(LinearOpMode op) {
         g1 = new GamepadEx(op.gamepad1);
@@ -36,9 +36,10 @@ public class UniversalGamepad implements Component{
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
         intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
-        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+        outtakeButton = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
+        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
 
-        wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
-        readers = new HashSet<>(Arrays.asList(clawButton, reverseMode, magButton, shieldButton, turretButton, intakeButton, wobbleButton));
+        wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.Y);
+        readers = new HashSet<>(Arrays.asList(clawButton, reverseMode, magButton, shieldButton, turretButton, intakeButton, outtakeButton, wobbleButton));
     }
 }

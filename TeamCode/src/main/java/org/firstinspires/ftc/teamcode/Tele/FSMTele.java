@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,12 +20,13 @@ import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
 @TeleOp(name = "RedTele", group = "Red")
+@Config
 public class FSMTele extends LinearOpMode {
     enum DriveState {
         NORMAL,
         WOBBLE
     }
-
+    public static double velo = 0;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -32,10 +36,11 @@ public class FSMTele extends LinearOpMode {
     Magazine magazine;
     Intake intake;
     UniversalGamepad universalGamepad;
+    ButtonReader magButton;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        universalGamepad = new UniversalGamepad(this);
+
         robot = new Robot(this, OpModeType.TELE);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
@@ -46,14 +51,18 @@ public class FSMTele extends LinearOpMode {
         telemetry.addData("Initialized", true);
         telemetry.update();
         shooter.setState(Shooter.State.CUSTOMVELO);
+        magButton = new ButtonReader(new GamepadEx(gamepad2), GamepadKeys.Button.B);
 
         waitForStart();
+        universalGamepad = new UniversalGamepad(this);
         robot.setPoseEstimate(new Pose2d());
 
         // WHILE LOOP
 
         while (opModeIsActive()) {
+            magButton.readValue();
             turret.setTarget(Robot.goal);
+            shooter.setVelocity(velo);
             universalGamepad.update();
             if (universalGamepad.shieldButton.wasJustPressed()) {
                 switch (intake.getState()) {
@@ -65,20 +74,17 @@ public class FSMTele extends LinearOpMode {
                         break;
                 }
             }
-            if (universalGamepad.g1.getButton(GamepadKeys.Button.A)) {
-                robot.setPoseEstimate(new Pose2d());
-            }
-            if (universalGamepad.magButton.wasJustPressed()) {
+            if (universalGamepad.magButton.isDown()) {
                 magazine.magMacro();
             }
-            robot.intake.setPower(-universalGamepad.g2.getRightY());
+            robot.intake.setPower(universalGamepad.g2.gamepad.right_trigger - universalGamepad.g2.gamepad.left_trigger);
             switch (driveState) {
                 case NORMAL:
                     robot.setWeightedDrivePower(
                             new Pose2d(
                                     universalGamepad.g1.getLeftY(),
                                     -universalGamepad.g1.getLeftX(),
-                                    -universalGamepad.g1.getRightX() * 0.92
+                                    -universalGamepad.g1.getRightX()
                             )
                     );
                     break;
@@ -87,7 +93,7 @@ public class FSMTele extends LinearOpMode {
                             new Pose2d(
                                     -universalGamepad.g1.getLeftY(),
                                     universalGamepad.g1.getLeftX(),
-                                    -universalGamepad.g1.getRightX() * 0.92
+                                    -universalGamepad.g1.getRightX()
                             )
                     );
                     break;
@@ -114,8 +120,8 @@ public class FSMTele extends LinearOpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.getError() < 3 && shooter.getPercentError() < 0.1 && robotPose.getX() < -10) {
-                gunner.shoot();
+            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.getError() < 3 && shooter.getPercentError() < 0.3 && robotPose.getX() < -10) {
+                if(gamepad1.a) gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
         }

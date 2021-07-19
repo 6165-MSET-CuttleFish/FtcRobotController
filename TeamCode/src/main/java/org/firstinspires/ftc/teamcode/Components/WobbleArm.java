@@ -49,10 +49,10 @@ public class WobbleArm implements Component {
                 .build();
     }
     public void dropMacro(){
-        wobbleDropMacro.start();
+        if(!getRunning()) wobbleDropMacro.start();
     }
     public void pickUp(){
-        wobblePickupMacro.start();
+        if(!getRunning() && getState() != State.UP) wobblePickupMacro.start();
     }
     private void up() {
         arm1.setPosition(0);
