@@ -57,8 +57,20 @@ public class Intake implements Component {
 
     public void shieldUp() {
         state = State.UP;
-        intakeL.setPosition(0);
+        intakeL.setPosition(0.16);
         intakeR.setPosition(1);
+    }
+
+    private double getRotationCount() {
+        return TICKS_PER_REV * GEAR_RATIO;
+    }
+
+    private double getClosestZero() {
+        double target = intakeMotor.getCurrentPosition();
+        while (target % getRotationCount() != 0) {
+            target ++;
+        }
+        return target;
     }
 
     public double getNoodleDelta() {
@@ -67,7 +79,7 @@ public class Intake implements Component {
 
     public void shieldDown() {
         state = State.DOWN;
-        intakeL.setPosition(0.12);
+        intakeL.setPosition(0.28);
         intakeR.setPosition(0.88);
     }
 

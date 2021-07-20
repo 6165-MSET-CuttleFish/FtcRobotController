@@ -69,7 +69,7 @@ public class Shooter implements Component {
     public Magazine magazine;
     public Gunner gunner;
     public Turret turret;
-    HashSet<Component> components;
+    private Component[] components;
 
     public Shooter(HardwareMap hardwareMap) {
         veloRegression = new InterpLUT();
@@ -88,11 +88,10 @@ public class Shooter implements Component {
         veloTracker = new Encoder(hardwareMap.get(DcMotorEx.class, "fw1"));
         veloTracker.setDirection(Encoder.Direction.REVERSE);
 
-
         magazine = new Magazine(hardwareMap);
         gunner = new Gunner(hardwareMap);
         turret = new Turret(hardwareMap);
-        components = new HashSet<>(Arrays.asList(magazine, gunner, turret));
+        components = new Component[]{magazine, gunner, turret};
         flap = hardwareMap.get(Servo.class, "flap");
 
         if (Details.opModeType == OpModeType.AUTO) {
@@ -106,28 +105,28 @@ public class Shooter implements Component {
 
         powerShotsController = new StateMachineBuilder<Integer>()
                 .state(0)
-                .transition(() -> turret.isIdle())
+                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[0]))
 
                 .state(1)
                 .transition(() -> gunner.getState() != Gunner.State.IN)
-                .onEnter(() -> gunner.shoot(1))
+                .onEnter(() -> gunner.shoot())
 
                 .state(2)
-                .transition(() -> turret.isIdle())
+                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[1]))
 
                 .state(3)
                 .transition(() -> gunner.getState() != Gunner.State.IN)
-                .onEnter(() -> gunner.shoot(1))
+                .onEnter(() -> gunner.shoot())
 
                 .state(4)
-                .transition(() -> turret.isIdle())
+                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[2]))
 
                 .state(5)
                 .transition(() -> gunner.getState() != Gunner.State.IN)
-                .onEnter(() -> gunner.shoot(1))
+                .onEnter(() -> gunner.shoot())
 
                 .exit(0)
 

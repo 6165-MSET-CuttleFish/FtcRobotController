@@ -77,10 +77,10 @@ public class Gunner implements Component {
     }
 
     private void in() {
-        gunner.setPosition(0.77);
+        gunner.setPosition(0.87);
     }
 
     private void out() {
-        gunner.setPosition(0.91);
+        gunner.setPosition(1);
     }
 }

@@ -2,18 +2,14 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.Components.Robot;
+
 import org.firstinspires.ftc.teamcode.Components.Shooter;
-import org.firstinspires.ftc.teamcode.Components.UniversalGamepad;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
@@ -28,9 +24,8 @@ public class ShooterVeloRegression extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
         dashboard = FtcDashboard.getInstance();
         shooter.setState(Shooter.State.CUSTOMVELO);
-        UniversalGamepad gamepad = new UniversalGamepad(this);
-        ButtonReader inc = new ButtonReader(gamepad.g1, GamepadKeys.Button.DPAD_UP);
-        ButtonReader dec = new ButtonReader(gamepad.g1, GamepadKeys.Button.DPAD_UP);
+        ButtonReader inc = new ButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
+        ButtonReader dec = new ButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
         waitForStart();
         while (opModeIsActive()){
             packet = new TelemetryPacket();

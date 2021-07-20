@@ -45,20 +45,21 @@ public class Turret implements Component {
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
-                targetAng = Math.toDegrees(targetAngle - Details.robotPose.getHeading());
-                if(target != null) targetAng = Coordinate.toPoint(Details.robotPose).angleTo(Coordinate.toPoint(Robot.goal)) - Math.toDegrees(Details.robotPose.getHeading());
+                targetAng = getClosestAngle(Math.toDegrees(targetAngle - Details.robotPose.getHeading()));
+                if(target != null) targetAng = getClosestAngle(Coordinate.toPoint(Details.robotPose).angleTo(Coordinate.toPoint(Robot.goal)) - Math.toDegrees(Details.robotPose.getHeading()));
                 break;
             case IDLE:
-                targetAng = 0;
+                targetAng = getClosestZero();
                 break;
             case TUNING:
                 if(!turretTuner.getRunning()) turretTuner.start();
                 targetAng = turretTuner.update();
                 break;
         }
-        if (targetAng > 200) {
+        while(targetAng > 1080) {
             targetAng -= 360;
-        } else if(targetAng < -200) {
+        }
+        while (targetAng < -1080) {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
@@ -77,7 +78,6 @@ public class Turret implements Component {
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
         DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
-        //dashboard.sendTelemetryPacket(packet);
     }
     public State getState(){
         return state;
@@ -87,6 +87,27 @@ public class Turret implements Component {
     }
     public double getRelativeAngle(){
         return turret.getCurrentPosition() * (2*Math.PI/(TICKS_PER_REVOLUTION * GEAR_RATIO));
+    }
+    private double getClosestAngle(double targetAngle) {
+        double curr = Math.toDegrees(getRelativeAngle());
+        double option1 = curr < targetAngle ? targetAngle + 360 : targetAngle - 360;
+        double range1 = Math.abs(option1 - curr);
+        double range2 = Math.abs(targetAngle - curr);
+        return range1 < range2 ? option1 : targetAngle;
+    }
+    private double getClosestZero() {
+        double curr = Math.toDegrees(getRelativeAngle());
+        double[] possibilities = {-1440, -1080, -720, -360, 0, 360, 720, 1080, 1440};
+        double minRange = 360;
+        int index = 0;
+        for (int i = 0; i < possibilities.length; i++) {
+            double range = Math.abs(possibilities[i] - curr);
+            if (range < minRange) {
+                minRange = range;
+                index = i;
+            }
+        }
+        return possibilities[index];
     }
     public double getAbsoluteAngle(){
         return Details.robotPose.getHeading() + getRelativeAngle();

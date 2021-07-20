@@ -107,7 +107,7 @@ public class Robot extends MecanumDrive implements Component {
     public Intake intake;
     public Shooter shooter;
     public WobbleArm wobbleArm;
-    private final HashSet<Component> components;
+    private final Component[] components;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(24, 0, 0);
 
@@ -165,7 +165,7 @@ public class Robot extends MecanumDrive implements Component {
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
-        components = new HashSet<>(Arrays.asList(intake, shooter, wobbleArm));
+        components = new Component[]{intake, shooter, wobbleArm};
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
