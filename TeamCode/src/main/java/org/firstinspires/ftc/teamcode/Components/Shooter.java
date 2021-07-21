@@ -17,16 +17,12 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.TuningController;
 import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
-import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_GEAR_RATIO;
-import static org.firstinspires.ftc.teamcode.util.TuningController.MOTOR_TICKS_PER_REV;
 
 //http://192.168.43.1:8080/dash
 @Config
@@ -140,9 +136,10 @@ public class Shooter implements Component {
         for (Component component : components) {
             component.update();
         }
+        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 2);
         switch (state) {
             case CONTINUOUS:
-                targetVelo = veloRegression.get(Details.robotPose.vec().distTo(Robot.goal));
+                targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
                 break;
             case POWERSHOTS:
                 targetVelo = 1000;
@@ -188,20 +185,15 @@ public class Shooter implements Component {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
-            veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
+            //veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }
-        //setPIDCoeffecients();
+        setPIDCoeffecients();
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
-        //dashboard.sendTelemetryPacket(packet);
     }
 
     private void setPIDCoeffecients() {
         veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
-    }
-
-    public int getRings() {
-        return 0;
     }
 
     public double getDistance() {
@@ -221,8 +213,7 @@ public class Shooter implements Component {
     }
 
     public double getVelocity() {
-        return 0;
-        //return veloTracker.getCorrectedVelocity();
+        return (veloTracker.getCorrectedVelocity()/8192)*60;
     }
 
     public double getTargetVelo() {

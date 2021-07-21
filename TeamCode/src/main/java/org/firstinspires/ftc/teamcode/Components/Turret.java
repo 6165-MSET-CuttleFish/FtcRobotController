@@ -53,7 +53,7 @@ public class Turret implements Component {
         switch (state){
             case TARGET_LOCK:
                 targetAng = getClosestAngle(Math.toDegrees(targetAngle - Details.robotPose.getHeading()));
-                if(target != null) targetAng = getClosestAngle(Coordinate.toPoint(Details.robotPose).angleTo(Coordinate.toPoint(Robot.goal)) - Math.toDegrees(Details.robotPose.getHeading()));
+                if(target != null) targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(Robot.goal)) - Math.toDegrees(Details.robotPose.getHeading()));
                 break;
             case IDLE:
                 targetAng = getClosestZero();
