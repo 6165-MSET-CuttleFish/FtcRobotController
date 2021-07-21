@@ -180,11 +180,12 @@ public class Robot extends MecanumDrive implements Component {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
         switch(opModeType) {
-            case TELE:
-                setLocalizer(new t265Localizer(hardwareMap));
-                break;
+//            case TELE:
+//                setLocalizer(new t265Localizer(hardwareMap));
+//                break;
             default:
                 setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
                 break;

@@ -41,9 +41,9 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.002, 0, 0);
-    public static double kV = 0.000162;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
-    public static double kA = 0.00027;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0023, 0, 0);
+    public static double kV = 0.00021;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
+    public static double kA = 0.000015;
     public static double kStatic = 0;
     public static double threshold = 300;
 

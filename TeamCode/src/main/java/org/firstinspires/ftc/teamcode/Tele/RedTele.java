@@ -39,7 +39,6 @@ public class RedTele extends LinearOpMode {
     Intake intake;
     GamepadEx g1, g2;
     ToggleButtonReader clawButton, reverseMode, shieldButton, turretButton, wobbleButton;
-    ButtonReader magButton;
     TriggerReader intakeButton, outtakeButton;
     KeyReader[] readers;
 
@@ -57,8 +56,11 @@ public class RedTele extends LinearOpMode {
         telemetry.addData("Initialized", true);
         telemetry.update();
         shooter.setState(Shooter.State.CUSTOMVELO);
-        magButton = new ButtonReader(new GamepadEx(gamepad2), GamepadKeys.Button.B);
-
+        intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
+        clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
+        shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
+        wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
+        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton};
         waitForStart();
         robot.setPoseEstimate(new Pose2d());
 
@@ -77,7 +79,7 @@ public class RedTele extends LinearOpMode {
                         break;
                 }
             }
-            if (magButton.isDown()) {
+            if (intakeButton.wasJustPressed()) {
                 magazine.magMacro();
             }
             robot.intake.setPower(g2.gamepad.right_trigger - g2.gamepad.left_trigger);
@@ -115,7 +117,7 @@ public class RedTele extends LinearOpMode {
 
     public void safety() {
         if (robotPose.getX() > 20) {
-            turret.setState(Turret.State.IDLE);
+           // turret.setState(Turret.State.IDLE);
         } else {
             switch (wobbleArm.getState()) {
                 case DOWN:
@@ -123,7 +125,7 @@ public class RedTele extends LinearOpMode {
                     turret.setState(Turret.State.TARGET_LOCK);
                     break;
                 case MID:
-                    turret.setState(Turret.State.IDLE);
+                    //turret.setState(Turret.State.IDLE);
                     break;
             } if (turret.getState() == Turret.State.TARGET_LOCK && turret.getError() < 3 && shooter.getPercentError() < 0.3 && robotPose.getX() < -10) {
                 if(gamepad1.a) gunner.shoot();

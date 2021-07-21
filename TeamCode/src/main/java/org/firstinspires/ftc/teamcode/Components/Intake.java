@@ -41,16 +41,8 @@ public class Intake implements Component {
         switch (state) {
             case UP:
                 shieldUp();
-                intakeMotor.setTargetPosition((int) getClosestZero());
-                if(intakeMotor.getTargetPosition() > intakeMotor.getCurrentPosition())
-                    intakeMotor.setPower(1);
-                else
-                    intakeMotor.setPower(-1);
-                intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
                 break;
             case DOWN:
-                intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 shieldDown();
                 break;
         }

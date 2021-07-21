@@ -24,7 +24,7 @@ public class T265 {
 
     // Electronics
     private static T265Camera t265Cam;
-    private StandardTrackingWheelLocalizer odo;
+    private final StandardTrackingWheelLocalizer odo;
 
     // Constants
     public final double ODOMETRY_COVARIANCE = 0.2;

@@ -20,10 +20,10 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.12, 0, 0.0009);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.27, 0.0001, 0.002);
     public static double kV = 1;
-    public static double kStatic = 0.03;
-    public static double kA = 0.007;
+    public static double kStatic = 0.01;
+    public static double kA = 0.01;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl;
     public static double targetAngle = 0;
@@ -61,10 +61,10 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        while(targetAng > 420) {
+        if (targetAng > 400) {
             targetAng -= 360;
         }
-        while (targetAng < -420) {
+        else if (targetAng < -400) {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
