@@ -10,7 +10,8 @@ import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 public class Intake implements Component {
     public enum State {
         UP,
-        DOWN
+        DOWN,
+        MID,
     }
     public static double TICKS_PER_REV;
     public static double GEAR_RATIO;
@@ -29,7 +30,7 @@ public class Intake implements Component {
         }
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        if (opModeType == OpModeType.AUTO) intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeL = hardwareMap.get(Servo.class, "intakeL");
         intakeR = hardwareMap.get(Servo.class, "intakeR");
@@ -40,8 +41,16 @@ public class Intake implements Component {
         switch (state) {
             case UP:
                 shieldUp();
+                intakeMotor.setTargetPosition((int) getClosestZero());
+                if(intakeMotor.getTargetPosition() > intakeMotor.getCurrentPosition())
+                    intakeMotor.setPower(1);
+                else
+                    intakeMotor.setPower(-1);
+                intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                 break;
             case DOWN:
+                intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 shieldDown();
                 break;
         }
@@ -55,30 +64,37 @@ public class Intake implements Component {
         return state;
     }
 
-    public void shieldUp() {
-        state = State.UP;
-        intakeL.setPosition(0.16);
-        intakeR.setPosition(1);
-    }
-
     private double getRotationCount() {
         return TICKS_PER_REV * GEAR_RATIO;
     }
 
     private double getClosestZero() {
-        double target = intakeMotor.getCurrentPosition();
-        while (target % getRotationCount() != 0) {
-            target ++;
+        double delta = intakeMotor.getCurrentPosition() % getRotationCount();
+        if (delta > getRotationCount()/2) delta = getRotationCount() - delta;
+        double target1 = intakeMotor.getCurrentPosition();
+        while (target1 % getRotationCount() > 1) {
+            target1 ++;
         }
-        return target;
+        double target2 = intakeMotor.getCurrentPosition();
+        while (target2 % getRotationCount() > 1) {
+            target2 --;
+        }
+        double range1 = Math.abs(getRotationCount() - target1);
+        double range2 = Math.abs(getRotationCount() - target2);
+        return range1 < range2 ? target1 : target2;
     }
 
-    public double getNoodleDelta() {
-        return intakeMotor.getCurrentPosition() * (2*Math.PI/(TICKS_PER_REV * GEAR_RATIO));
+    private void shieldUp() {
+        intakeL.setPosition(0.16);
+        intakeR.setPosition(1);
     }
 
-    public void shieldDown() {
-        state = State.DOWN;
+    private void shieldMid() {
+        intakeL.setPosition(0.16);
+        intakeR.setPosition(0.95);
+    }
+
+    private void shieldDown() {
         intakeL.setPosition(0.28);
         intakeR.setPosition(0.88);
     }

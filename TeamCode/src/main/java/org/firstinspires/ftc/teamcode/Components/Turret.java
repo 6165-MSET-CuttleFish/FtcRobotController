@@ -8,10 +8,12 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
+import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
@@ -23,8 +25,9 @@ public class Turret implements Component {
     public static double kStatic = 0.03;
     public static double kA = 0.007;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
-    PIDFController angleControl = new PIDFController(ANGLE_PID, kV, kA, kStatic);
+    PIDFController angleControl;
     public static double targetAngle = 0;
+    VoltageSensor batteryVoltageSensor;
     public Vector2d target;
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
@@ -40,6 +43,8 @@ public class Turret implements Component {
         turretTuner = new TurretTuner();
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        setPIDCoeffecients();
     }
     public void update(){
         double targetAng = 0;
@@ -56,10 +61,10 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        while(targetAng > 1080) {
+        while(targetAng > 420) {
             targetAng -= 360;
         }
-        while (targetAng < -1080) {
+        while (targetAng < -420) {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
@@ -73,12 +78,16 @@ public class Turret implements Component {
             lastKp = ANGLE_PID.kP;
             lastKi = ANGLE_PID.kI;
             lastKd = ANGLE_PID.kD;
-            angleControl = new PIDFController(ANGLE_PID, kV, kA, kStatic);
+            setPIDCoeffecients();
         }
         packet.put("Turret Angle", currAngle);
         packet.put("Target Angle", targetAng);
         DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
     }
+    private void setPIDCoeffecients() {
+        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());
+    }
+
     public State getState(){
         return state;
     }
@@ -97,7 +106,7 @@ public class Turret implements Component {
     }
     private double getClosestZero() {
         double curr = Math.toDegrees(getRelativeAngle());
-        double[] possibilities = {-1440, -1080, -720, -360, 0, 360, 720, 1080, 1440};
+        double[] possibilities = {-720, -360, 0, 360, 720};
         double minRange = 360;
         int index = 0;
         for (int i = 0; i < possibilities.length; i++) {

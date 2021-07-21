@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components.localizer;
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
@@ -10,8 +11,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 
 import static java.lang.Math.PI;
 
@@ -20,9 +24,10 @@ public class T265 {
 
     // Electronics
     private static T265Camera t265Cam;
+    private StandardTrackingWheelLocalizer odo;
 
     // Constants
-    public final double ODOMETRY_COVARIANCE = 1;
+    public final double ODOMETRY_COVARIANCE = 0.2;
     private final double INCH_TO_METER = 0.0254;
     private final double xOffset = -8.875;
     private final double yOffset = 0.5;
@@ -37,7 +42,7 @@ public class T265 {
     private boolean exportingMap = true;
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
-    public T265(HardwareMap hardwareMap, double startX, double startY, double startTheta) {
+    public T265(HardwareMap hardwareMap) {
         File file = new File(mapPath);
         if (!file.exists() || file.length() == 0) {
             isEmpty = true;
@@ -49,7 +54,7 @@ public class T265 {
                 t265Cam = new T265Camera(new Transform2d(new Translation2d(-8.875 * INCH_TO_METER, 0.5 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
             }
         }
-        setCameraPose(startX, startY, startTheta);
+        odo = new StandardTrackingWheelLocalizer(hardwareMap);
     }
 
     public void startCam() {
@@ -68,21 +73,12 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-//        x -= -xOffset * Math.sin(theta) - yOffset * Math.cos(theta);
-//        y -= xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
-
         t265Cam.setPose(new Pose2d(x * INCH_TO_METER, y * INCH_TO_METER, new Rotation2d(theta)));
     }
 
-    public void sendOdometryData(double vx, double vy, double theta, double w) {
-        double r = Math.hypot(xOffset, yOffset);
-        theta += Math.atan2(yOffset, xOffset) - PI/2;
-        t265Cam.sendOdometry(vy + r * w * Math.sin(theta), -vx - r * w * Math.cos(theta));
-    }
-
     public void updateCamPose() {
+        odo.update();
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
-
         Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
 
@@ -91,15 +87,12 @@ public class T265 {
         x = -translation.getX(); //* Math.sin(theta) - yOffset * Math.cos(theta);
         y = translation.getY(); //+ xOffset * Math.cos(theta) - yOffset * Math.sin(theta);
         theta = rotation.getRadians();
-        if (state.confidence == T265Camera.PoseConfidence.High) {
-            confidence = 3;
-        } else if (state.confidence == T265Camera.PoseConfidence.Medium) {
-            confidence = 2;
-        } else if (state.confidence == T265Camera.PoseConfidence.Low) {
-            confidence = 1;
-        } else {
-            confidence = 0;
+        com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
+        if(currVelo != null) {
+            t265Cam.sendOdometry(currVelo.getX() * INCH_TO_METER, currVelo.getY() * INCH_TO_METER);
         }
+        com.acmerobotics.roadrunner.geometry.Pose2d currPose = odo.getPoseEstimate();
+        odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(currPose.getX(), currPose.getY(), rotation.getRadians()));
     }
 
     public com.acmerobotics.roadrunner.geometry.Pose2d getPose() {

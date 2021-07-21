@@ -299,14 +299,6 @@ public class Robot extends MecanumDrive implements Component {
         shooter.tripleShot();
     }
 
-    public void shieldUp() {
-        intake.shieldUp();
-    }
-
-    public void shieldDown() {
-        intake.shieldDown();
-    }
-
     public Vector2d getDropZone() {
         if (height == UGContourRingPipeline.Height.FOUR) {
             return dropZones[2];

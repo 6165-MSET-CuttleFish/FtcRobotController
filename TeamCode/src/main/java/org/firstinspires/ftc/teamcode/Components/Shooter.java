@@ -63,13 +63,12 @@ public class Shooter implements Component {
     public Encoder veloTracker;
     public Servo flap;
     public double targetVelo;
-    public double power;
     private final InterpLUT veloRegression;
     public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
     public Gunner gunner;
     public Turret turret;
-    private Component[] components;
+    private final Component[] components;
 
     public Shooter(HardwareMap hardwareMap) {
         veloRegression = new InterpLUT();
@@ -179,8 +178,8 @@ public class Shooter implements Component {
         }
         lastAccel = accel;
         if (targetVelo == 0) {
-            flywheel.setPower(this.power);
-            flywheel1.setPower(this.power);
+            flywheel.setPower(0);
+            flywheel1.setPower(0);
         } else {
             flywheel.setPower(power);
             flywheel1.setPower(power);
@@ -189,16 +188,16 @@ public class Shooter implements Component {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
-            veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
+            veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }
-        setPIDCoeffecients();
+        //setPIDCoeffecients();
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
         //dashboard.sendTelemetryPacket(packet);
     }
 
     private void setPIDCoeffecients() {
-        veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage());
+        veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
     }
 
     public int getRings() {
