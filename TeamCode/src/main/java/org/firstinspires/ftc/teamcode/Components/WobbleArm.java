@@ -11,6 +11,7 @@ public class WobbleArm implements Component {
     public Claw claw;
     StateMachine wobbleDropMacro;
     StateMachine wobblePickupMacro;
+    StateMachine wobbleRaiseMacro;
     public enum State{
         DOWN,
         UP,
@@ -32,10 +33,22 @@ public class WobbleArm implements Component {
                 .exit(State.UP)
                 .onExit(() -> {
                     claw.release();
-                    state = State.UP;
+                    state = State.MID;
                 })
                 .build();
         wobblePickupMacro = new StateMachineBuilder<State>()
+                .state(State.DOWN)
+                .transitionTimed(0.25)
+                .onEnter(claw::grab)
+
+                .state(State.MID)
+                .transitionTimed(0)
+                .onEnter(this::mid)
+
+                .exit(State.DOWN)
+                .onExit(() -> state = State.MID)
+                .build();
+        wobbleRaiseMacro = new StateMachineBuilder<State>()
                 .state(State.DOWN)
                 .transitionTimed(0.25)
                 .onEnter(claw::grab)

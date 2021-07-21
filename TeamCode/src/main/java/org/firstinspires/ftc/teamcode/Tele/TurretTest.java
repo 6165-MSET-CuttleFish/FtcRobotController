@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Components.Turret;
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
 
-@TeleOp(name = "TurretTest", group = "LinearOpMode")
+@TeleOp(name = "TurretTest", group = "Test")
 public class TurretTest extends LinearOpMode {
     Turret turret;
     FtcDashboard dashboard;

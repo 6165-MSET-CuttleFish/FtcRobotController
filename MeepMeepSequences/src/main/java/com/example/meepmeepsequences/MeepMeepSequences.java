@@ -10,7 +10,7 @@ public class MeepMeepSequences {
     public static void main(String[] args) {
         // Declare a MeepMeep instance
         // With a field size of 800 pixels
-        MeepMeep mm = new MeepMeep(600)
+        MeepMeep mm = new MeepMeep(1000)
                 // Set field image
                 .setBackground(MeepMeep.Background.FIELD_ULTIMATE_GOAL_DARK)
                 // Set theme
@@ -22,8 +22,8 @@ public class MeepMeepSequences {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
                                 .splineTo(new Vector2d(50.5275, -22.7), Math.toRadians(0))
-                                .splineTo(new Vector2d(55.5275, -22.7), Math.toRadians(90))
-                                .splineTo(new Vector2d(55.5, 20), Math.toRadians(90))
+                                .splineTo(new Vector2d(60.5275, -22.7), Math.toRadians(90))
+                                .splineTo(new Vector2d(60.5, 20), Math.toRadians(90))
                                 .setReversed(true)
                                 .splineTo(new Vector2d(60.5275, -50), Math.toRadians(-90))
                                 .waitSeconds(0.5) // Drop Wobble

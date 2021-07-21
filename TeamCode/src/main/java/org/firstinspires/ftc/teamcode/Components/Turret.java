@@ -47,6 +47,8 @@ public class Turret implements Component {
         setPIDCoeffecients();
     }
     public void update(){
+        double currHeading = Details.robotPose.getHeading();
+        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 2);
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
@@ -81,6 +83,7 @@ public class Turret implements Component {
             setPIDCoeffecients();
         }
         packet.put("Turret Angle", currAngle);
+        packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
         DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
     }
@@ -99,7 +102,7 @@ public class Turret implements Component {
     }
     private double getClosestAngle(double targetAngle) {
         double curr = Math.toDegrees(getRelativeAngle());
-        double option1 = curr < targetAngle ? targetAngle + 360 : targetAngle - 360;
+        double option1 = curr > targetAngle ? targetAngle + 360 : targetAngle - 360;
         double range1 = Math.abs(option1 - curr);
         double range2 = Math.abs(targetAngle - curr);
         return range1 < range2 ? option1 : targetAngle;
@@ -134,6 +137,6 @@ public class Turret implements Component {
         return Math.abs(getError());
     }
     public boolean isIdle() {
-        return turret.getVelocity() < 100 && getAbsError() < 2;
+        return turret.getVelocity() < 100 && getAbsError() < 5;
     }
 }

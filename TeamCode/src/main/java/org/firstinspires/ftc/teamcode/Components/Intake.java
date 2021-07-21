@@ -13,8 +13,6 @@ public class Intake implements Component {
         DOWN,
         MID,
     }
-    public static double TICKS_PER_REV;
-    public static double GEAR_RATIO;
     State state = State.UP;
     DcMotor intakeMotor;
     Servo intakeL, intakeR;
@@ -54,26 +52,6 @@ public class Intake implements Component {
 
     public State getState() {
         return state;
-    }
-
-    private double getRotationCount() {
-        return TICKS_PER_REV * GEAR_RATIO;
-    }
-
-    private double getClosestZero() {
-        double delta = intakeMotor.getCurrentPosition() % getRotationCount();
-        if (delta > getRotationCount()/2) delta = getRotationCount() - delta;
-        double target1 = intakeMotor.getCurrentPosition();
-        while (target1 % getRotationCount() > 1) {
-            target1 ++;
-        }
-        double target2 = intakeMotor.getCurrentPosition();
-        while (target2 % getRotationCount() > 1) {
-            target2 --;
-        }
-        double range1 = Math.abs(getRotationCount() - target1);
-        double range2 = Math.abs(getRotationCount() - target2);
-        return range1 < range2 ? target1 : target2;
     }
 
     private void shieldUp() {
