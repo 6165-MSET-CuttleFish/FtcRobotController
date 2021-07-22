@@ -23,7 +23,7 @@ import static java.lang.Math.PI;
 public class T265 {
 
     // Electronics
-    private static T265Camera t265Cam;
+    public static T265Camera t265Cam;
     private final StandardTrackingWheelLocalizer odo;
 
     // Constants

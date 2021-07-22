@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.gamepad.KeyReader;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Gunner;
 import org.firstinspires.ftc.teamcode.Components.Intake;
@@ -18,12 +19,96 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
+import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
 @TeleOp(name = "RedTele", group = "Tele")
 @Config
-public class RedTele extends LinearOpMode {
+public class RedTele extends OpMode {
+    @Override
+    public void stop() {
+        T265.t265Cam.stop();
+        super.stop();
+    }
+
+    @Override
+    public void init() {
+        robot = new Robot(this, OpModeType.TELE);
+        wobbleArm = robot.wobbleArm;
+        shooter = robot.shooter;
+        magazine = shooter.magazine;
+        intake = robot.intake;
+        turret = shooter.turret;
+        gunner = shooter.gunner;
+        initializeButtons();
+        shooter.setState(Shooter.State.CUSTOMVELO);
+        telemetry.addData("Initialized", true);
+        telemetry.update();
+        robot.setPoseEstimate(new Pose2d());
+    }
+
+    @Override
+    public void loop() {
+        turret.setTarget(Robot.goal);
+        shooter.setVelocity(velo);
+        if (shieldButton.wasJustPressed()) {
+            switch (intake.getState()) {
+                case UP:
+                    intake.setState(Intake.State.DOWN);
+                    break;
+                case DOWN:
+                    intake.setState(Intake.State.UP);
+                    break;
+            }
+        }
+        if (magButton.isDown()) {
+            magazine.magMacro();
+            telemetry.addData("magazine macro", "Started");
+            telemetry.update();
+        }
+        robot.intake.setPower(g2.gamepad.right_stick_y);
+        if(reverseMode.wasJustPressed()) {
+            switch (driveState) {
+                case NORMAL:
+                    driveState = DriveState.WOBBLE;
+                    break;
+                case WOBBLE:
+                    driveState = DriveState.NORMAL;
+                    break;
+            }
+        }
+        switch (driveState) {
+            case NORMAL:
+                robot.setWeightedDrivePower(
+                        new Pose2d(
+                                g1.getLeftY(),
+                                -g1.getLeftX(),
+                                -g1.getRightX()
+                        )
+                );
+                break;
+            case WOBBLE:
+                robot.setWeightedDrivePower(
+                        new Pose2d(
+                                -g1.getLeftY(),
+                                g1.getLeftX(),
+                                -g1.getRightX()
+                        )
+                );
+                break;
+        }
+        wobble();
+        safety();
+        if (turretButton.getState()) {
+            turret.setState(Turret.State.IDLE);
+        }
+        robot.update();
+        for (KeyReader reader : readers) {
+            reader.readValue();
+        }
+    }
+
     enum DriveState {
         NORMAL,
         WOBBLE
@@ -42,88 +127,6 @@ public class RedTele extends LinearOpMode {
     ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
     TriggerReader intakeButton;
     KeyReader[] readers;
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, OpModeType.TELE);
-        wobbleArm = robot.wobbleArm;
-        shooter = robot.shooter;
-        magazine = shooter.magazine;
-        intake = robot.intake;
-        turret = shooter.turret;
-        gunner = shooter.gunner;
-        initializeButtons();
-        shooter.setState(Shooter.State.CUSTOMVELO);
-        telemetry.addData("Initialized", true);
-        telemetry.update();
-        waitForStart();
-        robot.setPoseEstimate(new Pose2d());
-
-        // WHILE LOOP
-
-        while (opModeIsActive()) {
-            turret.setTarget(Robot.goal);
-            shooter.setVelocity(velo);
-            if (shieldButton.wasJustPressed()) {
-                switch (intake.getState()) {
-                    case UP:
-                        intake.setState(Intake.State.DOWN);
-                        break;
-                    case DOWN:
-                        intake.setState(Intake.State.UP);
-                        break;
-                }
-            }
-            if (magButton.isDown()) {
-                magazine.magMacro();
-                telemetry.addData("magazine macro", "Started");
-                telemetry.update();
-            }
-            robot.intake.setPower(g2.gamepad.right_stick_y);
-            if(reverseMode.wasJustPressed()) {
-                switch (driveState) {
-                    case NORMAL:
-                        driveState = DriveState.WOBBLE;
-                        break;
-                    case WOBBLE:
-                        driveState = DriveState.NORMAL;
-                        break;
-                }
-            }
-            switch (driveState) {
-                case NORMAL:
-                    robot.setWeightedDrivePower(
-                            new Pose2d(
-                                    g1.getLeftY(),
-                                    -g1.getLeftX(),
-                                    -g1.getRightX()
-                            )
-                    );
-                    break;
-                case WOBBLE:
-                    robot.setWeightedDrivePower(
-                            new Pose2d(
-                                    -g1.getLeftY(),
-                                    g1.getLeftX(),
-                                    -g1.getRightX()
-                            )
-                    );
-                    break;
-            }
-            wobble();
-            safety();
-            if (turretButton.getState()) {
-                turret.setState(Turret.State.IDLE);
-            }
-            robot.update();
-            for (KeyReader reader : readers) {
-                reader.readValue();
-            }
-        }
-
-        //WHILE LOOP
-
-    }
 
     public void safety() {
         if (robotPose.getX() > 20) {

@@ -52,9 +52,9 @@ public class Shooter implements Component {
     double lastKstatic = kStatic;
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
     TuningController tuner;
+    ElapsedTime timer = new ElapsedTime();
     VoltageSensor batteryVoltageSensor;
     private final ElapsedTime veloTimer = new ElapsedTime();
-    private final ElapsedTime coastTimer = new ElapsedTime();
     public DcMotor flywheel, flywheel1;
     public Encoder veloTracker;
     public Servo flap;
@@ -128,15 +128,15 @@ public class Shooter implements Component {
                 .build();
         tuner = new TuningController();
         veloTimer.reset();
-        coastTimer.reset();
         setPIDCoeffecients();
+        timer.reset();
     }
 
     public void update() {
         for (Component component : components) {
             component.update();
         }
-        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 2);
+        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4);
         switch (state) {
             case CONTINUOUS:
                 targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
@@ -181,10 +181,11 @@ public class Shooter implements Component {
             flywheel.setPower(power);
             flywheel1.setPower(power);
         }
-        if (lastKv != kV || lastKa != kA || lastKstatic != kStatic) {
+        if (lastKv != kV || lastKa != kA || lastKstatic != kStatic || timer.seconds() > 2) {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
+            timer.reset();
             setPIDCoeffecients();
             //veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }

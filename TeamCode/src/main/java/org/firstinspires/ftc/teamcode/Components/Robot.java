@@ -22,6 +22,7 @@ import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -81,7 +82,7 @@ public class Robot extends MecanumDrive implements Component {
 
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
-    public final LinearOpMode linearOpMode;
+    public final OpMode linearOpMode;
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
@@ -125,19 +126,19 @@ public class Robot extends MecanumDrive implements Component {
     public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     FtcDashboard dashboard;
 
-    public Robot(LinearOpMode opMode, Pose2d pose2d) {
+    public Robot(OpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.NONE);
     }
 
-    public Robot(LinearOpMode opMode, OpModeType type) {
+    public Robot(OpMode opMode, OpModeType type) {
         this(opMode, Details.robotPose, type);
     }
 
-    public Robot(LinearOpMode opMode) {
+    public Robot(OpMode opMode) {
         this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE);
     }
 
-    public Robot(LinearOpMode opMode, Pose2d pose2d, OpModeType type) {
+    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         Details.opModeType = type;
         Details.robotPose = pose2d;
@@ -403,7 +404,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     private void waitForIdle(Runnable block) {
-        while (!Thread.currentThread().isInterrupted() && isBusy() && linearOpMode.opModeIsActive()) {
+        while (!Thread.currentThread().isInterrupted() && isBusy()) {
             block.run();
             update();
         }

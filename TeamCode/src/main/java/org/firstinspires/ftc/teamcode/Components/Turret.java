@@ -48,7 +48,7 @@ public class Turret implements Component {
     }
     public void update(){
         double currHeading = Details.robotPose.getHeading();
-        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 2);
+        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 4);
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
