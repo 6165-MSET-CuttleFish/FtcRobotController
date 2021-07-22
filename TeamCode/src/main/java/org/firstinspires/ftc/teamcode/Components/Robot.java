@@ -183,9 +183,9 @@ public class Robot extends MecanumDrive implements Component {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
         switch(opModeType) {
-//            case TELE:
-//                setLocalizer(new t265Localizer(hardwareMap));
-//                break;
+            case TELE:
+                setLocalizer(new t265Localizer(hardwareMap));
+                break;
             default:
                 setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
                 break;

@@ -37,7 +37,7 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0023, 0, 0);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.007, 0, 0);
     public static double kV = 0.00021;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
     public static double kA = 0.000015;
     public static double kStatic = 0;
@@ -185,9 +185,9 @@ public class Shooter implements Component {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
+            setPIDCoeffecients();
             //veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }
-        setPIDCoeffecients();
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
     }
@@ -242,7 +242,7 @@ public class Shooter implements Component {
     }
 
     public void flapDown() {
-        flap.setPosition(0.93);
+        flap.setPosition(0.85);
     }
 
     public void flapWayDown() {

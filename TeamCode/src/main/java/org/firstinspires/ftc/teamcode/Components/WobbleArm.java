@@ -26,14 +26,14 @@ public class WobbleArm implements Component {
                 .state(State.UP)
                 .transitionTimed(0)
 
-                .state(State.MID)
+                .state(State.DOWN)
                 .transitionTimed(0.3)
                 .onEnter(this::mid)
 
                 .exit(State.UP)
                 .onExit(() -> {
                     claw.release();
-                    state = State.MID;
+                    state = State.DOWN;
                 })
                 .build();
         wobblePickupMacro = new StateMachineBuilder<State>()
@@ -80,7 +80,7 @@ public class WobbleArm implements Component {
         arm2.setPosition(0.7);
     }
     public State getState() {
-        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.MACRO;
+        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning() || wobbleRaiseMacro.getRunning()) return State.MACRO;
         return state;
     }
     public void setState(State state) {
@@ -104,6 +104,6 @@ public class WobbleArm implements Component {
         wobblePickupMacro.update();
     }
     public boolean getRunning() {
-        return wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning();
+        return wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning() || wobbleRaiseMacro.getRunning();
     }
 }

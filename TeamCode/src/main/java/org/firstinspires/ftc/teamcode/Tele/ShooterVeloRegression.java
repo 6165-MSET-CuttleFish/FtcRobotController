@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Components.Gunner;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
@@ -17,11 +18,13 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 @Config
 public class ShooterVeloRegression extends LinearOpMode {
     Shooter shooter;
+    Gunner gunner;
     FtcDashboard dashboard;
     public static double velocity = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
+        gunner = shooter.gunner;
         dashboard = FtcDashboard.getInstance();
         shooter.setState(Shooter.State.CUSTOMVELO);
         ButtonReader inc = new ButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
@@ -32,7 +35,7 @@ public class ShooterVeloRegression extends LinearOpMode {
             shooter.setVelocity(velocity);
             shooter.update();
             if (gamepad1.a) {
-                shooter.gunner.shoot(3);
+                gunner.shoot(3);
             }
             if (dec.wasJustPressed()) {
                 velocity -= 100;

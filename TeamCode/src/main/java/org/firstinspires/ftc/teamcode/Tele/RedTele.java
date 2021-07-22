@@ -28,7 +28,7 @@ public class RedTele extends LinearOpMode {
         NORMAL,
         WOBBLE
     }
-    public static double velo = 0;
+    public static double velo = 4120;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -39,7 +39,7 @@ public class RedTele extends LinearOpMode {
     Intake intake;
     GamepadEx g1, g2;
     ToggleButtonReader turretButton;
-    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode;
+    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
     TriggerReader intakeButton;
     KeyReader[] readers;
 
@@ -74,10 +74,12 @@ public class RedTele extends LinearOpMode {
                         break;
                 }
             }
-            if (intakeButton.wasJustReleased()) {
+            if (magButton.isDown()) {
                 magazine.magMacro();
+                telemetry.addData("magazine macro", "Started");
+                telemetry.update();
             }
-            robot.intake.setPower(g2.gamepad.right_trigger - g2.gamepad.left_trigger);
+            robot.intake.setPower(g2.gamepad.right_stick_y);
             if(reverseMode.wasJustPressed()) {
                 switch (driveState) {
                     case NORMAL:
@@ -125,7 +127,7 @@ public class RedTele extends LinearOpMode {
 
     public void safety() {
         if (robotPose.getX() > 20) {
-           // turret.setState(Turret.State.IDLE);
+            turret.setState(Turret.State.IDLE);
         } else {
             switch (wobbleArm.getState()) {
                 case DOWN:
@@ -136,8 +138,8 @@ public class RedTele extends LinearOpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && shooter.getPercentError() < 0.3 && robotPose.getX() < -10) {
-                if(gamepad1.a) gunner.shoot();
+            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 0 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN) {
+                gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
         }
@@ -177,11 +179,12 @@ public class RedTele extends LinearOpMode {
         g1 = new GamepadEx(gamepad1);
         g2 = new GamepadEx(gamepad2);
         intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
-        reverseMode = new ButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
+        reverseMode = new ToggleButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
         turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
         clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
+        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.X);
         readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode};
     }
 }
