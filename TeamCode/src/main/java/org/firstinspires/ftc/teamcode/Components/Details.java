@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 

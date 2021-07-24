@@ -2,29 +2,37 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 
-public class Magazine implements Component{
+public class Magazine implements Component {
     Servo magLeft1, magLeft2;
     Servo magRight1, magRight2;
+    ColorRangeSensor thirdRingSensor;
     private final ElapsedTime externalTimer = new ElapsedTime();
     StateMachine stateMachine;
     public static double currentRings;
-    public enum State{
+
+    public enum State {
         DOWN,
         MOVING_UP,
         MOVING_DOWN,
         UP
     }
-    public Magazine(HardwareMap hardwareMap){
+
+    public Magazine(HardwareMap hardwareMap) {
         magLeft1 = hardwareMap.servo.get("magLeftBottom");
         magLeft2 = hardwareMap.servo.get("magLeftTop");
         magRight1 = hardwareMap.servo.get("magRightBottom");
         magRight2 = hardwareMap.servo.get("magRightTop");
+        thirdRingSensor = hardwareMap.get(ColorRangeSensor.class, "range");
         stateMachine = new StateMachineBuilder<State>()
                 .state(State.DOWN)
                 .transitionTimed(0)
@@ -32,10 +40,13 @@ public class Magazine implements Component{
 
                 .state(State.MOVING_UP)
                 .transitionTimed(0.3)
-                .onEnter(this::up)
+                .onEnter(() -> {
+                    down();
+                    currentRings += getRings();
+                    currentRings = Range.clip(currentRings, 0, 3);
+                })
 
                 .state(State.UP)
-                .onEnter(() -> currentRings = 3)
                 .transitionTimed(0.08)
 
                 .state(State.MOVING_DOWN)
@@ -45,31 +56,44 @@ public class Magazine implements Component{
                 .exit(State.DOWN)
 
                 .build();
-        if(opModeType == OpModeType.AUTO) {
+        if (opModeType == OpModeType.AUTO) {
             currentRings = 3;
         }
         down();
     }
-    public void up(){
+
+    public double getRings() {
+        if (thirdRingSensor.getDistance(DistanceUnit.INCH) < 2) {
+            return 3;
+        } else {
+            return 2;
+        }
+    }
+
+    public void up() {
         magLeft1.setPosition(0.43);
         magLeft2.setPosition(0.43);
 
         magRight1.setPosition(0.55);
         magRight2.setPosition(0.55);
     }
-    public void down(){
+
+    public void down() {
         magLeft1.setPosition(0.71);
         magLeft2.setPosition(0.71);
 
         magRight1.setPosition(0.27);
         magRight2.setPosition(0.27);
     }
-    public State getState(){
-       return (State) stateMachine.getState();
+
+    public State getState() {
+        return (State) stateMachine.getState();
     }
+
     public void magMacro() {
-        if(!stateMachine.getRunning()) stateMachine.start();
+        if (!stateMachine.getRunning()) stateMachine.start();
     }
+
     public void update() {
         stateMachine.update();
     }

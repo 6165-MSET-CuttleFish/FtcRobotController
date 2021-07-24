@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.noahbres.jotai.StateMachine;
@@ -195,6 +196,10 @@ public class Shooter implements Component {
 
     private void setPIDCoeffecients() {
         veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
+    }
+
+    public Vector2d getShooterVec() {
+        return Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5).toVector();
     }
 
     public double getDistance() {

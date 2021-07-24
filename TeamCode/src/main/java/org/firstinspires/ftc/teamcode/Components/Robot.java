@@ -71,6 +71,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+
 @Config
 public class Robot extends MecanumDrive implements Component {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
@@ -184,7 +185,7 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
-        switch(opModeType) {
+        switch (opModeType) {
             case TELE:
                 setLocalizer(new t265Localizer(hardwareMap));
                 break;
@@ -389,7 +390,7 @@ public class Robot extends MecanumDrive implements Component {
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        if(!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
+        if (!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
     }
 
     public void waitForIdle() {
