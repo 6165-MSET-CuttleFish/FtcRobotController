@@ -32,6 +32,7 @@ public class Turret implements Component {
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
     public static double GEAR_RATIO = (68.0/13.0) * (110.0/24.0);
+    public static double TOLERANCE = 0.4;
     private State state = State.IDLE;
     public enum State{
         TARGET_LOCK,
@@ -72,7 +73,11 @@ public class Turret implements Component {
         angleControl.setTargetPosition(targetAng);
         double currAngle = Math.toDegrees(getRelativeAngle());
         double power = angleControl.update(currAngle);
-        turret.setPower(power);
+        if (getAbsError() < TOLERANCE) {
+            turret.setPower(0);
+        } else {
+         turret.setPower(power);
+        }
         if(lastKv != kV || lastKa != kA || lastKStatic != kStatic || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
             lastKv = kV;
             lastKa = kA;

@@ -37,11 +37,11 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.002, 0, 0.00002);
-    public static double kV = 0.000191;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0018, 0, 0.00001);
+    public static double kV = 0.000199;
     public static double kA = 0.00003;
-    public static double kStatic = 0;
-    public static double threshold = 140;
+    public static double kStatic = 0.01;
+    public static double threshold = 300;
 
     double lastTargetVelo = 0.0;
     double lastMotorPos = 0;
@@ -243,7 +243,7 @@ public class Shooter implements Component {
     }
 
     public void flapDown() {
-        flap.setPosition(0.85);
+        flap.setPosition(0.89);
     }
 
     public void flapWayDown() {

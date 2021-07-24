@@ -110,8 +110,8 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final Component[] components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.1, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.3);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.3, 1.2);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0.02, 0.04);
 
     public static double LATERAL_MULTIPLIER = 1.1;
 
