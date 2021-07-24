@@ -40,6 +40,7 @@ import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -109,10 +110,10 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final Component[] components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(24, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.1, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.3);
 
-    public static double LATERAL_MULTIPLIER = 1.2;
+    public static double LATERAL_MULTIPLIER = 1.1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -388,12 +389,17 @@ public class Robot extends MecanumDrive implements Component {
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        if(!isBusy() && actionQueue.size() != 0) actionQueue.pop().run();
+        if(!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
     }
 
     public void waitForIdle() {
         waitForIdle(() -> {
         });
+    }
+
+    public boolean isHazardous() {
+        return shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
+                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.MACRO;
     }
 
     public void waitForActionsCompleted() {
@@ -485,7 +491,7 @@ public class Robot extends MecanumDrive implements Component {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.RADIANS).firstAngle;
+        return imu.getAngularOrientation().firstAngle;
     }
 
     @Override

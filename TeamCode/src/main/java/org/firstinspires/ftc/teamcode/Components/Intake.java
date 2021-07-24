@@ -65,8 +65,8 @@ public class Intake implements Component {
     }
 
     private void shieldDown() {
-        intakeL.setPosition(0.28);
-        intakeR.setPosition(0.88);
+        intakeL.setPosition(0.30);
+        intakeR.setPosition(0.86);
     }
 
     public void setPower(double power) {

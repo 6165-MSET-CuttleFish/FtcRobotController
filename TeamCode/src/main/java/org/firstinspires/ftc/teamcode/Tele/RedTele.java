@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 public class RedTele extends OpMode {
     @Override
     public void stop() {
-        T265.t265Cam.stop();
+        T265.stopCam();
         super.stop();
     }
 
@@ -62,8 +62,12 @@ public class RedTele extends OpMode {
                     break;
             }
         }
-        if (magButton.isDown()) {
-            magazine.magMacro();
+        if (magButton.wasJustPressed()) {
+            if (gunner.getState() == Gunner.State.IDLE) {
+                magazine.magMacro();
+            } else {
+                robot.actionQueue.add(() -> magazine.magMacro());
+            }
             telemetry.addData("magazine macro", "Started");
             telemetry.update();
         }
@@ -113,7 +117,7 @@ public class RedTele extends OpMode {
         NORMAL,
         WOBBLE
     }
-    public static double velo = 4120;
+    public static double velo = 4600;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -129,7 +133,7 @@ public class RedTele extends OpMode {
     KeyReader[] readers;
 
     public void safety() {
-        if (robotPose.getX() > 20) {
+        if (robotPose.getX() > 15) {
             turret.setState(Turret.State.IDLE);
         } else {
             switch (wobbleArm.getState()) {
@@ -141,7 +145,7 @@ public class RedTele extends OpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 0 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN) {
+            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
@@ -187,7 +191,7 @@ public class RedTele extends OpMode {
         clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
-        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.X);
-        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode};
+        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton};
     }
 }

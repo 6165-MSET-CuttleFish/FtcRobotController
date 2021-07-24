@@ -39,7 +39,7 @@ public class Magazine implements Component{
                 .transitionTimed(0.08)
 
                 .state(State.MOVING_DOWN)
-                .transitionTimed(0.2)
+                .transitionTimed(0.5)
                 .onEnter(this::down)
 
                 .exit(State.DOWN)
@@ -70,7 +70,7 @@ public class Magazine implements Component{
     public void magMacro() {
         if(!stateMachine.getRunning()) stateMachine.start();
     }
-    public void update(){
+    public void update() {
         stateMachine.update();
     }
 }

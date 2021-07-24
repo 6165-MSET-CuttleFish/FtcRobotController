@@ -24,7 +24,6 @@ public class LocalizationTest extends LinearOpMode {
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
-        //StandardTrackingWheelLocalizer localizer = new StandardTrackingWheelLocalizer(hardwareMap);
         while (!isStopRequested()) {
             robot.setWeightedDrivePower(
                     new Pose2d(

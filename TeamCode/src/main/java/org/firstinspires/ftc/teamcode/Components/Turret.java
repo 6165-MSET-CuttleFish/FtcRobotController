@@ -48,7 +48,7 @@ public class Turret implements Component {
     }
     public void update(){
         double currHeading = Details.robotPose.getHeading();
-        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 4);
+        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 4.5);
         double targetAng = 0;
         switch (state){
             case TARGET_LOCK:
@@ -85,7 +85,7 @@ public class Turret implements Component {
         packet.put("Turret Angle", currAngle);
         packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
-        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(Details.robotPose.getX(), Details.robotPose.getY(), getAbsoluteAngle()));
+        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(turretCoord.getX(), turretCoord.getY(), getAbsoluteAngle()));
     }
     private void setPIDCoeffecients() {
         angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());

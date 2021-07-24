@@ -37,11 +37,11 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.007, 0, 0);
-    public static double kV = 0.00021;//1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
-    public static double kA = 0.000015;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.002, 0, 0.00002);
+    public static double kV = 0.000191;
+    public static double kA = 0.00003;
     public static double kStatic = 0;
-    public static double threshold = 300;
+    public static double threshold = 140;
 
     double lastTargetVelo = 0.0;
     double lastMotorPos = 0;
@@ -136,7 +136,7 @@ public class Shooter implements Component {
         for (Component component : components) {
             component.update();
         }
-        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4);
+        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5);
         switch (state) {
             case CONTINUOUS:
                 targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
