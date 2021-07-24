@@ -18,7 +18,7 @@ public class MeepMeepSequences {
                 // Background opacity from 0-1
                 .setBackgroundAlpha(1f)
                 // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(220), Math.toRadians(220), 15)
+                .setConstraints(54, 54, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
                                 .splineTo(new Vector2d(50.5275, -22.7), Math.toRadians(0))

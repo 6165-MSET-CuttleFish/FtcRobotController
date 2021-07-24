@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.vision.UGAdvancedHighGoalPipeline;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,7 +14,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
-import org.firstinspires.ftc.teamcode.util.VelocityPIDFController;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
@@ -21,11 +21,13 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 public class Turret implements Component {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients( 0.27, 0.0001, 0.002);
+    public static PIDCoefficients VISION_PID = new PIDCoefficients(0.0, 0.0, 0.0);
     public static double kV = 1;
     public static double kStatic = 0.01;
     public static double kA = 0.01;
     public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl;
+    UGAdvancedHighGoalPipeline highGoalPipeline;
     public static double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
     public Vector2d target;
@@ -76,6 +78,8 @@ public class Turret implements Component {
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
+            if (getAbsError() < 20) {
+            }
          turret.setPower(power);
         }
         if(lastKv != kV || lastKa != kA || lastKStatic != kStatic || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
