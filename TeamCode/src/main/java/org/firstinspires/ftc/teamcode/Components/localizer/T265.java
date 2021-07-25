@@ -27,7 +27,7 @@ public class T265 {
     private final StandardTrackingWheelLocalizer odo;
 
     // Constants
-    public final double ODOMETRY_COVARIANCE = 0.1;
+    public final double ODOMETRY_COVARIANCE = 0.34;
     private final double INCH_TO_METER = 0.0254;
 
     // State Variables

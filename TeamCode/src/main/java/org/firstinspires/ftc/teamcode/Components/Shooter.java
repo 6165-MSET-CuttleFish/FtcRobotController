@@ -101,7 +101,7 @@ public class Shooter implements Component {
 
         powerShotsController = new StateMachineBuilder<Integer>()
                 .state(0)
-                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
+                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[0]))
 
                 .state(1)
@@ -109,7 +109,7 @@ public class Shooter implements Component {
                 .onEnter(() -> gunner.shoot())
 
                 .state(2)
-                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
+                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[1]))
 
                 .state(3)

@@ -123,7 +123,7 @@ public class RedTele extends OpMode {
         NORMAL,
         WOBBLE
     }
-    public static double TOLERANCE = 50;
+    public static double TOLERANCE = 80;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
