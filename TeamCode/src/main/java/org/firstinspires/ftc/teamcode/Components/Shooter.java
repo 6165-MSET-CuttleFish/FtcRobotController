@@ -39,7 +39,7 @@ public class Shooter implements Component {
     State state = State.IDLE;
     public StateMachine powerShotsController;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0018, 0, 0.00001);
-    public static double kV = 0.000199;
+    public static double kV = 0.000168;
     public static double kA = 0.00003;
     public static double kStatic = 0.01;
     public static double threshold = 300;
@@ -140,10 +140,14 @@ public class Shooter implements Component {
         Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5);
         switch (state) {
             case CONTINUOUS:
-                targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
+                try {
+                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
+                } catch (Exception e) {
+                    targetVelo = 5000;
+                }
                 break;
             case POWERSHOTS:
-                targetVelo = 1000;
+                targetVelo = 2000;
                 powerShotsController.update();
                 break;
             case TUNING:
@@ -258,15 +262,15 @@ public class Shooter implements Component {
     }
 
     private void setVelocityController() {
-
+        veloRegression.add(0,4400);
         veloRegression.add(69.4,4400);
+        veloRegression.add(73.5, 4290);
+        veloRegression.add(76.3, 4300);
         veloRegression.add(82.23, 4500);
+        veloRegression.add(86, 4480);
+        veloRegression.add(88.5, 4470);
         veloRegression.add(95.2, 4850);
         veloRegression.add(115.8, 5100 );
-        veloRegression.add(76.3, 4300);
-        veloRegression.add(73.5, 4290);
-        veloRegression.add(88.5, 4470);
-        veloRegression.add(86, 4480);
         veloRegression.createLUT();
     }
 
@@ -279,6 +283,6 @@ public class Shooter implements Component {
     }
 
     public void powerShots() {
-        powerShotsController.start();
+        if (!powerShotsController.getRunning()) powerShotsController.start();
     }
 }

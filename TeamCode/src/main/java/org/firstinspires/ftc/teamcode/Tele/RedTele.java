@@ -8,7 +8,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.KeyReader;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Components.Gunner;
@@ -42,7 +41,7 @@ public class RedTele extends OpMode {
         turret = shooter.turret;
         gunner = shooter.gunner;
         initializeButtons();
-        shooter.setState(Shooter.State.CUSTOMVELO);
+        shooter.setState(Shooter.State.CONTINUOUS);
         telemetry.addData("Initialized", true);
         telemetry.update();
         robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
@@ -51,7 +50,14 @@ public class RedTele extends OpMode {
     @Override
     public void loop() {
         turret.setTarget(Robot.goal);
-        shooter.setVelocity(velo);
+        if (shooterMode.getState()) {
+            shooter.setState(Shooter.State.POWERSHOTS);
+            if (powerShots.wasJustPressed()) {
+                shooter.powerShots();
+            }
+        } else {
+            shooter.setState(Shooter.State.CONTINUOUS);
+        }
         if (shieldButton.wasJustPressed()) {
             switch (intake.getState()) {
                 case UP:
@@ -117,8 +123,7 @@ public class RedTele extends OpMode {
         NORMAL,
         WOBBLE
     }
-    public static double velo = 4300;
-    public static double percentError = 0.01;
+    public static double TOLERANCE = 50;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -128,9 +133,9 @@ public class RedTele extends OpMode {
     Magazine magazine;
     Intake intake;
     GamepadEx g1, g2;
-    ToggleButtonReader turretButton;
+    ToggleButtonReader turretButton, shooterMode;
     ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
-    TriggerReader intakeButton;
+    TriggerReader intakeButton, powerShots;
     KeyReader[] readers;
 
     public void safety() {
@@ -147,7 +152,7 @@ public class RedTele extends OpMode {
                     turret.setState(Turret.State.IDLE);
                     break;
             } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
-             && shooter.getPercentError() < percentError) {
+             && shooter.getAbsError() < TOLERANCE) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
@@ -189,11 +194,13 @@ public class RedTele extends OpMode {
         g2 = new GamepadEx(gamepad2);
         intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
         reverseMode = new ToggleButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
-        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
+        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
+        shooterMode = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
+        powerShots = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
         clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
         magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
-        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton};
+        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
     }
 }

@@ -36,13 +36,15 @@ public class Intake implements Component {
 
     @Override
     public void update() {
-        switch (state) {
-            case UP:
-                shieldUp();
-                break;
-            case DOWN:
-                shieldDown();
-                break;
+        if (opModeType == OpModeType.AUTO) {
+            switch (state) {
+                case UP:
+                    shieldUp();
+                    break;
+                case DOWN:
+                    shieldDown();
+                    break;
+            }
         }
     }
 
