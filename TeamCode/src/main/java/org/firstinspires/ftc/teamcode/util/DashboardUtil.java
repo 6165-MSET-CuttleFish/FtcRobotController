@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.Path;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+
 import java.util.List;
 
 /**
@@ -58,7 +60,8 @@ public class DashboardUtil {
         Vector2d v = pose.headingVec().times(ROBOT_RADIUS/2);
         double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
         double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
-        canvas.strokeLine(x1, y1, x2, y2);
+        Coordinate coord = Coordinate.toPoint(pose).polarAdd (pose.getHeading (), 100);
+        canvas.strokeLine(x1, y1, coord.getX(), coord.getY());
     }
 
     public static void drawRing(Canvas canvas, Vector2d pose){
