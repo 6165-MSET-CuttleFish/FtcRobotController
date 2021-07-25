@@ -76,8 +76,8 @@ public class WobbleArm implements Component {
         arm2.setPosition(0.4);
     }
     private void mid(){
-        arm1.setPosition(0.3);
-        arm2.setPosition(0.7);
+        arm1.setPosition(0.1);
+        arm2.setPosition(0.9);
     }
     public State getState() {
         if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning() || wobbleRaiseMacro.getRunning()) return State.MACRO;

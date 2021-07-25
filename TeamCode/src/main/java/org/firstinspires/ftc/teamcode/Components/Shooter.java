@@ -182,7 +182,7 @@ public class Shooter implements Component {
             flywheel.setPower(power);
             flywheel1.setPower(power);
         }
-        if (lastKv != kV || lastKa != kA || lastKstatic != kStatic || timer.seconds() > 2) {
+        if (lastKv != kV || lastKa != kA || lastKstatic != kStatic) {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
@@ -190,12 +190,14 @@ public class Shooter implements Component {
             setPIDCoeffecients();
             //veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }
+        double newKv = kV * 12 / batteryVoltageSensor.getVoltage();
+        veloController.setkV(newKv);
         packet.put("Target Velocity", targetVelo);
         packet.put("Motor Power", power);
     }
 
     private void setPIDCoeffecients() {
-        veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
+        veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
     }
 
     public Vector2d getShooterVec() {
@@ -248,7 +250,7 @@ public class Shooter implements Component {
     }
 
     public void flapDown() {
-        flap.setPosition(0.89);
+        flap.setPosition(0.85);
     }
 
     public void flapWayDown() {

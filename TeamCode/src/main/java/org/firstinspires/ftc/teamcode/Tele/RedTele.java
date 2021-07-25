@@ -45,7 +45,7 @@ public class RedTele extends OpMode {
         shooter.setState(Shooter.State.CUSTOMVELO);
         telemetry.addData("Initialized", true);
         telemetry.update();
-        robot.setPoseEstimate(new Pose2d());
+        robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
     }
 
     @Override
@@ -117,7 +117,8 @@ public class RedTele extends OpMode {
         NORMAL,
         WOBBLE
     }
-    public static double velo = 4600;
+    public static double velo = 4300;
+    public static double percentError = 0.01;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -133,7 +134,7 @@ public class RedTele extends OpMode {
     KeyReader[] readers;
 
     public void safety() {
-        if (robotPose.getX() > 15) {
+        if (robotPose.getX() > 2) {
             turret.setState(Turret.State.IDLE);
         } else {
             switch (wobbleArm.getState()) {
@@ -145,7 +146,8 @@ public class RedTele extends OpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN) {
+            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
+             && shooter.getPercentError() < percentError) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);

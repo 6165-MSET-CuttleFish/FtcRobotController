@@ -25,8 +25,10 @@ public class Turret implements Component {
     public static double kV = 1;
     public static double kStatic = 0.01;
     public static double kA = 0.01;
-    public double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
+    private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
+    private double lastKpVision = VISION_PID.kP, lastKdVision = VISION_PID.kD, lastKiVision = VISION_PID.kI;
     PIDFController angleControl;
+    PIDFController visionControl = new PIDFController(VISION_PID);
     UGAdvancedHighGoalPipeline highGoalPipeline;
     public static double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
@@ -40,6 +42,7 @@ public class Turret implements Component {
         TARGET_LOCK,
         TUNING,
         IDLE,
+        UNPOWERED,
     }
     public Turret(HardwareMap hardwareMap){
         turret = hardwareMap.get(DcMotorEx.class, "turret");
@@ -48,6 +51,18 @@ public class Turret implements Component {
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         setPIDCoeffecients();
+    }
+    public Turret(HardwareMap hardwareMap, UGAdvancedHighGoalPipeline pipeline){
+        highGoalPipeline = pipeline;
+        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        turretTuner = new TurretTuner();
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        setPIDCoeffecients();
+    }
+    public void setHighGoalPipeline(UGAdvancedHighGoalPipeline pipeline) {
+        highGoalPipeline = pipeline;
     }
     public void update(){
         double currHeading = Details.robotPose.getHeading();
@@ -78,8 +93,6 @@ public class Turret implements Component {
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
-            if (getAbsError() < 20) {
-            }
          turret.setPower(power);
         }
         if(lastKv != kV || lastKa != kA || lastKStatic != kStatic || lastKp != ANGLE_PID.kP || lastKi != ANGLE_PID.kI || lastKd != ANGLE_PID.kD) {
@@ -91,6 +104,18 @@ public class Turret implements Component {
             lastKd = ANGLE_PID.kD;
             setPIDCoeffecients();
         }
+//        if(lastKpVision != VISION_PID.kP || lastKi != VISION_PID.kI || lastKd != VISION_PID.kD) {
+//            lastKp = VISION_PID.kP;
+//            lastKi = VISION_PID.kI;
+//            lastKd = VISION_PID.kD;
+//            visionControl = new PIDFController(VISION_PID);
+//        }
+//        try {
+//            packet.put("Rect Y", highGoalPipeline.getRedRect().y);
+//            packet.put("Rect X", highGoalPipeline.getRedRect().x);
+//        } catch (Exception ignored) {
+//
+//        }
         packet.put("Turret Angle", currAngle);
         packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
@@ -146,6 +171,6 @@ public class Turret implements Component {
         return Math.abs(getError());
     }
     public boolean isIdle() {
-        return turret.getVelocity() < 100 && getAbsError() < 5;
+        return Math.abs(turret.getVelocity()) < 100 && getAbsError() < 2;
     }
 }

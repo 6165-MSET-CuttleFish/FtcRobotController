@@ -26,6 +26,7 @@ public class ShooterVeloRegression extends OpMode {
     Magazine magazine;
     ToggleButtonReader inc;
     ToggleButtonReader dec;
+    ToggleButtonReader powerButton;
     public static double velocity = 0;
     @Override
     public void init() {
@@ -35,10 +36,12 @@ public class ShooterVeloRegression extends OpMode {
         gunner = shooter.gunner;
         magazine = shooter.magazine;
         shooter.setState(Shooter.State.CUSTOMVELO);
+        powerButton = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.X);
         turret.setTarget(Robot.goal);
         turret.setState(Turret.State.TARGET_LOCK);
         inc = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
-        dec = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
+        dec = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_DOWN);
+        robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
     }
 
     @Override
@@ -46,7 +49,12 @@ public class ShooterVeloRegression extends OpMode {
         robot.update();
         dec.readValue();
         inc.readValue();
-        shooter.setVelocity(velocity);
+        powerButton.readValue();
+        if (powerButton.getState()) {
+            shooter.setVelocity(velocity);
+        } else {
+            shooter.setVelocity(0);
+        }
         robot.setWeightedDrivePower(
                 new Pose2d(
                         -gamepad1.left_stick_y,
@@ -57,13 +65,16 @@ public class ShooterVeloRegression extends OpMode {
         if (gamepad1.a) {
             gunner.shoot(3);
         } else if (dec.wasJustPressed()) {
-            velocity -= 100;
+            velocity -= 200;
         } else if (inc.wasJustPressed()) {
-            velocity += 100;
+            velocity += 200;
         } else if (gamepad1.right_stick_button) {
             magazine.magMacro();
         }
+        robot.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
         telemetry.addData("Shooter Distance", shooter.getShooterVec().distTo(Robot.goal));
+        telemetry.addData("Velocity", velocity);
+        telemetry.update();
     }
 
     @Override

@@ -69,6 +69,11 @@ public class VelocityPIDFController {
         return accelSamples.getMean();
     }
 
+    public void setkV(double kV) {
+        this.kV = kV;
+    }
+
+
     public double update(double measuredPosition, double measuredVelocity) {
         if (Double.isNaN(lastPosition)) {
             lastPosition = measuredPosition;

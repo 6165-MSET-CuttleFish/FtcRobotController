@@ -18,6 +18,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.arcrobotics.ftclib.vision.UGAdvancedHighGoalPipeline;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -81,6 +82,7 @@ public class Robot extends MecanumDrive implements Component {
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
+    private UGAdvancedHighGoalPipeline highGoalPipeline;
 
     public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
 
@@ -88,7 +90,7 @@ public class Robot extends MecanumDrive implements Component {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    public static Vector2d goal = new Vector2d(70.5275, -32.9725);
+    public static Vector2d goal = new Vector2d(70.5275, -35.9725);
     public static Vector2d[] powerShotLocals = {
             new Vector2d(-5.8, -6.3),
             new Vector2d(-5.8, -16),
@@ -118,7 +120,7 @@ public class Robot extends MecanumDrive implements Component {
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 1;
+    public static double OMEGA_WEIGHT = 1.5;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -185,6 +187,8 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
+
+
         switch (opModeType) {
             case TELE:
                 setLocalizer(new t265Localizer(hardwareMap));
@@ -215,10 +219,11 @@ public class Robot extends MecanumDrive implements Component {
                         "id",
                         hardwareMap.appContext.getPackageName()
                 );
+        highGoalPipeline = new UGAdvancedHighGoalPipeline(60, CAMERA_HEIGHT);
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(pipeline = new UGContourRingPipeline(linearOpMode.telemetry, false));
+
 
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
 
@@ -227,7 +232,7 @@ public class Robot extends MecanumDrive implements Component {
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
         RingLocalizer.HORIZON = HORIZON;
-
+        webcam.setPipeline(highGoalPipeline);
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         dashboard.startCameraStream(webcam, 30);
     }

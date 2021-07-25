@@ -16,7 +16,6 @@ public class Magazine implements Component {
     Servo magLeft1, magLeft2;
     Servo magRight1, magRight2;
     ColorRangeSensor thirdRingSensor;
-    private final ElapsedTime externalTimer = new ElapsedTime();
     StateMachine stateMachine;
     public static double currentRings;
 
@@ -39,10 +38,10 @@ public class Magazine implements Component {
                 .onEnter(this::down)
 
                 .state(State.MOVING_UP)
-                .transitionTimed(0.3)
+                .transitionTimed(0.43)
                 .onEnter(() -> {
-                    down();
-                    currentRings += getRings();
+                    up();
+                    currentRings += 3;
                     currentRings = Range.clip(currentRings, 0, 3);
                 })
 
@@ -50,7 +49,7 @@ public class Magazine implements Component {
                 .transitionTimed(0.08)
 
                 .state(State.MOVING_DOWN)
-                .transitionTimed(0.3)
+                .transitionTimed(0.43)
                 .onEnter(this::down)
 
                 .exit(State.DOWN)
@@ -71,11 +70,11 @@ public class Magazine implements Component {
     }
 
     public void up() {
-        magLeft1.setPosition(0.43);
-        magLeft2.setPosition(0.43);
+        magLeft1.setPosition(0.41);
+        magLeft2.setPosition(0.41);
 
-        magRight1.setPosition(0.55);
-        magRight2.setPosition(0.55);
+        magRight1.setPosition(0.57);
+        magRight2.setPosition(0.57);
     }
 
     public void down() {

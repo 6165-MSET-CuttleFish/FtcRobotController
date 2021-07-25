@@ -21,6 +21,8 @@ public class WobbleTest extends LinearOpMode {
                 wobble.setState(WobbleArm.State.DOWN);
             } else if (gamepad1.y) {
                 wobble.setState(WobbleArm.State.UP);
+            } else if (gamepad1.right_bumper) {
+                wobble.pickUp();
             }
         }
     }
