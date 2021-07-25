@@ -258,25 +258,15 @@ public class Shooter implements Component {
     }
 
     private void setVelocityController() {
-        veloRegression.add(0, 1500);
-        veloRegression.add(75, 1450);
-        veloRegression.add(77.5, 1440);
-        veloRegression.add(78, 1420);
-        veloRegression.add(79, 1410);
-        veloRegression.add(80, 1400);
-        veloRegression.add(85, 1380);
-        veloRegression.add(90, 1350);
-        veloRegression.add(95, 1230);
-        veloRegression.add(100, 1220);
-        veloRegression.add(102, 1210);
-        veloRegression.add(105, 1220);
-        veloRegression.add(110, 1220);
-        veloRegression.add(115, 1190);
-        veloRegression.add(120, 1190);
-        veloRegression.add(125, 1210);
-        veloRegression.add(132.5, 1220);
-        veloRegression.add(200, 1400);
-        veloRegression.add(1000, 1400);
+
+        veloRegression.add(69.4,4400);
+        veloRegression.add(82.23, 4500);
+        veloRegression.add(95.2, 4850);
+        veloRegression.add(115.8, 5100 );
+        veloRegression.add(76.3, 4300);
+        veloRegression.add(73.5, 4290);
+        veloRegression.add(88.5, 4470);
+        veloRegression.add(86, 4480);
         veloRegression.createLUT();
     }
 
