@@ -45,14 +45,14 @@ public class RedTele extends OpMode {
         telemetry.addData("Initialized", true);
         telemetry.update();
         robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
+        turret.setTarget(Robot.goal);
     }
 
     @Override
     public void loop() {
-        turret.setTarget(Robot.goal);
         if (shooterMode.getState()) {
             shooter.setState(Shooter.State.POWERSHOTS);
-            if (powerShots.wasJustPressed()) {
+            if (powerShots.isDown()) {
                 shooter.powerShots();
             }
         } else {
@@ -68,14 +68,8 @@ public class RedTele extends OpMode {
                     break;
             }
         }
-        if (magButton.wasJustPressed()) {
-            if (gunner.getState() == Gunner.State.IDLE) {
+        if (magButton.wasJustPressed() && gunner.getState() == Gunner.State.IDLE) {
                 magazine.magMacro();
-            } else {
-                robot.actionQueue.add(() -> magazine.magMacro());
-            }
-            telemetry.addData("magazine macro", "Started");
-            telemetry.update();
         }
         robot.intake.setPower(g2.gamepad.right_stick_y);
         if(reverseMode.wasJustPressed()) {
@@ -151,7 +145,7 @@ public class RedTele extends OpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
+            } if (shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
              && shooter.getAbsError() < TOLERANCE) {
                 gunner.shoot();
             }

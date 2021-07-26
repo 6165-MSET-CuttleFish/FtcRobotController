@@ -35,6 +35,14 @@ public class Shooter implements Component {
         TUNING,
         IDLE,
     }
+    public enum PSState {
+        MOVING_PS1,
+        PS1,
+        MOVING_PS2,
+        PS2,
+        MOVING_PS3,
+        PS3
+    }
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
@@ -99,32 +107,36 @@ public class Shooter implements Component {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        powerShotsController = new StateMachineBuilder<Integer>()
-                .state(0)
+        powerShotsController = new StateMachineBuilder<PSState>()
+                .state(PSState.MOVING_PS1)
                 .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[0]))
 
-                .state(1)
-                .transition(() -> gunner.getState() != Gunner.State.IN)
+                .state(PSState.PS1)
+                .transition(() -> gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> gunner.shoot())
 
-                .state(2)
+                .state(PSState.MOVING_PS2)
                 .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[1]))
 
-                .state(3)
-                .transition(() -> gunner.getState() != Gunner.State.IN)
+                .state(PSState.PS2)
+                .transition(() -> gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> gunner.shoot())
 
-                .state(4)
-                .transition(() -> turret.isIdle() && gunner.getState() != Gunner.State.IDLE)
+                .state(PSState.MOVING_PS3)
+                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots[2]))
 
-                .state(5)
-                .transition(() -> gunner.getState() != Gunner.State.IN)
+                .state(PSState.PS3)
+                .transition(() -> gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> gunner.shoot())
 
-                .exit(0)
+                .exit(PSState.MOVING_PS1)
+                .onExit(() -> {
+                    state = State.CONTINUOUS;
+                    turret.setTarget(Robot.goal);
+                })
 
                 .build();
         tuner = new TuningController();
@@ -140,6 +152,8 @@ public class Shooter implements Component {
         Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5);
         switch (state) {
             case CONTINUOUS:
+                flapUp();
+                turret.setTarget(Robot.goal);
                 try {
                     targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
                 } catch (Exception e) {
@@ -147,7 +161,8 @@ public class Shooter implements Component {
                 }
                 break;
             case POWERSHOTS:
-                targetVelo = 2000;
+                flapDown();
+                targetVelo = 4200;
                 powerShotsController.update();
                 break;
             case TUNING:
@@ -250,11 +265,11 @@ public class Shooter implements Component {
 
 
     public void flapUp() {
-        flap.setPosition(0.75);
+        flap.setPosition(0.85);
     }
 
     public void flapDown() {
-        flap.setPosition(0.85);
+        flap.setPosition(0.87);
     }
 
     public void flapWayDown() {

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components.localizer;
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
@@ -8,6 +9,7 @@ import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
@@ -25,9 +27,10 @@ public class T265 {
     // Electronics
     private static T265Camera t265Cam;
     private final StandardTrackingWheelLocalizer odo;
+    ElapsedTime timer = new ElapsedTime();
 
     // Constants
-    public final double ODOMETRY_COVARIANCE = 0.34;
+    public final double ODOMETRY_COVARIANCE = 0.15;
     private final double INCH_TO_METER = 0.0254;
 
     // State Variables
@@ -52,6 +55,7 @@ public class T265 {
             }
         }
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
+        timer.reset();
     }
 
     public void startCam() {
@@ -71,10 +75,14 @@ public class T265 {
 
     public void setCameraPose(double x, double y, double theta) {
         t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(theta)));
-        //odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
+        odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
-
+    boolean started = false;
     public void updateCamPose() {
+        if (!started) {
+            timer.reset();
+        }
+        started = true;
         odo.update();
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
         Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
@@ -94,7 +102,16 @@ public class T265 {
             }
         }
         com.acmerobotics.roadrunner.geometry.Pose2d currPose = odo.getPoseEstimate();
-        odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(currPose.getX(), currPose.getY(), rotation.getRadians()));
+//        if (odo.getPoseEstimate().vec().distTo(new Vector2d(x, y)) > 10 && timer.seconds() > 1) {
+//            com.acmerobotics.roadrunner.geometry.Pose2d odoPose = odo.getPoseEstimate();
+//            x = odoPose.getX();
+//            y = odoPose.getY();
+//            theta = odoPose.getHeading();
+//            setCameraPose(odoPose.getX(), odoPose.getY(), odoPose.getHeading());
+//            timer.reset();
+//        } else {
+//            odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(currPose.getX(), currPose.getY(), theta));
+//        }
     }
 
     public com.acmerobotics.roadrunner.geometry.Pose2d getPose() {

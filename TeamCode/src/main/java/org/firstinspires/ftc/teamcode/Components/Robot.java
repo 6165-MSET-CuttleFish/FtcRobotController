@@ -96,10 +96,13 @@ public class Robot extends MecanumDrive implements Component {
             new Vector2d(-5.8, -16),
             new Vector2d(-5.8, -22)
     };
+    // 51.5
+    // 59
+    // 66.5
     public static Vector2d[] powerShots = {
-            new Vector2d(70.4725, -1.4725),
-            new Vector2d(70.4725, -10.4725),
-            new Vector2d(70.4725, -19.4725)
+            new Vector2d(70.4725, -3.9725),
+            new Vector2d(70.4725, -11.4725),
+            new Vector2d(70.4725, -18.9725)
     };
     public static Vector2d[] dropZones = {
             new Vector2d(-5.4725, -55.4),
