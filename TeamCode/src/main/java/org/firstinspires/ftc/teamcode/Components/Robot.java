@@ -412,8 +412,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public void waitForActionsCompleted() {
-        while (shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
-                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.MACRO) {
+        while (isHazardous() && !Thread.currentThread().isInterrupted()) {
             update();
         }
     }
@@ -426,7 +425,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public boolean isBusy() {
-        return trajectorySequenceRunner.isBusy();// || shooter.gunner.getState() != Gunner.State.IDLE;
+        return trajectorySequenceRunner.isBusy();
     }
 
     public void setMode(DcMotor.RunMode runMode) {

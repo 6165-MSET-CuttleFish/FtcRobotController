@@ -34,6 +34,7 @@ public class Shooter implements Component {
         POWERSHOTS,
         TUNING,
         IDLE,
+        EMPTY_MAG
     }
     public enum PSState {
         MOVING_PS1,
@@ -45,7 +46,7 @@ public class Shooter implements Component {
     }
 
     State state = State.IDLE;
-    public StateMachine powerShotsController;
+    StateMachine powerShotsController;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0018, 0, 0.00001);
     public static double kV = 0.000168;
     public static double kA = 0.00003;
@@ -61,7 +62,6 @@ public class Shooter implements Component {
     double lastKstatic = kStatic;
     VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
     TuningController tuner;
-    ElapsedTime timer = new ElapsedTime();
     VoltageSensor batteryVoltageSensor;
     private final ElapsedTime veloTimer = new ElapsedTime();
     public DcMotor flywheel, flywheel1;
@@ -142,7 +142,6 @@ public class Shooter implements Component {
         tuner = new TuningController();
         veloTimer.reset();
         setPIDCoeffecients();
-        timer.reset();
     }
 
     public void update() {
@@ -161,8 +160,13 @@ public class Shooter implements Component {
                 }
                 break;
             case POWERSHOTS:
-                flapDown();
-                targetVelo = 4200;
+                if (Details.opModeType == OpModeType.AUTO) {
+                    targetVelo = 4100;
+                    flapUp();
+                } else {
+                    targetVelo = 4200;
+                    flapDown();
+                }
                 powerShotsController.update();
                 break;
             case TUNING:
@@ -171,6 +175,14 @@ public class Shooter implements Component {
                 break;
             case IDLE:
                 targetVelo = 0;
+                turret.setState(Turret.State.IDLE);
+                break;
+            case EMPTY_MAG:
+                turret.setTargetAngle(Math.toRadians(180));
+                targetVelo = 2000;
+                if (turret.isIdle()) {
+                    gunner.shoot(3);
+                }
                 break;
         }
         veloController.setTargetVelocity(targetVelo);
@@ -205,7 +217,6 @@ public class Shooter implements Component {
             lastKv = kV;
             lastKa = kA;
             lastKstatic = kStatic;
-            timer.reset();
             setPIDCoeffecients();
             //veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
         }
@@ -277,11 +288,11 @@ public class Shooter implements Component {
     }
 
     private void setVelocityController() {
-        veloRegression.add(0,4400);
+        veloRegression.add(0,4000);
         veloRegression.add(67.7, 4500);
         veloRegression.add(72.8, 4500);
         veloRegression.add(78.4, 4600);
-        veloRegression.add(82.23, 4500);
+        veloRegression.add(82.23, 4630);
         veloRegression.add(86.3, 4670);
         veloRegression.add(88.4, 4670);
         veloRegression.add(95.2, 4850);

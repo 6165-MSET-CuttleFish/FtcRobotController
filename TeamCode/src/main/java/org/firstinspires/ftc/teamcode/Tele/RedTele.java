@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Components.Gunner;
 import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.Magazine;
@@ -25,11 +26,25 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @TeleOp(name = "RedTele", group = "Tele")
 @Config
 public class RedTele extends OpMode {
-    @Override
-    public void stop() {
-        T265.stopCam();
-        super.stop();
+    enum DriveState {
+        NORMAL,
+        WOBBLE
     }
+
+    public static double TOLERANCE = 80;
+    Robot robot;
+    DriveState driveState = DriveState.NORMAL;
+    WobbleArm wobbleArm;
+    Shooter shooter;
+    Turret turret;
+    Gunner gunner;
+    Magazine magazine;
+    Intake intake;
+    GamepadEx g1, g2;
+    ToggleButtonReader turretButton, shooterMode;
+    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
+    TriggerReader intakeButton, powerShots;
+    KeyReader[] readers;
 
     @Override
     public void init() {
@@ -48,6 +63,28 @@ public class RedTele extends OpMode {
         turret.setTarget(Robot.goal);
     }
 
+    private void initializeButtons() {
+        g1 = new GamepadEx(gamepad1);
+        g2 = new GamepadEx(gamepad2);
+        intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
+        reverseMode = new ToggleButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
+        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
+        shooterMode = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
+        powerShots = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
+        clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
+        shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
+        wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
+        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
+    }
+
+    @Override
+    public void stop() {
+        T265.stopCam();
+        super.stop();
+    }
+
+
     @Override
     public void loop() {
         if (shooterMode.getState()) {
@@ -58,21 +95,21 @@ public class RedTele extends OpMode {
         } else {
             shooter.setState(Shooter.State.CONTINUOUS);
         }
-        if (shieldButton.wasJustPressed()) {
-            switch (intake.getState()) {
-                case UP:
-                    intake.setState(Intake.State.DOWN);
-                    break;
-                case DOWN:
-                    intake.setState(Intake.State.UP);
-                    break;
-            }
-        }
+//        if (shieldButton.wasJustPressed()) {
+//            switch (intake.getShieldState()) {
+//                case UP:
+//                    intake.setShieldState(Intake.ShieldState.DOWN);
+//                    break;
+//                case DOWN:
+//                    intake.setShieldState(Intake.ShieldState.UP);
+//                    break;
+//            }
+//        }
         if (magButton.wasJustPressed() && gunner.getState() == Gunner.State.IDLE) {
-                magazine.magMacro();
+            magazine.magMacro();
         }
         robot.intake.setPower(g2.gamepad.right_stick_y);
-        if(reverseMode.wasJustPressed()) {
+        if (reverseMode.wasJustPressed()) {
             switch (driveState) {
                 case NORMAL:
                     driveState = DriveState.WOBBLE;
@@ -113,25 +150,6 @@ public class RedTele extends OpMode {
         }
     }
 
-    enum DriveState {
-        NORMAL,
-        WOBBLE
-    }
-    public static double TOLERANCE = 80;
-    Robot robot;
-    DriveState driveState = DriveState.NORMAL;
-    WobbleArm wobbleArm;
-    Shooter shooter;
-    Turret turret;
-    Gunner gunner;
-    Magazine magazine;
-    Intake intake;
-    GamepadEx g1, g2;
-    ToggleButtonReader turretButton, shooterMode;
-    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
-    TriggerReader intakeButton, powerShots;
-    KeyReader[] readers;
-
     public void safety() {
         if (robotPose.getX() > 2) {
             turret.setState(Turret.State.IDLE);
@@ -145,8 +163,9 @@ public class RedTele extends OpMode {
                 case MID:
                     turret.setState(Turret.State.IDLE);
                     break;
-            } if (shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
-             && shooter.getAbsError() < TOLERANCE) {
+            }
+            if (shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
+                    && shooter.getAbsError() < TOLERANCE) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
@@ -183,18 +202,5 @@ public class RedTele extends OpMode {
         }
     }
 
-    private void initializeButtons() {
-        g1 = new GamepadEx(gamepad1);
-        g2 = new GamepadEx(gamepad2);
-        intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
-        reverseMode = new ToggleButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
-        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
-        shooterMode = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
-        powerShots = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
-        clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
-        shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
-        wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
-        magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
-        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
-    }
+
 }

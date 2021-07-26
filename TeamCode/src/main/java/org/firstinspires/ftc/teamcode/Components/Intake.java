@@ -8,24 +8,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 
 public class Intake implements Component {
-    public enum State {
-        UP,
-        DOWN,
-        MID,
+    public enum IntakeState {
+        SAFE,
+        INTAKE,
+        OUTTAKE,
+        CUSTOM_VALUE,
+        IDLE,
     }
-    State state = State.UP;
+    IntakeState intakeState = IntakeState.IDLE;
     DcMotor intakeMotor;
     Servo intakeL, intakeR;
 
     public Intake(HardwareMap hardwareMap) {
-        switch (opModeType) {
-            case AUTO:
-                state = State.UP;
-                break;
-            case TELE:
-                state = State.DOWN;
-                break;
-        }
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -37,41 +31,22 @@ public class Intake implements Component {
     @Override
     public void update() {
         if (opModeType == OpModeType.AUTO) {
-            switch (state) {
-                case UP:
-                    shieldUp();
-                    break;
-                case DOWN:
-                    shieldDown();
-                    break;
+            switch (intakeState) {
+
             }
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setIntakeState(IntakeState intakeState) {
+        this.intakeState = intakeState;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    private void shieldUp() {
-        intakeL.setPosition(0.16);
-        intakeR.setPosition(1);
-    }
-
-    private void shieldMid() {
-        intakeL.setPosition(0.16);
-        intakeR.setPosition(0.95);
-    }
-
-    private void shieldDown() {
-        intakeL.setPosition(0.30);
-        intakeR.setPosition(0.86);
+    public IntakeState getIntakeState() {
+        return intakeState;
     }
 
     public void setPower(double power) {
+        setIntakeState(IntakeState.CUSTOM_VALUE);
         intakeMotor.setPower(power);
     }
 }
