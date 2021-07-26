@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
 @Autonomous(name = "RED_Aggressive", group = "red")
-public class RedAggresive extends LinearOpMode {
+public class RedAggressive extends LinearOpMode {
     Robot robot;
     Shooter shooter;
     Gunner gunner;
