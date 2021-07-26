@@ -27,7 +27,6 @@ public class T265 {
     // Electronics
     private static T265Camera t265Cam;
     private final StandardTrackingWheelLocalizer odo;
-    ElapsedTime timer = new ElapsedTime();
 
     // Constants
     public final double ODOMETRY_COVARIANCE = 0.15;
@@ -54,9 +53,8 @@ public class T265 {
 //                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
 //            }
 //        }
-        t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+        t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(180))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
-        timer.reset();
     }
 
     public void startCam() {
@@ -75,14 +73,11 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(theta)));
+        t265Cam.setPose(new Pose2d(x * INCH_TO_METER, y * INCH_TO_METER, new Rotation2d(theta)));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
     boolean started = false;
     public void updateCamPose() {
-        if (!started) {
-            timer.reset();
-        }
         started = true;
         odo.update();
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
@@ -91,8 +86,8 @@ public class T265 {
 
         chassisSpeeds = state.velocity;
 
-        x = -translation.getX();
-        y = -translation.getY();
+        x = translation.getX();
+        y = translation.getY();
         theta = rotation.getRadians();
         com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
         if(currVelo != null) {
@@ -102,7 +97,6 @@ public class T265 {
 
             }
         }
-        com.acmerobotics.roadrunner.geometry.Pose2d currPose = odo.getPoseEstimate();
 //        if (odo.getPoseEstimate().vec().distTo(new Vector2d(x, y)) > 10 && timer.seconds() > 1) {
 //            com.acmerobotics.roadrunner.geometry.Pose2d odoPose = odo.getPoseEstimate();
 //            x = odoPose.getX();
