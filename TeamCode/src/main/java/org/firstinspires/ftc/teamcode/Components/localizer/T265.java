@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Components.localizer;
+
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -42,18 +43,16 @@ public class T265 {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
     public T265(HardwareMap hardwareMap) {
-//        File file = new File(mapPath);
-//        if (!file.exists() || file.length() == 0) {
-//            isEmpty = true;
-//        }
-//        if (t265Cam == null) {
-//            if (!isEmpty) {
-//                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
-//            } else {
-//                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
-//            }
-//        }
-        t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(180))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+        File file = new File(mapPath);
+        if (!file.exists() || file.length() == 0) {
+            isEmpty = true;
+        }
+        if (!isEmpty) {
+            t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
+        } else {
+            t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+        }
+        //t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(180))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
     }
 
@@ -76,9 +75,8 @@ public class T265 {
         t265Cam.setPose(new Pose2d(x * INCH_TO_METER, y * INCH_TO_METER, new Rotation2d(theta)));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
-    boolean started = false;
+
     public void updateCamPose() {
-        started = true;
         odo.update();
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
         Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
@@ -90,23 +88,13 @@ public class T265 {
         y = translation.getY();
         theta = rotation.getRadians();
         com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
-        if(currVelo != null) {
+        if (currVelo != null) {
             try {
                 t265Cam.sendOdometry(currVelo.getX() * INCH_TO_METER, currVelo.getY() * INCH_TO_METER);
             } catch (Exception ignored) {
 
             }
         }
-//        if (odo.getPoseEstimate().vec().distTo(new Vector2d(x, y)) > 10 && timer.seconds() > 1) {
-//            com.acmerobotics.roadrunner.geometry.Pose2d odoPose = odo.getPoseEstimate();
-//            x = odoPose.getX();
-//            y = odoPose.getY();
-//            theta = odoPose.getHeading();
-//            setCameraPose(odoPose.getX(), odoPose.getY(), odoPose.getHeading());
-//            timer.reset();
-//        } else {
-//            odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(currPose.getX(), currPose.getY(), theta));
-//        }
     }
 
     public com.acmerobotics.roadrunner.geometry.Pose2d getPose() {

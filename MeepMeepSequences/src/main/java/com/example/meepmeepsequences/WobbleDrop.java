@@ -16,14 +16,14 @@ public class WobbleDrop{
                 // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(220), Math.toRadians(220), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequnceBuilder(new Pose2d(-62, -50.7, 0))
+                        drive.trajectorySequenceBuilder(new Pose2d(-62, -50.7, 0))
                         //if(rings == 0)
                             .lineToLinearHeading(new Pose2d(-5.4725, -55.4, Math.toRadians(-180)))
                         //if(rings == 1)
                             .lineToLinearHeading(new Pose2d(23, -35.4725, Math.toRadians(-180)))
                         //if(rings == 4)
                             .lineToLinearHeading(new Pose2d(45.5275, -57, Math.toRadians(-180)))
-                            .lineTo(new Pose2d(50.5275, -50))
+                        .build());
 
     }
 }

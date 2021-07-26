@@ -134,21 +134,22 @@ public class Robot extends MecanumDrive implements Component {
     FtcDashboard dashboard;
 
     public Robot(OpMode opMode, Pose2d pose2d) {
-        this(opMode, pose2d, OpModeType.NONE);
+        this(opMode, pose2d, OpModeType.NONE, Side.NONE);
     }
 
-    public Robot(OpMode opMode, OpModeType type) {
-        this(opMode, Details.robotPose, type);
+    public Robot(OpMode opMode, OpModeType type, Side side) {
+        this(opMode, Details.robotPose, type, side);
     }
 
     public Robot(OpMode opMode) {
-        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE);
+        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Side.NONE);
     }
 
-    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type) {
+    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Side side) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         Details.opModeType = type;
         Details.robotPose = pose2d;
+        Details.side = side;
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;

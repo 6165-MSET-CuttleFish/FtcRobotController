@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.Side;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 import org.firstinspires.ftc.teamcode.Components.localizer.T265;
@@ -48,7 +49,7 @@ public class RedTele extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(this, OpModeType.TELE);
+        robot = new Robot(this, OpModeType.TELE, Side.RED);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
         magazine = shooter.magazine;

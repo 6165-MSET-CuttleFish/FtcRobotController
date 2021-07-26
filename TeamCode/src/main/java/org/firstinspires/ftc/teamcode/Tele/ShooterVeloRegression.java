@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.Side;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 
@@ -30,7 +31,7 @@ public class ShooterVeloRegression extends OpMode {
     public static double velocity = 0;
     @Override
     public void init() {
-        robot = new Robot(this, OpModeType.TELE);
+        robot = new Robot(this, OpModeType.TELE, Side.RED);
         shooter = robot.shooter;
         turret = shooter.turret;
         gunner = shooter.gunner;

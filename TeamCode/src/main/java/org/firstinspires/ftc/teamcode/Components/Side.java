@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-enum Side {
+public enum Side {
     RED,
-    BLUE
+    BLUE,
+    NONE
 }

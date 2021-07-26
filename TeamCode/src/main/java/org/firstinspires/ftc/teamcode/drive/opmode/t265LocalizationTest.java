@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Components.Side;
 import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 
 @TeleOp(name = "T265Test", group = "test")
@@ -20,7 +21,7 @@ public class t265LocalizationTest extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(this, OpModeType.TELE);
+        robot = new Robot(this, OpModeType.TELE, Side.RED);
     }
 
     @Override

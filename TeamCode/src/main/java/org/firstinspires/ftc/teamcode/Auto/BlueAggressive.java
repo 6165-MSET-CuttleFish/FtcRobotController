@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Components.Magazine;
 import org.firstinspires.ftc.teamcode.Components.OpModeType;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
+import org.firstinspires.ftc.teamcode.Components.Side;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -31,7 +32,7 @@ public class BlueAggressive extends LinearOpMode {
     Claw claw;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-62, 22.7, 0), OpModeType.AUTO);
+        robot = new Robot(this, new Pose2d(-62, 22.7, 0), OpModeType.AUTO, Side.BLUE);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;

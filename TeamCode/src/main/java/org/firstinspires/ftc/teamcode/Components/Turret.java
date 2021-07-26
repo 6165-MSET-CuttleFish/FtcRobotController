@@ -118,6 +118,7 @@ public class Turret implements Component {
     }
 
     private void setPIDCoeffecients() {
+        //turret.setPIDFCoefficients();
         angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());
     }
 
@@ -131,6 +132,10 @@ public class Turret implements Component {
 
     public double getRelativeAngle() {
         return turret.getCurrentPosition() * (2 * Math.PI / (TICKS_PER_REVOLUTION * GEAR_RATIO));
+    }
+
+    public double angleToTicks(double angle) {
+        return angle / (2 * Math.PI) * (TICKS_PER_REVOLUTION * GEAR_RATIO);
     }
 
     private double getClosestAngle(double targetAngle) {
