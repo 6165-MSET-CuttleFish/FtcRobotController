@@ -43,17 +43,18 @@ public class T265 {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
     public T265(HardwareMap hardwareMap) {
-        File file = new File(mapPath);
-        if (!file.exists() || file.length() == 0) {
-            isEmpty = true;
-        }
-        if (t265Cam == null) {
-            if (!isEmpty) {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
-            } else {
-                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
-            }
-        }
+//        File file = new File(mapPath);
+//        if (!file.exists() || file.length() == 0) {
+//            isEmpty = true;
+//        }
+//        if (t265Cam == null) {
+//            if (!isEmpty) {
+//                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
+//            } else {
+//                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+//            }
+//        }
+        t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
         timer.reset();
     }

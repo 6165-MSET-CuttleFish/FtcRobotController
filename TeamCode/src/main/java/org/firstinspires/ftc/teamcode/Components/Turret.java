@@ -42,18 +42,8 @@ public class Turret implements Component {
         TARGET_LOCK,
         TUNING,
         IDLE,
-        UNPOWERED,
     }
     public Turret(HardwareMap hardwareMap){
-        turret = hardwareMap.get(DcMotorEx.class, "turret");
-        turretTuner = new TurretTuner();
-        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        setPIDCoeffecients();
-    }
-    public Turret(HardwareMap hardwareMap, UGAdvancedHighGoalPipeline pipeline){
-        highGoalPipeline = pipeline;
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
