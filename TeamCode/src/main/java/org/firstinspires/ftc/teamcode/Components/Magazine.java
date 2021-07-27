@@ -38,7 +38,7 @@ public class Magazine implements Component {
                 .onEnter(this::down)
 
                 .state(State.MOVING_UP)
-                .transitionTimed(0.43)
+                .transitionTimed(0.3)
                 .onEnter(() -> {
                     up();
                     currentRings += 3;
@@ -49,7 +49,7 @@ public class Magazine implements Component {
                 .transitionTimed(0.08)
 
                 .state(State.MOVING_DOWN)
-                .transitionTimed(0.43)
+                .transitionTimed(0.38)
                 .onEnter(this::down)
 
                 .exit(State.DOWN)
@@ -78,8 +78,8 @@ public class Magazine implements Component {
     }
 
     public void down() {
-        magLeft1.setPosition(0.71);
-        magLeft2.setPosition(0.71);
+        magLeft1.setPosition(0.75);
+        magLeft2.setPosition(0.75);
 
         magRight1.setPosition(0.27);
         magRight2.setPosition(0.27);

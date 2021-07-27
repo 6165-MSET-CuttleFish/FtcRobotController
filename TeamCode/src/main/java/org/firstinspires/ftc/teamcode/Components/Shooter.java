@@ -46,7 +46,7 @@ public class Shooter implements Component {
     }
 
     State state = State.IDLE;
-    StateMachine powerShotsController;
+    public StateMachine powerShotsController;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0018, 0, 0.00001);
     public static double kV = 0.000168;
     public static double kA = 0.00003;
@@ -178,10 +178,10 @@ public class Shooter implements Component {
                 turret.setState(Turret.State.IDLE);
                 break;
             case EMPTY_MAG:
-                turret.setTargetAngle(Math.toRadians(180));
+                turret.setTargetAngle(Math.toRadians(-180));
                 targetVelo = 2000;
-                if (turret.isIdle()) {
-                    gunner.shoot(3);
+                if (turret.isOnTarget() && Magazine.currentRings != 0) {
+                    gunner.shoot();
                 }
                 break;
         }

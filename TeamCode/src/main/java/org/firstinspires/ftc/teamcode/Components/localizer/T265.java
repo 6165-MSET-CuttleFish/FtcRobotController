@@ -47,10 +47,12 @@ public class T265 {
         if (!file.exists() || file.length() == 0) {
             isEmpty = true;
         }
-        if (!isEmpty) {
-            t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
-        } else {
-            t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+        if (t265Cam == null) {
+            if (!isEmpty) {
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, mapPath, hardwareMap.appContext);
+            } else {
+                t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(0))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
+            }
         }
         //t265Cam = new T265Camera(new Transform2d(new Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), new Rotation2d(Math.toRadians(180))), ODOMETRY_COVARIANCE, hardwareMap.appContext);
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
@@ -72,7 +74,7 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        t265Cam.setPose(new Pose2d(x * INCH_TO_METER, y * INCH_TO_METER, new Rotation2d(theta)));
+        t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(theta)));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
 
@@ -84,8 +86,8 @@ public class T265 {
 
         chassisSpeeds = state.velocity;
 
-        x = translation.getX();
-        y = translation.getY();
+        x = -translation.getX();
+        y = -translation.getY();
         theta = rotation.getRadians();
         com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
         if (currVelo != null) {
