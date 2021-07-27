@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,8 +14,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.TuningController;
@@ -69,7 +65,6 @@ public class Shooter implements Component {
     public Servo flap;
     public double targetVelo;
     private final InterpLUT veloRegression;
-    public ColorRangeSensor colorRangeSensor;
     public Magazine magazine;
     public Gunner gunner;
     public Turret turret;
@@ -110,7 +105,7 @@ public class Shooter implements Component {
         powerShotsController = new StateMachineBuilder<PSState>()
                 .state(PSState.MOVING_PS1)
                 .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots[0]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots()[0]))
 
                 .state(PSState.PS1)
                 .transition(() -> gunner.getState() == Gunner.State.IDLE)
@@ -118,7 +113,7 @@ public class Shooter implements Component {
 
                 .state(PSState.MOVING_PS2)
                 .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots[1]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots()[1]))
 
                 .state(PSState.PS2)
                 .transition(() -> gunner.getState() == Gunner.State.IDLE)
@@ -126,7 +121,7 @@ public class Shooter implements Component {
 
                 .state(PSState.MOVING_PS3)
                 .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots[2]))
+                .onEnter(() -> turret.setTarget(Robot.powerShots()[2]))
 
                 .state(PSState.PS3)
                 .transition(() -> gunner.getState() == Gunner.State.IDLE)
@@ -234,10 +229,6 @@ public class Shooter implements Component {
         return Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5).toVector();
     }
 
-    public double getDistance() {
-        return colorRangeSensor.getDistance(DistanceUnit.INCH);
-    }
-
     public void setVelocity(double v) {
         targetVelo = v;
     }
@@ -268,10 +259,6 @@ public class Shooter implements Component {
 
     public double getPercentError() {
         return getAbsError() / getTargetVelo();
-    }
-
-    public void tripleShot() {
-        gunner.shoot(3);
     }
 
 

@@ -18,11 +18,9 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.arcrobotics.ftclib.vision.UGAdvancedHighGoalPipeline;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -34,14 +32,9 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
-import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -53,7 +46,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -90,25 +82,44 @@ public class Robot extends MecanumDrive implements Component {
     public Telemetry telemetry;
 
     public static Vector2d goal = new Vector2d(70.5275, -35.9725);
-    public static Vector2d[] powerShotLocals = {
-            new Vector2d(-5.8, -6.3),
-            new Vector2d(-5.8, -16),
-            new Vector2d(-5.8, -22)
-    };
+    public static Vector2d pwrShotLocal() {
+        if (side == Side.BLUE) {
+            return new Vector2d(-5.8, 6.3);
+        }
+        return new Vector2d(-5.8, -6.3);
+    }
     // 51.5
     // 59
     // 66.5
-    public static Vector2d[] powerShots = {
-            new Vector2d(70.4725, -3.9725),
-            new Vector2d(70.4725, -11.4725),
-            new Vector2d(70.4725, -18.9725)
-    };
-    public static Vector2d[] dropZones = {
-            new Vector2d(-5.4725, -55.4),
-            new Vector2d(23, -35.4725),
-            new Vector2d(45.5275, -57)
-    };
-    public static Vector2d rightWobble = new Vector2d(-32, -51);
+    public static Vector2d[] powerShots(){
+        if (side == Side.BLUE) {
+            return new Vector2d[]{
+                    new Vector2d(70.4725, 3.9725),
+                    new Vector2d(70.4725, 11.4725),
+                    new Vector2d(70.4725, 18.9725)
+            };
+        }
+        return new Vector2d[]{
+                new Vector2d(70.4725, -3.9725),
+                new Vector2d(70.4725, -11.4725),
+                new Vector2d(70.4725, -18.9725)
+        };
+    }
+    public static Pose2d[] dropZonesPS() {
+        if (side == Side.BLUE) {
+            return new Pose2d[]{
+                    new Pose2d(-5.4725, 55.4, Math.toRadians(90)),
+                    new Pose2d(23, 35.4725, Math.toRadians(90)),
+                    new Pose2d(50.5275, 50, Math.toRadians(90))
+            };
+        }
+        return new Pose2d[]{
+                new Pose2d(-5.4725, -55.4, Math.toRadians(-110)),
+                new Pose2d(23, -35.4725, Math.toRadians(-110)),
+                new Pose2d(50.5275, -50, Math.toRadians(-70))
+        };
+
+    }
 
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
     public Intake intake;
@@ -192,25 +203,13 @@ public class Robot extends MecanumDrive implements Component {
         leftRear.setDirection(DcMotor.Direction.FORWARD);
 
 
-        switch (opModeType) {
-            case TELE:
-                setLocalizer(new t265Localizer(hardwareMap));
-                break;
-            default:
-                setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
-                break;
+        if (opModeType == OpModeType.TELE) {
+            setLocalizer(new t265Localizer(hardwareMap));
+        } else {
+            setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
         }
         setPoseEstimate(Details.robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-    }
-
-    public void setVectors() {
-        switch (side) {
-            case RED:
-                break;
-            case BLUE:
-                break;
-        }
     }
 
     public void autoInit() {
@@ -234,6 +233,7 @@ public class Robot extends MecanumDrive implements Component {
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
         RingLocalizer.HORIZON = HORIZON;
+        webcam.setPipeline(pipeline = new UGContourRingPipeline());
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         dashboard.startCameraStream(webcam, 30);
     }
@@ -245,7 +245,7 @@ public class Robot extends MecanumDrive implements Component {
         Vector2d[] wayPoints;
         switch (side) {
             case RED:
-                builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
+                builder = trajectoryBuilder(Coordinate.toPose(pwrShotLocal(), 0))
                         .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                         .splineTo(new Vector2d(42, 7), 0);
                 wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
@@ -257,7 +257,7 @@ public class Robot extends MecanumDrive implements Component {
                         .build();
                 break;
             case BLUE:
-                builder = trajectoryBuilder(Coordinate.toPose(powerShotLocals[2], 0))
+                builder = trajectoryBuilder(Coordinate.toPose(pwrShotLocal(), 0))
                         .splineTo(new Vector2d(15, 7), new Vector2d(10, 8).angleBetween(new Vector2d(42, 9)))
                         .splineTo(new Vector2d(42, 7), 0);
                 wayPoints = bouncebacks.getVectors(getPoseEstimate()).toArray(new Vector2d[0]).clone();
@@ -305,17 +305,13 @@ public class Robot extends MecanumDrive implements Component {
         intake.setPower(-intakeSpeed);
     }
 
-    public void optimalShoot() {
-        shooter.tripleShot();
-    }
-
-    public Vector2d getDropZone() {
+    public Pose2d getDropZone() {
         if (stackHeight == UGContourRingPipeline.Height.FOUR) {
-            return dropZones[2];
+            return dropZonesPS()[2];
         } else if (stackHeight == UGContourRingPipeline.Height.ONE) {
-            return dropZones[1];
+            return dropZonesPS()[1];
         } else {
-            return dropZones[0];
+            return dropZonesPS()[0];
         }
     }
 
@@ -521,6 +517,11 @@ public class Robot extends MecanumDrive implements Component {
         // flat on a surface
 
         return (double) imu.getAngularVelocity().yRotationRate;
+    }
+
+    public void correctHeading() {
+        Pose2d currPose = getPoseEstimate();
+        setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), getExternalHeading()));
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

@@ -60,10 +60,10 @@ public class WobbleArm implements Component {
 
                 .state(State.MID)
                 .transitionTimed(0)
-                .onEnter(this::mid)
+                .onEnter(this::up)
 
                 .exit(State.DOWN)
-                .onExit(() -> state = State.DOWN)
+                .onExit(() -> state = State.UP)
                 .build();
     }
     public void dropMacro(){
@@ -81,8 +81,8 @@ public class WobbleArm implements Component {
         arm2.setPosition(0.4);
     }
     private void drop() {
-        arm1.setPosition(0.3);
-        arm2.setPosition(0.7);
+        arm1.setPosition(0.45);
+        arm2.setPosition(0.55);
     }
     private void mid(){
         arm1.setPosition(0.1);

@@ -18,7 +18,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @TeleOp(name = "BounceBackPipeline", group = "LinearOpMode")
-@Disabled
 public class BounceBackPipelineDetector extends LinearOpMode {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
@@ -76,6 +75,8 @@ public class BounceBackPipelineDetector extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+            telemetry.addData("x", pipeline.getX());
+            telemetry.addData("y", pipeline.getY());
         }
     }
     Trajectory pickup(double endTangent){

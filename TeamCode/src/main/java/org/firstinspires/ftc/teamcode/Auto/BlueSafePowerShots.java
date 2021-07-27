@@ -34,5 +34,6 @@ public class BlueSafePowerShots extends LinearOpMode {
         gunner = shooter.gunner;
         magazine = shooter.magazine;
         claw = wobbleArm.claw;
+        waitForStart();
     }
 }

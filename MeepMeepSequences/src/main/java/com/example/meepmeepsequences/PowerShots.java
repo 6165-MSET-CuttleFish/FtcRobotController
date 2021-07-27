@@ -19,16 +19,10 @@ public class PowerShots {
                 // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(220), Math.toRadians(220), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
-                                .splineTo(new Vector2d(-5, -16), 0)
-                                .waitSeconds(0.8) // Shoot powershots
-                                .lineToLinearHeading(new Pose2d(59.5275, -10.7, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(59.5275, -50, Math.toRadians(-90)))
-                                .turn(Math.toRadians(180))
-                                .waitSeconds(1) // Drop Wobble
-                                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot bouncebacks
-                                .lineTo(new Vector2d(12, -20))
+                        drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, Math.toRadians(180)))
+                                .splineToConstantHeading(new Vector2d(-40, -22), Math.toRadians(90))
+                                .splineToConstantHeading(new Vector2d(-62, -16), Math.toRadians(180))
+                                .splineToSplineHeading(new Pose2d(-5, -22, Math.toRadians(180)), Math.toRadians(0))
                                 .build()
                 )
                 .start();

@@ -35,7 +35,7 @@ public class T265 {
     private final double INCH_TO_METER = 0.0254;
 
     // State Variables
-    private double x, y, theta;
+    private static double x, y, theta;
 
     @SuppressLint("SdCardPath")
     private final String mapPath = "/data/user/0/com.qualcomm.ftcrobotcontroller/cache/map.bin";
@@ -76,7 +76,7 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        offsets = new Transform2d(new Translation2d(this.x * INCH_TO_METER - x * INCH_TO_METER, this.y * INCH_TO_METER - y * INCH_TO_METER), new Rotation2d(this.theta - theta));
+        offsets = new Transform2d(new Translation2d((x - T265.x) * INCH_TO_METER, (y - T265.y) * INCH_TO_METER), new Rotation2d(theta - T265.theta));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
 

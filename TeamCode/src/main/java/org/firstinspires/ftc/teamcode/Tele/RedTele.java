@@ -96,20 +96,10 @@ public class RedTele extends OpMode {
         } else {
             shooter.setState(Shooter.State.CONTINUOUS);
         }
-//        if (shieldButton.wasJustPressed()) {
-//            switch (intake.getShieldState()) {
-//                case UP:
-//                    intake.setShieldState(Intake.ShieldState.DOWN);
-//                    break;
-//                case DOWN:
-//                    intake.setShieldState(Intake.ShieldState.UP);
-//                    break;
-//            }
-//        }
         if (magButton.wasJustPressed() && gunner.getState() == Gunner.State.IDLE) {
             magazine.magMacro();
         }
-        robot.intake.setPower(g2.gamepad.right_stick_y);
+        robot.intake.setPower(gamepad2.right_stick_y);
         if (reverseMode.wasJustPressed()) {
             switch (driveState) {
                 case NORMAL:
@@ -122,20 +112,12 @@ public class RedTele extends OpMode {
         }
         switch (driveState) {
             case NORMAL:
-                robot.setWeightedDrivePower(
-                        new Pose2d(
-                                g1.getLeftY(),
-                                -g1.getLeftX(),
-                                -g1.getRightX()
-                        )
-                );
-                break;
             case WOBBLE:
                 robot.setWeightedDrivePower(
                         new Pose2d(
-                                -g1.getLeftY(),
-                                g1.getLeftX(),
-                                -g1.getRightX()
+                                -gamepad1.left_stick_y,
+                                -gamepad1.left_stick_x,
+                                -gamepad1.right_stick_x
                         )
                 );
                 break;

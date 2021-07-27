@@ -84,7 +84,7 @@ public class Turret implements Component {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
-        angleControl.setTargetVelocity(Math.toDegrees(-poseVelocity.getHeading()));
+        angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
         double currAngle = Math.toDegrees(getRelativeAngle());
         double power = angleControl.update(currAngle, getAngularVelocity());
         if (getAbsError() < TOLERANCE) {

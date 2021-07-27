@@ -44,27 +44,64 @@ public class RedSafePowerShots extends LinearOpMode {
                 .forward(10)
                 .addDisplacementMarker(() -> wobbleArm.setState(WobbleArm.State.DOWN))
                 .build();
-        Trajectory traj = robot.trajectoryBuilder(forward.end())
+        Trajectory powershots = robot.trajectoryBuilder(forward.end())
                 .addDisplacementMarker(() -> shooter.setState(Shooter.State.POWERSHOTS))
-                .splineTo(new Vector2d(-5, -16), 0)
+                .splineTo(Robot.pwrShotLocal(), 0)
                 .build();
-        TrajectorySequence wobbleDrop = robot.trajectorySequenceBuilder(traj.end())
+        TrajectorySequence wobbleDrop = robot.trajectorySequenceBuilder(powershots.end())
                 .lineToLinearHeading(new Pose2d(59.5275, -10.7, Math.toRadians(-90)))
                 .lineToSplineHeading(new Pose2d(59.5275, -50, Math.toRadians(-90)))
                 .turn(Math.toRadians(180))
+                .build();
+        Trajectory bouncebacks = robot.trajectoryBuilder(wobbleDrop.end())
+                .addDisplacementMarker(() -> {
+                    shooter.setState(Shooter.State.CONTINUOUS);
+                    magazine.magMacro();
+                })
                 .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
-                .waitSeconds(0.5) // Shoot bouncebacks
+                .build();
+        Trajectory park = robot.trajectoryBuilder(bouncebacks.end())
                 .lineTo(new Vector2d(12, -20))
                 .build();
+        boolean foundRings = false;
+
         waitForStart();
-        robot.followTrajectory(forward);
-        turret.setTargetAngle(Math.toRadians(100));
-        robot.waitForActionsCompleted();
-        turret.setState(Turret.State.IDLE);
-        robot.followTrajectory(traj);
-        shooter.powerShots();
-        robot.waitForActionsCompleted();
-        shooter.setState(Shooter.State.IDLE);
-        robot.followTrajectorySequence(wobbleDrop);
+
+        if (!foundRings) {
+            robot.followTrajectory(forward);
+            turret.setTargetAngle(Math.toRadians(100));
+            robot.waitForActionsCompleted();
+            turret.setState(Turret.State.IDLE);
+            robot.followTrajectory(powershots);
+            shooter.powerShots();
+            robot.waitForActionsCompleted();
+            shooter.setState(Shooter.State.IDLE);
+            robot.followTrajectorySequence(wobbleDrop);
+            wobbleArm.dropMacro();
+            robot.waitForActionsCompleted();
+            robot.followTrajectory(bouncebacks);
+            gunner.shoot(3);
+            robot.waitForActionsCompleted();
+            robot.followTrajectory(park);
+        } else {
+            robot.followTrajectory(forward);
+            turret.setTargetAngle(Math.toRadians(100));
+            robot.waitForActionsCompleted();
+            turret.setState(Turret.State.IDLE);
+            robot.followTrajectory(powershots);
+            shooter.powerShots();
+            robot.waitForActionsCompleted();
+            shooter.setState(Shooter.State.IDLE);
+            robot.followTrajectorySequence(wobbleDrop);
+            wobbleArm.dropMacro();
+            robot.waitForActionsCompleted();
+            robot.followTrajectory(bouncebacks);
+            shooter.powerShots();
+            robot.waitForActionsCompleted();
+            robot.followTrajectory(park);
+        }
+        while (opModeIsActive()) {
+            robot.update();
+        }
     }
 }
