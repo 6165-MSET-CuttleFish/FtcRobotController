@@ -20,6 +20,7 @@ public class Intake implements Component {
     IntakeState intakeState = IntakeState.IDLE;
     DcMotor intakeMotor;
     CRServo intakeL, intakeR;
+    Servo drop;
     ColorRangeSensor colorRangeSensor;
 
     public Intake(HardwareMap hardwareMap) {
@@ -29,6 +30,7 @@ public class Intake implements Component {
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeL = hardwareMap.crservo.get("intakeL");
         intakeR = hardwareMap.crservo.get("intakeR");
+        drop = hardwareMap.servo.get("drop");
         intakeR.setDirection(DcMotorSimple.Direction.REVERSE);
         colorRangeSensor = hardwareMap.get(ColorRangeSensor.class, "range");
     }
@@ -61,7 +63,9 @@ public class Intake implements Component {
         intakeL.setPower(power);
         intakeR.setPower(power);
     }
-
+    public void dropIntake(){
+        drop.setPosition(1/*insert positions */);
+    }
     public void setPower(double power) {
         setIntakeState(IntakeState.CUSTOM_VALUE);
         intakeMotor.setPower(power);
