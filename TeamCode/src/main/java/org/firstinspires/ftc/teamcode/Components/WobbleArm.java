@@ -27,13 +27,18 @@ public class WobbleArm implements Component {
                 .transitionTimed(0)
 
                 .state(State.DOWN)
-                .transitionTimed(0.3)
-                .onEnter(this::mid)
+                .transitionTimed(0.5)
+                .onEnter(this::drop)
+
+                .state(State.MID)
+                .transitionTimed(0.5)
+                .onEnter(() -> claw.release())
 
                 .exit(State.UP)
                 .onExit(() -> {
-                    claw.release();
-                    state = State.DOWN;
+                    claw.grab();
+                    up();
+                    state = State.UP;
                 })
                 .build();
         wobblePickupMacro = new StateMachineBuilder<State>()
@@ -74,6 +79,10 @@ public class WobbleArm implements Component {
     private void down() {
         arm1.setPosition(0.6);
         arm2.setPosition(0.4);
+    }
+    private void drop() {
+        arm1.setPosition(0.3);
+        arm2.setPosition(0.7);
     }
     private void mid(){
         arm1.setPosition(0.1);

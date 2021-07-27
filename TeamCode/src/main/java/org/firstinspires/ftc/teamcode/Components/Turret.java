@@ -187,4 +187,9 @@ public class Turret implements Component {
     public boolean isIdle() {
         return Math.abs(turret.getVelocity()) < 100 && getAbsError() < 1.7;
     }
+
+    public boolean isOnTarget() {
+        if (state != State.TARGET_LOCK) return false;
+        return Math.abs(turret.getVelocity()) < 100 && getAbsError() < 1.7;
+    }
 }
