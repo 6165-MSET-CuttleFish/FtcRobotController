@@ -41,6 +41,7 @@ public class T265 {
     public boolean isEmpty = false;
     private boolean exportingMap = true;
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+    Transform2d offsets = new Transform2d(new Translation2d(0, 0), new Rotation2d(0));
 
     public T265(HardwareMap hardwareMap) {
         File file = new File(mapPath);
@@ -56,7 +57,7 @@ public class T265 {
         odo = new StandardTrackingWheelLocalizer(hardwareMap);
     }
 
-    public void startCam() {
+    public static void startCam() {
         t265Cam.start();
     }
 

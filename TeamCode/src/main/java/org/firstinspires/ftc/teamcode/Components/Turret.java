@@ -21,14 +21,11 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 public class Turret implements Component {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.27, 0.0001, 0.002);
-    public static PIDCoefficients VISION_PID = new PIDCoefficients(0.0, 0.0, 0.0);
     public static double kV = 1;
-    public static double kStatic = 0.01;
-    public static double kA = 0.01;
+    public static double kStatic = 0;
+    public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
-    private double lastKpVision = VISION_PID.kP, lastKdVision = VISION_PID.kD, lastKiVision = VISION_PID.kI;
     PIDFController angleControl;
-    PIDFController visionControl = new PIDFController(VISION_PID);
     UGAdvancedHighGoalPipeline highGoalPipeline;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
@@ -118,8 +115,7 @@ public class Turret implements Component {
     }
 
     private void setPIDCoeffecients() {
-        //turret.setPIDFCoefficients();
-        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());
+        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
     }
 
     public State getState() {
