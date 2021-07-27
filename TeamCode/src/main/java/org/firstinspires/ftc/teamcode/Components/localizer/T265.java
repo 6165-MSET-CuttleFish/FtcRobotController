@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ public class T265 {
     private final StandardTrackingWheelLocalizer odo;
 
     // Constants
-    public final double ODOMETRY_COVARIANCE = 0.15;
+    private final double ODOMETRY_COVARIANCE = 0.15;
     private final double INCH_TO_METER = 0.0254;
 
     // State Variables
@@ -75,15 +76,16 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(theta)));
+        offsets = new Transform2d(new Translation2d(this.x * INCH_TO_METER - x * INCH_TO_METER, this.y * INCH_TO_METER - y * INCH_TO_METER), new Rotation2d(this.theta - theta));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
 
     public void updateCamPose() {
         odo.update();
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
-        Translation2d translation = new Translation2d(state.pose.getTranslation().getX() / INCH_TO_METER, state.pose.getTranslation().getY() / INCH_TO_METER);
-        Rotation2d rotation = state.pose.getRotation();
+        Pose2d updatedPose = state.pose.transformBy(offsets);
+        Translation2d translation = new Translation2d(updatedPose.getTranslation().getX() / INCH_TO_METER, updatedPose.getTranslation().getY() / INCH_TO_METER);
+        Rotation2d rotation = updatedPose.getRotation();
 
         chassisSpeeds = state.velocity;
 

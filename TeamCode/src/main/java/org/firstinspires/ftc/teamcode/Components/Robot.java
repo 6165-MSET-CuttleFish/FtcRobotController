@@ -82,9 +82,8 @@ public class Robot extends MecanumDrive implements Component {
     public OpenCvCamera webcam;
     private UGContourRingPipeline pipeline;
     private RingLocalizer bouncebacks;
-    private UGAdvancedHighGoalPipeline highGoalPipeline;
 
-    public UGContourRingPipeline.Height height = UGContourRingPipeline.Height.ZERO;
+    public static UGContourRingPipeline.Height stackHeight = UGContourRingPipeline.Height.ZERO;
 
     public final OpMode linearOpMode;
     public HardwareMap hardwareMap;
@@ -223,7 +222,6 @@ public class Robot extends MecanumDrive implements Component {
                         "id",
                         hardwareMap.appContext.getPackageName()
                 );
-        highGoalPipeline = new UGAdvancedHighGoalPipeline(60, CAMERA_HEIGHT);
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
@@ -236,7 +234,6 @@ public class Robot extends MecanumDrive implements Component {
         RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
 
         RingLocalizer.HORIZON = HORIZON;
-        webcam.setPipeline(highGoalPipeline);
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         dashboard.startCameraStream(webcam, 30);
     }
@@ -292,7 +289,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public void scan() {
-        height = pipeline.getHeight();
+        stackHeight = pipeline.getHeight();
     }
 
     public void turnOffVision() {
@@ -313,9 +310,9 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public Vector2d getDropZone() {
-        if (height == UGContourRingPipeline.Height.FOUR) {
+        if (stackHeight == UGContourRingPipeline.Height.FOUR) {
             return dropZones[2];
-        } else if (height == UGContourRingPipeline.Height.ONE) {
+        } else if (stackHeight == UGContourRingPipeline.Height.ONE) {
             return dropZones[1];
         } else {
             return dropZones[0];

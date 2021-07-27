@@ -20,8 +20,9 @@ import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
+import static org.firstinspires.ftc.teamcode.Components.Robot.stackHeight;
 
-@Autonomous(name = "RED_Aggressive", group = "red")
+@Autonomous(name = "RED_AGGRESSIVE", group = "red")
 public class RedAggressive extends LinearOpMode {
     Robot robot;
     Shooter shooter;
@@ -33,8 +34,8 @@ public class RedAggressive extends LinearOpMode {
     Claw claw;
 
     TrajectorySequence mainSequence;
-    Trajectory wobbleDrop;
-    TrajectorySequence shootBonked;
+    Trajectory wobbleDrop4, wobbleDrop1, wobbleDrop0;
+    TrajectorySequence shootBonked4, shootBonked1, shootBonked0;
     TrajectorySequence powerShots;
     TrajectorySequence bouncebacks;
     TrajectorySequence park;
@@ -58,14 +59,14 @@ public class RedAggressive extends LinearOpMode {
                 .splineTo(new Vector2d(50.5275, 10), Math.toRadians(90))
                 .splineTo(new Vector2d(50.5, 20), Math.toRadians(90))
                 .build();
-        wobbleDrop = robot.trajectoryBuilder(mainSequence.end(), true)
+        wobbleDrop4 = robot.trajectoryBuilder(mainSequence.end(), true)
                 .splineTo(new Vector2d(50.5275, -50), Math.toRadians(-90))
                 .addDisplacementMarker(() -> {
                     wobbleArm.dropMacro();
                     intake.setPower(0);
                 })
                 .build();
-        shootBonked = robot.trajectorySequenceBuilder(wobbleDrop.end())
+        shootBonked4 = robot.trajectorySequenceBuilder(wobbleDrop4.end())
                 .splineTo(new Vector2d(-5, -22.7), Math.toRadians(180))
                 .addTemporalMarker(0.4, () -> {
                     magazine.magMacro();
@@ -73,7 +74,7 @@ public class RedAggressive extends LinearOpMode {
                 })
                 .addDisplacementMarker(() -> gunner.shoot(3))
                 .build();
-        powerShots = robot.trajectorySequenceBuilder(shootBonked.end())
+        powerShots = robot.trajectorySequenceBuilder(shootBonked4.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
                 .lineTo(new Vector2d(-58, -22.7)) // Intake starter rings
                 .addTemporalMarker(0.3, () -> {
@@ -95,12 +96,13 @@ public class RedAggressive extends LinearOpMode {
         park = robot.trajectorySequenceBuilder(bouncebacks.end())
                 .lineTo(new Vector2d(12, -20))
                 .build();
+
         waitForStart();
-        // intake.setShieldState(Intake.ShieldState.DOWN);
+
         robot.followTrajectorySequence(mainSequence);
-        robot.followTrajectory(wobbleDrop);
+        robot.followTrajectory(wobbleDrop4);
         robot.waitForActionsCompleted();
-        robot.followTrajectorySequence(shootBonked);
+        robot.followTrajectorySequence(shootBonked4);
         robot.waitForActionsCompleted();
         robot.followTrajectorySequence(powerShots);
         shooter.powerShots();
@@ -116,7 +118,26 @@ public class RedAggressive extends LinearOpMode {
             robot.update();
         }
     }
+
     private void generatePaths(){
-        Async.start(()->{});
+        Async.start(()->{
+
+        });
+    }
+
+    private Trajectory getWobbleDrop() {
+        switch (stackHeight){
+            case ZERO: return wobbleDrop0;
+            case ONE: return wobbleDrop1;
+            default: return wobbleDrop4;
+        }
+    }
+
+    private TrajectorySequence getShootBonked() {
+        switch (stackHeight){
+            case ZERO: return shootBonked0;
+            case ONE: return shootBonked1;
+            default: return shootBonked4;
+        }
     }
 }

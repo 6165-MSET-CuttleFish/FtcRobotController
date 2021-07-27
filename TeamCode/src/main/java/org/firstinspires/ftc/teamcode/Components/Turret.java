@@ -10,18 +10,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
+import static org.firstinspires.ftc.teamcode.Components.Details.poseVelocity;
+import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
     public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.27, 0.0001, 0.002);
-    public static double kV = 1;
+    public static double kV = 0;
     public static double kStatic = 0;
     public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
@@ -80,8 +84,9 @@ public class Turret implements Component {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
+        angleControl.setTargetVelocity(Math.toDegrees(-poseVelocity.getHeading()));
         double currAngle = Math.toDegrees(getRelativeAngle());
-        double power = angleControl.update(currAngle);
+        double power = angleControl.update(currAngle, getAngularVelocity());
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
@@ -96,22 +101,10 @@ public class Turret implements Component {
             lastKd = ANGLE_PID.kD;
             setPIDCoeffecients();
         }
-//        if(lastKpVision != VISION_PID.kP || lastKi != VISION_PID.kI || lastKd != VISION_PID.kD) {
-//            lastKp = VISION_PID.kP;
-//            lastKi = VISION_PID.kI;
-//            lastKd = VISION_PID.kD;
-//            visionControl = new PIDFController(VISION_PID);
-//        }
-//        try {
-//            packet.put("Rect Y", highGoalPipeline.getRedRect().y);
-//            packet.put("Rect X", highGoalPipeline.getRedRect().x);
-//        } catch (Exception ignored) {
-//
-//        }
         packet.put("Turret Angle", currAngle);
         packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
-        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(turretCoord.getX(), turretCoord.getY(), getAbsoluteAngle()));
+        DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(turretCoord.getX(), turretCoord.getY(), getAbsoluteAngle()), state == State.TARGET_LOCK);
     }
 
     private void setPIDCoeffecients() {
@@ -127,7 +120,19 @@ public class Turret implements Component {
     }
 
     public double getRelativeAngle() {
-        return turret.getCurrentPosition() * (2 * Math.PI / (TICKS_PER_REVOLUTION * GEAR_RATIO));
+        return ticksToAngle(turret.getCurrentPosition());
+    }
+
+    public double ticksToAngle(double ticks) {
+        return ticks * (2 * Math.PI / (TICKS_PER_REVOLUTION * GEAR_RATIO));
+    }
+
+    public double getAbsoluteAngle() {
+        return Details.robotPose.getHeading() + getRelativeAngle();
+    }
+
+    public double getAngularVelocity() {
+        return ticksToAngle(turret.getVelocity());
     }
 
     public double angleToTicks(double angle) {
@@ -161,10 +166,6 @@ public class Turret implements Component {
         targetAngle = angle;
         target = null;
         state = State.TARGET_LOCK;
-    }
-
-    public double getAbsoluteAngle() {
-        return Details.robotPose.getHeading() + getRelativeAngle();
     }
 
     public void setTarget(Vector2d vector2d) {
