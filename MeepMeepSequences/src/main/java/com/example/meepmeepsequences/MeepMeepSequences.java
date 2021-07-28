@@ -42,6 +42,30 @@ public class MeepMeepSequences {
                                 .lineTo(new Vector2d(12, -20))
                                 .build()
                 )
+                /* reversed for blue
+                    drive.trajectorySequenceBuilder(new Pose2d(-62, 22.7, 0))
+                                .splineTo(new Vector2d(50.5275, 22.7), Math.toRadians(0))
+                                .splineTo(new Vector2d(60.5275, 22.7), Math.toRadians(270))
+                                .splineTo(new Vector2d(60.5, -20), Math.toRadians(270))
+                                .setReversed(true)
+                                .splineTo(new Vector2d(60.5275, 50), Math.toRadians(90)) //!!!
+                                .waitSeconds(0.5) // Drop Wobble
+                                .setReversed(false)
+                                .splineTo(new Vector2d(-5, 22.7), Math.toRadians(0))
+                                .waitSeconds(0.5) // Shoot bonked rings
+                                .lineTo(new Vector2d(-62, 22.7)) // Intake starter rings
+                                .setReversed(true)
+                                .splineTo(new Vector2d(-5, 10.7), Math.toRadians(180))
+                                .waitSeconds(0.6) // Shoot powershots
+                                .lineToLinearHeading(new Pose2d(65.5275, 10.7, Math.toRadians(90)))
+                                .lineToSplineHeading(new Pose2d(60.5275, 57, Math.toRadians(90)))
+                                .setReversed(true)
+                                .splineTo(new Vector2d(-5.8, 20), Math.toRadians(0))
+                                .waitSeconds(0.5) // Shoot bouncebacks
+                                .lineTo(new Vector2d(12, 20))
+                                .build()
+
+                 */
                 .start();
     }
 }
