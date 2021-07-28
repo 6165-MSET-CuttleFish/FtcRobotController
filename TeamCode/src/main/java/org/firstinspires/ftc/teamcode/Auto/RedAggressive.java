@@ -59,6 +59,8 @@ public class RedAggressive extends LinearOpMode {
         intake.dropIntake();
         robot.followTrajectorySequence(mainSequence);
         robot.followTrajectory(getWobbleDrop());
+        wobbleArm.dropMacro();
+        intake.setPower(0);
         robot.waitForActionsCompleted();
         robot.followTrajectorySequence(getShootBonked());
         gunner.shoot(3);
@@ -91,26 +93,14 @@ public class RedAggressive extends LinearOpMode {
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
                 .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Robot.dropZonesPS()[0].getHeading())
-                .addDisplacementMarker(() -> {
-                    wobbleArm.dropMacro();
-                    intake.setPower(0);
-                })
                 .build();
         wobbleDrop1 = robot.trajectoryBuilder(mainSequence.end(), true)
                 .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[1].vec(), Robot.dropZonesPS()[1].getHeading())
-                .addDisplacementMarker(() -> {
-                    wobbleArm.dropMacro();
-                    intake.setPower(0);
-                })
                 .build();
         wobbleDrop4 = robot.trajectoryBuilder(mainSequence.end(), true)
                 .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Robot.dropZonesPS()[2].getHeading())
-                .addDisplacementMarker(() -> {
-                    wobbleArm.dropMacro();
-                    intake.setPower(0);
-                })
                 .build();
         // Shoot Bonked
         shootBonked0 = robot.trajectorySequenceBuilder(wobbleDrop0.end())
@@ -119,7 +109,6 @@ public class RedAggressive extends LinearOpMode {
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
                 .splineTo(new Vector2d(-5, -16.7), Math.toRadians(180))
-                .addDisplacementMarker(() -> gunner.shoot(3))
                 .build();
         shootBonked1 = robot.trajectorySequenceBuilder(wobbleDrop1.end())
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {

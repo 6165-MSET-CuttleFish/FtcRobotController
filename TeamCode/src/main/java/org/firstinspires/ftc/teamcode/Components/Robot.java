@@ -109,8 +109,8 @@ public class Robot extends MecanumDrive implements Component {
     public static Pose2d[] dropZonesPS() {
         if (side == Side.BLUE) {
             return new Pose2d[]{
-                    new Pose2d(-5.4725, 55.4, Math.toRadians(90)),
-                    new Pose2d(23, 35.4725, Math.toRadians(90)),
+                    new Pose2d(25, 47.4, Math.toRadians(90)),
+                    new Pose2d(45, 26.4725, Math.toRadians(90)),
                     new Pose2d(50.5275, 50, Math.toRadians(90))
             };
         }
@@ -127,8 +127,8 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final Component[] components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0.3, 1.2);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0.02, 0.04);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 1.2);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0, 0.04);
 
     public static double LATERAL_MULTIPLIER = 1.1;
 
