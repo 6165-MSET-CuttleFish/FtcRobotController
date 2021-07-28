@@ -63,9 +63,12 @@ public class Intake implements Component {
         intakeL.setPower(power);
         intakeR.setPower(power);
     }
-    public void dropIntake(){
-        drop.setPosition(1/*insert positions */);
-    }
+
+    //use these two functions so that it drops intake and then raises the dropper
+    public void dropIntake(){ drop.setPosition(0.6);}
+    public void raiseIntake(){drop.setPosition(1);}
+
+    //public double getDropPosition(){return drop.getPosition();}
     public void setPower(double power) {
         setIntakeState(IntakeState.CUSTOM_VALUE);
         intakeMotor.setPower(power);
