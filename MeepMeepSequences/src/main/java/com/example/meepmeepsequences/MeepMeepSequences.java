@@ -25,7 +25,7 @@ public class MeepMeepSequences {
                                 .splineTo(new Vector2d(60.5275, -22.7), Math.toRadians(90))
                                 .splineTo(new Vector2d(60.5, 20), Math.toRadians(90))
                                 .setReversed(true)
-                                .splineTo(new Vector2d(60.5275, -50), Math.toRadians(-90))
+                                .splineTo(new Vector2d(60.5275, -50), Math.toRadians(-90)) //!!!
                                 .waitSeconds(0.5) // Drop Wobble
                                 .setReversed(false)
                                 .splineTo(new Vector2d(-5, -22.7), Math.toRadians(180))
