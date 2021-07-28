@@ -16,7 +16,7 @@ public class t265Localizer implements Localizer {
     @SuppressLint("SdCardPath")
     public t265Localizer(HardwareMap hardwareMap) {
         cam = new T265(hardwareMap);
-        if(!cam.isStarted()) T265.startCam();
+        T265.startCam();
     }
 
     @NotNull
@@ -38,6 +38,6 @@ public class t265Localizer implements Localizer {
     @Nullable
     @Override
     public Pose2d getPoseVelocity() {
-        return PoseUtil.toInches(PoseUtil.toRRPoseVelo(cam.getChassisSpeeds()));
+        return PoseUtil.toRRPose2d(cam.getPoseVelo());
     }
 }
