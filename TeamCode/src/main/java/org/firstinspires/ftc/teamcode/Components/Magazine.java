@@ -46,7 +46,7 @@ public class Magazine implements Component {
                 })
 
                 .state(State.UP)
-                .transitionTimed(0.08)
+                .transitionTimed(0.1)
 
                 .state(State.MOVING_DOWN)
                 .transitionTimed(0.38)

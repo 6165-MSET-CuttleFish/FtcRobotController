@@ -43,11 +43,11 @@ public class Shooter implements Component {
 
     State state = State.IDLE;
     public StateMachine powerShotsController;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0018, 0, 0.00001);
-    public static double kV = 0.000168;
-    public static double kA = 0.00003;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.001, 0, 0);
+    public static double kV = 0.00017;
+    public static double kA = 0.000027;
     public static double kStatic = 0.01;
-    public static double threshold = 300;
+    public static double threshold = 350;
 
     double lastTargetVelo = 0.0;
     double lastMotorPos = 0;
@@ -156,8 +156,8 @@ public class Shooter implements Component {
                 break;
             case POWERSHOTS:
                 if (Details.opModeType == OpModeType.AUTO) {
-                    targetVelo = 4100;
-                    flapUp();
+                    targetVelo = 3600;
+                    flapWayUp();
                 } else {
                     targetVelo = 4200;
                     flapDown();
@@ -175,7 +175,7 @@ public class Shooter implements Component {
             case EMPTY_MAG:
                 turret.setTargetAngle(Math.toRadians(-180));
                 targetVelo = 2000;
-                if (turret.isOnTarget() && Magazine.currentRings != 0) {
+                if (turret.isOnTarget() && Magazine.currentRings != 0 && turret.getAbsoluteAngle() < Math.toRadians(-100)) {
                     gunner.shoot();
                 }
                 break;
@@ -264,6 +264,10 @@ public class Shooter implements Component {
 
     public void flapUp() {
         flap.setPosition(0.85);
+    }
+
+    public void flapWayUp() {
+        flap.setPosition(0.82);
     }
 
     public void flapDown() {

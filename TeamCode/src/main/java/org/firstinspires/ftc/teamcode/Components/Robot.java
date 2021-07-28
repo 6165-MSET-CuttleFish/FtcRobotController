@@ -35,6 +35,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -114,8 +115,8 @@ public class Robot extends MecanumDrive implements Component {
             };
         }
         return new Pose2d[]{
-                new Pose2d(-5.4725, -55.4, Math.toRadians(-110)),
-                new Pose2d(23, -35.4725, Math.toRadians(-110)),
+                new Pose2d(25, -47.4, Math.toRadians(-90)),
+                new Pose2d(45, -26.4725, Math.toRadians(-90)),
                 new Pose2d(50.5275, -50, Math.toRadians(-70))
         };
 

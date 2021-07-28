@@ -37,7 +37,7 @@ public class Turret implements Component {
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
     public static double GEAR_RATIO = (68.0 / 13.0) * (110.0 / 24.0);
-    public static double TOLERANCE = 0.4;
+    public static double TOLERANCE = 0;
     private State state = State.IDLE;
 
     public enum State {
@@ -68,7 +68,7 @@ public class Turret implements Component {
                 targetAng = getClosestAngle(Math.toDegrees(targetAngle - Details.robotPose.getHeading()));
                 if (target != null)
                     targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - Math.toDegrees(Details.robotPose.getHeading()));
-                targetAng -= 2;
+                //targetAng -= 2;
                 break;
             case IDLE:
                 targetAng = getClosestZero();
@@ -84,7 +84,7 @@ public class Turret implements Component {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
-        angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
+       // angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
         double currAngle = Math.toDegrees(getRelativeAngle());
         double power = angleControl.update(currAngle, getAngularVelocity());
         if (getAbsError() < TOLERANCE) {
@@ -108,7 +108,7 @@ public class Turret implements Component {
     }
 
     private void setPIDCoeffecients() {
-        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
+        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());
     }
 
     public State getState() {
@@ -186,11 +186,11 @@ public class Turret implements Component {
     }
 
     public boolean isIdle() {
-        return Math.abs(turret.getVelocity()) < 100 && getAbsError() < 1.7;
+        return Math.abs(turret.getVelocity()) < 40 && getAbsError() < 1;
     }
 
     public boolean isOnTarget() {
         if (state != State.TARGET_LOCK) return false;
-        return Math.abs(turret.getVelocity()) < 100 && getAbsError() < 1.7;
+        return Math.abs(turret.getVelocity()) < 150 && getAbsError() < 1.7;
     }
 }

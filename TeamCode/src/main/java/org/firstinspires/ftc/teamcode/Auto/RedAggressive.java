@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -51,19 +52,23 @@ public class RedAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
+        stackHeight = UGContourRingPipeline.Height.ONE;
 
         waitForStart();
 
+        intake.dropIntake();
         robot.followTrajectorySequence(mainSequence);
         robot.followTrajectory(getWobbleDrop());
         robot.waitForActionsCompleted();
         robot.followTrajectorySequence(getShootBonked());
+        gunner.shoot(3);
         robot.waitForActionsCompleted();
         robot.followTrajectorySequence(powerShots);
         shooter.powerShots();
         robot.waitForActionsCompleted();
         shooter.setState(Shooter.State.IDLE);
         robot.followTrajectorySequence(bouncebacks);
+        gunner.shoot(3);
         robot.waitForActionsCompleted();
         shooter.setState(Shooter.State.IDLE);
         robot.followTrajectorySequence(park);
@@ -109,7 +114,7 @@ public class RedAggressive extends LinearOpMode {
                 .build();
         // Shoot Bonked
         shootBonked0 = robot.trajectorySequenceBuilder(wobbleDrop0.end())
-                .addTemporalMarker(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
@@ -117,43 +122,45 @@ public class RedAggressive extends LinearOpMode {
                 .addDisplacementMarker(() -> gunner.shoot(3))
                 .build();
         shootBonked1 = robot.trajectorySequenceBuilder(wobbleDrop1.end())
-                .addTemporalMarker(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
                 .splineTo(new Vector2d(-5, -16.7), Math.toRadians(180))
-                .addDisplacementMarker(() -> gunner.shoot(3))
                 .build();
         shootBonked4 = robot.trajectorySequenceBuilder(wobbleDrop4.end())
-                .addTemporalMarker(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
                 .splineTo(new Vector2d(-5, -16.7), Math.toRadians(180))
-                .addDisplacementMarker(() -> gunner.shoot(3))
                 .build();
         // PowerShots
         powerShots = robot.trajectorySequenceBuilder(shootBonked4.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
-                .lineTo(new Vector2d(-58, -16.7)) // Intake starter rings
-                .addTemporalMarker(0.3, () -> {
+                .lineTo(new Vector2d(-55, -16.7)) // Intake starter rings
+                .setReversed(true)
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);
                     magazine.magMacro();
                     shooter.setState(Shooter.State.POWERSHOTS);
                 })
-                .setReversed(true)
                 .splineTo(Robot.pwrShotLocal(), 0)
                 .build();
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
+                .addDisplacementMarker(() -> intake.setPower(1))
                 .lineToLinearHeading(new Pose2d(50.5275, -10.7, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(50.5275, -57, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(50.5275, -50, Math.toRadians(-90)))
                 .setReversed(true)
-                .addDisplacementMarker(() -> shooter.setState(Shooter.State.CONTINUOUS))
-                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
-                .addDisplacementMarker(() -> gunner.shoot(3))
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                    intake.setPower(0);
+                    magazine.magMacro();
+                    shooter.setState(Shooter.State.CONTINUOUS);
+                })
+                .splineTo(new Vector2d(-5.8, -14), Math.toRadians(180))
                 .build();
         park = robot.trajectorySequenceBuilder(bouncebacks.end())
-                .lineTo(new Vector2d(12, -20))
+                .lineTo(new Vector2d(12, -14))
                 .build();
     }
 

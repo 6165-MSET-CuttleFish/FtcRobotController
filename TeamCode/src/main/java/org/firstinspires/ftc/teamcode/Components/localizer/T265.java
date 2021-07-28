@@ -76,7 +76,8 @@ public class T265 {
     }
 
     public void setCameraPose(double x, double y, double theta) {
-        offsets = new Transform2d(new Translation2d((x - T265.x) * INCH_TO_METER, (y - T265.y) * INCH_TO_METER), new Rotation2d(theta - T265.theta));
+        t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y*INCH_TO_METER, new Rotation2d(theta * INCH_TO_METER)));
+        //offsets = new Transform2d(new Translation2d((T265.x - x) * INCH_TO_METER, (T265.y - y) * INCH_TO_METER), new Rotation2d(T265.theta - theta));
         odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
 

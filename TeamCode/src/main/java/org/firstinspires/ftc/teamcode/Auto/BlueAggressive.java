@@ -60,7 +60,7 @@ public class BlueAggressive extends LinearOpMode {
         TrajectorySequence powerShots = robot.trajectorySequenceBuilder(shootBonked.end())
                 .lineTo(new Vector2d(-62, 22.7)) // Intake starter rings
                 .setReversed(true)
-                .splineTo(Robot.powerShotLocals[0], Math.toRadians(180))
+                .splineTo(Robot.pwrShotLocal(), Math.toRadians(180))
                 .addTemporalMarker(() -> shooter.setState(Shooter.State.POWERSHOTS))
                 .addDisplacementMarker(() -> shooter.powerShots())
                 .build();

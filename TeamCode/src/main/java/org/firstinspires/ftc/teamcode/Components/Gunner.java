@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class Gunner implements Component {
     private final StateMachine shoot;
-    private static double gunTime = 85.0 / 1000.0;
+    private static double gunTime = 90.0 / 1000.0;
     private int shotRounds = 0;
     private int targetRounds = 1;
     private final Servo gunner;
@@ -77,10 +77,10 @@ public class Gunner implements Component {
     }
 
     private void in() {
-        gunner.setPosition(0.87);
+        gunner.setPosition(0.1);
     }
 
     private void out() {
-        gunner.setPosition(1);
+        gunner.setPosition(0.3);
     }
 }
