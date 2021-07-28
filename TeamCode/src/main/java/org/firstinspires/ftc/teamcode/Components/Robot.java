@@ -121,7 +121,16 @@ public class Robot extends MecanumDrive implements Component {
         };
 
     }
+    public static Pose2d[] dropZonesHigh(){
+        if(side == Side.BLUE){
+            return new Pose2d[]{
 
+            };
+        }
+        return new Pose2d[]{
+
+        };
+    }
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
     public Intake intake;
     public Shooter shooter;

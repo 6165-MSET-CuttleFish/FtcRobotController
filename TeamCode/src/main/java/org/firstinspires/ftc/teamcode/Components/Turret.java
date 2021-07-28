@@ -78,6 +78,9 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
+        if(false && (targetAngle<180 && targetAngle>0)) {//assuming wobble arm is up
+            turret.setPower(0);
+        }
         if (targetAng > 400) {
             targetAng -= 360;
         } else if (targetAng < -400) {
