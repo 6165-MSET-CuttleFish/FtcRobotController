@@ -77,14 +77,14 @@ public class Turret implements Component {
         }
         double upperBound = 400;
         double lowerBound = -400;
-        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
-            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
-                angleControl.setTargetPosition(getClosestDangerMax());
-            } else {
-                upperBound = getClosestDangerMax();
-                lowerBound = getClosestDangerMin();
-            }
-        }
+//        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
+//            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
+//                angleControl.setTargetPosition(getClosestDangerMax());
+//            } else {
+//                upperBound = getClosestDangerMax();
+//                lowerBound = getClosestDangerMin();
+//            }
+//        }
         if (targetAng > upperBound) {
             targetAng -= 360;
         } else if (targetAng < lowerBound) {
