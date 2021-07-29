@@ -104,27 +104,27 @@ public class Shooter implements Component {
 
         powerShotsController = new StateMachineBuilder<PSState>()
                 .state(PSState.MOVING_PS1)
-                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots()[0]))
 
                 .state(PSState.PS1)
-                .transition(() -> gunner.getState() == Gunner.State.IDLE)
+                .transitionTimed(4 * Gunner.gunTime)
                 .onEnter(() -> gunner.shoot())
 
                 .state(PSState.MOVING_PS2)
-                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots()[1]))
 
                 .state(PSState.PS2)
-                .transition(() -> gunner.getState() == Gunner.State.IDLE)
+                .transitionTimed(4 * Gunner.gunTime)
                 .onEnter(() -> gunner.shoot())
 
                 .state(PSState.MOVING_PS3)
-                .transition(() -> turret.isIdle() && gunner.getState() == Gunner.State.IDLE)
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
                 .onEnter(() -> turret.setTarget(Robot.powerShots()[2]))
 
                 .state(PSState.PS3)
-                .transition(() -> gunner.getState() == Gunner.State.IDLE)
+                .transitionTimed(4 * Gunner.gunTime)
                 .onEnter(() -> gunner.shoot())
 
                 .exit(PSState.MOVING_PS1)
@@ -156,8 +156,8 @@ public class Shooter implements Component {
                 break;
             case POWERSHOTS:
                 if (Details.opModeType == OpModeType.AUTO) {
-                    targetVelo = 3600;
-                    flapWayUp();
+                    targetVelo = 4000;
+                    flapUp();
                 } else {
                     targetVelo = 4200;
                     flapDown();
@@ -175,7 +175,7 @@ public class Shooter implements Component {
             case EMPTY_MAG:
                 turret.setTargetAngle(Math.toRadians(-180));
                 targetVelo = 2000;
-                if (turret.isOnTarget() && Magazine.currentRings != 0 && turret.getAbsoluteAngle() < Math.toRadians(-100)) {
+                if (turret.isIdle() && Magazine.currentRings != 0 && turret.getAbsoluteAngle() < Math.toRadians(-100)) {
                     gunner.shoot();
                 }
                 break;
@@ -279,7 +279,7 @@ public class Shooter implements Component {
     }
 
     private void setVelocityController() {
-        veloRegression.add(0,4000);
+        veloRegression.add(0,4400);
         veloRegression.add(67.7, 4500);
         veloRegression.add(72.8, 4500);
         veloRegression.add(78.4, 4600);

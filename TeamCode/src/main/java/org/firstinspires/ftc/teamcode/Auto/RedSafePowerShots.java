@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
+import static org.firstinspires.ftc.teamcode.Components.Robot.stackHeight;
 
 @Autonomous(name = "RED_SAFE_POWERSHOTS", group = "red")
 public class RedSafePowerShots extends LinearOpMode {
@@ -30,6 +31,10 @@ public class RedSafePowerShots extends LinearOpMode {
     Intake intake;
     WobbleArm wobbleArm;
     Claw claw;
+
+    Trajectory powershots;
+    TrajectorySequence wobbleDrop4, wobbleDrop1, wobbleDrop0;
+    Trajectory bouncebacks4, bouncebacks1, bouncebacks0;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, new Pose2d(-61.5975, -16.8475, 0), OpModeType.AUTO, Side.RED);
@@ -44,28 +49,61 @@ public class RedSafePowerShots extends LinearOpMode {
                 .forward(10)
                 .addDisplacementMarker(() -> wobbleArm.setState(WobbleArm.State.DOWN))
                 .build();
-        Trajectory powershots = robot.trajectoryBuilder(forward.end())
+        powershots = robot.trajectoryBuilder(forward.end())
                 .addDisplacementMarker(() -> shooter.setState(Shooter.State.POWERSHOTS))
                 .splineTo(Robot.pwrShotLocal(), 0)
                 .build();
-        TrajectorySequence wobbleDrop = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(59.5275, -10.7, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(59.5275, -50, Math.toRadians(-90)))
+        //wobble drop
+        wobbleDrop0 = robot.trajectorySequenceBuilder(powershots.end())
+                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .splineTo(Robot.dropZonesPS()[0].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(180))
                 .build();
-        Trajectory bouncebacks = robot.trajectoryBuilder(wobbleDrop.end())
+        wobbleDrop1 = robot.trajectorySequenceBuilder(powershots.end())
+                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .splineTo(Robot.dropZonesPS()[1].vec(), Math.toRadians(-90))
+                .turn(Math.toRadians(180))
+                .build();
+        wobbleDrop4 = robot.trajectorySequenceBuilder(powershots.end())
+                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .splineTo(Robot.dropZonesPS()[2].vec(), Math.toRadians(-90))
+                .turn(Math.toRadians(180))
+                .build();
+        // bouncebacks
+        bouncebacks0 = robot.trajectoryBuilder(wobbleDrop0.end())
                 .addDisplacementMarker(() -> {
                     shooter.setState(Shooter.State.CONTINUOUS);
+                    intake.setPower(0);
                     magazine.magMacro();
                 })
                 .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
                 .build();
-        Trajectory park = robot.trajectoryBuilder(bouncebacks.end())
+        bouncebacks1 = robot.trajectoryBuilder(wobbleDrop1.end())
+                .addDisplacementMarker(() -> {
+                    shooter.setState(Shooter.State.CONTINUOUS);
+                    intake.setPower(0);
+                    magazine.magMacro();
+                })
+                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
+                .build();
+        bouncebacks4 = robot.trajectoryBuilder(wobbleDrop4.end())
+                .addDisplacementMarker(() -> {
+                    shooter.setState(Shooter.State.CONTINUOUS);
+                    intake.setPower(0);
+                    magazine.magMacro();
+                })
+                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
+                .build();
+        Trajectory park = robot.trajectoryBuilder(bouncebacks4.end())
                 .lineTo(new Vector2d(12, -20))
                 .build();
         boolean foundRings = false;
 
         waitForStart();
+
+        robot.setPoseEstimate(robotPose);
+
+        intake.dropIntake();
 
         if (!foundRings) {
             robot.followTrajectory(forward);
@@ -76,12 +114,15 @@ public class RedSafePowerShots extends LinearOpMode {
             shooter.powerShots();
             robot.waitForActionsCompleted();
             shooter.setState(Shooter.State.IDLE);
-            robot.followTrajectorySequence(wobbleDrop);
+            intake.setPower(1);
+            wobbleArm.setState(WobbleArm.State.MID);
+            robot.followTrajectorySequence(getWobbleDrop());
             wobbleArm.dropMacro();
             robot.waitForActionsCompleted();
-            robot.followTrajectory(bouncebacks);
+            robot.followTrajectory(getBounceBacks());
             gunner.shoot(3);
             robot.waitForActionsCompleted();
+            shooter.setState(Shooter.State.IDLE);
             robot.followTrajectory(park);
         } else {
             robot.followTrajectory(forward);
@@ -92,16 +133,31 @@ public class RedSafePowerShots extends LinearOpMode {
             shooter.powerShots();
             robot.waitForActionsCompleted();
             shooter.setState(Shooter.State.IDLE);
-            robot.followTrajectorySequence(wobbleDrop);
+            robot.followTrajectorySequence(wobbleDrop4);
             wobbleArm.dropMacro();
             robot.waitForActionsCompleted();
-            robot.followTrajectory(bouncebacks);
+            robot.followTrajectory(bouncebacks4);
             shooter.powerShots();
             robot.waitForActionsCompleted();
             robot.followTrajectory(park);
         }
         while (opModeIsActive()) {
             robot.update();
+        }
+    }
+    private TrajectorySequence getWobbleDrop() {
+        switch (stackHeight){
+            case ZERO: return wobbleDrop0;
+            case ONE: return wobbleDrop1;
+            default: return wobbleDrop4;
+        }
+    }
+
+    private Trajectory getBounceBacks() {
+        switch (stackHeight){
+            case ZERO: return bouncebacks0;
+            case ONE: return bouncebacks1;
+            default: return bouncebacks4;
         }
     }
 }

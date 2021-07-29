@@ -21,7 +21,6 @@ public class DropServoTest extends LinearOpMode {
                 drop = true;
             }
             intake.update();
-            telemetry.addData("pos",intake.getDropPosition());
             telemetry.update ();
         }
     }

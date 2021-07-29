@@ -34,9 +34,12 @@ public class WobbleArm implements Component {
                 .transitionTimed(0.5)
                 .onEnter(() -> claw.release())
 
+                .state(State.MACRO)
+                .transitionTimed(0.2)
+                .onEnter(() -> claw.grab())
+
                 .exit(State.UP)
                 .onExit(() -> {
-                    claw.grab();
                     up();
                     state = State.UP;
                 })

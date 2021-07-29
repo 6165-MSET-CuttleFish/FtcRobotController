@@ -85,9 +85,9 @@ public class Robot extends MecanumDrive implements Component {
     public static Vector2d goal = new Vector2d(70.5275, -35.9725);
     public static Vector2d pwrShotLocal() {
         if (side == Side.BLUE) {
-            return new Vector2d(-5.8, 6.3);
+            return new Vector2d(-1.8, 2.9725);
         }
-        return new Vector2d(-5.8, -6.3);
+        return new Vector2d(-1.8, -2.9725);
     }
     // 51.5
     // 59
@@ -111,13 +111,13 @@ public class Robot extends MecanumDrive implements Component {
             return new Pose2d[]{
                     new Pose2d(25, 47.4, Math.toRadians(90)),
                     new Pose2d(45, 26.4725, Math.toRadians(90)),
-                    new Pose2d(50.5275, 50, Math.toRadians(90))
+                    new Pose2d(50.5275, 47.4, Math.toRadians(90))
             };
         }
         return new Pose2d[]{
                 new Pose2d(25, -47.4, Math.toRadians(-90)),
                 new Pose2d(45, -26.4725, Math.toRadians(-90)),
-                new Pose2d(50.5275, -50, Math.toRadians(-70))
+                new Pose2d(50.5275, -47, Math.toRadians(-70))
         };
 
     }
@@ -127,10 +127,10 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final Component[] components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 1.2);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0, 0.04);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.2);
 
-    public static double LATERAL_MULTIPLIER = 1.1;
+    public static double LATERAL_MULTIPLIER = 1.2;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -202,13 +202,12 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
-
-
-        if (opModeType == OpModeType.TELE) {
-            setLocalizer(new t265Localizer(hardwareMap));
-        } else {
-            setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
-        }
+        setLocalizer(new t265Localizer(hardwareMap, this));
+//        if (opModeType == OpModeType.TELE) {
+//            setLocalizer(new t265Localizer(hardwareMap));
+//        } else {
+//            setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
+//        }
         setPoseEstimate(Details.robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -407,6 +406,7 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public void waitForActionsCompleted() {
+        update();
         while (isHazardous() && !Thread.currentThread().isInterrupted()) {
             update();
         }

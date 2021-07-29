@@ -24,7 +24,7 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.27, 0.0001, 0.002);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.24, 0, 0.0007);
     public static double kV = 0;
     public static double kStatic = 0;
     public static double kA = 0;
@@ -68,7 +68,6 @@ public class Turret implements Component {
                 targetAng = getClosestAngle(Math.toDegrees(targetAngle - Details.robotPose.getHeading()));
                 if (target != null)
                     targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - Math.toDegrees(Details.robotPose.getHeading()));
-                //targetAng -= 2;
                 break;
             case IDLE:
                 targetAng = getClosestZero();
@@ -84,9 +83,9 @@ public class Turret implements Component {
             targetAng += 360;
         }
         angleControl.setTargetPosition(targetAng);
-       // angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
+        // angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
         double currAngle = Math.toDegrees(getRelativeAngle());
-        double power = angleControl.update(currAngle, getAngularVelocity());
+        double power = angleControl.update(currAngle);
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
@@ -104,11 +103,12 @@ public class Turret implements Component {
         packet.put("Turret Angle", currAngle);
         packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
+        packet.put("Angle Error", getAbsError());
         DashboardUtil.drawTurret(packet.fieldOverlay(), new Pose2d(turretCoord.getX(), turretCoord.getY(), getAbsoluteAngle()), state == State.TARGET_LOCK);
     }
 
     private void setPIDCoeffecients() {
-        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage());
+        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
     }
 
     public State getState() {
@@ -186,11 +186,11 @@ public class Turret implements Component {
     }
 
     public boolean isIdle() {
-        return Math.abs(turret.getVelocity()) < 40 && getAbsError() < 1;
+        return Math.abs(turret.getVelocity()) < 200 && getAbsError() < 2;
     }
 
     public boolean isOnTarget() {
         if (state != State.TARGET_LOCK) return false;
-        return Math.abs(turret.getVelocity()) < 150 && getAbsError() < 1.7;
+        return Math.abs(turret.getVelocity()) <= 70 && getAbsError() < 0.7;
     }
 }
