@@ -27,9 +27,9 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.24, 0, 0.0007);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.223, 0.00505, 0.0007);
     public static double kV = 0;
-    public static double kStatic = 0;
+    public static double kStatic = 0.0001;
     public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl;
