@@ -131,7 +131,7 @@ public class Robot extends MecanumDrive implements Component {
         }
         return new Pose2d[]{ //new Pose2d(-62, -56, Math.toRadians(0)) start location for red high goal
                 new Pose2d(-5, -59, Math.toRadians(180)), // case 0
-                new Pose2d(22, -54, Math.toRadians(270)), // case 1
+                new Pose2d(24, -52, Math.toRadians(270)), // case 1
                 new Pose2d(44,-59, Math.toRadians(180)) // case 4
         };
     }

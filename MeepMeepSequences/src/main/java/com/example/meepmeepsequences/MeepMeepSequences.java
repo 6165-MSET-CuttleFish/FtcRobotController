@@ -21,62 +21,25 @@ public class MeepMeepSequences {
                 .setConstraints(54, 54, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-62, 56, Math.toRadians(0)))
+
+                                .lineTo(new Vector2d (2, 56))
                                 //.lineToLinearHeading(new Pose2d(5, 52, Math.toRadians(270))) //case 0
                                 //.lineToLinearHeading(new Pose2d(49,52, Math.toRadians(270))) //case 4
-                                .lineToLinearHeading(new Pose2d(39, 54, Math.toRadians(90)))
+                                //.lineToLinearHeading(new Pose2d(39, 54, Math.toRadians(90))) // case 1
+                                .waitSeconds(0.8)
+                                .lineToLinearHeading(new Pose2d(-12,36, Math.toRadians(180)))
+                                .lineTo(new Vector2d(-20, 36))
+                                .waitSeconds (0.8)
+                                .lineTo(new Vector2d(-4, 36))
+                                .waitSeconds(0.8)
+                                .lineTo(new Vector2d(-30, 36))
+                                .waitSeconds(0.2)
+                                .lineTo(new Vector2d(-4, 40))
+                                .waitSeconds(0.7)
+                                .lineTo(new Vector2d(5, 40))
                                 .build()
                 )
                 .start();
-                        /*
-                        drive.trajectorySequenceBuilder(new Pose2d(-62, -22.7, 0))
-                                .splineTo(new Vector2d(50.5275, -22.7), Math.toRadians(0))
-                                .splineTo(new Vector2d(60.5275, -22.7), Math.toRadians(90))
-                                .splineTo(new Vector2d(60.5, 20), Math.toRadians(90))
-                                .setReversed(true)
-                                .splineTo(new Vector2d(60.5275, -50), Math.toRadians(-90)) //!!!
-                                .waitSeconds(0.5) // Drop Wobble
-                                .setReversed(false)
-                                .splineTo(new Vector2d(-5, -22.7), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot bonked rings
-                                .lineTo(new Vector2d(-62, -22.7)) // Intake starter rings
-                                .setReversed(true)
-                                .splineTo(new Vector2d(-5, -10.7), Math.toRadians(0))
-                                .waitSeconds(0.6) // Shoot powershots
-                                .lineToLinearHeading(new Pose2d(65.5275, -10.7, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(60.5275, -57, Math.toRadians(-90)))
-                                .setReversed(true)
-                                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot bouncebacks
-                                .lineTo(new Vector2d(12, -20))
-                                .build()
-
-                         */
-
-                // reversed for blue
-
-                            /*
-                                .splineTo(new Vector2d(50.5275, 22.7), Math.toRadians(0))
-                                .splineTo(new Vector2d(60.5275, 22.7), Math.toRadians(270))
-                                .splineTo(new Vector2d(60.5, -20), Math.toRadians(270))
-                                .setReversed(true)
-                                .splineTo(new Vector2d(60.5275, 50), Math.toRadians(90)) //!!!
-                                .waitSeconds(0.5) // Drop Wobble
-                                .setReversed(false)
-                                .splineTo(new Vector2d(-5, 22.7), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot bonked rings
-                                .lineTo(new Vector2d(-62, 22.7)) // Intake starter rings
-                                .setReversed(true)
-                                .splineTo(new Vector2d(-5, 10.7), Math.toRadians(0))
-                                .waitSeconds(0.6) // Shoot powershots
-                                .lineToLinearHeading(new Pose2d(60.5275, 10.7, Math.toRadians(90)))
-                                .lineToSplineHeading(new Pose2d(60.5275, 57, Math.toRadians(90)))
-                                .setReversed(true)
-                                .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
-                                .waitSeconds(0.5) // Shoot bouncebacks
-                                .lineTo(new Vector2d(12, 20))
-                                .build()
-
-                        */
 
     }
 }
