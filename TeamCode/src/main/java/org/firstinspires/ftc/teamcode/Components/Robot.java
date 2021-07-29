@@ -123,12 +123,16 @@ public class Robot extends MecanumDrive implements Component {
     }
     public static Pose2d[] dropZonesHigh(){
         if(side == Side.BLUE){
-            return new Pose2d[]{
-
+            return new Pose2d[]{ // init position:  new Pose2d(-62, 56, Math.toRadians(0))
+                    new Pose2d(5, 52, Math.toRadians(270)), // case 0
+                    new Pose2d(39, 54, Math.toRadians(90)), // case 1
+                    new Pose2d(49,52, Math.toRadians(270)) //case 4
             };
         }
-        return new Pose2d[]{
-
+        return new Pose2d[]{ //new Pose2d(-62, -56, Math.toRadians(0)) start location for red high goal
+                new Pose2d(-5, -59, Math.toRadians(180)), // case 0
+                new Pose2d(22, -54, Math.toRadians(270)), // case 1
+                new Pose2d(44,-59, Math.toRadians(180)) // case 4
         };
     }
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
