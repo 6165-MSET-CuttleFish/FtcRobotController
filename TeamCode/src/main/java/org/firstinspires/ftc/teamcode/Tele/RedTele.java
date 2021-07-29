@@ -137,7 +137,7 @@ public class RedTele extends OpMode {
         if (robotPose.getX() > 2) {
             turret.setState(Turret.State.IDLE);
         } else {
-            switch (wobbleArm.getState()) {
+            switch (WobbleArm.getState()) {
                 case DOWN:
                 case UP:
                     turret.setState(Turret.State.TARGET_LOCK);
@@ -157,7 +157,7 @@ public class RedTele extends OpMode {
 
     public void wobble() {
         if (wobbleButton.wasJustPressed()) {
-            switch (robot.wobbleArm.getState()) {
+            switch (WobbleArm.getState()) {
                 case UP:
                     wobbleArm.dropMacro();
                     break;
@@ -171,7 +171,7 @@ public class RedTele extends OpMode {
         if (clawButton.wasJustPressed()) {
             switch (wobbleArm.claw.getState()) {
                 case GRIP: {
-                    if (wobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
+                    if (WobbleArm.getState() != WobbleArm.State.UP) robot.wobbleArm.claw.release();
                     break;
                 }
                 case RELEASE: {

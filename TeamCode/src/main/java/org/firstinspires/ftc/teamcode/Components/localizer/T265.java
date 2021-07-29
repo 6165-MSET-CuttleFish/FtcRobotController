@@ -41,7 +41,6 @@ public class T265 {
     public boolean isEmpty = false;
     private boolean exportingMap = true;
 
-    static Transform2d offset = new Transform2d(new Translation2d(0, 0), new Rotation2d(0));
     static Pose2d curr = new Pose2d();
     static Pose2d poseVelo = new Pose2d();
 
@@ -73,10 +72,11 @@ public class T265 {
 
     public static void stopCam() {
         t265Cam.stop();
+        t265Cam = null; // experimental
     }
 
     public void setCameraPose(double x, double y, double theta) {
-       offset = new Pose2d(x, y, new Rotation2d(theta)).minus(curr);
+       t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(-theta)));
     }
 
     public void updateCamPose() {
@@ -84,7 +84,7 @@ public class T265 {
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
         Translation2d translation = new Translation2d(-state.pose.getTranslation().getX() / INCH_TO_METER, -state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
-        Pose2d temp = new Pose2d(translation, rotation).plus(offset);
+        Pose2d temp = new Pose2d(translation, rotation);
         poseVelo = new Pose2d(temp.getTranslation().minus(curr.getTranslation()).div(veloTimer.seconds()), new Rotation2d((temp.getHeading() - curr.getHeading()) / veloTimer.seconds()));
         curr = temp;
 

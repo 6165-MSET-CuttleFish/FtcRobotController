@@ -14,9 +14,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 import static org.firstinspires.ftc.teamcode.Components.Details.poseVelocity;
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
@@ -30,7 +33,6 @@ public class Turret implements Component {
     public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl;
-    UGAdvancedHighGoalPipeline highGoalPipeline;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
     public Vector2d target;
@@ -55,19 +57,15 @@ public class Turret implements Component {
         setPIDCoeffecients();
     }
 
-    public void setHighGoalPipeline(UGAdvancedHighGoalPipeline pipeline) {
-        highGoalPipeline = pipeline;
-    }
-
     public void update() {
         double currHeading = Details.robotPose.getHeading();
         Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 4.5);
         double targetAng = 0;
         switch (state) {
             case TARGET_LOCK:
-                targetAng = getClosestAngle(Math.toDegrees(targetAngle - Details.robotPose.getHeading()));
+                targetAng = getClosestAngle(toDegrees(targetAngle - Details.robotPose.getHeading()));
                 if (target != null)
-                    targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - Math.toDegrees(Details.robotPose.getHeading()));
+                    targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - toDegrees(Details.robotPose.getHeading()));
                 break;
             case IDLE:
                 targetAng = getClosestZero();
@@ -77,17 +75,23 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        if(false && (targetAngle<180 && targetAngle>0)) {//assuming wobble arm is up
-            turret.setPower(0);
+        double upperBound = 400;
+        double lowerBound = -400;
+        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
+            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
+                angleControl.setTargetPosition(getClosestDangerMax());
+            } else {
+                upperBound = getClosestDangerMax();
+                lowerBound = getClosestDangerMin();
+            }
         }
-        if (targetAng > 400) {
+        if (targetAng > upperBound) {
             targetAng -= 360;
-        } else if (targetAng < -400) {
+        } else if (targetAng < lowerBound) {
             targetAng += 360;
         }
-        angleControl.setTargetPosition(targetAng);
-        // angleControl.setTargetVelocity(-Math.toDegrees(poseVelocity.getHeading()));
-        double currAngle = Math.toDegrees(getRelativeAngle());
+        angleControl.setTargetPosition(toRadians(targetAng));
+        double currAngle = getRelativeAngle();
         double power = angleControl.update(currAngle);
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
@@ -103,7 +107,7 @@ public class Turret implements Component {
             lastKd = ANGLE_PID.kD;
             setPIDCoeffecients();
         }
-        packet.put("Turret Angle", currAngle);
+        packet.put("Turret Angle", toDegrees(currAngle));
         packet.put("Turret Velocity", turret.getVelocity());
         packet.put("Target Angle", targetAng);
         packet.put("Angle Error", getAbsError());
@@ -143,7 +147,7 @@ public class Turret implements Component {
     }
 
     private double getClosestAngle(double targetAngle) {
-        double curr = Math.toDegrees(getRelativeAngle());
+        double curr = toDegrees(getRelativeAngle());
         double option1 = curr > targetAngle ? targetAngle + 360 : targetAngle - 360;
         double range1 = Math.abs(option1 - curr);
         double range2 = Math.abs(targetAngle - curr);
@@ -151,8 +155,38 @@ public class Turret implements Component {
     }
 
     private double getClosestZero() {
-        double curr = Math.toDegrees(getRelativeAngle());
+        double curr = toDegrees(getRelativeAngle());
         double[] possibilities = {-720, -360, 0, 360, 720};
+        double minRange = 360;
+        int index = 0;
+        for (int i = 0; i < possibilities.length; i++) {
+            double range = Math.abs(possibilities[i] - curr);
+            if (range < minRange) {
+                minRange = range;
+                index = i;
+            }
+        }
+        return possibilities[index];
+    }
+
+    private double getClosestDangerMax() {
+        double curr = toDegrees(getRelativeAngle());
+        double[] possibilities = {50, -310};
+        double minRange = 360;
+        int index = 0;
+        for (int i = 0; i < possibilities.length; i++) {
+            double range = Math.abs(possibilities[i] - curr);
+            if (range < minRange) {
+                minRange = range;
+                index = i;
+            }
+        }
+        return possibilities[index];
+    }
+
+    private double getClosestDangerMin() {
+        double curr = toDegrees(getRelativeAngle());
+        double[] possibilities = {170, -190};
         double minRange = 360;
         int index = 0;
         for (int i = 0; i < possibilities.length; i++) {
@@ -181,7 +215,7 @@ public class Turret implements Component {
     }
 
     public double getError() {
-        return angleControl.getLastError();
+        return toDegrees(angleControl.getLastError());
     }
 
     public double getAbsError() {

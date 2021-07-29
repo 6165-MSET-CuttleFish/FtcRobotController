@@ -4,17 +4,23 @@ import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 
 public class WobbleArm implements Component {
-    State state = State.UP;
+    static State state = State.UP;
     public Servo arm1, arm2;
     public Claw claw;
-    StateMachine wobbleDropMacro;
-    StateMachine wobblePickupMacro;
-    StateMachine wobbleRaiseMacro;
+    static StateMachine wobbleDropMacro;
+    static StateMachine wobblePickupMacro;
+    ElapsedTime timer = new ElapsedTime();
     public enum State{
+        MOVING_DOWN,
         DOWN,
+        MOVING_UP,
         UP,
+        MOVING_MID,
         MID,
         MACRO,
     }
@@ -22,6 +28,9 @@ public class WobbleArm implements Component {
         claw = new Claw(hardwareMap);
         arm1 = hardwareMap.servo.get("wobbleArm1");
         arm2 = hardwareMap.servo.get("wobbleArm2");
+        if (opModeType == OpModeType.AUTO) {
+            state = State.MID;
+        }
         wobbleDropMacro = new StateMachineBuilder<State>()
                 .state(State.UP)
                 .transitionTimed(0)
@@ -56,18 +65,6 @@ public class WobbleArm implements Component {
                 .exit(State.DOWN)
                 .onExit(() -> state = State.MID)
                 .build();
-        wobbleRaiseMacro = new StateMachineBuilder<State>()
-                .state(State.DOWN)
-                .transitionTimed(0.25)
-                .onEnter(claw::grab)
-
-                .state(State.MID)
-                .transitionTimed(0)
-                .onEnter(this::up)
-
-                .exit(State.DOWN)
-                .onExit(() -> state = State.UP)
-                .build();
     }
     public void dropMacro(){
         if(!getRunning()) wobbleDropMacro.start();
@@ -91,24 +88,45 @@ public class WobbleArm implements Component {
         arm1.setPosition(0.1);
         arm2.setPosition(0.9);
     }
-    public State getState() {
-        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning() || wobbleRaiseMacro.getRunning()) return State.MACRO;
+    public static State getState() {
+        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.MACRO;
         return state;
     }
     public void setState(State state) {
-        this.state = state;
+        WobbleArm.state = state;
     }
     public void update() {
         if(!getRunning()) {
             switch (state) {
                 case UP:
                     up();
+                    timer.reset();
                     break;
                 case MID:
                     mid();
+                    timer.reset();
                     break;
                 case DOWN:
                     down();
+                    timer.reset();
+                    break;
+                case MOVING_DOWN:
+                    down();
+                    if (timer.seconds() > 0.3) {
+                        setState(State.DOWN);
+                    }
+                    break;
+                case MOVING_UP:
+                    up();
+                    if (timer.seconds() > 0.3) {
+                        setState(State.UP);
+                    }
+                    break;
+                case MOVING_MID:
+                    mid();
+                    if (timer.seconds() > 0.3) {
+                        setState(State.MID);
+                    }
                     break;
             }
         }
@@ -116,6 +134,6 @@ public class WobbleArm implements Component {
         wobblePickupMacro.update();
     }
     public boolean getRunning() {
-        return wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning() || wobbleRaiseMacro.getRunning();
+        return wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning();
     }
 }

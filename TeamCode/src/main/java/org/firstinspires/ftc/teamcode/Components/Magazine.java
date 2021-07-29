@@ -15,7 +15,6 @@ import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 public class Magazine implements Component {
     Servo magLeft1, magLeft2;
     Servo magRight1, magRight2;
-    ColorRangeSensor thirdRingSensor;
     StateMachine stateMachine;
     public static double currentRings;
 
@@ -31,7 +30,6 @@ public class Magazine implements Component {
         magLeft2 = hardwareMap.servo.get("magLeftTop");
         magRight1 = hardwareMap.servo.get("magRightBottom");
         magRight2 = hardwareMap.servo.get("magRightTop");
-        thirdRingSensor = hardwareMap.get(ColorRangeSensor.class, "range");
         stateMachine = new StateMachineBuilder<State>()
                 .state(State.DOWN)
                 .transitionTimed(0)
@@ -59,14 +57,6 @@ public class Magazine implements Component {
             currentRings = 3;
         }
         down();
-    }
-
-    public double getRings() {
-        if (thirdRingSensor.getDistance(DistanceUnit.INCH) < 2) {
-            return 3;
-        } else {
-            return 2;
-        }
     }
 
     public void up() {

@@ -34,6 +34,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
+import org.firstinspires.ftc.teamcode.drive.ComplexLocalizer;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -215,12 +216,11 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
-        setLocalizer(new t265Localizer(hardwareMap, this));
-//        if (opModeType == OpModeType.TELE) {
-//            setLocalizer(new t265Localizer(hardwareMap));
-//        } else {
-//            setLocalizer(new StandardTwoWheelTracker(hardwareMap, this));
-//        }
+        if (opModeType == OpModeType.TELE) {
+            setLocalizer(new t265Localizer(hardwareMap));
+        } else {
+            setLocalizer(new ComplexLocalizer(hardwareMap, this));
+        }
         setPoseEstimate(Details.robotPose);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
