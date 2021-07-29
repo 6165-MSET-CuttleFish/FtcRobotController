@@ -90,9 +90,9 @@ public class Turret implements Component {
         } else if (targetAng < lowerBound) {
             targetAng += 360;
         }
-        angleControl.setTargetPosition(toRadians(targetAng));
+        angleControl.setTargetPosition(targetAng);
         double currAngle = getRelativeAngle();
-        double power = angleControl.update(currAngle);
+        double power = angleControl.update(toDegrees(currAngle));
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
