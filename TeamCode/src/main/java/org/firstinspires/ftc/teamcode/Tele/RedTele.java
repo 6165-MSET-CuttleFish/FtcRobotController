@@ -43,7 +43,7 @@ public class RedTele extends OpMode {
     Intake intake;
     GamepadEx g1, g2;
     ToggleButtonReader turretButton, shooterMode;
-    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton;
+    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton, incrementOffset, decrementOffset;
     TriggerReader intakeButton, powerShots;
     KeyReader[] readers;
 
@@ -60,7 +60,12 @@ public class RedTele extends OpMode {
         shooter.setState(Shooter.State.CONTINUOUS);
         telemetry.addData("Initialized", true);
         telemetry.update();
-        robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        //robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
         turret.setTarget(Robot.goal);
     }
 
@@ -72,7 +77,7 @@ public class RedTele extends OpMode {
         turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
         shooterMode = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
         powerShots = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
-        clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.A);
+        clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.X);
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
         magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
@@ -148,7 +153,7 @@ public class RedTele extends OpMode {
                     break;
             }
             if (shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
-                    && shooter.getAbsError() < TOLERANCE) {
+                    && shooter.isWithinTolerance()) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);
@@ -159,7 +164,7 @@ public class RedTele extends OpMode {
         if (wobbleButton.wasJustPressed()) {
             switch (WobbleArm.getState()) {
                 case UP:
-                    wobbleArm.dropMacro();
+                    wobbleArm.setState(WobbleArm.State.MOVING_DOWN);
                     break;
                 case MID:
                 case DOWN:

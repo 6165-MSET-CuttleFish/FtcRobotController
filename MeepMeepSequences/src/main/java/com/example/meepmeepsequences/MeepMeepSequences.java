@@ -20,23 +20,12 @@ public class MeepMeepSequences {
                 // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(54, 54, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-62, 56, Math.toRadians(0)))
-
-                                .lineTo(new Vector2d (2, 56))
-                                //.lineToLinearHeading(new Pose2d(5, 52, Math.toRadians(270))) //case 0
-                                //.lineToLinearHeading(new Pose2d(49,52, Math.toRadians(270))) //case 4
-                                //.lineToLinearHeading(new Pose2d(39, 54, Math.toRadians(90))) // case 1
-                                .waitSeconds(0.8)
-                                .lineToLinearHeading(new Pose2d(-12,36, Math.toRadians(180)))
-                                .lineTo(new Vector2d(-20, 36))
-                                .waitSeconds (0.8)
-                                .lineTo(new Vector2d(-4, 36))
-                                .waitSeconds(0.8)
-                                .lineTo(new Vector2d(-30, 36))
-                                .waitSeconds(0.2)
-                                .lineTo(new Vector2d(-4, 40))
-                                .waitSeconds(0.7)
-                                .lineTo(new Vector2d(5, 40))
+                        drive.trajectorySequenceBuilder(new Pose2d(-61.5975, -16.8475, 0))
+                                .splineTo(new Vector2d(30.5275, -22.7), Math.toRadians(0))
+                                .splineTo(new Vector2d(45.5275, -22.7), Math.toRadians(0))
+                                .splineTo(new Vector2d(48.5275, -22.7), Math.toRadians(0))
+                                .splineTo(new Vector2d(50.5275, -17.7), Math.toRadians(90))
+                                .splineTo(new Vector2d(50.5, 17), Math.toRadians(90))
                                 .build()
                 )
                 .start();

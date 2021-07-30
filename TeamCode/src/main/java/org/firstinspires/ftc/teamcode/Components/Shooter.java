@@ -65,6 +65,7 @@ public class Shooter implements Component {
     public Servo flap;
     public double targetVelo;
     private final InterpLUT veloRegression;
+    private final InterpLUT toleranceRegression;
     public Magazine magazine;
     public Gunner gunner;
     public Turret turret;
@@ -72,7 +73,9 @@ public class Shooter implements Component {
 
     public Shooter(HardwareMap hardwareMap) {
         veloRegression = new InterpLUT();
+        toleranceRegression = new InterpLUT();
         setVelocityController();
+        setToleranceRegression();
         flywheel = hardwareMap.get(DcMotor.class, "fw");
         flywheel1 = hardwareMap.get(DcMotor.class, "fw1");
         flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -143,7 +146,7 @@ public class Shooter implements Component {
         for (Component component : components) {
             component.update();
         }
-        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5);
+        Coordinate shooterCoord = Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 3);
         switch (state) {
             case CONTINUOUS:
                 flapUp();
@@ -226,7 +229,7 @@ public class Shooter implements Component {
     }
 
     public Vector2d getShooterVec() {
-        return Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 4.5).toVector();
+        return Coordinate.toPoint(Details.robotPose).polarAdd(Details.robotPose.getHeading() - Math.PI, 3).toVector();
     }
 
     public void setVelocity(double v) {
@@ -279,9 +282,9 @@ public class Shooter implements Component {
     }
 
     private void setVelocityController() {
-        veloRegression.add(0,4400);
-        veloRegression.add(67.7, 4500);
-        veloRegression.add(72.8, 4500);
+        veloRegression.add(0,4500);
+        veloRegression.add(67.7, 4520);
+        veloRegression.add(72.8, 4520);
         veloRegression.add(78.4, 4600);
         veloRegression.add(82.23, 4630);
         veloRegression.add(86.3, 4670);
@@ -292,6 +295,30 @@ public class Shooter implements Component {
         veloRegression.add(136.5, 5700);
        
         veloRegression.createLUT();
+    }
+
+    private void setToleranceRegression() {
+        toleranceRegression.add(0,200);
+        toleranceRegression.add(67.7, 200);
+        toleranceRegression.add(72.8, 190);
+        toleranceRegression.add(78.4, 130);
+        toleranceRegression.add(82.23, 100);
+        toleranceRegression.add(86.3, 80);
+        toleranceRegression.add(95.2, 80);
+
+        toleranceRegression.createLUT();
+    }
+
+    public boolean isWithinTolerance() {
+        double neededVelo = getPoseVelo(getShooterVec());
+        double error = Math.abs(getVelocity() - neededVelo);
+        double maxError;
+        try {
+            maxError = toleranceRegression.get(getShooterVec().distTo(Robot.goal));
+        } catch (Exception ignored) {
+            maxError = 80;
+        }
+        return  maxError > error;
     }
 
     public State getState() {

@@ -52,8 +52,12 @@ public class RedAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
+        sleep(1000);
         stackHeight = UGContourRingPipeline.Height.ONE;
-
+        robot.setPoseEstimate(robotPose);
+        sleep(1000);
+        telemetry.addData("Ready", true);
+        telemetry.update();
         waitForStart();
 
         intake.dropIntake();
@@ -81,13 +85,14 @@ public class RedAggressive extends LinearOpMode {
 
     private void generatePaths(){
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
+                .splineTo(new Vector2d(25.5275, -18.7), Math.toRadians(0))
                 .splineTo(new Vector2d(45.5275, -22.7), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
                     shooter.setState(Shooter.State.IDLE);
                     intake.setPower(1);
                 })
                 .splineTo(new Vector2d(50.5275, 10), Math.toRadians(90))
-                .splineTo(new Vector2d(50.5, 20), Math.toRadians(90))
+                .splineTo(new Vector2d(50.5, 17), Math.toRadians(90))
                 .build();
         // Wobble Drop
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
@@ -139,7 +144,7 @@ public class RedAggressive extends LinearOpMode {
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
                 .lineToLinearHeading(new Pose2d(50.5275, -10.7, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(50.5275, -50, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(50.5275, -42, Math.toRadians(-90)))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);

@@ -47,7 +47,7 @@ public class RedSafePowerShots extends LinearOpMode {
         claw = wobbleArm.claw;
         Trajectory forward = robot.trajectoryBuilder(robotPose)
                 .forward(10)
-                .addDisplacementMarker(() -> wobbleArm.setState(WobbleArm.State.DOWN))
+                .addTemporalMarker(0.3, () -> wobbleArm.setState(WobbleArm.State.DOWN))
                 .build();
         powershots = robot.trajectoryBuilder(forward.end())
                 .addDisplacementMarker(() -> shooter.setState(Shooter.State.POWERSHOTS))
@@ -67,7 +67,7 @@ public class RedSafePowerShots extends LinearOpMode {
         wobbleDrop4 = robot.trajectorySequenceBuilder(powershots.end())
                 .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Math.toRadians(-90))
-                .turn(Math.toRadians(180))
+                .turn(Math.toRadians(-140))
                 .build();
         // bouncebacks
         bouncebacks0 = robot.trajectoryBuilder(wobbleDrop0.end())
@@ -98,16 +98,17 @@ public class RedSafePowerShots extends LinearOpMode {
                 .lineTo(new Vector2d(12, -20))
                 .build();
         boolean foundRings = false;
+        sleep(500);
+        robot.setPoseEstimate(robotPose);
 
         waitForStart();
 
-        robot.setPoseEstimate(robotPose);
-
         intake.dropIntake();
+        claw.grab();
 
         if (!foundRings) {
             robot.followTrajectory(forward);
-            turret.setTargetAngle(Math.toRadians(100));
+            turret.setTargetAngle(Math.toRadians(150));
             robot.waitForActionsCompleted();
             turret.setState(Turret.State.IDLE);
             robot.followTrajectory(powershots);

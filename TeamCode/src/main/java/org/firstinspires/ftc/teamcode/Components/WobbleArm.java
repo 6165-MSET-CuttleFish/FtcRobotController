@@ -89,9 +89,13 @@ public class WobbleArm implements Component {
         arm2.setPosition(0.9);
     }
     public static State getState() {
-        if(wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.MACRO;
-        return state;
-    }
+        try {
+            if (wobbleDropMacro.getRunning() || wobblePickupMacro.getRunning()) return State.MACRO;
+            return state;
+        } catch (Exception ignored) {
+            return state;
+        }
+     }
     public void setState(State state) {
         WobbleArm.state = state;
     }
@@ -114,6 +118,7 @@ public class WobbleArm implements Component {
                     down();
                     if (timer.seconds() > 0.3) {
                         setState(State.DOWN);
+                        claw.release();
                     }
                     break;
                 case MOVING_UP:

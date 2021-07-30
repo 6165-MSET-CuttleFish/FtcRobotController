@@ -34,7 +34,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.drive.ComplexLocalizer;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -83,12 +82,12 @@ public class Robot extends MecanumDrive implements Component {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    public static Vector2d goal = new Vector2d(70.5275, -35.9725);
+    public static Vector2d goal = new Vector2d(70.5275, -37.9725);
     public static Vector2d pwrShotLocal() {
         if (side == Side.BLUE) {
-            return new Vector2d(-1.8, 2.9725);
+            return new Vector2d(-2.5, 2.9725);
         }
-        return new Vector2d(-1.8, -2.9725);
+        return new Vector2d(-2.5, -2.9725);
     }
     // 51.5
     // 59
@@ -116,9 +115,9 @@ public class Robot extends MecanumDrive implements Component {
             };
         }
         return new Pose2d[]{
-                new Pose2d(25, -47.4, Math.toRadians(-90)),
-                new Pose2d(45, -26.4725, Math.toRadians(-90)),
-                new Pose2d(50.5275, -47, Math.toRadians(-70))
+                new Pose2d(25, -40, Math.toRadians(-90)),
+                new Pose2d(48, -20.4725, Math.toRadians(-90)),
+                new Pose2d(57.5275, -40, Math.toRadians(-120))
         };
 
     }
@@ -141,14 +140,14 @@ public class Robot extends MecanumDrive implements Component {
     public Shooter shooter;
     public WobbleArm wobbleArm;
     private final Component[] components;
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.2);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 1.2);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(9, 0.07, 0.1);
 
     public static double LATERAL_MULTIPLIER = 1.2;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 1.5;
+    public static double OMEGA_WEIGHT = 1;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -216,12 +215,12 @@ public class Robot extends MecanumDrive implements Component {
         }
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
-        if (opModeType == OpModeType.TELE) {
-            setLocalizer(new t265Localizer(hardwareMap));
-        } else {
-            setLocalizer(new ComplexLocalizer(hardwareMap, this));
-        }
-        setPoseEstimate(Details.robotPose);
+        setLocalizer(new t265Localizer(hardwareMap));
+//        if (opModeType == OpModeType.TELE) {
+//
+//        } else {
+//            setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+//        }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
 
@@ -405,7 +404,7 @@ public class Robot extends MecanumDrive implements Component {
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        if (!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
+        // if (!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
     }
 
     public void waitForIdle() {
@@ -415,7 +414,7 @@ public class Robot extends MecanumDrive implements Component {
 
     public boolean isHazardous() {
         return shooter.powerShotsController.getRunning() || isBusy() || !shooter.turret.isIdle() || shooter.magazine.getState() != Magazine.State.DOWN ||
-                shooter.gunner.getState() != Gunner.State.IDLE || wobbleArm.getState() == WobbleArm.State.MACRO;
+                shooter.gunner.getState() != Gunner.State.IDLE || WobbleArm.getState() == WobbleArm.State.MACRO;
     }
 
     public void waitForActionsCompleted() {

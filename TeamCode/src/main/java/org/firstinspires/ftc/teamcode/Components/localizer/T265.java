@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.Math.PI;
 
@@ -33,7 +34,7 @@ public class T265 {
     ElapsedTime veloTimer = new ElapsedTime();
 
     // Constants
-    private final double ODOMETRY_COVARIANCE = 0.15;
+    private final double ODOMETRY_COVARIANCE = 0.2;
     private final double INCH_TO_METER = 0.0254;
 
     @SuppressLint("SdCardPath")
@@ -72,11 +73,12 @@ public class T265 {
 
     public static void stopCam() {
         t265Cam.stop();
-        t265Cam = null; // experimental
+        //t265Cam = null; // experimental
     }
 
     public void setCameraPose(double x, double y, double theta) {
        t265Cam.setPose(new Pose2d(-x * INCH_TO_METER, -y * INCH_TO_METER, new Rotation2d(-theta)));
+       odo.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(x, y, theta));
     }
 
     public void updateCamPose() {
@@ -85,10 +87,11 @@ public class T265 {
         Translation2d translation = new Translation2d(-state.pose.getTranslation().getX() / INCH_TO_METER, -state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
         Pose2d temp = new Pose2d(translation, rotation);
-        poseVelo = new Pose2d(temp.getTranslation().minus(curr.getTranslation()).div(veloTimer.seconds()), new Rotation2d((temp.getHeading() - curr.getHeading()) / veloTimer.seconds()));
+        //poseVelo = new Pose2d(temp.getTranslation().minus(curr.getTranslation()).div(veloTimer.seconds()), new Rotation2d((temp.getHeading() - curr.getHeading()) / veloTimer.seconds()));
         curr = temp;
 
         com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
+        poseVelo = PoseUtil.toFTCLibPos2d(Objects.requireNonNull(odo.getPoseVelocity()));
         if (currVelo != null) {
             try {
                 t265Cam.sendOdometry(currVelo.getX() * INCH_TO_METER, currVelo.getY() * INCH_TO_METER);

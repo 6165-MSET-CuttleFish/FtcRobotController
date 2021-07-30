@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
+import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 import static org.firstinspires.ftc.teamcode.Components.Details.poseVelocity;
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
@@ -27,14 +28,15 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(0.223, 0.00505, 0.0007);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(12, 0, 0);
     public static double kV = 0;
-    public static double kStatic = 0.0001;
+    public static double kStatic = 0;
     public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
     PIDFController angleControl;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
+    public int offset = -2;
     public Vector2d target;
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
@@ -51,7 +53,7 @@ public class Turret implements Component {
     public Turret(HardwareMap hardwareMap) {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
-        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (opModeType == OpModeType.AUTO) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         setPIDCoeffecients();
@@ -59,13 +61,14 @@ public class Turret implements Component {
 
     public void update() {
         double currHeading = Details.robotPose.getHeading();
-        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 4.5);
+        Coordinate turretCoord = Coordinate.toPoint(Details.robotPose).polarAdd(currHeading - Math.PI, 3);
         double targetAng = 0;
         switch (state) {
             case TARGET_LOCK:
                 targetAng = getClosestAngle(toDegrees(targetAngle - Details.robotPose.getHeading()));
                 if (target != null)
                     targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - toDegrees(Details.robotPose.getHeading()));
+                targetAng += offset;
                 break;
             case IDLE:
                 targetAng = getClosestZero();
@@ -77,22 +80,23 @@ public class Turret implements Component {
         }
         double upperBound = 400;
         double lowerBound = -400;
-//        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
-//            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
-//                angleControl.setTargetPosition(getClosestDangerMax());
-//            } else {
-//                upperBound = getClosestDangerMax();
-//                lowerBound = getClosestDangerMin();
-//            }
-//        }
+        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
+            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
+                turret.setPower(0);
+                return;
+            } else {
+                upperBound = 20;
+                lowerBound = -190;
+            }
+        }
         if (targetAng > upperBound) {
             targetAng -= 360;
         } else if (targetAng < lowerBound) {
             targetAng += 360;
         }
-        angleControl.setTargetPosition(targetAng);
+        angleControl.setTargetPosition(toRadians(targetAng));
         double currAngle = getRelativeAngle();
-        double power = angleControl.update(toDegrees(currAngle));
+        double power = angleControl.update(currAngle);
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {
@@ -171,7 +175,7 @@ public class Turret implements Component {
 
     private double getClosestDangerMax() {
         double curr = toDegrees(getRelativeAngle());
-        double[] possibilities = {50, -310};
+        double[] possibilities = {20, -340};
         double minRange = 360;
         int index = 0;
         for (int i = 0; i < possibilities.length; i++) {
@@ -223,11 +227,11 @@ public class Turret implements Component {
     }
 
     public boolean isIdle() {
-        return Math.abs(turret.getVelocity()) < 200 && getAbsError() < 2;
+        return Math.abs(turret.getVelocity()) < 600 && getAbsError() < 4;
     }
 
     public boolean isOnTarget() {
         if (state != State.TARGET_LOCK) return false;
-        return Math.abs(turret.getVelocity()) <= 70 && getAbsError() < 0.7;
+        return Math.abs(turret.getVelocity()) <= 80 && getAbsError() < 0.6;
     }
 }

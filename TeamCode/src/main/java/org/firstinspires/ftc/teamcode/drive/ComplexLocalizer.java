@@ -41,9 +41,9 @@ public class ComplexLocalizer implements Localizer {
     @Override
     public void update() {
         odo.update();
-        if (timer.seconds() > 3) {
-            timer.reset();
-            odo.setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), drive.getExternalHeading() + headingOffset));
-        }
+//        if (timer.seconds() > 3 && getPoseVelocity().getHeading() < Math.toRadians(40) && getPoseVelocity().getX() < 20 && getPoseVelocity().getY() < 20) {
+//            timer.reset();
+//            odo.setPoseEstimate(new Pose2d(getPoseEstimate().getX(), getPoseEstimate().getY(), drive.getExternalHeading() + headingOffset));
+//        }
     }
 }
