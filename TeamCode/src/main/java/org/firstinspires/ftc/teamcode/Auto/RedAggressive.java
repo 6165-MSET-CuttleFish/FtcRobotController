@@ -85,21 +85,21 @@ public class RedAggressive extends LinearOpMode {
 
     private void generatePaths(){
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
-                .lineToSplineHeading(new Pose2d(46, -16))
-                .splineTo(new Vector2d(55.5275, -10), Math.toRadians(90))
-                .splineTo(new Vector2d(55.5, 17), Math.toRadians(90))
+                .lineToSplineHeading(new Pose2d(46, -16.8475))
+                .splineTo(new Vector2d(58, -10), Math.toRadians(90))
+                .splineTo(new Vector2d(58, 17), Math.toRadians(90))
                 .build();
         // Wobble Drop
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Robot.dropZonesPS()[0].getHeading())
                 .build();
         wobbleDrop1 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[1].vec(), Robot.dropZonesPS()[1].getHeading())
                 .build();
         wobbleDrop4 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Robot.dropZonesPS()[2].getHeading())
                 .build();
         // Shoot Bonked
@@ -138,14 +138,15 @@ public class RedAggressive extends LinearOpMode {
                 .build();
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
-                .lineToLinearHeading(new Pose2d(50.5275, -10.7, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(50.5275, -42, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(58, -3, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(58.5275, -40, Math.toRadians(-90)))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
+                .splineTo(new Vector2d(20, -16), Math.toRadians(180))
                 .splineTo(new Vector2d(-5.8, -17), Math.toRadians(180))
                 .build();
         park = robot.trajectorySequenceBuilder(bouncebacks.end())

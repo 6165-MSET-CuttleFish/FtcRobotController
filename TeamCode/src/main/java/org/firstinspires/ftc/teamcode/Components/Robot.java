@@ -34,8 +34,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
-import org.firstinspires.ftc.teamcode.drive.StandardTwoWheelTracker;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -148,7 +146,7 @@ public class Robot extends MecanumDrive implements Component {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 1.2);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(9, 0.07, 0.1);
 
-    public static double LATERAL_MULTIPLIER = 1.2;
+    public static double LATERAL_MULTIPLIER = 1.8;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;

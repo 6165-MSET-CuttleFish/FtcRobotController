@@ -42,7 +42,7 @@ public class BlueAggressive extends LinearOpMode {
     TrajectorySequence park;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, 16.8475, 0), OpModeType.AUTO, Side.BLUE);
+        robot = new Robot(this, new Pose2d(-61.5975, -16.8475, 0), OpModeType.AUTO, Side.RED);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -52,8 +52,12 @@ public class BlueAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
+        sleep(500);
         stackHeight = UGContourRingPipeline.Height.ONE;
-
+        robot.setPoseEstimate(robotPose);
+        sleep(1000);
+        telemetry.addData("Ready", true);
+        telemetry.update();
         waitForStart();
 
         intake.dropIntake();
@@ -74,32 +78,25 @@ public class BlueAggressive extends LinearOpMode {
         robot.waitForActionsCompleted();
         shooter.setState(Shooter.State.IDLE);
         robot.followTrajectorySequence(park);
-        while (opModeIsActive()){
-            robot.update();
-        }
     }
 
     private void generatePaths(){
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
-                .splineTo(new Vector2d(45.5275, 22.7), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-                    shooter.setState(Shooter.State.IDLE);
-                    intake.setPower(1);
-                })
-                .splineTo(new Vector2d(50.5275, -10), Math.toRadians(-90))
-                .splineTo(new Vector2d(50.5, -20), Math.toRadians(-90))
+                .lineToSplineHeading(new Pose2d(46, 16.8475))
+                .splineTo(new Vector2d(58, 10), Math.toRadians(-90))
+                .splineTo(new Vector2d(58, -17), Math.toRadians(-90))
                 .build();
         // Wobble Drop
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, 5), Math.toRadians(90))
+                .splineTo(new Vector2d(58, 5), Math.toRadians(90))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Robot.dropZonesPS()[0].getHeading())
                 .build();
         wobbleDrop1 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, 5), Math.toRadians(90))
+                .splineTo(new Vector2d(58, 5), Math.toRadians(90))
                 .splineTo(Robot.dropZonesPS()[1].vec(), Robot.dropZonesPS()[1].getHeading())
                 .build();
         wobbleDrop4 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(50.5275, 5), Math.toRadians(90))
+                .splineTo(new Vector2d(58, 5), Math.toRadians(90))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Robot.dropZonesPS()[2].getHeading())
                 .build();
         // Shoot Bonked
@@ -108,21 +105,21 @@ public class BlueAggressive extends LinearOpMode {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(-180))
+                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(180))
                 .build();
         shootBonked1 = robot.trajectorySequenceBuilder(wobbleDrop1.end())
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(-180))
+                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(180))
                 .build();
         shootBonked4 = robot.trajectorySequenceBuilder(wobbleDrop4.end())
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(-180))
+                .splineTo(new Vector2d(-5, -16.7), Math.toRadians(180))
                 .build();
         // PowerShots
         powerShots = robot.trajectorySequenceBuilder(shootBonked4.end())
@@ -138,18 +135,19 @@ public class BlueAggressive extends LinearOpMode {
                 .build();
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
-                .lineToLinearHeading(new Pose2d(50.5275, 10.7, Math.toRadians(90)))
-                .lineToSplineHeading(new Pose2d(50.5275, 50, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(58, 3, Math.toRadians(90)))
+                .lineToSplineHeading(new Pose2d(58.5275, 40, Math.toRadians(90)))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5.8, 14), Math.toRadians(-180))
+                .splineTo(new Vector2d(20, 16), Math.toRadians(180))
+                .splineTo(new Vector2d(-5.8, 17), Math.toRadians(180))
                 .build();
         park = robot.trajectorySequenceBuilder(bouncebacks.end())
-                .lineTo(new Vector2d(12, 14))
+                .lineTo(new Vector2d(12, 17))
                 .build();
     }
 
