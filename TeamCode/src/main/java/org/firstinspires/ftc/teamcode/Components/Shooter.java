@@ -133,7 +133,7 @@ public class Shooter implements Component {
                 .exit(PSState.MOVING_PS1)
                 .onExit(() -> {
                     state = State.CONTINUOUS;
-                    turret.setTarget(Robot.goal);
+                    turret.setTarget(Robot.goal());
                 })
 
                 .build();
@@ -150,9 +150,9 @@ public class Shooter implements Component {
         switch (state) {
             case CONTINUOUS:
                 flapUp();
-                turret.setTarget(Robot.goal);
+                turret.setTarget(Robot.goal());
                 try {
-                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal)));
+                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal())));
                 } catch (Exception e) {
                     targetVelo = 5000;
                 }
@@ -237,11 +237,11 @@ public class Shooter implements Component {
     }
 
     public void setVelocity(Vector2d vector2d) {
-        targetVelo = veloRegression.get(vector2d.distTo(Robot.goal));
+        targetVelo = veloRegression.get(vector2d.distTo(Robot.goal()));
     }
 
     public double getPoseVelo(Vector2d vector2d) {
-        return veloRegression.get(vector2d.distTo(Robot.goal));
+        return veloRegression.get(vector2d.distTo(Robot.goal()));
     }
 
     public double getVelocity() {
@@ -314,7 +314,7 @@ public class Shooter implements Component {
         double error = Math.abs(getVelocity() - neededVelo);
         double maxError;
         try {
-            maxError = toleranceRegression.get(getShooterVec().distTo(Robot.goal));
+            maxError = toleranceRegression.get(getShooterVec().distTo(Robot.goal()));
         } catch (Exception ignored) {
             maxError = 80;
         }

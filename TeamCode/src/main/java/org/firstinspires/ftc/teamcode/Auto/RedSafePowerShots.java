@@ -55,17 +55,17 @@ public class RedSafePowerShots extends LinearOpMode {
                 .build();
         //wobble drop
         wobbleDrop0 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(58.5275, -3, Math.toRadians(-90)))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(180))
                 .build();
         wobbleDrop1 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(58.5275, -3, Math.toRadians(-90)))
                 .splineTo(Robot.dropZonesPS()[1].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(180))
                 .build();
         wobbleDrop4 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, -10.7, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(58.5275, -3, Math.toRadians(-90)))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(-140))
                 .build();
@@ -76,7 +76,8 @@ public class RedSafePowerShots extends LinearOpMode {
                     intake.setPower(0);
                     magazine.magMacro();
                 })
-                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
+                .splineTo(new Vector2d(15, 20), Math.toRadians(180))
+                .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
                 .build();
         bouncebacks1 = robot.trajectoryBuilder(wobbleDrop1.end())
                 .addDisplacementMarker(() -> {
@@ -84,7 +85,8 @@ public class RedSafePowerShots extends LinearOpMode {
                     intake.setPower(0);
                     magazine.magMacro();
                 })
-                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
+                .splineTo(new Vector2d(15, 20), Math.toRadians(180))
+                .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
                 .build();
         bouncebacks4 = robot.trajectoryBuilder(wobbleDrop4.end())
                 .addDisplacementMarker(() -> {
@@ -92,7 +94,8 @@ public class RedSafePowerShots extends LinearOpMode {
                     intake.setPower(0);
                     magazine.magMacro();
                 })
-                .splineTo(new Vector2d(-5.8, -20), Math.toRadians(180))
+                .splineTo(new Vector2d(15, 20), Math.toRadians(180))
+                .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
                 .build();
         Trajectory park = robot.trajectoryBuilder(bouncebacks4.end())
                 .lineTo(new Vector2d(12, -20))

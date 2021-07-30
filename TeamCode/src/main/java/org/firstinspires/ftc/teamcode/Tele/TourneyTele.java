@@ -24,9 +24,9 @@ import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
-@TeleOp(name = "RedTele", group = "Tele")
+@TeleOp(name = "MainTele", group = "Tele")
 @Config
-public class RedTele extends OpMode {
+public class TourneyTele extends OpMode {
     enum DriveState {
         NORMAL,
         WOBBLE
@@ -66,7 +66,7 @@ public class RedTele extends OpMode {
                 e.printStackTrace();
             }
         //robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
-        turret.setTarget(Robot.goal);
+        turret.setTarget(Robot.goal());
     }
 
     private void initializeButtons() {
@@ -81,7 +81,9 @@ public class RedTele extends OpMode {
         shieldButton = new ToggleButtonReader(g1, GamepadKeys.Button.DPAD_DOWN);
         wobbleButton = new ToggleButtonReader(g2, GamepadKeys.Button.B);
         magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
-        readers = new KeyReader[]{intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
+        incrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_RIGHT);
+        decrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_LEFT);
+        readers = new KeyReader[]{incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
     }
 
     @Override
@@ -93,8 +95,14 @@ public class RedTele extends OpMode {
 
     @Override
     public void loop() {
+        if (incrementOffset.wasJustPressed()) {
+            turret.offset -= 2;
+        } else if (decrementOffset.wasJustPressed()) {
+            turret.offset += 2;
+        }
         if (shooterMode.getState()) {
             shooter.setState(Shooter.State.POWERSHOTS);
+            turret.offset = -2;
             if (powerShots.isDown()) {
                 shooter.powerShots();
             }

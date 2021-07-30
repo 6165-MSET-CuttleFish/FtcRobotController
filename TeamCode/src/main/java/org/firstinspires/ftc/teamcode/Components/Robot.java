@@ -82,7 +82,12 @@ public class Robot extends MecanumDrive implements Component {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    public static Vector2d goal = new Vector2d(70.5275, -37.9725);
+    public static Vector2d goal() {
+        if (side == Side.BLUE) {
+            return new Vector2d(70.5275, 37.9725);
+        }
+        return new Vector2d(70.5275, -37.9725);
+    }
     public static Vector2d pwrShotLocal() {
         if (side == Side.BLUE) {
             return new Vector2d(-2.5, 2.9725);
@@ -109,13 +114,13 @@ public class Robot extends MecanumDrive implements Component {
     public static Pose2d[] dropZonesPS() {
         if (side == Side.BLUE) {
             return new Pose2d[]{
-                    new Pose2d(25, 47.4, Math.toRadians(90)),
-                    new Pose2d(45, 26.4725, Math.toRadians(90)),
-                    new Pose2d(50.5275, 47.4, Math.toRadians(90))
+                    new Pose2d(20, 47, Math.toRadians(60)),
+                    new Pose2d(40, 20.4725, Math.toRadians(90)),
+                    new Pose2d(57.5275, 40, Math.toRadians(120))
             };
         }
         return new Pose2d[]{
-                new Pose2d(25, -40, Math.toRadians(-90)),
+                new Pose2d(-20, -47, Math.toRadians(-60)),
                 new Pose2d(48, -20.4725, Math.toRadians(-90)),
                 new Pose2d(57.5275, -40, Math.toRadians(-120))
         };

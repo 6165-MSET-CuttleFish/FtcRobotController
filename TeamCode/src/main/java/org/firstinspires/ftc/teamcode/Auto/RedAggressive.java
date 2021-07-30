@@ -85,14 +85,9 @@ public class RedAggressive extends LinearOpMode {
 
     private void generatePaths(){
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
-                .splineTo(new Vector2d(25.5275, -18.7), Math.toRadians(0))
-                .splineTo(new Vector2d(45.5275, -22.7), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-                    shooter.setState(Shooter.State.IDLE);
-                    intake.setPower(1);
-                })
-                .splineTo(new Vector2d(50.5275, 10), Math.toRadians(90))
-                .splineTo(new Vector2d(50.5, 17), Math.toRadians(90))
+                .lineToSplineHeading(new Pose2d(46, -16))
+                .splineTo(new Vector2d(55.5275, -10), Math.toRadians(90))
+                .splineTo(new Vector2d(55.5, 17), Math.toRadians(90))
                 .build();
         // Wobble Drop
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
@@ -151,10 +146,10 @@ public class RedAggressive extends LinearOpMode {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5.8, -14), Math.toRadians(180))
+                .splineTo(new Vector2d(-5.8, -17), Math.toRadians(180))
                 .build();
         park = robot.trajectorySequenceBuilder(bouncebacks.end())
-                .lineTo(new Vector2d(12, -14))
+                .lineTo(new Vector2d(12, -17))
                 .build();
     }
 

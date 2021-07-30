@@ -38,7 +38,7 @@ public class ShooterVeloRegression extends OpMode {
         magazine = shooter.magazine;
         shooter.setState(Shooter.State.CUSTOMVELO);
         powerButton = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.X);
-        turret.setTarget(Robot.goal);
+        turret.setTarget(Robot.goal());
         turret.setState(Turret.State.TARGET_LOCK);
         inc = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_UP);
         dec = new ToggleButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.DPAD_DOWN);
@@ -73,7 +73,7 @@ public class ShooterVeloRegression extends OpMode {
             magazine.magMacro();
         }
         robot.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
-        telemetry.addData("Shooter Distance", shooter.getShooterVec().distTo(Robot.goal));
+        telemetry.addData("Shooter Distance", shooter.getShooterVec().distTo(Robot.goal()));
         telemetry.addData("Velocity", velocity);
         telemetry.update();
     }
