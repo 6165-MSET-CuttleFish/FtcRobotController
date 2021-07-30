@@ -111,7 +111,6 @@ public class RedSafePowerShots extends LinearOpMode {
 
         if (!foundRings) {
             robot.followTrajectory(forward);
-            turret.setTargetAngle(Math.toRadians(150));
             robot.waitForActionsCompleted();
             turret.setState(Turret.State.IDLE);
             robot.followTrajectory(powershots);

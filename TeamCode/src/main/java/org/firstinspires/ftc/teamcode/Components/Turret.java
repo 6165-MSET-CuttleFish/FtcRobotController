@@ -48,7 +48,6 @@ public class Turret implements Component {
         TARGET_LOCK,
         TUNING,
         IDLE,
-        ABS_ZERO,
     }
 
     public Turret(HardwareMap hardwareMap) {
@@ -73,9 +72,7 @@ public class Turret implements Component {
                 break;
             case IDLE:
                 targetAng = getClosestZero();
-                break;
-            case ABS_ZERO:
-                targetAng = 0;
+                if (opModeType == OpModeType.AUTO) targetAng = 0;
                 break;
             case TUNING:
                 if (!turretTuner.getRunning()) turretTuner.start();

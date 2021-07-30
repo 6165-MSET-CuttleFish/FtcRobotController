@@ -52,14 +52,16 @@ public class RedAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
-        sleep(1000);
+        sleep(500);
         stackHeight = UGContourRingPipeline.Height.ONE;
         robot.setPoseEstimate(robotPose);
         sleep(1000);
         telemetry.addData("Ready", true);
         telemetry.update();
+
         waitForStart();
 
+        robot.scan();
         intake.dropIntake();
         robot.followTrajectorySequence(mainSequence);
         robot.followTrajectory(getWobbleDrop());
@@ -78,9 +80,6 @@ public class RedAggressive extends LinearOpMode {
         robot.waitForActionsCompleted();
         shooter.setState(Shooter.State.IDLE);
         robot.followTrajectorySequence(park);
-        while (opModeIsActive()){
-            robot.update();
-        }
     }
 
     private void generatePaths(){

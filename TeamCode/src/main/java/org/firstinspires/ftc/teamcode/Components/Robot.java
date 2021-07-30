@@ -110,19 +110,18 @@ public class Robot extends MecanumDrive implements Component {
         };
     }
     public static Pose2d[] dropZonesPS() {
-        if (side == Side.BLUE) {
+        if (blue) {
             return new Pose2d[]{
-                    new Pose2d(20, 47, Math.toRadians(60)),
+                    new Pose2d(20, 47, Math.toRadians(120)),
                     new Pose2d(40, 20.4725, Math.toRadians(90)),
-                    new Pose2d(57.5275, 40, Math.toRadians(120))
+                    new Pose2d(57.5275, 47, Math.toRadians(60))
             };
         }
         return new Pose2d[]{
-                new Pose2d(-20, -47, Math.toRadians(-60)),
-                new Pose2d(48, -20.4725, Math.toRadians(-90)),
-                new Pose2d(57.5275, -40, Math.toRadians(-120))
+                new Pose2d(20, -47, Math.toRadians(-120)),
+                new Pose2d(45, -20.4725, Math.toRadians(-90)),
+                new Pose2d(57.5275, -47, Math.toRadians(-60))
         };
-
     }
     public static Pose2d[] dropZonesHigh(){
         if(side == Side.BLUE){
@@ -219,12 +218,10 @@ public class Robot extends MecanumDrive implements Component {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.FORWARD);
         setLocalizer(new t265Localizer(hardwareMap));
-//        if (opModeType == OpModeType.TELE) {
-//
-//        } else {
-//            setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
-//        }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        if (opModeType == OpModeType.AUTO) {
+            autoInit();
+        }
     }
 
     public void autoInit() {
