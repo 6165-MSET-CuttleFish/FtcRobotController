@@ -42,7 +42,7 @@ public class RedAggressive extends LinearOpMode {
     TrajectorySequence park;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, -27.64, 0), OpModeType.AUTO, Side.RED);
+        robot = new Robot(this, new Pose2d(-61.5975, -16.8475, 0), OpModeType.AUTO, Side.RED);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;

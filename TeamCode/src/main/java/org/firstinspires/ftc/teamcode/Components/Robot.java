@@ -34,7 +34,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Components.localizer.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -96,7 +95,7 @@ public class Robot extends MecanumDrive implements Component {
     // 51.5
     // 59
     // 66.5
-    public static Vector2d[] powerShots() {
+    public static Vector2d[] powerShots(){
         if (side == Side.BLUE) {
             return new Vector2d[]{
                     new Vector2d(70.4725, 3.9725),
@@ -242,6 +241,7 @@ public class Robot extends MecanumDrive implements Component {
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
 
+
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
 
         UGContourRingPipeline.Config.setHORIZON(HORIZON);
@@ -250,8 +250,7 @@ public class Robot extends MecanumDrive implements Component {
 
         RingLocalizer.HORIZON = HORIZON;
         webcam.setPipeline(pipeline = new UGContourRingPipeline());
-        // webcam.openCameraDevice();
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT));
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         //dashboard.startCameraStream(webcam, 30);
     }
 
@@ -311,7 +310,7 @@ public class Robot extends MecanumDrive implements Component {
 
     public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
-        // webcam.closeCameraDevice();
+        dashboard.stopCameraStream();
     }
 
     public void release() {
@@ -406,14 +405,6 @@ public class Robot extends MecanumDrive implements Component {
         }
         for (Component component : components) {
             component.update();
-        }
-        if (opModeType == OpModeType.AUTO) {
-            if (shooter.magazine.isThirdRing() && !shooter.magazine.getRunning()) {
-                shooter.magazine.mid();
-                intake.setPower(0);
-            } else {
-                shooter.magazine.down();
-            }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);

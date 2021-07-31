@@ -37,7 +37,7 @@ public class BlueSafePowerShots extends LinearOpMode {
     Trajectory bouncebacks4, bouncebacks1, bouncebacks0;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, 27.64, 0), OpModeType.AUTO, Side.BLUE);
+        robot = new Robot(this, new Pose2d(-61.5975, 16.8475, 0), OpModeType.AUTO, Side.BLUE);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -54,23 +54,23 @@ public class BlueSafePowerShots extends LinearOpMode {
                 .build();
         //wobble drop
         wobbleDrop0 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, 3, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(58.5275, 3, Math.toRadians(90)))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Math.toRadians(90))
                 .turn(Math.toRadians(180))
                 .build();
         wobbleDrop1 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, 3, Math.toRadians(90)))
-                .splineTo(Robot.dropZonesPS()[1].vec(), Math.toRadians(90))
+                .lineToLinearHeading(new Pose2d(58.5275, 3, Math.toRadians(90)))
+                .splineTo(Robot.dropZonesPS()[1].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(180))
                 .build();
         wobbleDrop4 = robot.trajectorySequenceBuilder(powershots.end())
-                .lineToLinearHeading(new Pose2d(55.5275, 3, Math.toRadians(90)))
-                .splineTo(Robot.dropZonesPS()[2].vec(), Math.toRadians(90))
+                .lineToLinearHeading(new Pose2d(58.5275, 3, Math.toRadians(90)))
+                .splineTo(Robot.dropZonesPS()[2].vec(), Math.toRadians(-90))
                 .turn(Math.toRadians(180))
                 .build();
         // bouncebacks
         bouncebacks0 = robot.trajectoryBuilder(wobbleDrop0.end())
-                .addTemporalMarker(0.5, () -> {
+                .addDisplacementMarker(() -> {
                     shooter.setState(Shooter.State.CONTINUOUS);
                     intake.setPower(0);
                     magazine.magMacro();
@@ -79,7 +79,7 @@ public class BlueSafePowerShots extends LinearOpMode {
                 .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
                 .build();
         bouncebacks1 = robot.trajectoryBuilder(wobbleDrop1.end())
-                .addTemporalMarker(0.5, () -> {
+                .addDisplacementMarker(() -> {
                     shooter.setState(Shooter.State.CONTINUOUS);
                     intake.setPower(0);
                     magazine.magMacro();
@@ -88,7 +88,7 @@ public class BlueSafePowerShots extends LinearOpMode {
                 .splineTo(new Vector2d(-5.8, 20), Math.toRadians(180))
                 .build();
         bouncebacks4 = robot.trajectoryBuilder(wobbleDrop4.end())
-                .addTemporalMarker(0.5, () -> {
+                .addDisplacementMarker(() -> {
                     shooter.setState(Shooter.State.CONTINUOUS);
                     intake.setPower(0);
                     magazine.magMacro();
@@ -113,7 +113,7 @@ public class BlueSafePowerShots extends LinearOpMode {
 
 
         waitForStart();
-        robot.turnOffVision();
+
         intake.dropIntake();
         claw.grab();
 
