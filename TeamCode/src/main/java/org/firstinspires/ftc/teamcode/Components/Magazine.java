@@ -17,6 +17,7 @@ public class Magazine implements Component {
     Servo magRight1, magRight2;
     StateMachine stateMachine;
     public static double currentRings;
+    ColorRangeSensor colorRangeSensor;
 
     public enum State {
         DOWN,
@@ -24,8 +25,16 @@ public class Magazine implements Component {
         MOVING_DOWN,
         UP
     }
+    public double getRange() {
+        return colorRangeSensor.getDistance(DistanceUnit.INCH);
+    }
+
+    public boolean isThirdRing(){
+        return getRange() < 4 && getRange() > 0.2;
+    }
 
     public Magazine(HardwareMap hardwareMap) {
+        colorRangeSensor = hardwareMap.get(ColorRangeSensor.class, "range");
         magLeft1 = hardwareMap.servo.get("magLeftBottom");
         magLeft2 = hardwareMap.servo.get("magLeftTop");
         magRight1 = hardwareMap.servo.get("magRightBottom");
@@ -75,12 +84,24 @@ public class Magazine implements Component {
         magRight2.setPosition(0.27);
     }
 
+    public void mid() {
+        magLeft1.setPosition(0.72);
+        magLeft2.setPosition(0.72);
+
+        magRight1.setPosition(0.30);
+        magRight2.setPosition(0.30);
+    }
+
     public State getState() {
         return (State) stateMachine.getState();
     }
 
     public void magMacro() {
         if (!stateMachine.getRunning()) stateMachine.start();
+    }
+
+    public boolean getRunning() {
+        return stateMachine.getRunning();
     }
 
     public void update() {

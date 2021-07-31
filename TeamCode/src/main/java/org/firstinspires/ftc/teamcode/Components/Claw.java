@@ -15,7 +15,7 @@ public class Claw {
     }
     public void grab(){
         state = State.GRIP;
-        grabber.setPosition(0.4);
+        grabber.setPosition(0);
     }
     public void release(){
         state = State.RELEASE;

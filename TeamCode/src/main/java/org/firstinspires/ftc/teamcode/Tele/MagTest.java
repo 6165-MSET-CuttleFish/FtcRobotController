@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.Magazine;
 
 @TeleOp(name = "MagTest", group = "Test")
-@Disabled
 public class MagTest extends LinearOpMode {
     Magazine magazine;
     Gunner gunner;
@@ -37,6 +36,8 @@ public class MagTest extends LinearOpMode {
             if (Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN) {
                 gunner.shoot();
             }
+            telemetry.addData("dist", magazine.getRange());
+            telemetry.update();
         }
     }
 }
