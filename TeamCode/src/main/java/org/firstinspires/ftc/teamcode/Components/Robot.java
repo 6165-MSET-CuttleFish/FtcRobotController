@@ -110,7 +110,7 @@ public class Robot extends MecanumDrive implements Component {
         };
     }
     public static Pose2d[] dropZonesPS() {
-        if (blue) {
+        if (side == Side.BLUE) {
             return new Pose2d[]{
                     new Pose2d(20, 47, Math.toRadians(120)),
                     new Pose2d(40, 20.4725, Math.toRadians(90)),
@@ -247,7 +247,7 @@ public class Robot extends MecanumDrive implements Component {
         RingLocalizer.HORIZON = HORIZON;
         webcam.setPipeline(pipeline = new UGContourRingPipeline());
         webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-        dashboard.startCameraStream(webcam, 30);
+        //dashboard.startCameraStream(webcam, 30);
     }
 
     public Trajectory ringPickup;

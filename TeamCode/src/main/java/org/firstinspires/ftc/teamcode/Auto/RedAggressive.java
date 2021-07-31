@@ -53,12 +53,15 @@ public class RedAggressive extends LinearOpMode {
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
         sleep(500);
-        stackHeight = UGContourRingPipeline.Height.ONE;
         robot.setPoseEstimate(robotPose);
         sleep(1000);
         telemetry.addData("Ready", true);
         telemetry.update();
-
+        while (!opModeIsActive() && !isStopRequested()) {
+            robot.scan();
+            telemetry.addData("ring", stackHeight.toString());
+            telemetry.update();
+        }
         waitForStart();
 
         robot.scan();
@@ -137,8 +140,8 @@ public class RedAggressive extends LinearOpMode {
                 .build();
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
-                .lineToLinearHeading(new Pose2d(58, -3, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(58.5275, -40, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(40, -3, Math.toRadians(0)))
+                .splineTo(new Vector2d(58.5275, -40), Math.toRadians(-90))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);

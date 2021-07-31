@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.Intake;
 
 @TeleOp(name = "Intake Drop Test", group = "test")
+@Disabled
 public class DropServoTest extends LinearOpMode {
     public Intake intake;
     public void runOpMode() throws InterruptedException{

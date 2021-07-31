@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
 
 @TeleOp(name = "TurretTest", group = "Test")
+@Disabled
 public class TurretTest extends LinearOpMode {
     Turret turret;
     FtcDashboard dashboard;

@@ -69,6 +69,7 @@ public class Shooter implements Component {
     public Magazine magazine;
     public Gunner gunner;
     public Turret turret;
+    ElapsedTime timer = new ElapsedTime();
     private final Component[] components;
 
     public Shooter(HardwareMap hardwareMap) {
@@ -107,24 +108,33 @@ public class Shooter implements Component {
 
         powerShotsController = new StateMachineBuilder<PSState>()
                 .state(PSState.MOVING_PS1)
-                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots()[0]))
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE || timer.seconds() > 0.6)
+                .onEnter(() -> {
+                    timer.reset();
+                    turret.setTarget(Robot.powerShots()[0]);
+                })
 
                 .state(PSState.PS1)
                 .transitionTimed(4 * Gunner.gunTime)
                 .onEnter(() -> gunner.shoot())
 
                 .state(PSState.MOVING_PS2)
-                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots()[1]))
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE || timer.seconds() > 0.6)
+                .onEnter(() -> {
+                    turret.setTarget(Robot.powerShots()[1]);
+                    timer.reset();
+                })
 
                 .state(PSState.PS2)
                 .transitionTimed(4 * Gunner.gunTime)
                 .onEnter(() -> gunner.shoot())
 
                 .state(PSState.MOVING_PS3)
-                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE)
-                .onEnter(() -> turret.setTarget(Robot.powerShots()[2]))
+                .transition(() -> turret.isOnTarget() && gunner.getState() == Gunner.State.IDLE || timer.seconds() > 0.6)
+                .onEnter(() -> {
+                    timer.reset();
+                    turret.setTarget(Robot.powerShots()[2]);
+                })
 
                 .state(PSState.PS3)
                 .transitionTimed(4 * Gunner.gunTime)
@@ -233,6 +243,7 @@ public class Shooter implements Component {
     }
 
     public void setVelocity(double v) {
+        setState(State.CONTINUOUS);
         targetVelo = v;
     }
 
@@ -241,7 +252,11 @@ public class Shooter implements Component {
     }
 
     public double getPoseVelo(Vector2d vector2d) {
-        return veloRegression.get(vector2d.distTo(Robot.goal()));
+        try {
+            return veloRegression.get(vector2d.distTo(Robot.goal()));
+        } catch (Exception ignored) {
+            return 5700;
+        }
     }
 
     public double getVelocity() {

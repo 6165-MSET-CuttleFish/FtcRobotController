@@ -42,7 +42,7 @@ public class BlueAggressive extends LinearOpMode {
     TrajectorySequence park;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, -16.8475, 0), OpModeType.AUTO, Side.RED);
+        robot = new Robot(this, new Pose2d(-61.5975, 16.8475, 0), OpModeType.AUTO, Side.BLUE);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -53,11 +53,15 @@ public class BlueAggressive extends LinearOpMode {
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
         sleep(500);
-        stackHeight = UGContourRingPipeline.Height.ONE;
         robot.setPoseEstimate(robotPose);
         sleep(1000);
         telemetry.addData("Ready", true);
         telemetry.update();
+        while (!opModeIsActive() && !isStopRequested()) {
+            robot.scan();
+            telemetry.addData("ring", stackHeight.toString());
+            telemetry.update();
+        }
         waitForStart();
 
         intake.dropIntake();
@@ -80,7 +84,7 @@ public class BlueAggressive extends LinearOpMode {
         robot.followTrajectorySequence(park);
     }
 
-    private void generatePaths(){
+    private void generatePaths() {
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
                 .lineToSplineHeading(new Pose2d(46, 16.8475))
                 .splineTo(new Vector2d(58, 10), Math.toRadians(-90))
@@ -119,7 +123,7 @@ public class BlueAggressive extends LinearOpMode {
                     magazine.magMacro();
                     shooter.setState(Shooter.State.CONTINUOUS);
                 })
-                .splineTo(new Vector2d(-5, -16.7), Math.toRadians(180))
+                .splineTo(new Vector2d(-5, 16.7), Math.toRadians(180))
                 .build();
         // PowerShots
         powerShots = robot.trajectorySequenceBuilder(shootBonked4.end())
@@ -135,8 +139,8 @@ public class BlueAggressive extends LinearOpMode {
                 .build();
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
-                .lineToLinearHeading(new Pose2d(58, 3, Math.toRadians(90)))
-                .lineToSplineHeading(new Pose2d(58.5275, 40, Math.toRadians(90)))
+                .lineToSplineHeading(new Pose2d(40, 3, Math.toRadians(0)))
+                .splineTo(new Vector2d(58.5275, 40), Math.toRadians(90))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);

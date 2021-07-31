@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(12, 0, 0);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(12, 0, 0.05);
     public static double kV = 0;
     public static double kStatic = 0;
     public static double kA = 0;
@@ -36,12 +36,12 @@ public class Turret implements Component {
     PIDFController angleControl;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
-    public int offset = -2;
+    public int offset = 2;
     public Vector2d target;
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
     public static double GEAR_RATIO = (68.0 / 13.0) * (110.0 / 24.0);
-    public static double TOLERANCE = 0;
+    public static double TOLERANCE = 0.5;
     private State state = State.IDLE;
 
     public enum State {
@@ -53,7 +53,7 @@ public class Turret implements Component {
     public Turret(HardwareMap hardwareMap) {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
-        if (opModeType == OpModeType.AUTO) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         setPIDCoeffecients();
@@ -79,19 +79,8 @@ public class Turret implements Component {
                 targetAng = turretTuner.update();
                 break;
         }
-        double upperBound = 400;
-        double lowerBound = -400;
-        if(WobbleArm.getState() == WobbleArm.State.MID) {//assuming wobble arm is up
-            if ((MathFunctions.AngleWrap(toRadians(targetAngle)) < Math.PI && MathFunctions.AngleWrap(toRadians(targetAngle)) > 0)) {
-                turret.setPower(0);
-                return;
-            } else {
-                if (opModeType == OpModeType.AUTO) {
-                    upperBound = 20;
-                    lowerBound = -190;
-                }
-            }
-        }
+        double upperBound = 380;
+        double lowerBound = -380;
         if (targetAng > upperBound) {
             targetAng -= 360;
         } else if (targetAng < lowerBound) {
@@ -235,6 +224,6 @@ public class Turret implements Component {
 
     public boolean isOnTarget() {
         if (state != State.TARGET_LOCK) return false;
-        return Math.abs(turret.getVelocity()) <= 80 && getAbsError() < 0.6;
+        return Math.abs(turret.getVelocity()) <= 50 && getAbsError() < 0.9;
     }
 }

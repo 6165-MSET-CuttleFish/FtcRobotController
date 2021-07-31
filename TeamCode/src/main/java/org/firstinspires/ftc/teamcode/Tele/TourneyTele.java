@@ -31,8 +31,6 @@ public class TourneyTele extends OpMode {
         NORMAL,
         WOBBLE
     }
-
-    public static double TOLERANCE = 80;
     Robot robot;
     DriveState driveState = DriveState.NORMAL;
     WobbleArm wobbleArm;
@@ -42,8 +40,8 @@ public class TourneyTele extends OpMode {
     Magazine magazine;
     Intake intake;
     GamepadEx g1, g2;
-    ToggleButtonReader turretButton, shooterMode;
-    ButtonReader clawButton, wobbleButton, shieldButton, reverseMode, magButton, incrementOffset, decrementOffset;
+    ToggleButtonReader turretButton, shooterMode, reverseMode;
+    ButtonReader clawButton, wobbleButton, shieldButton, magButton, incrementOffset, decrementOffset;
     TriggerReader intakeButton, powerShots;
     KeyReader[] readers;
 
@@ -83,7 +81,7 @@ public class TourneyTele extends OpMode {
         magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
         incrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_RIGHT);
         decrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_LEFT);
-        readers = new KeyReader[]{incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
+        readers = new KeyReader[]{turretButton, incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
     }
 
     @Override
@@ -95,6 +93,7 @@ public class TourneyTele extends OpMode {
 
     @Override
     public void loop() {
+        intake.raiseIntake();
         if (incrementOffset.wasJustPressed()) {
             turret.offset -= 2;
         } else if (decrementOffset.wasJustPressed()) {
@@ -102,7 +101,7 @@ public class TourneyTele extends OpMode {
         }
         if (shooterMode.getState()) {
             shooter.setState(Shooter.State.POWERSHOTS);
-            turret.offset = -2;
+            turret.offset = 2;
             if (powerShots.isDown()) {
                 shooter.powerShots();
             }
@@ -123,9 +122,7 @@ public class TourneyTele extends OpMode {
                     break;
             }
         }
-        switch (driveState) {
-            case NORMAL:
-            case WOBBLE:
+            if(!reverseMode.getState()) {
                 robot.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.left_stick_y,
@@ -133,8 +130,15 @@ public class TourneyTele extends OpMode {
                                 -gamepad1.right_stick_x
                         )
                 );
-                break;
-        }
+            } else {
+                robot.setWeightedDrivePower(
+                        new Pose2d(
+                                gamepad1.left_stick_y,
+                                gamepad1.left_stick_x,
+                                -gamepad1.right_stick_x
+                        )
+                );
+            }
         wobble();
         safety();
         if (turretButton.getState()) {
@@ -171,10 +175,10 @@ public class TourneyTele extends OpMode {
     public void wobble() {
         if (wobbleButton.wasJustPressed()) {
             switch (WobbleArm.getState()) {
+                case MID:
                 case UP:
                     wobbleArm.setState(WobbleArm.State.MOVING_DOWN);
                     break;
-                case MID:
                 case DOWN:
                     wobbleArm.claw.grab();
                     wobbleArm.setState(WobbleArm.State.UP);

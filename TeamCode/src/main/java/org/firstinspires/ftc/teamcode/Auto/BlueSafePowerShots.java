@@ -102,6 +102,11 @@ public class BlueSafePowerShots extends LinearOpMode {
                 .build();
         boolean foundRings = false;
         sleep(500);
+        while (!opModeIsActive() && !isStopRequested()) {
+            robot.scan();
+            telemetry.addData("ring", stackHeight.toString());
+            telemetry.update();
+        }
         robot.setPoseEstimate(robotPose);
 
         waitForStart();
