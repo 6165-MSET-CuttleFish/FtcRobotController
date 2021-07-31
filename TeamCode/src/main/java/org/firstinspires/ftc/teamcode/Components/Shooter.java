@@ -162,7 +162,7 @@ public class Shooter implements Component {
                 flapUp();
                 turret.setTarget(Robot.goal());
                 try {
-                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal())));
+                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal()))) + 50;
                 } catch (Exception e) {
                     targetVelo = 5000;
                 }
@@ -313,10 +313,10 @@ public class Shooter implements Component {
     }
 
     private void setToleranceRegression() {
-        toleranceRegression.add(0,200);
-        toleranceRegression.add(67.7, 200);
-        toleranceRegression.add(72.8, 190);
-        toleranceRegression.add(78.4, 130);
+        toleranceRegression.add(0,100);
+        toleranceRegression.add(67.7, 100);
+        toleranceRegression.add(72.8, 100);
+        toleranceRegression.add(78.4, 100);
         toleranceRegression.add(82.23, 100);
         toleranceRegression.add(86.3, 80);
         toleranceRegression.add(95.2, 80);

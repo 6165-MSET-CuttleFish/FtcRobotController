@@ -23,9 +23,9 @@ import org.firstinspires.ftc.teamcode.Components.localizer.T265;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 
-@TeleOp(name = "MainTele", group = "Tele")
+@TeleOp(name = "TempTele", group = "Tele")
 @Config
-public class TourneyTele extends OpMode {
+public class TempTele extends OpMode {
     enum DriveState {
         NORMAL,
         WOBBLE
@@ -57,12 +57,12 @@ public class TourneyTele extends OpMode {
         shooter.setState(Shooter.State.CONTINUOUS);
         telemetry.addData("Initialized", true);
         telemetry.update();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        //robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        robot.setPoseEstimate(new Pose2d(-61.5975, -21.8475, Math.toRadians(0)));
         turret.setTarget(Robot.goal());
     }
 
@@ -121,23 +121,23 @@ public class TourneyTele extends OpMode {
                     break;
             }
         }
-            if(!reverseMode.getState()) {
-                robot.setWeightedDrivePower(
-                        new Pose2d(
-                                -gamepad1.left_stick_y,
-                                -gamepad1.left_stick_x,
-                                -gamepad1.right_stick_x
-                        )
-                );
-            } else {
-                robot.setWeightedDrivePower(
-                        new Pose2d(
-                                gamepad1.left_stick_y,
-                                gamepad1.left_stick_x,
-                                -gamepad1.right_stick_x
-                        )
-                );
-            }
+        if(!reverseMode.getState()) {
+            robot.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
+        } else {
+            robot.setWeightedDrivePower(
+                    new Pose2d(
+                            gamepad1.left_stick_y,
+                            gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
+        }
         wobble();
         safety();
         if (turretButton.getState()) {

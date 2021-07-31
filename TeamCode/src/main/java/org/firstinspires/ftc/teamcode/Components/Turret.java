@@ -36,7 +36,7 @@ public class Turret implements Component {
     PIDFController angleControl;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
-    public int offset = 2;
+    public double offset = 1.5;
     public Vector2d target;
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
