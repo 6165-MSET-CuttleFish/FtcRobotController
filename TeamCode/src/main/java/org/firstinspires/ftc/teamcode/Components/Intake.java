@@ -17,11 +17,11 @@ public class Intake implements Component {
         CUSTOM_VALUE,
         IDLE,
     }
-    IntakeState intakeState = IntakeState.IDLE;
+    IntakeState intakeState = IntakeState.CUSTOM_VALUE;
     DcMotor intakeMotor;
     CRServo intakeL, intakeR;
     Servo drop;
-    ColorRangeSensor colorRangeSensor;
+
 
     public Intake(HardwareMap hardwareMap) {
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
@@ -32,23 +32,11 @@ public class Intake implements Component {
         intakeR = hardwareMap.crservo.get("intakeR");
         drop = hardwareMap.servo.get("drop");
         intakeR.setDirection(DcMotorSimple.Direction.REVERSE);
-        colorRangeSensor = hardwareMap.get(ColorRangeSensor.class, "range");
+
     }
 
     @Override
     public void update() {
-        switch (intakeState) {
-            case IDLE:
-                setPower(0);
-                break;
-            case SAFE:
-                if (colorRangeSensor.getDistance(DistanceUnit.INCH) < 1) {
-                    setIntakeState(IntakeState.IDLE);
-                    break;
-                }
-                setPower(1);
-                break;
-        }
     }
 
     public void setIntakeState(IntakeState intakeState) {
