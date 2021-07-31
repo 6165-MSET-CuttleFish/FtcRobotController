@@ -20,9 +20,9 @@ public class MeepMeepSequences {
                 // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(54, 54, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(-61.5975, 3, 0))
-                                        .lineToSplineHeading(new Pose2d(40, 3, Math.toRadians(0)))
-                                        .splineTo(new Vector2d(58.5275, 40), Math.toRadians(90))
+                                drive.trajectorySequenceBuilder(new Pose2d (-62, 56, Math.toRadians(0)))
+                                        .splineTo(new Vector2d (15, 38), Math.toRadians(0))
+
                 .build()
                 )
                 .start();

@@ -40,11 +40,12 @@ public class TourneyTele extends OpMode {
     Magazine magazine;
     Intake intake;
     GamepadEx g1, g2;
-    ToggleButtonReader turretButton, shooterMode, reverseMode;
+    ToggleButtonReader turretButton, shooterMode, reverseMode, defenseToggle;
     ButtonReader clawButton, wobbleButton, shieldButton, magButton, incrementOffset, decrementOffset;
     TriggerReader intakeButton, powerShots;
     KeyReader[] readers;
 
+    private boolean defense = false;
     @Override
     public void init() {
         robot = new Robot(this, OpModeType.TELE);
@@ -81,7 +82,8 @@ public class TourneyTele extends OpMode {
         magButton = new ToggleButtonReader(g2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
         incrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_RIGHT);
         decrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_LEFT);
-        readers = new KeyReader[]{turretButton, incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots};
+        defenseToggle = new ToggleButtonReader(g1, GamepadKeys.Button.RIGHT_BUMPER);
+        readers = new KeyReader[]{turretButton, incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots, /*defenseToggle*/};
     }
 
     @Override
@@ -111,6 +113,20 @@ public class TourneyTele extends OpMode {
         if (magButton.wasJustPressed() && gunner.getState() == Gunner.State.IDLE) {
             magazine.magMacro();
         }
+        /*
+        if(defenseToggle.wasJustPressed()){
+            if(defense){
+                defense = false;
+                shooter.setState(Shooter.State.CONTINUOUS);
+            }
+            else{
+                defense = true;
+                shooter.setState(Shooter.State.MID);
+            }
+        }
+
+
+         */
         robot.intake.setPower(gamepad2.right_stick_y);
         if (reverseMode.wasJustPressed()) {
             switch (driveState) {

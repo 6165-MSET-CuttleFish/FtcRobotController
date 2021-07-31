@@ -30,7 +30,8 @@ public class Shooter implements Component {
         POWERSHOTS,
         TUNING,
         IDLE,
-        EMPTY_MAG
+        EMPTY_MAG,
+        MID
     }
     public enum PSState {
         MOVING_PS1,
@@ -177,6 +178,12 @@ public class Shooter implements Component {
                 }
                 powerShotsController.update();
                 break;
+            /*case MID:
+                flapUp();
+                turret.setTarget(Robot.goal());
+                targetVelo = 3800;
+                break;
+             */
             case TUNING:
                 if(!tuner.getRunning()) tuner.start();
                 targetVelo = tuner.update();
