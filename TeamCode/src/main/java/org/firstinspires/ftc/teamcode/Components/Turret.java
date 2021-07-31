@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 @Config
 public class Turret implements Component {
     DcMotorEx turret;
-    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(12, 0, 0.05);
+    public static PIDCoefficients ANGLE_PID = new PIDCoefficients(9, 0, 0.03);
     public static double kV = 0;
     public static double kStatic = 0;
     public static double kA = 0;
@@ -41,7 +41,7 @@ public class Turret implements Component {
     TurretTuner turretTuner;
     public static double TICKS_PER_REVOLUTION = 28;
     public static double GEAR_RATIO = (68.0 / 13.0) * (110.0 / 24.0);
-    public static double TOLERANCE = 0.5;
+    public static double TOLERANCE = 0.65;
     private State state = State.IDLE;
 
     public enum State {
@@ -53,7 +53,7 @@ public class Turret implements Component {
     public Turret(HardwareMap hardwareMap) {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         turretTuner = new TurretTuner();
-        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (opModeType == OpModeType.AUTO) turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         setPIDCoeffecients();

@@ -167,6 +167,10 @@ public class Robot extends MecanumDrive implements Component {
         this(opMode, Details.robotPose, type, side);
     }
 
+    public Robot(OpMode opMode, OpModeType type) {
+        this(opMode, Details.robotPose, type, side);
+    }
+
     public Robot(OpMode opMode) {
         this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Side.NONE);
     }

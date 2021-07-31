@@ -47,7 +47,7 @@ public class TourneyTele extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(this, OpModeType.TELE, Side.RED);
+        robot = new Robot(this, OpModeType.TELE);
         wobbleArm = robot.wobbleArm;
         shooter = robot.shooter;
         magazine = shooter.magazine;
@@ -164,8 +164,8 @@ public class TourneyTele extends OpMode {
                     turret.setState(Turret.State.IDLE);
                     break;
             }
-            if (shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
-                    && shooter.isWithinTolerance()) {
+            if ((shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
+                    && shooter.isWithinTolerance()) || intakeButton.wasJustPressed()) {
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);

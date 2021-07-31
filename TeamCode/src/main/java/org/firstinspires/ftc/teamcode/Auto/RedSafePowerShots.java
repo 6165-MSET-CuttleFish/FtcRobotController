@@ -47,7 +47,6 @@ public class RedSafePowerShots extends LinearOpMode {
         claw = wobbleArm.claw;
         Trajectory forward = robot.trajectoryBuilder(robotPose)
                 .forward(10)
-                .addTemporalMarker(0.3, () -> wobbleArm.setState(WobbleArm.State.DOWN))
                 .build();
         powershots = robot.trajectoryBuilder(forward.end())
                 .addDisplacementMarker(() -> shooter.setState(Shooter.State.POWERSHOTS))
@@ -102,13 +101,15 @@ public class RedSafePowerShots extends LinearOpMode {
                 .build();
         boolean foundRings = false;
         sleep(500);
+        robot.setPoseEstimate(robotPose);
+        sleep(1000);
+        telemetry.addData("Ready", true);
+        telemetry.update();
         while (!opModeIsActive() && !isStopRequested()) {
             robot.scan();
             telemetry.addData("ring", stackHeight.toString());
             telemetry.update();
         }
-        robot.setPoseEstimate(robotPose);
-
         waitForStart();
 
         intake.dropIntake();
@@ -116,6 +117,7 @@ public class RedSafePowerShots extends LinearOpMode {
 
         if (!foundRings) {
             robot.followTrajectory(forward);
+            wobbleArm.setState(WobbleArm.State.DOWN);
             robot.waitForActionsCompleted();
             turret.setState(Turret.State.IDLE);
             robot.followTrajectory(powershots);

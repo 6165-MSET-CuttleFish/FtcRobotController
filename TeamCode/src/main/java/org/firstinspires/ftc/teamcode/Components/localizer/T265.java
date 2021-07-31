@@ -34,7 +34,7 @@ public class T265 {
     ElapsedTime veloTimer = new ElapsedTime();
 
     // Constants
-    private final double ODOMETRY_COVARIANCE = 0.2;
+    private final double ODOMETRY_COVARIANCE = 0.18;
     private final double INCH_TO_METER = 0.0254;
 
     @SuppressLint("SdCardPath")

@@ -30,17 +30,19 @@ public class WobbleArm implements Component {
         arm2 = hardwareMap.servo.get("wobbleArm2");
         if (opModeType == OpModeType.AUTO) {
             state = State.MID;
+        } else {
+            state = State.UP;
         }
         wobbleDropMacro = new StateMachineBuilder<State>()
                 .state(State.UP)
                 .transitionTimed(0)
 
                 .state(State.DOWN)
-                .transitionTimed(0.5)
+                .transitionTimed(0.3)
                 .onEnter(this::drop)
 
                 .state(State.MID)
-                .transitionTimed(0.5)
+                .transitionTimed(0.2)
                 .onEnter(() -> claw.release())
 
                 .state(State.MACRO)

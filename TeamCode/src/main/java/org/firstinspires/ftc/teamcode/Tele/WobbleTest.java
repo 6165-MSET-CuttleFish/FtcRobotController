@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
 @TeleOp(name = "WobbleTest", group = "Test")
-@Disabled
 public class WobbleTest extends LinearOpMode {
     WobbleArm wobble;
     @Override
@@ -25,6 +24,9 @@ public class WobbleTest extends LinearOpMode {
                 wobble.setState(WobbleArm.State.UP);
             } else if (gamepad1.right_bumper) {
                 wobble.pickUp();
+            }
+            if (gamepad1.left_bumper) {
+                wobble.dropMacro();
             }
         }
     }
