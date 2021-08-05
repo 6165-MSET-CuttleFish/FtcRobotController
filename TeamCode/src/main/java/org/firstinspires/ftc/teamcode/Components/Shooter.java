@@ -45,10 +45,13 @@ public class Shooter implements Component {
     State state = State.IDLE;
     public StateMachine powerShotsController;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.001, 0, 0);
-    public static double kV = 0.00017;
+    public static double kV = 0.000154;
     public static double kA = 0.000027;
     public static double kStatic = 0.01;
     public static double threshold = 350;
+    public double offset = 50;
+    double p = 0;
+    double a = 0.08;
 
     double lastTargetVelo = 0.0;
     double lastMotorPos = 0;
@@ -163,14 +166,14 @@ public class Shooter implements Component {
                 flapUp();
                 turret.setTarget(Robot.goal());
                 try {
-                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal()))) + 50;
+                    targetVelo = veloRegression.get(shooterCoord.distanceTo(Coordinate.toPoint(Robot.goal()))) + offset;
                 } catch (Exception e) {
-                    targetVelo = 5000;
+                    targetVelo = 4500;
                 }
                 break;
             case POWERSHOTS:
                 if (Details.opModeType == OpModeType.AUTO) {
-                    targetVelo = 4000;
+                    targetVelo = 4100;
                     flapUp();
                 } else {
                     targetVelo = 4200;
@@ -205,7 +208,7 @@ public class Shooter implements Component {
         veloTimer.reset();
         lastTargetVelo = targetVelo;
         double motorPos = veloTracker.getCurrentPosition();
-        double motorVelo = (veloTracker.getCorrectedVelocity()/8192)*60;
+        double motorVelo = lowPassFilter((veloTracker.getCorrectedVelocity()/8192)*60);
         double accel = motorVelo - lastMotorVelo;
         double power;
         if(Math.abs(accel - lastAccel) < threshold) {
@@ -255,14 +258,14 @@ public class Shooter implements Component {
     }
 
     public void setVelocity(Vector2d vector2d) {
-        targetVelo = veloRegression.get(vector2d.distTo(Robot.goal()));
+        targetVelo = veloRegression.get(vector2d.distTo(Robot.goal())) + offset;
     }
 
     public double getPoseVelo(Vector2d vector2d) {
         try {
-            return veloRegression.get(vector2d.distTo(Robot.goal()));
+            return veloRegression.get(vector2d.distTo(Robot.goal())) + offset;
         } catch (Exception ignored) {
-            return 5700;
+            return 4500;
         }
     }
 
@@ -314,7 +317,7 @@ public class Shooter implements Component {
         veloRegression.add(95.2, 4850);
         veloRegression.add(110.5, 5000);
         veloRegression.add(115.8, 5100);
-        veloRegression.add(136.5, 5700);
+        veloRegression.add(136.5, 5100);
        
         veloRegression.createLUT();
     }
@@ -353,5 +356,10 @@ public class Shooter implements Component {
 
     public void powerShots() {
         if (!powerShotsController.getRunning()) powerShotsController.start();
+    }
+    public double lowPassFilter(double i) {
+        double estimate = a*p + (1-a)*i;
+        p = estimate;
+        return estimate;
     }
 }

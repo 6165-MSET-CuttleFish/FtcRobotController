@@ -42,7 +42,7 @@ public class BlueAggressive extends LinearOpMode {
     TrajectorySequence park;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, 27.64, 0), OpModeType.AUTO, Side.BLUE);
+        robot = new Robot(this, new Pose2d(-61.5975, 23.64, 0), OpModeType.AUTO, Side.BLUE);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -52,9 +52,7 @@ public class BlueAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
-        sleep(500);
         robot.setPoseEstimate(robotPose);
-        sleep(1000);
         telemetry.addData("Ready", true);
         telemetry.update();
         while (!opModeIsActive() && !isStopRequested()) {

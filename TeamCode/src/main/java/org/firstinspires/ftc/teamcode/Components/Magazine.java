@@ -30,7 +30,7 @@ public class Magazine implements Component {
     }
 
     public boolean isThirdRing(){
-        return getRange() < 4 && getRange() > 0.2;
+        return getRange() < 3 && getRange() > 0.2;
     }
 
     public Magazine(HardwareMap hardwareMap) {
@@ -85,11 +85,11 @@ public class Magazine implements Component {
     }
 
     public void mid() {
-        magLeft1.setPosition(0.72);
-        magLeft2.setPosition(0.72);
+        magLeft1.setPosition(0.73);
+        magLeft2.setPosition(0.73);
 
-        magRight1.setPosition(0.30);
-        magRight2.setPosition(0.30);
+        magRight1.setPosition(0.29);
+        magRight2.setPosition(0.29);
     }
 
     public State getState() {

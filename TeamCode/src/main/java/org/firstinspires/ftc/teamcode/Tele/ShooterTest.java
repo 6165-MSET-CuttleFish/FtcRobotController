@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.Components.Shooter;
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
 @TeleOp(name="ShooterTest", group = "Test")
-@Disabled
 public class ShooterTest extends LinearOpMode {
     Shooter shooter;
     FtcDashboard dashboard;

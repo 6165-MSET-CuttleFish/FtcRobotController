@@ -16,6 +16,11 @@ public class t265Localizer implements Localizer {
     @SuppressLint("SdCardPath")
     public t265Localizer(HardwareMap hardwareMap) {
         cam = new T265(hardwareMap);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         T265.startCam();
     }
 

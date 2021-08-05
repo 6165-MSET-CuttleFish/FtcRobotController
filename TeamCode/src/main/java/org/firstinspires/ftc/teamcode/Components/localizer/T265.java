@@ -73,7 +73,6 @@ public class T265 {
 
     public static void stopCam() {
         t265Cam.stop();
-        //t265Cam = null; // experimental
     }
 
     public void setCameraPose(double x, double y, double theta) {

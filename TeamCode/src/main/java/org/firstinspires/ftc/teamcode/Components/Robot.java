@@ -89,9 +89,9 @@ public class Robot extends MecanumDrive implements Component {
     }
     public static Vector2d pwrShotLocal() {
         if (side == Side.BLUE) {
-            return new Vector2d(-2.5, 2.9725);
+            return new Vector2d(-8, 8);
         }
-        return new Vector2d(-2.5, -2.9725);
+        return new Vector2d(-8, -8);
     }
     // 51.5
     // 59
@@ -115,13 +115,13 @@ public class Robot extends MecanumDrive implements Component {
             return new Pose2d[]{
                     new Pose2d(20, 47, Math.toRadians(120)),
                     new Pose2d(40, 20.4725, Math.toRadians(90)),
-                    new Pose2d(57.5275, 47, Math.toRadians(60))
+                    new Pose2d(54.5275, 47, Math.toRadians(60))
             };
         }
         return new Pose2d[]{
-                new Pose2d(20, -47, Math.toRadians(-120)),
-                new Pose2d(45, -20.4725, Math.toRadians(-90)),
-                new Pose2d(57.5275, -47, Math.toRadians(-60))
+                new Pose2d(20, -43, Math.toRadians(-120)),
+                new Pose2d(45, -17.4725, Math.toRadians(-90)),
+                new Pose2d(54.5275, -43, Math.toRadians(-60))
         };
     }
     public static Pose2d[] dropZonesHigh(){
@@ -155,7 +155,6 @@ public class Robot extends MecanumDrive implements Component {
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final List<DcMotorEx> motors;
-    private final BNO055IMU imu;
     private final VoltageSensor batteryVoltageSensor;
     public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     FtcDashboard dashboard;
@@ -194,10 +193,6 @@ public class Robot extends MecanumDrive implements Component {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
         leftFront = hardwareMap.get(DcMotorEx.class, "fl");
         leftRear = hardwareMap.get(DcMotorEx.class, "bl");
         rightRear = hardwareMap.get(DcMotorEx.class, "br");
@@ -250,8 +245,8 @@ public class Robot extends MecanumDrive implements Component {
 
         RingLocalizer.HORIZON = HORIZON;
         webcam.setPipeline(pipeline = new UGContourRingPipeline());
-        // webcam.openCameraDevice();
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT));
+        webcam.openCameraDevice();
+        webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
         //dashboard.startCameraStream(webcam, 30);
     }
 
@@ -310,8 +305,8 @@ public class Robot extends MecanumDrive implements Component {
     }
 
     public void turnOffVision() {
-        webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
-        // webcam.closeCameraDevice();
+        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
+        webcam.closeCameraDevice();
     }
 
     public void release() {
@@ -399,6 +394,8 @@ public class Robot extends MecanumDrive implements Component {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
+    public boolean intakeReq = false;
+
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -407,11 +404,14 @@ public class Robot extends MecanumDrive implements Component {
         for (Component component : components) {
             component.update();
         }
-        if (opModeType == OpModeType.AUTO) {
-            if (shooter.magazine.isThirdRing() && !shooter.magazine.getRunning()) {
+        if (opModeType == OpModeType.AUTO && !shooter.magazine.getRunning()) {
+            if (shooter.magazine.isThirdRing()) {
                 shooter.magazine.mid();
                 intake.setPower(0);
             } else {
+                if (intakeReq) {
+                    intake.setPower(1);
+                }
                 shooter.magazine.down();
             }
         }
@@ -517,34 +517,6 @@ public class Robot extends MecanumDrive implements Component {
         rightFront.setPower(v3);
     }
 
-    @Override
-    public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
-    }
-
-    @Override
-    public Double getExternalHeadingVelocity() {
-        // TODO: This must be changed to match your configuration
-        //                           | Z axis
-        //                           |
-        //     (Motor Port Side)     |   / X axis
-        //                       ____|__/____
-        //          Y axis     / *   | /    /|   (IO Side)
-        //          _________ /______|/    //      I2C
-        //                   /___________ //     Digital
-        //                  |____________|/      Analog
-        //
-        //                 (Servo Port Side)
-        //
-        // The positive x axis points toward the USB port(s)
-        //
-        // Adjust the axis rotation rate as necessary
-        // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
-        // flat on a surface
-
-        return (double) imu.getAngularVelocity().yRotationRate;
-    }
-
     public void correctHeading() {
         Pose2d currPose = getPoseEstimate();
         setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), getExternalHeading()));
@@ -559,5 +531,10 @@ public class Robot extends MecanumDrive implements Component {
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
+    }
+
+    @Override
+    public double getRawExternalHeading() {
+        return 0;
     }
 }

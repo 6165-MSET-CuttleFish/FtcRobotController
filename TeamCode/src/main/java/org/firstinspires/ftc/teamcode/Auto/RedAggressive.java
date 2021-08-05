@@ -42,7 +42,7 @@ public class RedAggressive extends LinearOpMode {
     TrajectorySequence park;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, -27.64, 0), OpModeType.AUTO, Side.RED);
+        robot = new Robot(this, new Pose2d(-61.5975, -23.64, 0), OpModeType.AUTO, Side.RED);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -52,9 +52,7 @@ public class RedAggressive extends LinearOpMode {
         claw = wobbleArm.claw;
         shooter.setState(Shooter.State.EMPTY_MAG);
         generatePaths();
-        sleep(500);
         robot.setPoseEstimate(robotPose);
-        sleep(1000);
         telemetry.addData("Ready", true);
         telemetry.update();
         while (!opModeIsActive() && !isStopRequested()) {
@@ -88,20 +86,20 @@ public class RedAggressive extends LinearOpMode {
     private void generatePaths(){
         mainSequence = robot.trajectorySequenceBuilder(robotPose)
                 .lineToSplineHeading(new Pose2d(46, -16.8475))
-                .splineTo(new Vector2d(58, -10), Math.toRadians(90))
-                .splineTo(new Vector2d(58, 17), Math.toRadians(90))
+                .splineTo(new Vector2d(55, -10), Math.toRadians(90))
+                .splineTo(new Vector2d(55, 17), Math.toRadians(90))
                 .build();
         // Wobble Drop
         wobbleDrop0 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(55, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[0].vec(), Robot.dropZonesPS()[0].getHeading())
                 .build();
         wobbleDrop1 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(55, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[1].vec(), Robot.dropZonesPS()[1].getHeading())
                 .build();
         wobbleDrop4 = robot.trajectoryBuilder(mainSequence.end(), true)
-                .splineTo(new Vector2d(58, -5), Math.toRadians(-90))
+                .splineTo(new Vector2d(55, -5), Math.toRadians(-90))
                 .splineTo(Robot.dropZonesPS()[2].vec(), Robot.dropZonesPS()[2].getHeading())
                 .build();
         // Shoot Bonked
@@ -141,7 +139,7 @@ public class RedAggressive extends LinearOpMode {
         bouncebacks = robot.trajectorySequenceBuilder(powerShots.end())
                 .addDisplacementMarker(() -> intake.setPower(1))
                 .lineToSplineHeading(new Pose2d(40, -3, Math.toRadians(0)))
-                .splineTo(new Vector2d(58.5275, -40), Math.toRadians(-90))
+                .splineTo(new Vector2d(55.5275, -40), Math.toRadians(-90))
                 .setReversed(true)
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     intake.setPower(0);

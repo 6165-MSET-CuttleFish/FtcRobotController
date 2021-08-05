@@ -37,7 +37,7 @@ public class BlueSafePowerShots extends LinearOpMode {
     Trajectory bouncebacks4, bouncebacks1, bouncebacks0;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(this, new Pose2d(-61.5975, 27.64, 0), OpModeType.AUTO, Side.BLUE);
+        robot = new Robot(this, new Pose2d(-61.5975, 23.64, 0), OpModeType.AUTO, Side.BLUE);
         shooter = robot.shooter;
         intake = robot.intake;
         wobbleArm = robot.wobbleArm;
@@ -100,7 +100,7 @@ public class BlueSafePowerShots extends LinearOpMode {
                 .lineTo(new Vector2d(12, 20))
                 .build();
         boolean foundRings = false;
-        sleep(500);
+        sleep(1000);
         robot.setPoseEstimate(robotPose);
         sleep(1000);
         telemetry.addData("Ready", true);

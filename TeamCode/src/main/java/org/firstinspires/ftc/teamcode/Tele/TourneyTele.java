@@ -41,7 +41,7 @@ public class TourneyTele extends OpMode {
     Intake intake;
     GamepadEx g1, g2;
     ToggleButtonReader turretButton, shooterMode, reverseMode, defenseToggle;
-    ButtonReader clawButton, wobbleButton, shieldButton, magButton, incrementOffset, decrementOffset;
+    ButtonReader shooterOverride, clawButton, wobbleButton, shieldButton, magButton, incrementOffset, decrementOffset, incrementVelo, decrementVelo;
     TriggerReader intakeButton, powerShots;
     KeyReader[] readers;
 
@@ -73,7 +73,10 @@ public class TourneyTele extends OpMode {
         g2 = new GamepadEx(gamepad2);
         intakeButton = new TriggerReader(g2, GamepadKeys.Trigger.RIGHT_TRIGGER);
         reverseMode = new ToggleButtonReader(g1, GamepadKeys.Button.LEFT_BUMPER);
-        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
+        turretButton = new ToggleButtonReader(g2, GamepadKeys.Button.Y);
+        shooterOverride = new ButtonReader(g2, GamepadKeys.Button.LEFT_STICK_BUTTON);
+        incrementVelo = new ButtonReader(g2, GamepadKeys.Button.DPAD_UP);
+        decrementVelo = new ButtonReader(g2, GamepadKeys.Button.DPAD_DOWN);
         shooterMode = new ToggleButtonReader(g2, GamepadKeys.Button.LEFT_BUMPER);
         powerShots = new TriggerReader(g2, GamepadKeys.Trigger.LEFT_TRIGGER);
         clawButton = new ToggleButtonReader(g2, GamepadKeys.Button.X);
@@ -83,7 +86,7 @@ public class TourneyTele extends OpMode {
         incrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_RIGHT);
         decrementOffset = new ButtonReader(g2, GamepadKeys.Button.DPAD_LEFT);
         defenseToggle = new ToggleButtonReader(g1, GamepadKeys.Button.RIGHT_BUMPER);
-        readers = new KeyReader[]{turretButton, incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots, /*defenseToggle*/};
+        readers = new KeyReader[]{shooterOverride, turretButton, incrementOffset, decrementOffset, intakeButton, clawButton, shieldButton, wobbleButton, reverseMode, magButton, shooterMode, powerShots, /*defenseToggle*/};
     }
 
     @Override
@@ -97,9 +100,14 @@ public class TourneyTele extends OpMode {
     public void loop() {
         intake.raiseIntake();
         if (incrementOffset.wasJustPressed()) {
-            turret.offset -= 2;
+            turret.offset -= 2.5;
         } else if (decrementOffset.wasJustPressed()) {
-            turret.offset += 2;
+            turret.offset += 2.5;
+        }
+        if (incrementVelo.wasJustPressed()) {
+            shooter.offset += 40;
+        } else if (decrementVelo.wasJustPressed()) {
+            shooter.offset -= 40;
         }
         if (shooterMode.getState()) {
             shooter.setState(Shooter.State.POWERSHOTS);
@@ -180,8 +188,8 @@ public class TourneyTele extends OpMode {
                     turret.setState(Turret.State.IDLE);
                     break;
             }
-            if ((shooter.getState() == Shooter.State.CONTINUOUS && turret.getState() == Turret.State.TARGET_LOCK && turret.isIdle() && robotPose.getX() < 2 && Magazine.currentRings != 0 && magazine.getState() == Magazine.State.DOWN
-                    && shooter.isWithinTolerance()) || intakeButton.wasJustPressed()) {
+            if ((shooter.getState() == Shooter.State.CONTINUOUS && magazine.getState() == Magazine.State.DOWN
+                    && shooter.isWithinTolerance() && intakeButton.isDown()) || shooterOverride.isDown()){
                 gunner.shoot();
             }
             turret.setState(Turret.State.TARGET_LOCK);

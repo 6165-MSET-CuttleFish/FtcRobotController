@@ -83,8 +83,8 @@ public class WobbleArm implements Component {
         arm2.setPosition(0.4);
     }
     private void drop() {
-        arm1.setPosition(0.45);
-        arm2.setPosition(0.55);
+        arm1.setPosition(0.4);
+        arm2.setPosition(0.6);
     }
     private void mid(){
         arm1.setPosition(0.1);
