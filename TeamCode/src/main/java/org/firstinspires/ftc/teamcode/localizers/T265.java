@@ -1,29 +1,19 @@
-package org.firstinspires.ftc.teamcode.Components.localizer;
+package org.firstinspires.ftc.teamcode.localizers;
 
 import android.annotation.SuppressLint;
 
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.spartronics4915.lib.T265Camera;
 
-import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
-import org.firstinspires.ftc.teamcode.R;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.PoseUtil;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.List;
 import java.util.Objects;
-
-import static java.lang.Math.PI;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class T265 {

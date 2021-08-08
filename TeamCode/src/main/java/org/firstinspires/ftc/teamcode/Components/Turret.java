@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
+import static org.firstinspires.ftc.teamcode.Components.Details.getFuturePose;
 import static org.firstinspires.ftc.teamcode.Components.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 import static org.firstinspires.ftc.teamcode.Components.Details.poseVelocity;
@@ -66,12 +68,18 @@ public class Turret implements Component {
         switch (state) {
             case TARGET_LOCK:
                 targetAng = getClosestAngle(toDegrees(targetAngle - Details.robotPose.getHeading()));
-                if (target != null)
+                angleControl.setTargetVelocity(-poseVelocity.getHeading());
+                if (target != null) {
                     targetAng = getClosestAngle(turretCoord.angleTo(Coordinate.toPoint(target)) - toDegrees(Details.robotPose.getHeading()));
+                    Coordinate nextTurretCoord = Coordinate.toPoint(getFuturePose()).polarAdd(currHeading - Math.PI, 3);
+                    double getFutureTarget = getClosestAngle(nextTurretCoord.angleTo(Coordinate.toPoint(target)) - toDegrees(getFuturePose().getHeading()));
+                    angleControl.setTargetVelocity(getFutureTarget - targetAng);
+                }
                 targetAng += offset;
                 break;
             case IDLE:
                 targetAng = getClosestZero();
+                angleControl.setTargetVelocity(0);
                 if (opModeType == OpModeType.AUTO) targetAng = 0;
                 break;
             case TUNING:
@@ -87,8 +95,11 @@ public class Turret implements Component {
             targetAng += 360;
         }
         angleControl.setTargetPosition(toRadians(targetAng));
+        if (turret.getCurrent(CurrentUnit.MILLIAMPS) < 9000) {
+            angleControl.reset();
+        }
         double currAngle = getRelativeAngle();
-        double power = angleControl.update(currAngle);
+        double power = angleControl.update(currAngle, getAngularVelocity());
         if (getAbsError() < TOLERANCE) {
             turret.setPower(0);
         } else {

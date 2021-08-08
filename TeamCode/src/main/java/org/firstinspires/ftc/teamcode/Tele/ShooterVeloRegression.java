@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
 import org.firstinspires.ftc.teamcode.Components.Side;
 import org.firstinspires.ftc.teamcode.Components.Turret;
-import org.firstinspires.ftc.teamcode.Components.localizer.T265;
+import org.firstinspires.ftc.teamcode.localizers.T265;
 
 @TeleOp(name="VeloRegression", group = "Test")
 @Config

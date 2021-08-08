@@ -9,4 +9,7 @@ public class Details {
     public static Side side = Side.RED;
     public static OpModeType opModeType = OpModeType.NONE;
     public static TelemetryPacket packet = new TelemetryPacket();
+    public static Pose2d getFuturePose() {
+        return robotPose.plus(poseVelocity);
+    }
 }

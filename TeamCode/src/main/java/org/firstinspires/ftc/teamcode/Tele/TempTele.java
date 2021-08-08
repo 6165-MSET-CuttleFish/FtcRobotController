@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.Shooter;
 import org.firstinspires.ftc.teamcode.Components.Turret;
 import org.firstinspires.ftc.teamcode.Components.WobbleArm;
-import org.firstinspires.ftc.teamcode.Components.localizer.T265;
+import org.firstinspires.ftc.teamcode.localizers.T265;
 
 import static org.firstinspires.ftc.teamcode.Components.Details.robotPose;
 

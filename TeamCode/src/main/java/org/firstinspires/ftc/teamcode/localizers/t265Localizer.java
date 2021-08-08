@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Components.localizer;
+package org.firstinspires.ftc.teamcode.localizers;
 
 import android.annotation.SuppressLint;
 
@@ -22,6 +22,7 @@ public class t265Localizer implements Localizer {
             e.printStackTrace();
         }
         T265.startCam();
+        update();
     }
 
     @NotNull
