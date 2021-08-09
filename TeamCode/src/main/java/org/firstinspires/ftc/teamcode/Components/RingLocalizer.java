@@ -201,7 +201,7 @@ public class RingLocalizer extends OpenCvPipeline {
     }
     public ArrayList<Vector2d> getVectors(Pose2d currentPose){
         ArrayList<Vector2d> list = new ArrayList<>();
-        Coordinate current = new Coordinate(currentPose);
+        Coordinate current = Coordinate.toPoint(currentPose);
         for(Pose2d pose2d : vectors){
             Coordinate temp = current.toPoint();
             temp.polarAdd(currentPose.getHeading() - Math.PI, 3.5);
