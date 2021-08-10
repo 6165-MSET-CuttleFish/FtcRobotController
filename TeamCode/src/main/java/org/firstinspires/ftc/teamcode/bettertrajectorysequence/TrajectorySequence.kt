@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.bettertrajectorysequence
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.SequenceSegment
-import java.util.*
 
 class TrajectorySequence(sequenceList: List<SequenceSegment?>) {
     private val sequenceList: List<SequenceSegment>
@@ -17,7 +16,7 @@ class TrajectorySequence(sequenceList: List<SequenceSegment?>) {
     fun duration(): Double {
         var total = 0.0
         for (segment in sequenceList) {
-            total += segment.duration
+            total += segment.duration()
         }
         return total
     }
@@ -31,7 +30,7 @@ class TrajectorySequence(sequenceList: List<SequenceSegment?>) {
     }
 
     init {
-        if (sequenceList.size == 0) throw EmptySequenceException()
-        this.sequenceList = Collections.unmodifiableList(sequenceList) as List<SequenceSegment>
+        if (sequenceList.isEmpty()) throw EmptySequenceException()
+        this.sequenceList = sequenceList.filterNotNull()
     }
 }

@@ -13,8 +13,10 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.ConditionalWait;
+import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.TurnSegment;
@@ -36,6 +38,12 @@ public class TrajectorySequenceRunner {
     public static String COLOR_INACTIVE_TURN = "#7c4dff7a";
     public static String COLOR_INACTIVE_WAIT = "#dd2c007a";
 
+    public static String COLOR_INACTIVE_CONDITIONAL_WAIT = "#8D2377";
+    public static String COLOR_ACTIVE_CONDITIONAL_WAIT = "#EA37C5";
+
+    public static String COLOR_INACTIVE_FUTURE_SEGMENT = "#3B0381";
+    public static String COLOR_ACTIVE_FUTURE_SEGMENT = "#761FE4";
+
     public static String COLOR_ACTIVE_TRAJECTORY = "#4CAF50";
     public static String COLOR_ACTIVE_TURN = "#7c4dff";
     public static String COLOR_ACTIVE_WAIT = "#dd2c00";
@@ -47,6 +55,8 @@ public class TrajectorySequenceRunner {
     private final PIDFController turnController;
 
     private final NanoClock clock;
+    private double offset;
+    private ElapsedTime time = new ElapsedTime();
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
@@ -59,9 +69,11 @@ public class TrajectorySequenceRunner {
 
     private final FtcDashboard dashboard;
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+    private final PIDCoefficients headingPIDCoefficients;
 
     public TrajectorySequenceRunner(TrajectoryFollower follower, PIDCoefficients headingPIDCoefficients) {
         this.follower = follower;
+        this.headingPIDCoefficients = headingPIDCoefficients;
 
         turnController = new PIDFController(headingPIDCoefficients);
         turnController.setInputBounds(0, 2 * Math.PI);
@@ -73,6 +85,7 @@ public class TrajectorySequenceRunner {
     }
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
+        time.reset();
         currentTrajectorySequence = trajectorySequence;
         currentSegmentStartTime = clock.seconds();
         currentSegmentIndex = 0;
@@ -108,6 +121,7 @@ public class TrajectorySequenceRunner {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
+                time.reset();
                 currentSegmentStartTime = now;
                 lastSegmentIndex = currentSegmentIndex;
 
@@ -139,6 +153,18 @@ public class TrajectorySequenceRunner {
                 }
 
                 targetPose = currentTrajectory.get(deltaTime);
+            } else if (currentSegment instanceof FutureSegment) {
+                TrajectorySequenceRunner runner = new TrajectorySequenceRunner(follower, headingPIDCoefficients);
+                runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
+                if (isNewTransition) {
+                    assert runner.currentTrajectorySequence != null;
+                    offset += runner.currentTrajectorySequence.duration();
+
+                }
+                if (!runner.follower.isFollowing()) {
+                    currentSegmentIndex++;
+                }
+                return runner.update(poseEstimate, poseVelocity);
             } else if (currentSegment instanceof TurnSegment) {
                 MotionState targetState = ((TurnSegment) currentSegment).getMotionProfile().get(deltaTime);
 
@@ -159,7 +185,7 @@ public class TrajectorySequenceRunner {
                         new Pose2d(0, 0, targetAlpha)
                 );
 
-                if (deltaTime >= currentSegment.getDuration()) {
+                if (deltaTime >= currentSegment.getDuration().invoke()) {
                     currentSegmentIndex++;
                     driveSignal = new DriveSignal();
                 }
@@ -169,7 +195,7 @@ public class TrajectorySequenceRunner {
                 targetPose = currentSegment.getStartPose();
                 driveSignal = new DriveSignal();
 
-                if (deltaTime >= currentSegment.getDuration()) {
+                if (deltaTime >= currentSegment.getDuration().invoke()) {
                     currentSegmentIndex++;
                 }
             } else if (currentSegment instanceof ConditionalWait) {
@@ -177,13 +203,15 @@ public class TrajectorySequenceRunner {
 
                 targetPose = currentSegment.getStartPose();
                 driveSignal = new DriveSignal();
-
+                offset += time.seconds();
+                time.reset();
                 if (((ConditionalWait) currentSegment).getCondition().invoke()) {
                     currentSegmentIndex++;
+
                 }
             }
 
-            while (remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime()) {
+            while (remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime() + offset) {
                 remainingMarkers.get(0).getCallback().onMarkerReached();
                 remainingMarkers.remove(0);
             }
@@ -237,6 +265,18 @@ public class TrajectorySequenceRunner {
                     fieldOverlay.setStrokeWidth(1);
                     fieldOverlay.setStroke(COLOR_INACTIVE_WAIT);
                     fieldOverlay.strokeCircle(pose.getX(), pose.getY(), 3);
+                } else if (segment instanceof ConditionalWait) {
+                    Pose2d pose = segment.getStartPose();
+
+                    fieldOverlay.setStrokeWidth(1);
+                    fieldOverlay.setStroke(COLOR_INACTIVE_CONDITIONAL_WAIT);
+                    fieldOverlay.strokeCircle(pose.getX(), pose.getY(), 3);
+                } else if (segment instanceof FutureSegment) {
+                    if (((FutureSegment) segment).getTrajectory() != null) {
+                        fieldOverlay.setStrokeWidth(1);
+                        fieldOverlay.setStroke(COLOR_INACTIVE_FUTURE_SEGMENT);
+                        draw(fieldOverlay, ((FutureSegment) segment).getTrajectory(), currentSegment, targetPose, poseEstimate);
+                    }
                 }
             }
         }
@@ -259,6 +299,12 @@ public class TrajectorySequenceRunner {
 
                 fieldOverlay.setStrokeWidth(1);
                 fieldOverlay.setStroke(COLOR_ACTIVE_WAIT);
+                fieldOverlay.strokeCircle(pose.getX(), pose.getY(), 3);
+            }  else if (currentSegment instanceof ConditionalWait) {
+                Pose2d pose = currentSegment.getStartPose();
+
+                fieldOverlay.setStrokeWidth(1);
+                fieldOverlay.setStroke(COLOR_ACTIVE_CONDITIONAL_WAIT);
                 fieldOverlay.strokeCircle(pose.getX(), pose.getY(), 3);
             }
         }

@@ -11,7 +11,7 @@ class TurnSegment(
     val motionProfile: MotionProfile,
     markers: List<TrajectoryMarker>
 ) : SequenceSegment(
-    motionProfile.duration(),
+    { motionProfile.duration() },
     startPose,
     Pose2d(
         startPose.x, startPose.y,
