@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Components
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.control.PIDCoefficients
-import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -14,24 +13,34 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.Components.Details.packet
 import org.firstinspires.ftc.teamcode.PurePursuit.polarAdd
+import org.firstinspires.ftc.teamcode.util.BPIDFController
 import kotlin.math.abs
 
 @Config
 class Turret(hardwareMap: HardwareMap) : Component {
     var turret: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "turret")
+    companion object {
+        var ANGLE_PID = PIDCoefficients(8.0, 4.0, 0.03)
+        var kV = 0.0
+        var kStatic = 0.0
+        var kA = 0.0
+        var TICKS_PER_REVOLUTION = 28.0
+        var GEAR_RATIO = 68.0 / 13.0 * (110.0 / 24.0)
+        var TOLERANCE = 0
+    }
     private var lastKv = kV
     private var lastKp = ANGLE_PID.kP
     private var lastKi = ANGLE_PID.kI
     private var lastKd = ANGLE_PID.kD
     private var lastKStatic = kStatic
     private var lastKa = kA
-    var angleControl: PIDFController = PIDFController(ANGLE_PID, kV, kA, kStatic)
+    var angleControl: BPIDFController = BPIDFController(ANGLE_PID, 2.0, kV, kA, kStatic)
     private var targetAngle = 0.0
     var batteryVoltageSensor: VoltageSensor
     @JvmField
     var offset = 1.5
     var target: Vector2d? = null
-    var turretTuner: TurretTuner
+    private val turretTuner: TurretTuner = TurretTuner()
     var state = State.IDLE
 
     enum class State {
@@ -99,7 +108,7 @@ class Turret(hardwareMap: HardwareMap) : Component {
     }
 
     private fun setPIDCoefficients() {
-        angleControl = PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.voltage, kA, kStatic)
+        angleControl = BPIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.voltage, kA, kStatic)
     }
 
     private val relativeAngle: Double
@@ -165,18 +174,9 @@ class Turret(hardwareMap: HardwareMap) : Component {
     val isOnTarget: Boolean
         get() = if (state != State.TARGET_LOCK) false else abs(turret.velocity) <= 50 && absError < 0.9
 
-    companion object {
-        var ANGLE_PID = PIDCoefficients(9.0, 0.0, 0.03)
-        var kV = 0.0
-        var kStatic = 0.0
-        var kA = 0.0
-        var TICKS_PER_REVOLUTION = 28.0
-        var GEAR_RATIO = 68.0 / 13.0 * (110.0 / 24.0)
-        var TOLERANCE = 0.65
-    }
+
 
     init {
-        turretTuner = TurretTuner()
         if (Details.opModeType == OpModeType.AUTO) turret.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         turret.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next()

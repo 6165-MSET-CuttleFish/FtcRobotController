@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.t265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
@@ -344,6 +345,14 @@ public class Robot extends MecanumDrive implements Component {
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
         return new TrajectorySequenceBuilder(
                 startPose,
+                VEL_CONSTRAINT, ACCEL_CONSTRAINT,
+                MAX_ANG_VEL, MAX_ANG_ACCEL
+        );
+    }
+
+    public TrajectorySequenceBuilder futureBuilder(FutureSegment futureSegment) {
+        return new TrajectorySequenceBuilder(
+                futureSegment.getStartPose(),
                 VEL_CONSTRAINT, ACCEL_CONSTRAINT,
                 MAX_ANG_VEL, MAX_ANG_ACCEL
         );

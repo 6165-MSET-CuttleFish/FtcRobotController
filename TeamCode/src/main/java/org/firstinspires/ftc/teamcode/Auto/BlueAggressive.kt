@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Components.*
 import org.firstinspires.ftc.teamcode.Components.Robot.stackHeight
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment
 
 @Autonomous(name = "BLUE_AGGRESSIVE", group = "blue")
 class BlueAggressive : LinearOpMode() {

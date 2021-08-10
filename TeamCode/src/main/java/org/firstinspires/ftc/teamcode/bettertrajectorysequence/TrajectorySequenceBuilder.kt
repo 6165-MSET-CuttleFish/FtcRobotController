@@ -592,7 +592,9 @@ class TrajectorySequenceBuilder(
         return this
     }
 
-    fun addFutureTrajectory(future: FutureSegment): TrajectorySequenceBuilder {
+    fun addFutureTrajectory(future: FutureSegment, endPose: Pose2d): TrajectorySequenceBuilder {
+        future.startPose = lastPose
+        future.endPose = endPose
         futurePath(future)
         sequenceSegments.add(
             future
