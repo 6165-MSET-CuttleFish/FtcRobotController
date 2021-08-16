@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 public class Robot {
-    static boolean blue = false;
+    static boolean blue = true;
     public static Vector2d goal() {
         if (blue) {
             return new Vector2d(70.5275, 37.9725);
