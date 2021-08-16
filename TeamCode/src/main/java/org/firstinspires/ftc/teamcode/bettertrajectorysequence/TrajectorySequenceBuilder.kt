@@ -726,11 +726,13 @@ class TrajectorySequenceBuilder(
             var newSegment: SequenceSegment? = null
             if (segment is WaitSegment) {
                 val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+                newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
                 newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
                 val thisSegment = segment
                 newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers)
             } else if (segment is TurnSegment) {
                 val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+                newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
                 newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
                 val thisSegment = segment
                 newSegment = TurnSegment(

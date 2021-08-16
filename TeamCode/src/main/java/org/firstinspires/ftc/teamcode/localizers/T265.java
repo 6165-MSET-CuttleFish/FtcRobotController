@@ -75,9 +75,8 @@ public class T265 {
         T265Camera.CameraUpdate state = t265Cam.getLastReceivedCameraUpdate();
         Translation2d translation = new Translation2d(-state.pose.getTranslation().getX() / INCH_TO_METER, -state.pose.getTranslation().getY() / INCH_TO_METER);
         Rotation2d rotation = state.pose.getRotation();
-        Pose2d temp = new Pose2d(translation, rotation);
         //poseVelo = new Pose2d(temp.getTranslation().minus(curr.getTranslation()).div(veloTimer.seconds()), new Rotation2d((temp.getHeading() - curr.getHeading()) / veloTimer.seconds()));
-        curr = temp;
+        curr = new Pose2d(translation, rotation);
 
         com.acmerobotics.roadrunner.geometry.Pose2d currVelo = odo.getPoseVelocity();
         poseVelo = PoseUtil.toFTCLibPos2d(Objects.requireNonNull(odo.getPoseVelocity()));

@@ -71,13 +71,13 @@ class BetterPath : LinearOpMode() {
             .addDisplacementMarker { intake.setPower(1.0) }
             .lineTo(Vector2d(-55.0, 16.7)) // Intake starter rings
             .setReversed(true)
-            .prepShooter(0.5, robot)
+            .prepShooter(0.5, robot, Shooter.State.POWERSHOTS)
             .splineTo(pwrShotLocal(), 0.0)
             .addDisplacementMarker { intake.setPower(1.0) }
             .lineToSplineHeading(Pose2d(40.0, 3.0, Math.toRadians(0.0)))
             .splineTo(Vector2d(58.5275, 40.0), Math.toRadians(90.0))
             .setReversed(true)
-            .prepShooter(0.5, robot)
+            .prepShooter(0.5, robot, Shooter.State.CONTINUOUS)
             .splineTo(Vector2d(20.0, 16.0), Math.toRadians(180.0))
             .splineTo(Vector2d(-5.8, 17.0), Math.toRadians(180.0))
             .lineTo(Vector2d(12.0, 17.0))

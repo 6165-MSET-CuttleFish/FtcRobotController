@@ -26,6 +26,19 @@ class Shooter(hardwareMap: HardwareMap) : Component {
         MOVING_PS1, PS1, MOVING_PS2, PS2, MOVING_PS3, PS3
     }
 
+    companion object {
+        @JvmStatic
+        var MOTOR_VELO_PID = PIDCoefficients(0.001, 0.0, 0.0)
+        @JvmStatic
+        var kV = 0.000154
+        @JvmStatic
+        var kA = 0.000027
+        @JvmStatic
+        var kStatic = 0.01
+        @JvmStatic
+        var threshold = 350.0
+    }
+
     var state = State.IDLE
     @JvmField
     var powerShotsController: StateMachine<*>
@@ -234,14 +247,6 @@ class Shooter(hardwareMap: HardwareMap) : Component {
         val estimate = a * p + (1 - a) * i
         p = estimate
         return estimate
-    }
-
-    companion object {
-        var MOTOR_VELO_PID = PIDCoefficients(0.001, 0.0, 0.0)
-        var kV = 0.000154
-        var kA = 0.000027
-        var kStatic = 0.01
-        var threshold = 350.0
     }
 
     init {

@@ -16,11 +16,11 @@ fun TrajectorySequenceBuilder.magMacro(offset: Double, magazine: Magazine): Traj
     return this
 }
 
-fun TrajectorySequenceBuilder.prepShooter(offset: Double, robot: Robot): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.prepShooter(offset: Double, robot: Robot, state: Shooter.State): TrajectorySequenceBuilder {
     this.UNSTABLE_addTemporalMarkerOffset(offset) {
         robot.intake.setPower(0.0)
         robot.shooter.magazine.magMacro()
-        robot.shooter.state = Shooter.State.POWERSHOTS
+        robot.shooter.state = state
     }
     return this
 }

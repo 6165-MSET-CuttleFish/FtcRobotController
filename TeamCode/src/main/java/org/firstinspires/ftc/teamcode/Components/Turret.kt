@@ -19,13 +19,21 @@ import kotlin.math.abs
 @Config
 class Turret(hardwareMap: HardwareMap) : Component {
     var turret: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "turret")
+
     companion object {
+        @JvmStatic
         var ANGLE_PID = PIDCoefficients(8.0, 4.0, 0.03)
+        @JvmStatic
         var kV = 0.0
+        @JvmStatic
         var kStatic = 0.0
+        @JvmStatic
         var kA = 0.0
+        @JvmStatic
         var TICKS_PER_REVOLUTION = 28.0
+        @JvmStatic
         var GEAR_RATIO = 68.0 / 13.0 * (110.0 / 24.0)
+        @JvmStatic
         var TOLERANCE = 0
     }
     private var lastKv = kV
@@ -40,6 +48,10 @@ class Turret(hardwareMap: HardwareMap) : Component {
     @JvmField
     var offset = 1.5
     var target: Vector2d? = null
+        set(value) {
+            state = State.TARGET_LOCK
+            field = value
+        }
     private val turretTuner: TurretTuner = TurretTuner()
     var state = State.IDLE
 
@@ -154,12 +166,6 @@ class Turret(hardwareMap: HardwareMap) : Component {
     fun setTargetAngle(angle: Double) {
         targetAngle = angle
         target = null
-        state = State.TARGET_LOCK
-    }
-
-    @JvmName("setTarget1")
-    fun setTarget(vector2d: Vector2d?) {
-        target = vector2d
         state = State.TARGET_LOCK
     }
 
