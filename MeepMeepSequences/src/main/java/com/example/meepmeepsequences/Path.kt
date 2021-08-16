@@ -56,7 +56,7 @@ class Path {
                         .splineTo(Vector2d(20.0, 16.0), Math.toRadians(180.0))
                         .splineTo(Vector2d(-5.8, 17.0), Math.toRadians(180.0))
                         .lineTo(Vector2d(12.0, 17.0))
-                        .build()
+                        .build();
                 }
             }
         )
