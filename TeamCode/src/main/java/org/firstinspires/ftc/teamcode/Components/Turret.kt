@@ -4,22 +4,22 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.VoltageSensor
-import org.firstinspires.ftc.teamcode.util.TurretTuner
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.VoltageSensor
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.Components.Details.packet
 import org.firstinspires.ftc.teamcode.PurePursuit.polarAdd
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.BPIDFController
+import org.firstinspires.ftc.teamcode.util.DashboardUtil
+import org.firstinspires.ftc.teamcode.util.TurretTuner
 import kotlin.math.abs
 
 @Config
 class Turret(hardwareMap: HardwareMap) : Component {
-    var turret: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "turret")
-
+    val turret: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "turret")
     companion object {
         @JvmStatic
         var ANGLE_PID = PIDCoefficients(8.0, 4.0, 0.03)
@@ -35,6 +35,8 @@ class Turret(hardwareMap: HardwareMap) : Component {
         var GEAR_RATIO = 68.0 / 13.0 * (110.0 / 24.0)
         @JvmStatic
         var TOLERANCE = 0
+
+        val MAX_RPM = 0.0
     }
     private var lastKv = kV
     private var lastKp = ANGLE_PID.kP
@@ -123,6 +125,10 @@ class Turret(hardwareMap: HardwareMap) : Component {
         angleControl = BPIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.voltage, kA, kStatic)
     }
 
+    fun rpmToVelocity(rpm: Double): Double {
+        return rpm *  GEAR_RATIO * 2 * Math.PI / 60.0
+    }
+
     private val relativeAngle: Double
         get() = ticksToAngle(turret.currentPosition.toDouble())
 
@@ -183,6 +189,7 @@ class Turret(hardwareMap: HardwareMap) : Component {
 
 
     init {
+        kV = 1 / rpmToVelocity(MAX_RPM)
         if (Details.opModeType == OpModeType.AUTO) turret.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         turret.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next()

@@ -17,7 +17,7 @@ class Path {
 
     // Declare a MeepMeep instance
     // With a field size of 800 pixels
-    var aggroPath = MeepMeep(600) // Set field image
+    val aggroPath = MeepMeep(800) // Set field image
         .setBackground(Background.FIELD_ULTIMATE_GOAL_DARK) // Set theme
         .setTheme(ColorSchemeRedDark())
         // Background opacity from 0-1

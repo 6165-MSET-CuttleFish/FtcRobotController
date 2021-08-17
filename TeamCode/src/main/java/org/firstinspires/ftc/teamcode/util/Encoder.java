@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.MovingStatistics;
 
 /**
  * Wraps a motor instance to provide corrected velocity counts and allow reversing without changing the corresponding
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
  */
 public class Encoder {
     private final static int CPS_STEP = 0x10000;
+    private MovingStatistics velocityEstimates;
 
     private static double inverseOverflow(double input, double estimate) {
         double real = input;
@@ -47,6 +49,7 @@ public class Encoder {
         this.clock = clock;
 
         this.direction = Direction.FORWARD;
+        this.velocityEstimates = new MovingStatistics(5);
 
         this.lastPosition = 0;
         this.velocityEstimate = 0.0;
@@ -75,7 +78,8 @@ public class Encoder {
         if (currentPosition != lastPosition) {
             double currentTime = clock.seconds();
             double dt = currentTime - lastUpdateTime;
-            velocityEstimate = (currentPosition - lastPosition) / dt;
+            // velocityEstimate = (currentPosition - lastPosition) / dt;
+            velocityEstimates.add((currentPosition - lastPosition) / dt);
             lastPosition = currentPosition;
             lastUpdateTime = currentTime;
         }
@@ -88,6 +92,6 @@ public class Encoder {
     }
 
     public double getCorrectedVelocity() {
-        return inverseOverflow(getRawVelocity(), velocityEstimate);
+        return inverseOverflow(getRawVelocity(), velocityEstimates.getMean());
     }
 }

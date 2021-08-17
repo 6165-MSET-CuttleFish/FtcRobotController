@@ -155,7 +155,6 @@ public class Robot extends MecanumDrive implements Component {
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final List<DcMotorEx> motors;
     private final VoltageSensor batteryVoltageSensor;
-    public LinkedList<Runnable> actionQueue = new LinkedList<Runnable>();
     FtcDashboard dashboard;
 
     public Robot(OpMode opMode, Pose2d pose2d) {
