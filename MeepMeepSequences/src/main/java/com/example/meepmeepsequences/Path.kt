@@ -70,21 +70,3 @@ class Path {
             }
         )
 }
-fun TrajectorySequenceBuilder.waitCondition(condition: () -> Boolean): TrajectorySequenceBuilder {
-    this.waitSeconds(1.0)
-    return this
-}
-
-fun TrajectorySequenceBuilder.addFutureTrajectory(callback: FutureCallback, pose: Pose2d) : TrajectorySequenceBuilder {
-    return callback.buildFutureSequence(this)
-}
-
-fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment) : TrajectorySequenceBuilder {
-    addTrajectory(segment.trajectory)
-    return this
-}
-
-interface FutureCallback {
-    fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
-}
-
