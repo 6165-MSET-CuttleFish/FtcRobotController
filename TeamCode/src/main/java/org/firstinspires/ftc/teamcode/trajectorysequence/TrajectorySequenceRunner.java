@@ -27,7 +27,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import static org.firstinspires.ftc.teamcode.Components.Details.packet;
+import static org.firstinspires.ftc.teamcode.components.Details.packet;
 
 @Config
 public class TrajectorySequenceRunner {

@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Components.OpModeType;
-import org.firstinspires.ftc.teamcode.Components.Robot;
-import org.firstinspires.ftc.teamcode.Components.Side;
+import org.firstinspires.ftc.teamcode.components.OpModeType;
+import org.firstinspires.ftc.teamcode.components.Robot;
+import org.firstinspires.ftc.teamcode.components.Side;
 import org.firstinspires.ftc.teamcode.localizers.T265;
 
 @TeleOp(name = "T265Test", group = "test")

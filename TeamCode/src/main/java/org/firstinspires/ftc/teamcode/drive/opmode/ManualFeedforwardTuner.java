@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.components.Robot;
 
 import java.util.Objects;
 

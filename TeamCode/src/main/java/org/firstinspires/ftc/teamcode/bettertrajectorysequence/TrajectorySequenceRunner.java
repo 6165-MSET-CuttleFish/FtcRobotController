@@ -24,13 +24,12 @@ import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.W
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import static org.firstinspires.ftc.teamcode.Components.Details.packet;
+import static org.firstinspires.ftc.teamcode.components.Details.packet;
 
 @Config
 public class TrajectorySequenceRunner {

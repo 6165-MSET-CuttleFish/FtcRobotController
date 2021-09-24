@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.components.Robot;
 import org.firstinspires.ftc.teamcode.localizers.StandardTrackingWheelLocalizer;
 
 /**

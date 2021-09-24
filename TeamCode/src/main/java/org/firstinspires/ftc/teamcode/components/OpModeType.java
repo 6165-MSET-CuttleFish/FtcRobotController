@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Components;
+package org.firstinspires.ftc.teamcode.components;
 
 public enum OpModeType {
     AUTO,

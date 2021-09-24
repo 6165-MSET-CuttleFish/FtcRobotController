@@ -21,7 +21,7 @@ class Path {
     // Declare a MeepMeep instance
     // With a field size of 800 pixels
     val aggroPath = MeepMeep(800) // Set field image
-        .setBackground(Background.FIELD_ULTIMATE_GOAL_DARK) // Set theme
+        .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set theme
         .setTheme(ColorSchemeRedDark())
         // Background opacity from 0-1
         .setBackgroundAlpha(1f) // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
