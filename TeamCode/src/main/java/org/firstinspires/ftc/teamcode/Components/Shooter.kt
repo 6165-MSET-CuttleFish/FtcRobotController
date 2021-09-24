@@ -9,10 +9,9 @@ import com.noahbres.jotai.StateMachineBuilder
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.Components.Turret
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate
 import org.firstinspires.ftc.teamcode.util.Encoder
-import org.firstinspires.ftc.teamcode.util.TuningController
+import org.firstinspires.ftc.teamcode.tuners.TuningController
 import org.firstinspires.ftc.teamcode.util.VelocityPIDFController
 
 //http://192.168.43.1:8080/dash
@@ -44,8 +43,8 @@ class Shooter(hardwareMap: HardwareMap) : Component {
     var powerShotsController: StateMachine<*>
     @JvmField
     var offset = 50.0
-    var p = 0.0
-    var a = 0.08
+    private var p = 0.0
+    private var a = 0.08
     private var lastTargetVelo = 0.0
     private var lastMotorPos = 0.0
     private var lastMotorVelo = 0.0

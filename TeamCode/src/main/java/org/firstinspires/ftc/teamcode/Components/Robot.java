@@ -92,9 +92,7 @@ public class Robot extends MecanumDrive implements Component {
         }
         return new Vector2d(-8, -8);
     }
-    // 51.5
-    // 59
-    // 66.5
+
     public static Vector2d[] powerShots() {
         if (side == Side.BLUE) {
             return new Vector2d[]{
@@ -410,20 +408,19 @@ public class Robot extends MecanumDrive implements Component {
         for (Component component : components) {
             component.update();
         }
-        if (opModeType == OpModeType.AUTO && !shooter.magazine.getRunning()) {
-            if (shooter.magazine.isThirdRing()) {
-                shooter.magazine.mid();
-                intake.setPower(0);
-            } else {
-                if (intakeReq) {
-                    intake.setPower(1);
-                }
-                shooter.magazine.down();
-            }
-        }
+//        if (opModeType == OpModeType.AUTO && !shooter.magazine.getRunning()) {
+//            if (shooter.magazine.isThirdRing()) {
+//                shooter.magazine.mid();
+//                intake.setPower(0);
+//            } else {
+//                if (intakeReq) {
+//                    intake.setPower(1);
+//                }
+//                shooter.magazine.down();
+//            }
+//        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
-        // if (!isBusy() && actionQueue.size() != 0 && !isHazardous()) actionQueue.pop().run();
     }
 
     public void waitForIdle() {

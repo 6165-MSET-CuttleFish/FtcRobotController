@@ -11,10 +11,9 @@ import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.Components.Details.packet
 import org.firstinspires.ftc.teamcode.PurePursuit.polarAdd
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.BPIDFController
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
-import org.firstinspires.ftc.teamcode.util.TurretTuner
+import org.firstinspires.ftc.teamcode.tuners.TurretTuner
 import kotlin.math.abs
 
 @Config
@@ -54,7 +53,8 @@ class Turret(hardwareMap: HardwareMap) : Component {
             state = State.TARGET_LOCK
             field = value
         }
-    private val turretTuner: TurretTuner = TurretTuner()
+    private val turretTuner: TurretTuner =
+        TurretTuner()
     var state = State.IDLE
 
     enum class State {

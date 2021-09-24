@@ -121,6 +121,9 @@ public class TrajectorySequenceRunner {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
+                if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
+                    offset += time.seconds();
+                }
                 time.reset();
                 currentSegmentStartTime = now;
                 lastSegmentIndex = currentSegmentIndex;
@@ -156,11 +159,10 @@ public class TrajectorySequenceRunner {
             } else if (currentSegment instanceof FutureSegment) {
                 TrajectorySequenceRunner runner = new TrajectorySequenceRunner(follower, headingPIDCoefficients);
                 runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
-                if (isNewTransition) {
-                    assert runner.currentTrajectorySequence != null;
-                    offset += runner.currentTrajectorySequence.duration();
-
-                }
+//                if (isNewTransition) {
+//                    assert runner.currentTrajectorySequence != null;
+//                    offset += runner.currentTrajectorySequence.duration();
+//                }
                 if (!runner.follower.isFollowing()) {
                     currentSegmentIndex++;
                 }
@@ -203,11 +205,10 @@ public class TrajectorySequenceRunner {
 
                 targetPose = currentSegment.getStartPose();
                 driveSignal = new DriveSignal();
-                offset += time.seconds();
-                time.reset();
                 if (((ConditionalWait) currentSegment).getCondition().invoke()) {
+                    offset += time.seconds();
+                    time.reset();
                     currentSegmentIndex++;
-
                 }
             }
 
