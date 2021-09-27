@@ -29,21 +29,15 @@ class Path {
         .followTrajectorySequence(
             object : AddTrajectorySequenceCallback {
                 override fun buildTrajectorySequence(drive: DriveShim): TrajectorySequence {
-                    return drive.trajectorySequenceBuilder(Pose2d(-62.0, 16.8475, 0.0))
-                        .lineToSplineHeading(Pose2d(46.0, 16.8475))
-                        .splineTo(Vector2d(58.0, 10.0), Math.toRadians(-90.0))
-                        .splineTo(Vector2d(58.0, -17.0), Math.toRadians(-90.0))
-                        .addFutureTrajectory(object : FutureCallback {
-                            override fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder {
-                                return builder
-                                    .setReversed(true)
-                                    .splineTo(Vector2d(58.0, 5.0), Math.toRadians(90.0))
-                                    .splineTo(dropZonesPS()[2].vec(), dropZonesPS()[2].heading)
-                                    .waitCondition { false }
-                                    .setReversed(false)
-                                    .splineTo(Vector2d(-5.0, 16.7), Math.toRadians(180.0))
-                            }
-                        }, Pose2d(-5.0, 16.7, Math.toRadians(180.0)))
+                    return drive.trajectorySequenceBuilder(Pose2d(0.0, 0.0, 0.0))
+                        .forward(20.0)
+                        .turn(1.6)
+                        .forward(20.0)
+                        .turn(1.6)
+                        .forward(20.0)
+                        .turn(-1.55)
+                        .forward(20.0)
+                        .turn(-1.55)
                         .waitCondition { false }
 //                        .UNSTABLE_addTemporalMarkerOffset(0.4) {
 //                            magazine.magMacro()
@@ -54,4 +48,5 @@ class Path {
                 }
             }
         )
+            .start();
 }
