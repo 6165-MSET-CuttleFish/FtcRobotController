@@ -21,9 +21,6 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
-        DcMotor left = hardwareMap.dcMotor.get("intake");
-        DcMotor right = hardwareMap.dcMotor.get("fl");
-
 
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -40,8 +37,6 @@ public class LocalizationTest extends LinearOpMode {
             robot.update();
 
             Pose2d poseEstimate = robot.getPoseEstimate();
-            telemetry.addData("left", left.getCurrentPosition());
-            telemetry.addData("right", right.getCurrentPosition());
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));

@@ -32,7 +32,8 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
-import org.firstinspires.ftc.teamcode.localizers.t265Localizer;
+import org.firstinspires.ftc.teamcode.localizers.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
@@ -73,7 +74,7 @@ public class Robot extends TankDrive implements Component {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private final DcMotorEx leftFront, leftRear, leftMid, rightRear, rightFront, rightMid;
 
     private final Component[] components = {};
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(0, 0, 0);
@@ -81,7 +82,6 @@ public class Robot extends TankDrive implements Component {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
@@ -126,11 +126,14 @@ public class Robot extends TankDrive implements Component {
         }
         leftFront = hardwareMap.get(DcMotorEx.class, "fl");
         leftRear = hardwareMap.get(DcMotorEx.class, "bl");
+        leftMid = hardwareMap.get(DcMotorEx.class, "ml");
         rightRear = hardwareMap.get(DcMotorEx.class, "br");
         rightFront = hardwareMap.get(DcMotorEx.class, "fr");
-
+        rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         // components = new Component[]{intake, shooter, wobbleArm};
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
+        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -143,9 +146,13 @@ public class Robot extends TankDrive implements Component {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        setLocalizer(new t265Localizer(hardwareMap));
+        for (DcMotorEx motor : leftMotors) {
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMid.setDirection(DcMotor.Direction.REVERSE);
+        Easy265.init(hardwareMap);
+        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
