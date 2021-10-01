@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -38,6 +38,11 @@ import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.Side;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -48,8 +53,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.components.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.components.Details.side;
+import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -62,8 +67,12 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 
+/**
+ * This class represents the robot and its drivetrain
+ * @author Ayush Raman
+ */
 @Config
-public class Robot extends TankDrive implements Component {
+public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final int HORIZON = 100; // horizon value to tune
@@ -74,9 +83,9 @@ public class Robot extends TankDrive implements Component {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
 
-    private final DcMotorEx leftFront, leftRear, leftMid, rightRear, rightFront, rightMid;
+    private final Module[] modules;
+    public Intake intake;
 
-    private final Component[] components = {};
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -86,7 +95,7 @@ public class Robot extends TankDrive implements Component {
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
+    private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     FtcDashboard dashboard;
 
@@ -124,13 +133,13 @@ public class Robot extends TankDrive implements Component {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        leftFront = hardwareMap.get(DcMotorEx.class, "fl");
-        leftRear = hardwareMap.get(DcMotorEx.class, "bl");
-        leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        rightRear = hardwareMap.get(DcMotorEx.class, "br");
-        rightFront = hardwareMap.get(DcMotorEx.class, "fr");
-        rightMid = hardwareMap.get(DcMotorEx.class, "mr");
-        // components = new Component[]{intake, shooter, wobbleArm};
+        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
+                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
+                leftMid = hardwareMap.get(DcMotorEx.class, "ml");
+        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+                rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
+                rightMid = hardwareMap.get(DcMotorEx.class, "mr");
+        modules = new Module[]{intake};
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
         leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
         rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
@@ -290,20 +299,9 @@ public class Robot extends TankDrive implements Component {
         if (!Thread.currentThread().isInterrupted()) {
             Details.robotPose = getPoseEstimate();
         }
-        for (Component component : components) {
-            component.update();
+        for (Module module : modules) {
+            module.update();
         }
-//        if (opModeType == OpModeType.AUTO && !shooter.magazine.getRunning()) {
-//            if (shooter.magazine.isThirdRing()) {
-//                shooter.magazine.mid();
-//                intake.setPower(0);
-//            } else {
-//                if (intakeReq) {
-//                    intake.setPower(1);
-//                }
-//                shooter.magazine.down();
-//            }
-//        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }

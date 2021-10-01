@@ -11,8 +11,7 @@ import java.util.List;
  * Utility functions for log files.
  */
 public class LoggingUtil {
-    public static final File ROAD_RUNNER_FOLDER =
-            new File(AppUtil.ROOT_FOLDER + "/RoadRunner/");
+    public static final File ROAD_RUNNER_FOLDER = new File(AppUtil.ROOT_FOLDER + "/RoadRunner/");
 
     private static final long LOG_QUOTA = 25 * 1024 * 1024; // 25MB log quota for now
 
