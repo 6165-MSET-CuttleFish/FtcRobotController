@@ -54,6 +54,7 @@ import androidx.annotation.NonNull;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -165,8 +166,9 @@ public class Robot extends TankDrive {
         setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
-            autoInit();
+            // autoInit();
         }
+        setPoseEstimate(robotPose);
     }
 
     public void autoInit() {
