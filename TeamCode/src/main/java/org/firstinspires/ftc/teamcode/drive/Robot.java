@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -32,13 +31,12 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -137,15 +135,15 @@ public class Robot extends TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
+                // leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx // rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
-        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
+        motors = Arrays.asList(leftFront, /*leftRear,*/ leftMid, /*rightRear,*/ rightFront, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftMid /*leftRear*/);
+        rightMotors = Arrays.asList(rightFront, rightMid/*, rightRear*/);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
