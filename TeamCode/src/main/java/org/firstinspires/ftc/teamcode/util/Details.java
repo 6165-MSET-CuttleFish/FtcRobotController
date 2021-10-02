@@ -1,7 +1,10 @@
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.Side;
 
 public class Details {
     public static Pose2d robotPose = new Pose2d();
