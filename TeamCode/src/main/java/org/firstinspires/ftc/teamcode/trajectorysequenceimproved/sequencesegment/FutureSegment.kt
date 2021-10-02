@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment
+package org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 
 class FutureSegment(
     startPose2d: Pose2d,
