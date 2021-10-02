@@ -2,19 +2,17 @@ package com.example.meepmeepsequences
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.example.meepmeepsequences.Robot.dropZonesPS
 import com.example.meepmeepsequences.Robot.pwrShotLocal
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 import com.noahbres.meepmeep.roadrunner.AddTrajectorySequenceCallback
 import com.noahbres.meepmeep.roadrunner.DriveShim
-import com.noahbres.meepmeep.roadrunner.DriveTrainType
-import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
-import java.util.*
 
 class Path {
 
