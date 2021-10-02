@@ -307,6 +307,11 @@ public class Robot extends TankDrive {
      * @return Whether the robot's current state is potentially hazardous to operate in
      */
     public boolean isHazardous() {
+        for (Module module : modules) {
+            if (module.isHazardous()) {
+                return true;
+            }
+        }
         return false;
     }
 
