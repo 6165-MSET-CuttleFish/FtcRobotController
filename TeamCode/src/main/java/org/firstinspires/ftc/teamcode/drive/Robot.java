@@ -142,7 +142,7 @@ public class Robot extends TankDrive {
         DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
-        modules = new Module[]{intake};
+        modules = new Module[]{};
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
         leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
         rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
