@@ -14,7 +14,7 @@ import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
-import java.util.*
+import java.util.*;
 
 class Path {
 
@@ -23,6 +23,7 @@ class Path {
     val aggroPath = MeepMeep(800) // Set field image
         .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set theme
         .setTheme(ColorSchemeRedDark())
+        .setDriveTrainType(DriveTrainType.TANK)
         // Background opacity from 0-1
         .setBackgroundAlpha(1f) // Set constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
         .setConstraints(54.0, 54.0, Math.toRadians(180.0), Math.toRadians(180.0), 15.0)

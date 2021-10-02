@@ -2,6 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
+      <module name="FtcApp.FtcRobotController" target="11" />
+      <module name="FtcApp.TeamCode" target="11" />
       <module name="FtcRobotController.FtcRobotController" target="11" />
       <module name="FtcRobotController.TeamCode" target="11" />
       <module name="mti.FtcRobotController" target="11" />
