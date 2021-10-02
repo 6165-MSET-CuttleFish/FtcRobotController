@@ -32,6 +32,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
@@ -54,6 +55,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
@@ -283,8 +285,6 @@ public class Robot extends TankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    public boolean intakeReq = false;
-
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -402,11 +402,21 @@ public class Robot extends TankDrive {
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
+        double totalCurrent = 0;
+        for (DcMotorEx motor : motors) {
+            totalCurrent += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
+        if (totalCurrent < MAX_CURRENT) {
+            for (DcMotorEx leftMotor : leftMotors) {
+                leftMotor.setPower(v);
+            }
+            for (DcMotorEx rightMotor : rightMotors) {
+                rightMotor.setPower(v1);
+            }
+        } else {
+            for (DcMotorEx motor : motors) {
+                motor.setPower(0);
+            }
         }
     }
 
