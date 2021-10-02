@@ -137,15 +137,15 @@ public class Robot extends TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
+                //leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx //rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
-        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
+        motors = Arrays.asList(leftFront, leftMid, rightFront, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftMid);
+        rightMotors = Arrays.asList(rightFront, rightMid);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -158,13 +158,13 @@ public class Robot extends TankDrive {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        for (DcMotorEx motor : leftMotors) {
+        for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMid.setDirection(DcMotor.Direction.REVERSE);
-        Easy265.init(hardwareMap);
-        setLocalizer(new T265Localizer());
+        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotor.Direction.FORWARD);
+//        Easy265.init(hardwareMap);
+//        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
