@@ -135,15 +135,15 @@ public class Robot extends TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                // leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
-                leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx // rightRear = hardwareMap.get(DcMotorEx.class, "br"),
-                rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
-                rightMid = hardwareMap.get(DcMotorEx.class, "mr");
+                 leftRear = hardwareMap.get(DcMotorEx.class, "bl");
+                //leftMid = hardwareMap.get(DcMotorEx.class, "ml");
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+                rightFront = hardwareMap.get(DcMotorEx.class, "fr");
+                //rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, /*leftRear,*/ leftMid, /*rightRear,*/ rightFront, rightMid);
-        leftMotors = Arrays.asList(leftFront, leftMid /*leftRear*/);
-        rightMotors = Arrays.asList(rightFront, rightMid/*, rightRear*/);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        leftMotors = Arrays.asList(leftFront, leftRear);
+        rightMotors = Arrays.asList(rightFront, rightRear);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -159,8 +159,8 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : leftMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMid.setDirection(DcMotor.Direction.REVERSE);
+        //leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        //rightMid.setDirection(DcMotor.Direction.REVERSE);
         Easy265.init(hardwareMap);
         setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
