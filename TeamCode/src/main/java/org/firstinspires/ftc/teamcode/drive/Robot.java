@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -53,6 +54,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
@@ -126,6 +128,7 @@ public class Robot extends TankDrive {
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        Details.telemetry = telemetry;
         TrajectoryFollower follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
@@ -192,20 +195,6 @@ public class Robot extends TankDrive {
         webcam.openCameraDevice();
         webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
         //dashboard.startCameraStream(webcam, 30);
-    }
-
-    public Trajectory ringPickup;
-
-    void bubbleSort(Vector2d[] arr, Vector2d referencePose) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++)
-            for (int j = 0; j < n - i - 1; j++)
-                if (arr[j].distTo(referencePose) > arr[j + 1].distTo(referencePose)) {
-                    // swap arr[j+1] and arr[j]
-                    Coordinate temp = Coordinate.toPoint(arr[j]);
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp.toVector();
-                }
     }
 
     public void switchPipeline(OpenCvPipeline pipeline) {
@@ -407,10 +396,10 @@ public class Robot extends TankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
+            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
         }
         for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(v1);
+            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
         }
     }
 
