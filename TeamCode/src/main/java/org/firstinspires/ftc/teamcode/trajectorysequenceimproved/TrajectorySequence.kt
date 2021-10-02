@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.bettertrajectorysequence
+package org.firstinspires.ftc.teamcode.trajectorysequenceimproved
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.SequenceSegment
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.SequenceSegment
 
 class TrajectorySequence(sequenceList: List<SequenceSegment?>) {
     private val sequenceList: List<SequenceSegment>

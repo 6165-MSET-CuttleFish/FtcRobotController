@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.*
 object Easy265 {
 
     private const val TAG = "Easy265"
-    private val ODOMETRY_COVARIANCE = 0.15
+    private val ODOMETRY_COVARIANCE = 1.0
     private val INCH_TO_METER = 0.0254
 
     /**
