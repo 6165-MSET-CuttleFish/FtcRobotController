@@ -9,7 +9,13 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  *
  * @author Bill Yuan
  */
-public class Intake extends Module {
+public class Intake extends Module<Intake.State> {
+    enum State {
+        INTAKING,
+        EXTAKING,
+        OFF
+    }
+
     public Intake(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
@@ -17,6 +23,20 @@ public class Intake extends Module {
     @Override
     public void init() {
         // TODO: initialize hardware modules
+    }
+
+    @Override
+    public State getState() {
+        // TODO: return the state of the module
+        return null;
+    }
+
+    /**
+     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     */
+    @Override
+    public boolean isHazardous() {
+        return false;
     }
 
     @Override

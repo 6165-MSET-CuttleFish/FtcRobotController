@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment
+package org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 

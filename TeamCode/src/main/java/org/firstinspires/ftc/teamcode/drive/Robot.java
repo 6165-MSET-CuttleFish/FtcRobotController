@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -28,17 +27,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -54,8 +52,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -167,8 +166,9 @@ public class Robot extends TankDrive {
 //        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
-            autoInit();
+            // autoInit();
         }
+        setPoseEstimate(robotPose);
     }
 
     public void autoInit() {
@@ -281,8 +281,6 @@ public class Robot extends TankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    public boolean intakeReq = false;
-
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -305,6 +303,11 @@ public class Robot extends TankDrive {
      * @return Whether the robot's current state is potentially hazardous to operate in
      */
     public boolean isHazardous() {
+        for (Module module : modules) {
+            if (module.isHazardous()) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -395,11 +398,21 @@ public class Robot extends TankDrive {
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
+        double totalCurrent = 0;
+        for (DcMotorEx motor : motors) {
+            totalCurrent += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
+        if (totalCurrent < MAX_CURRENT) {
+            for (DcMotorEx leftMotor : leftMotors) {
+                leftMotor.setPower(v);
+            }
+            for (DcMotorEx rightMotor : rightMotors) {
+                rightMotor.setPower(v1);
+            }
+        } else {
+            for (DcMotorEx motor : motors) {
+                motor.setPower(0);
+            }
         }
     }
 

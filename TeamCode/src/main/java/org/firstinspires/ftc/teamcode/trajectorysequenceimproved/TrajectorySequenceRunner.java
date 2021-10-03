@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.bettertrajectorysequence;
+package org.firstinspires.ftc.teamcode.trajectorysequenceimproved;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -15,12 +15,12 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.ConditionalWait;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.SequenceSegment;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.TrajectorySegment;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.TurnSegment;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.WaitSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.ConditionalWait;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.SequenceSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TrajectorySegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TurnSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.WaitSegment;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 import java.util.ArrayList;

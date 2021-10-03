@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.bettertrajectorysequence
+package org.firstinspires.ftc.teamcode.trajectorysequenceimproved
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
@@ -10,7 +10,7 @@ import com.acmerobotics.roadrunner.trajectory.*
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import com.acmerobotics.roadrunner.util.Angle.norm
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.*
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
 import java.util.*
 
 class TrajectorySequenceBuilder(
