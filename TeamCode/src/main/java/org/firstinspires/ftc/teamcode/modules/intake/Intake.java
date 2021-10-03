@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+
 /**
  * Frontal mechanism for collecting freight
  *
@@ -12,6 +14,8 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 public class Intake extends Module<Intake.State> {
     private DcMotor intake;
     private Servo blocker;
+    private DistanceSensor blockSensor;
+    private boolean isBlock;
     enum State {
         INTAKING,
         EXTAKING,
@@ -27,7 +31,9 @@ public class Intake extends Module<Intake.State> {
     public void init() {
         intake = hardwareMap.get(DcMotor.class, "intake");
         blocker = hardwareMap.get(Servo.class, "blocker");
+        blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        isBlock = false;
     }
 
     @Override
@@ -46,18 +52,36 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void update() {
-        // TODO: update control loops and modules
+        functions();
     }
-    public void in(){
+    private void in(){
         intake.setPower(1);
         setState(State.INTAKING);
     }
-    public void out(){
+    private void out(){
         intake.setPower(-1);
         setState(State.EXTAKING);
     }
-    public void off(){
+    private void off(){
         intake.setPower(0);
         setState(State.IDLE);
+    }
+    private void checkBlock(){
+        if(/*DistanceSensor.distanceOutOfRange*/){
+            off();
+            isBlock = true;
+        }
+    }
+    private void functions(){
+        checkBlock();
+        if(!isBlock == false){
+            if(/*gamepad1.*/){
+                in();
+            }
+            else if(/*gamepad1.*/){
+                out();
+            }
+            else off();
+        }
     }
 }
