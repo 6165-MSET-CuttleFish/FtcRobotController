@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -402,6 +404,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : motors) {
             totalCurrent += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
+        Log.println(Log.INFO, "totalCurrent", totalCurrent + "");
         if (totalCurrent < MAX_CURRENT) {
             for (DcMotorEx leftMotor : leftMotors) {
                 leftMotor.setPower(v);
