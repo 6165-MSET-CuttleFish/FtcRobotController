@@ -15,12 +15,8 @@ public class Intake extends Module<Intake.State> {
     enum State {
         INTAKING,
         EXTAKING,
-<<<<<<< HEAD
-        OFF,
-        HAS_OBJECT
-=======
         IDLE
->>>>>>> master
+
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -62,6 +58,6 @@ public class Intake extends Module<Intake.State> {
     }
     public void off(){
         intake.setPower(0);
-        setState(State.OFF);
+        setState(State.IDLE);
     }
 }
