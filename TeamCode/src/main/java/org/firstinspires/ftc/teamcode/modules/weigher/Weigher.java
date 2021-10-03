@@ -11,6 +11,7 @@ public class Weigher extends Module<Weigher.State> {
         CUBE_LIGHT,
         CUBE_MEDIUM,
         CUBE_HEAVY,
+        DUCK,
         ;
     }
     State state = State.NONE;
