@@ -4,6 +4,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+/**
+ * Weighing the Freight to determine type
+ *
+ * @author Matthew Song
+ */
 public class Weigher extends Module<Weigher.State> {
     enum State {
         NONE,
@@ -11,8 +16,8 @@ public class Weigher extends Module<Weigher.State> {
         CUBE_LIGHT,
         CUBE_MEDIUM,
         CUBE_HEAVY,
-        DUCK,
-        ;
+        DUCK
+
     }
     State state = State.NONE;
 
