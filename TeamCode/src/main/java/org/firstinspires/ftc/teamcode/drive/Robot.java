@@ -93,7 +93,7 @@ public class Robot extends TankDrive {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 1;
+    public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -137,15 +137,15 @@ public class Robot extends TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                //leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
+                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx //rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftMid, rightFront, rightMid);
-        leftMotors = Arrays.asList(leftFront, leftMid);
-        rightMotors = Arrays.asList(rightFront, rightMid);
+        motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
+        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
+        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -159,10 +159,11 @@ public class Robot extends TankDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
         for (DcMotorEx motor : rightMotors) {
-            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            motor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
         leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMid.setDirection(DcMotor.Direction.FORWARD);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotor.Direction.REVERSE);
 //        Easy265.init(hardwareMap);
 //        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
@@ -396,10 +397,10 @@ public class Robot extends TankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
+            leftMotor.setPower(v);
         }
         for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
+            rightMotor.setPower(v1);
         }
     }
 
