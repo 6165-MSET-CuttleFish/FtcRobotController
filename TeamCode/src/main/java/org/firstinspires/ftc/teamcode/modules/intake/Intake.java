@@ -13,7 +13,7 @@ public class Intake extends Module<Intake.State> {
     enum State {
         INTAKING,
         EXTAKING,
-        OFF
+        IDLE
     }
 
     public Intake(HardwareMap hardwareMap) {

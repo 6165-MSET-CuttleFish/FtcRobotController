@@ -32,13 +32,13 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -153,6 +153,8 @@ public class Robot extends TankDrive {
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
@@ -161,11 +163,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMid.setDirection(DcMotor.Direction.REVERSE);
-//        Easy265.init(hardwareMap);
-//        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();

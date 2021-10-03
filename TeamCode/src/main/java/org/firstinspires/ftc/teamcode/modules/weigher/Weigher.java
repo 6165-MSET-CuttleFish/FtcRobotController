@@ -10,8 +10,7 @@ public class Weigher extends Module<Weigher.State> {
         BALL,
         CUBE_LIGHT,
         CUBE_MEDIUM,
-        CUBE_HEAVY,
-        ;
+        CUBE_HEAVY
     }
     State state = State.NONE;
 
