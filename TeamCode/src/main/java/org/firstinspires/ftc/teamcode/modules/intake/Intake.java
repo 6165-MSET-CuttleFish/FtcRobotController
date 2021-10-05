@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.modules.intake;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
@@ -66,22 +68,27 @@ public class Intake extends Module<Intake.State> {
         intake.setPower(0);
         setState(State.IDLE);
     }
-    /* private void checkBlock(){
-        if(DistanceSensor.distanceOutOfRange){
+     private void checkBlock(){
+        if(blockSensor.getDistance(DistanceUnit.INCH) < 2){
             off();
             isBlock = true;
         }
-    } */
+        else{
+            isBlock = false;
+        }
+    }
     private void functions(){
-        //checkBlock();
+        checkBlock();
         if(!isBlock == false){
-            if(/*gamepad1.*/){
+            //temporary buttons
+            if(gamepad1.b){
                 in();
             }
-            else if(/*gamepad1.*/){
+            else if(gamepad1.a){
                 out();
             }
             else off();
         }
+        else off();
     }
 }
