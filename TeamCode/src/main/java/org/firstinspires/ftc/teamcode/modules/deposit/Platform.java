@@ -6,6 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+/**
+ * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
+ * @author Sreyash, Martin
+ */
 public class Platform extends Module<Platform.State> {
     enum State {
         TRANSIT_IN,

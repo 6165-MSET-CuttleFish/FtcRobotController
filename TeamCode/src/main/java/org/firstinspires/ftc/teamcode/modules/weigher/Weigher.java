@@ -4,6 +4,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+/**
+ * Module to weigh the freight
+ * @author Matthew Song
+ */
 public class Weigher extends Module<Weigher.State> {
     enum State {
         NONE,
