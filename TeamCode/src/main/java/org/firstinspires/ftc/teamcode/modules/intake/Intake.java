@@ -66,14 +66,14 @@ public class Intake extends Module<Intake.State> {
         intake.setPower(0);
         setState(State.IDLE);
     }
-    private void checkBlock(){
-        if(/*DistanceSensor.distanceOutOfRange*/){
+    /* private void checkBlock(){
+        if(DistanceSensor.distanceOutOfRange){
             off();
             isBlock = true;
         }
-    }
+    } */
     private void functions(){
-        checkBlock();
+        //checkBlock();
         if(!isBlock == false){
             if(/*gamepad1.*/){
                 in();
