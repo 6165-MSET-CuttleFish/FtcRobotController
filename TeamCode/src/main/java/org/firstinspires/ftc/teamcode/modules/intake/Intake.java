@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gam
  */
 public class Intake extends Module<Intake.State> {
     private DcMotor intake;
-    private Servo blocker;
+    private Servo dropL, dropR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
     enum State {
@@ -32,10 +32,14 @@ public class Intake extends Module<Intake.State> {
     @Override
     public void init() {
         intake = hardwareMap.get(DcMotor.class, "intake");
-        blocker = hardwareMap.get(Servo.class, "blocker");
+        dropL = hardwareMap.get(Servo.class, "dropL");
+        dropR = hardwareMap.get(Servo.class, "dropR");
         blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         isBlock = false;
+        dropL.setPosition();
+        dropR.setDirection(Servo.Direction.REVERSE);
+        dropR.setPosition();
     }
 
     @Override
@@ -67,6 +71,7 @@ public class Intake extends Module<Intake.State> {
     private void off(){
         intake.setPower(0);
         setState(State.IDLE);
+        dropL
     }
      private void checkBlock(){
         if(blockSensor.getDistance(DistanceUnit.INCH) < 2){
