@@ -37,9 +37,9 @@ public class Intake extends Module<Intake.State> {
         blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         isBlock = false;
-        dropL.setPosition();
+        dropL.setPosition(/*insert number*/);
         dropR.setDirection(Servo.Direction.REVERSE);
-        dropR.setPosition();
+        dropR.setPosition(/*insert number*/);
     }
 
     @Override
@@ -63,15 +63,20 @@ public class Intake extends Module<Intake.State> {
     private void in(){
         intake.setPower(1);
         setState(State.INTAKING);
+        dropL.setPosition(/*insert number*/);
+        dropR.setPosition(/*insert number*/);
     }
     private void out(){
         intake.setPower(-1);
         setState(State.EXTAKING);
+        dropL.setPosition(/*insert number*/);
+        dropR.setPosition(/*insert number*/);
     }
     private void off(){
         intake.setPower(0);
         setState(State.IDLE);
-        dropL
+        dropL.setPosition(/*insert number*/);
+        dropR.setPosition(/*insert number*/);
     }
      private void checkBlock(){
         if(blockSensor.getDistance(DistanceUnit.INCH) < 2){
