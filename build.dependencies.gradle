@@ -21,6 +21,7 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.2.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.3'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation ('com.spartronics4915.lib:ftc265:2.1.8') {
         exclude group: 'com.arcrobotics'
     }

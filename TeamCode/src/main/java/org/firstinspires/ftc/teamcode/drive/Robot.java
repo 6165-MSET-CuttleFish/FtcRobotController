@@ -34,6 +34,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
+import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
@@ -54,7 +55,6 @@ import androidx.annotation.NonNull;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -92,7 +92,7 @@ public class Robot extends TankDrive {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 1;
+    public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -142,9 +142,9 @@ public class Robot extends TankDrive {
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr");
                 //rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
+        motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
+        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
+        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -152,23 +152,22 @@ public class Robot extends TankDrive {
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        for (DcMotorEx motor : leftMotors) {
+        for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        //leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        //rightMid.setDirection(DcMotor.Direction.REVERSE);
-        Easy265.init(hardwareMap);
-        setLocalizer(new T265Localizer());
+        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
-            // autoInit();
+            autoInit();
         }
-        setPoseEstimate(robotPose);
     }
 
     public void autoInit() {
@@ -396,10 +395,10 @@ public class Robot extends TankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
+            leftMotor.setPower(v);
         }
         for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
+            rightMotor.setPower(v1);
         }
     }
 
