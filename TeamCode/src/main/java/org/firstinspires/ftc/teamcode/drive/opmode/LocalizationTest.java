@@ -32,6 +32,9 @@ public class LocalizationTest extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+            if (gamepad1.a) {
+                robot.setPoseEstimate(new Pose2d());
+            }
 
             robot.update();
 
