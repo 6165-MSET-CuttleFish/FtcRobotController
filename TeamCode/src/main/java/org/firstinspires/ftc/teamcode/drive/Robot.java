@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -137,11 +136,11 @@ public class Robot extends TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
-                leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
-                rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
-                rightMid = hardwareMap.get(DcMotorEx.class, "mr");
+                 leftRear = hardwareMap.get(DcMotorEx.class, "bl");
+                //leftMid = hardwareMap.get(DcMotorEx.class, "ml");
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+                rightFront = hardwareMap.get(DcMotorEx.class, "fr");
+                //rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
         motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
         leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
