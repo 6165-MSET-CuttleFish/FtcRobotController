@@ -290,6 +290,10 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
+        for (DcMotorEx motor : motors) {
+            telemetry.addData(motor.getDeviceName(), motor.getPower());
+        }
+        telemetry.update();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
