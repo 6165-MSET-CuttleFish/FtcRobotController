@@ -4,6 +4,7 @@ import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 /**
@@ -11,13 +12,18 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Platform extends Module<Platform.State> {
     enum State {
-        TRANSIT_IN,
-        IN,
-        TRANSIT_OUT,
-        OUT,
+        TRANSIT_IN (0),
+        IN(0.25),
+        TRANSIT_OUT(0.4),
+        OUT(0.75);
+        final double angle;
+        State(double angle) {
+            this.angle = angle;
+        }
     }
     StateMachine<State> stateMachine;
-    DcMotorEx platform;
+    Servo platformL;
+    Servo platformR;
     private Platform state;
     /**
      * Constructor which calls the 'init' function
@@ -43,9 +49,9 @@ public class Platform extends Module<Platform.State> {
             setState(State.OUT);
         }else if(stateMachine.getState()==State.OUT){
             setState(State.TRANSIT_IN);
-        }else{
-            isHazardous();
         }
+        platformL.setPosition(state.getState().angle);
+        platformR.setPosition(state.getState().angle);
     }
 
     /**
@@ -53,7 +59,12 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        platform = hardwareMap.get(DcMotorEx.class, "platform");
+        platformL = hardwareMap.servo.get("platformLeft");
+        platformR = hardwareMap.servo.get("platformRight");
+        platformR.setDirection(Servo.Direction.REVERSE);
+        setState(State.TRANSIT_IN);
+        platformL.setPosition(state.getState().angle);
+        platformR.setPosition(state.getState().angle);
     }
 
     @Override

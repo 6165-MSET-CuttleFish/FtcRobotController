@@ -75,9 +75,7 @@ public class Deposit extends Module<Deposit.State> {
 
             pidController = new BPIDFController(MOTOR_PID, integralBand, kV, kA, kStatic);
         }
-        if(getHorizontalVelocity()==0){
-            setState(State.IDLE);
-        }
+        
     }
 
     private double getHorizontalVelocity() {
@@ -97,7 +95,7 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public boolean isHazardous() {
-        if(getState()!=State.IDLE){
+        if(getState()==State.LEVEL3){
             return true;
         }
         return false;
