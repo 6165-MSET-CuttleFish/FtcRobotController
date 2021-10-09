@@ -9,7 +9,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 //
-public class detector extends OpenCvPipeline {
+public class Detector extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
 
@@ -26,7 +26,7 @@ public class detector extends OpenCvPipeline {
             new Point(0, 0));
     static double PERCENT_COLOR_THRESH = 0;
 
-    public detector(Telemetry t){ telemetry = t; }
+    public Detector(Telemetry t){ telemetry = t; }
 
     @Override
     public Mat processFrame(Mat input) {
