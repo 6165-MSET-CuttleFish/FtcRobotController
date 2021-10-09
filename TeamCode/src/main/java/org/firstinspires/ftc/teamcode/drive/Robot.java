@@ -165,7 +165,7 @@ public class Robot extends TankDrive {
         }
         //leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
         //rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        Easy265.init(hardwareMap);
+        Easy265.init(opMode);
         setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {

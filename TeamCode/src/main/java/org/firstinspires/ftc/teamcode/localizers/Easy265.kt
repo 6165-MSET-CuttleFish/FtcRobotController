@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.localizers
 
+import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
 import com.intel.realsense.librealsense.UsbUtilities
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.util.*
 
 /**
@@ -21,6 +24,8 @@ object Easy265 {
     private const val TAG = "Easy265"
     private val ODOMETRY_COVARIANCE = 1.0
     private val INCH_TO_METER = 0.0254
+    private lateinit var telemetry: Telemetry
+
 
     /**
      * The global T265 camera, throws UninitializedPropertyAccessException
@@ -37,6 +42,8 @@ object Easy265 {
      */
     @JvmStatic var lastCameraUpdate: T265Camera.CameraUpdate? = null
 
+    var requestedPose2d: com.acmerobotics.roadrunner.geometry.Pose2d? = null
+
     /**
      * The pose reported from the last camera update, in inches.
      * Returns null if update() hasn't been called or the camera hasn't been started
@@ -46,13 +53,8 @@ object Easy265 {
         //set and get are in inches
         set(value) {
             if(value != null && isStarted) {
-                Async.start {
-                    while (lastCameraUpdate?.confidence != T265Camera.PoseConfidence.High) {
-                        camera.setPose(value.toFTCLibPose2d().toMeters())
-                    }
-                    camera.setPose(value.toFTCLibPose2d().toMeters())
-                }
-
+                requestedPose2d = value
+                update()
             }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()
@@ -73,21 +75,21 @@ object Easy265 {
      * @param attempts amount of times this method will be called recursively if the initialization fails
      */
     @JvmStatic @JvmOverloads fun init(
-        hardwareMap: HardwareMap,
-        cameraToRobot: Transform2d = Transform2d(Translation2d(0.0, 0.0), Rotation2d(0.0)),
+        opMode: OpMode,
+        cameraToRobot: Transform2d = Transform2d(
+            Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), Rotation2d(
+                Math.toRadians(180.0)
+            )
+        ),
         attempts: Int = 6
     ) {
+        telemetry = opMode.telemetry
         try {
             if(!::camera.isInitialized) {
-                UsbUtilities.grantUsbPermissionIfNeeded(hardwareMap.appContext)
-                camera = T265Camera(
-                    Transform2d(
-                        Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), Rotation2d(
-                            Math.toRadians(0.0)
-                        )
-                    ), ODOMETRY_COVARIANCE, hardwareMap.appContext
+                UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
+                camera = T265Camera(cameraToRobot, ODOMETRY_COVARIANCE, opMode.hardwareMap.appContext
                 )
-                UsbUtilities.grantUsbPermissionIfNeeded(hardwareMap.appContext)
+                UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
             }
 
             if(camera.isStarted) {
@@ -102,7 +104,7 @@ object Easy265 {
                 throw RuntimeException("Unable to start T265Camera after various attempts", e)
             } else {
                 RobotLog.w(TAG, "Unable to start T265Camera, retrying...", e)
-                init(hardwareMap, cameraToRobot, attempts - 1)
+                init(opMode, cameraToRobot, attempts - 1)
             }
         }
     }
@@ -116,13 +118,13 @@ object Easy265 {
      * @param cameraToRobot offset of the center of the robot from the center of the camera
      */
     @JvmStatic @JvmOverloads fun initWithoutStop(
-        hardwareMap: HardwareMap,
+        opMode: OpMode,
         cameraToRobot: Transform2d = Transform2d(
             Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), Rotation2d(
-                Math.toRadians(0.0)
+                Math.toRadians(180.0)
             )
         )
-    ) = init(hardwareMap, cameraToRobot, Int.MAX_VALUE)
+    ) = init(opMode, cameraToRobot, Int.MAX_VALUE)
 
     /**
      * Pulls the last data from the camera and stores it the
@@ -133,8 +135,21 @@ object Easy265 {
      */
     @JvmStatic fun update() {
         if(isStarted) {
+            if (Thread.interrupted()) {
+                camera.stop()
+                return
+            }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
+            telemetry.addData("Confidence", lastCameraUpdate?.confidence)
+            if (requestedPose2d != null && lastCameraUpdate?.confidence == T265Camera.PoseConfidence.High) {
+                camera.setPose(requestedPose2d?.toFTCLibPose2d()?.toMeters())
+                requestedPose2d = null
+            }
         }
+    }
+
+    @JvmStatic fun stop() {
+        camera.stop()
     }
 
 }
