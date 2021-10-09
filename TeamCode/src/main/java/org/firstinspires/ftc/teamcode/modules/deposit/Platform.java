@@ -5,6 +5,7 @@ import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 /**
@@ -12,18 +13,20 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Platform extends Module<Platform.State> {
     enum State {
-        TRANSIT_IN (0),
-        IN(0.25),
-        TRANSIT_OUT(0.4),
-        OUT(0.75);
+        TRANSIT_IN (0,0),
+        IN(0.2,1),
+        OUT(0.5,1);
         final double angle;
-        State(double angle) {
+        final double time;
+        State(double angle,double time) {
             this.angle = angle;
+            this.time = time;
         }
     }
     StateMachine<State> stateMachine;
     Servo platformL;
     Servo platformR;
+    ElapsedTime elapsedTime;
     private Platform state;
     /**
      * Constructor which calls the 'init' function
@@ -44,14 +47,14 @@ public class Platform extends Module<Platform.State> {
         if(stateMachine.getState()==State.TRANSIT_IN){
             setState(State.IN);
         }else if(stateMachine.getState()==State.IN){
-            setState(State.TRANSIT_OUT);
-        }else if(stateMachine.getState()==State.TRANSIT_OUT){
             setState(State.OUT);
         }else if(stateMachine.getState()==State.OUT){
             setState(State.TRANSIT_IN);
         }
+        elapsedTime.startTime();
         platformL.setPosition(state.getState().angle);
         platformR.setPosition(state.getState().angle);
+        elapsedTime.reset();
     }
 
     /**
@@ -85,6 +88,14 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isHazardous() {
+        /**Conditions:
+         * elapsed time passes set time before module reaches position
+         */
+        if(platformL.getPosition()!= getState().angle&&elapsedTime.time()>getState().time){
+            return true;
+        }else if(platformL.getPosition()!=(1-platformR.getPosition())){
+            return true;
+        }
         return false;
     }
 }
