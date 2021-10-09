@@ -92,7 +92,7 @@ public class Robot extends TankDrive {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 2;
+    public static double OMEGA_WEIGHT = 1;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -293,7 +293,6 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : motors) {
             telemetry.addData(motor.getDeviceName(), motor.getPower());
         }
-        telemetry.update();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
