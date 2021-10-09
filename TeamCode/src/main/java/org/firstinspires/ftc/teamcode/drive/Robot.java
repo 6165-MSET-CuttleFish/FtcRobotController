@@ -356,6 +356,12 @@ public class Robot extends TankDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
+        vel = new Pose2d(
+                drivePower.getX(),
+                drivePower.getY(),
+                drivePower.getHeading() * 2
+        );
+
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
