@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.BPIDFController;
 
+/**
+ * Mechanism at the back of the robot to raise the freight using linear slides
+ * @author Sreyash, Martin
+ */
 public class Deposit extends Module<Deposit.State> {
     enum State {
         LEVEL3(3),

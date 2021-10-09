@@ -1,3 +1,7 @@
+## Rules
+
+Do NOT commit directly to the master branch unless you are on campus or are the season's Software Lead.
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the Freight Frenzy (2021-2022) competition season.

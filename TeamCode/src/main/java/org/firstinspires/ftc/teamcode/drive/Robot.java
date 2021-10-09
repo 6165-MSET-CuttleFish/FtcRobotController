@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -139,7 +138,7 @@ public class Robot extends TankDrive {
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
@@ -163,9 +162,8 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
@@ -292,6 +290,10 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
+        for (DcMotorEx motor : motors) {
+            telemetry.addData(motor.getDeviceName(), motor.getPower());
+        }
+        telemetry.update();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }

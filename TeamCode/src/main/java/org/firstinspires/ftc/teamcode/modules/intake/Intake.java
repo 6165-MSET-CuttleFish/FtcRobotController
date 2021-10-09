@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 /**
  * Frontal mechanism for collecting freight
  *
- * @author Bill Yuan
+ * @author Matthew Song
  */
 public class Intake extends Module<Intake.State> {
     enum State {
