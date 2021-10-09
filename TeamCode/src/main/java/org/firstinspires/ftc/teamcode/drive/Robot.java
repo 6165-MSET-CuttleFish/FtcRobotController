@@ -366,6 +366,8 @@ public class Robot extends TankDrive {
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
+            telemetry.addData("denom", denom);
+            telemetry.addData("VX", VX_WEIGHT * Math.abs(drivePower.getX()));
         }
 
         setDrivePower(vel);
