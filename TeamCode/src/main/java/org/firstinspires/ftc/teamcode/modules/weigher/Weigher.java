@@ -34,7 +34,7 @@ public class Weigher extends Module<Weigher.State> {
      */
     @Override
     public void update() {
-
+        weighing();
     }
 
     /**
@@ -42,7 +42,9 @@ public class Weigher extends Module<Weigher.State> {
      */
     @Override
     public void init() {
-
+        //insert servos and sensors and stuff
+        // led light to reveal object?
+        // probably gradient for cubes, yellow for duck, white for ball
     }
 
     /**
@@ -57,4 +59,31 @@ public class Weigher extends Module<Weigher.State> {
     public boolean isHazardous() {
         return false;
     }
+    private void weighing(){
+        if(/*no thing*/){
+            setState(State.NONE);
+            //set led off
+        }
+        else if(/*light cube*/){
+            setState(State.CUBE_LIGHT);
+            //set led light
+        }
+        else if(/*medium cube*/){
+            setState(State.CUBE_MEDIUM);
+            //set led med
+        }
+        else if(/*heavy cube*/){
+            setState(State.CUBE_HEAVY);
+            //set led dark
+        }
+        else if(/*ball*/){
+            setState(State.BALL);
+            //set led white
+        }
+        else if(/*duck*/){
+            setState(State.DUCK);
+            //set led yellow
+        }
+    }
+
 }
