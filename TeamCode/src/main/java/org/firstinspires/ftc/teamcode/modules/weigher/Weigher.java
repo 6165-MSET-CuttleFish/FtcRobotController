@@ -60,27 +60,27 @@ public class Weigher extends Module<Weigher.State> {
         return false;
     }
     private void weighing(){
-        if(/*no thing*/){
+        if(/*no thing*/true){
             setState(State.NONE);
             //set led off
         }
-        else if(/*light cube*/){
+        else if(true/*light cube*/){
             setState(State.CUBE_LIGHT);
             //set led light
         }
-        else if(/*medium cube*/){
+        else if(true/*medium cube*/){
             setState(State.CUBE_MEDIUM);
             //set led med
         }
-        else if(/*heavy cube*/){
+        else if(true/*heavy cube*/){
             setState(State.CUBE_HEAVY);
             //set led dark
         }
-        else if(/*ball*/){
+        else if(true/*ball*/){
             setState(State.BALL);
             //set led white
         }
-        else if(/*duck*/){
+        else if(true/*duck*/){
             setState(State.DUCK);
             //set led yellow
         }
