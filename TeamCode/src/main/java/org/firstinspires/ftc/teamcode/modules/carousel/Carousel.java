@@ -5,6 +5,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+/**
+ * Mechanism at the back of the robot to deposit freight
+ *
+ * @author Apoorva Talwalkar
+ */
 public class Carousel extends Module<Carousel.State> {
     enum State {
 
