@@ -6,8 +6,6 @@
       <module name="FtcApp.TeamCode" target="11" />
       <module name="FtcRobotController.FtcRobotController" target="11" />
       <module name="FtcRobotController.TeamCode" target="11" />
-      <module name="mti.FtcRobotController" target="11" />
-      <module name="mti.TeamCode" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
