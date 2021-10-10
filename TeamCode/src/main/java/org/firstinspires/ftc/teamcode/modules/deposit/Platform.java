@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -18,6 +19,8 @@ public class Platform extends Module<Platform.State> {
         OUT,
     }
     StateMachine<State> stateMachine;
+    DcMotorEx platform;
+    private Platform state;
     /**
      * Constructor which calls the 'init' function
      *
@@ -34,7 +37,17 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void update() {
-
+        if(stateMachine.getState()== State.TRANSIT_IN){
+            setState(State.IN);
+        }else if(stateMachine.getState()== State.IN){
+            setState(State.TRANSIT_OUT);
+        }else if(stateMachine.getState()== State.TRANSIT_OUT){
+            setState(State.OUT);
+        }else if(stateMachine.getState()== State.OUT){
+            setState(State.TRANSIT_IN);
+        }else{
+            isHazardous();
+        }
     }
 
     /**
@@ -42,12 +55,20 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-
+        platform = hardwareMap.get(DcMotorEx.class, "platform");
     }
 
     @Override
     public State getState() {
         return stateMachine.getState();
+    }
+
+    /**
+     * Set a new state for the module
+     * @param state New state of the module
+     */
+    public void setState(Platform state) {
+        this.state = state;
     }
 
     /**

@@ -22,7 +22,6 @@ public class Intake extends Module<Intake.State> {
         INTAKING,
         EXTAKING,
         IDLE
-
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -46,6 +45,20 @@ public class Intake extends Module<Intake.State> {
     public State getState() {
 
         return this.getState();
+    }
+
+    /**
+     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     */
+    @Override
+    public boolean isHazardous() {
+        return false;
+    }
+
+    @Override
+    public State getState() {
+        // TODO: return the state of the module
+        return null;
     }
 
     /**

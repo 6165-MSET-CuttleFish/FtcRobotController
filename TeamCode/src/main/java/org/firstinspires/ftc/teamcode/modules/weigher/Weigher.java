@@ -85,5 +85,4 @@ public class Weigher extends Module<Weigher.State> {
             //set led yellow
         }
     }
-
 }

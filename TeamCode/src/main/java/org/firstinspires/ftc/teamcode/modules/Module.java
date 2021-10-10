@@ -37,6 +37,11 @@ public abstract class Module<T> {
     /**
      * @return The state of the module
      */
+    public abstract void init();
+
+    /**
+     * @return The state of the module
+     */
     public T getState() {
         return state;
     }
