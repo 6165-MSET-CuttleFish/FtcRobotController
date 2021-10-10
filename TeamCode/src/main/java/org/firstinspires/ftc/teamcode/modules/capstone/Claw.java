@@ -1,23 +1,32 @@
-package org.firstinspires.ftc.teamcode.modules.carousel;
+package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
-public class Carousel extends Module<Carousel.State> {
+/**
+ * Module to collect the team marker at the start of the match
+ * @author Bill Yuan
+ */
+public class Claw extends Module<Claw.State> {
     enum State {
 
     }
-    CRServo driver;
-
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Carousel(HardwareMap hardwareMap) {
+    public Claw(HardwareMap hardwareMap) {
         super(hardwareMap);
+    }
+
+    /**
+     * This function initializes all necessary hardware modules
+     */
+    @Override
+    public void init() {
+
     }
 
     /**
@@ -29,27 +38,11 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
-     * This function initializes all necessary hardware modules
-     */
-    @Override
-    public void init() {
-        driver = hardwareMap.crservo.get("driver");
-
-    }
-
-    /**
-     * @return The state of the module
-     */
-    @Override
-    public State getState() {
-        return null;
-    }
-
-    /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     @Override
     public boolean isHazardous() {
         return false;
     }
+
 }

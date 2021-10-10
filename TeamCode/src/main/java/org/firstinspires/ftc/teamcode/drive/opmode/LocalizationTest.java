@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-@Disabled
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,10 +28,13 @@ public class LocalizationTest extends LinearOpMode {
             robot.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
+                            0,
+                            gamepad1.right_stick_x
                     )
             );
+            if (gamepad1.a) {
+                robot.setPoseEstimate(new Pose2d());
+            }
 
             robot.update();
 

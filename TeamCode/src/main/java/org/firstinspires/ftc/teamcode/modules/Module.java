@@ -25,12 +25,17 @@ public abstract class Module<T> {
     }
 
     /**
+     * This function initializes all necessary hardware modules
+     */
+    public abstract void init();
+
+    /**
      * This function updates all necessary controls in a loop
      */
     public abstract void update();
 
     /**
-     * This function initializes all necessary hardware modules
+     * @return The state of the module
      */
     public abstract void init();
 

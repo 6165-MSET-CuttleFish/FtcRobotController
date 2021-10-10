@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -32,13 +31,13 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.sequencesegment.FutureSegment;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.bettertrajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -139,11 +138,11 @@ public class Robot extends TankDrive {
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftRear, leftMid, rightRear, rightFront, rightMid);
+        motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
         leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
         rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
         for (DcMotorEx motor : motors) {
@@ -153,18 +152,18 @@ public class Robot extends TankDrive {
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        for (DcMotorEx motor : leftMotors) {
+        for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMid.setDirection(DcMotor.Direction.REVERSE);
-        Easy265.init(hardwareMap);
-        setLocalizer(new T265Localizer());
+        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
@@ -291,6 +290,9 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
+        for (DcMotorEx motor : motors) {
+            telemetry.addData(motor.getDeviceName(), motor.getPower());
+        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
@@ -354,6 +356,12 @@ public class Robot extends TankDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
+        vel = new Pose2d(
+                drivePower.getX(),
+                drivePower.getY(),
+                drivePower.getHeading() * 2
+        );
+
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
@@ -364,6 +372,8 @@ public class Robot extends TankDrive {
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
+            telemetry.addData("denom", denom);
+            telemetry.addData("VX", VX_WEIGHT * Math.abs(drivePower.getX()));
         }
 
         setDrivePower(vel);
@@ -396,10 +406,10 @@ public class Robot extends TankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(Range.clip(v, -1, MAX_POWER));
+            leftMotor.setPower(v);
         }
         for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(Range.clip(v1, -1, MAX_POWER));
+            rightMotor.setPower(v1);
         }
     }
 
