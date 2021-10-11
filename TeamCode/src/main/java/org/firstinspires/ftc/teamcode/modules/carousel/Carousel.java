@@ -51,10 +51,10 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isDoingWork() {
         return false;
     }
 }

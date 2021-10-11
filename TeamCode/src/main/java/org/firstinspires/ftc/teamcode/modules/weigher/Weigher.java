@@ -56,31 +56,31 @@ public class Weigher extends Module<Weigher.State> {
     }
 
     @Override
-    public boolean isHazardous() {
+    public boolean isDoingWork() {
         return false;
     }
     private void weighing(){
-        if(/*no thing*/){
+        if(true/*no thing*/){
             setState(State.NONE);
             //set led off
         }
-        else if(/*light cube*/){
+        else if(false/*light cube*/){
             setState(State.CUBE_LIGHT);
             //set led light
         }
-        else if(/*medium cube*/){
+        else if(false/*medium cube*/){
             setState(State.CUBE_MEDIUM);
             //set led med
         }
-        else if(/*heavy cube*/){
+        else if(false/*heavy cube*/){
             setState(State.CUBE_HEAVY);
             //set led dark
         }
-        else if(/*ball*/){
+        else if(false/*ball*/){
             setState(State.BALL);
             //set led white
         }
-        else if(/*duck*/){
+        else if(false/*duck*/){
             setState(State.DUCK);
             //set led yellow
         }
