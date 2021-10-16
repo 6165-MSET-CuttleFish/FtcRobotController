@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.localizers
 
-import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
@@ -42,8 +41,6 @@ object Easy265 {
      */
     @JvmStatic var lastCameraUpdate: T265Camera.CameraUpdate? = null
 
-    var requestedPose2d: com.acmerobotics.roadrunner.geometry.Pose2d? = null
-
     /**
      * The pose reported from the last camera update, in inches.
      * Returns null if update() hasn't been called or the camera hasn't been started
@@ -53,8 +50,7 @@ object Easy265 {
         //set and get are in inches
         set(value) {
             if(value != null && isStarted) {
-                requestedPose2d = value
-                update()
+                camera.setPose(value.toFTCLibPose2d().toMeters())
             }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()
@@ -141,10 +137,6 @@ object Easy265 {
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
             telemetry.addData("Confidence", lastCameraUpdate?.confidence)
-            if (requestedPose2d != null && lastCameraUpdate?.confidence == T265Camera.PoseConfidence.High) {
-                camera.setPose(requestedPose2d?.toFTCLibPose2d()?.toMeters())
-                requestedPose2d = null
-            }
         }
     }
 

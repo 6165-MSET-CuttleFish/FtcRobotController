@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.localization.Localizer
  */
 @Suppress("UNUSED")
 class T265Localizer : Localizer {
-    var offset = Pose2d()
     /**
      * Updates the T265 camera and returns the last pose
      * if isn't null from the Easy265 wrapper static class.
@@ -20,11 +19,11 @@ class T265Localizer : Localizer {
             Easy265.update()
 
             return if (Easy265.lastPose != null) {
-                Easy265.lastPose!!.plus(offset)
-            } else Pose2d(0.0,0.0,0.0).plus(offset)
+                Easy265.lastPose!!
+            } else Pose2d(0.0,0.0,0.0)
         }
         set(value) {
-            offset = value.minus(poseEstimate.minus(offset));//sets the offset as negative
+            Easy265.lastPose = value
         }
 
     /**
