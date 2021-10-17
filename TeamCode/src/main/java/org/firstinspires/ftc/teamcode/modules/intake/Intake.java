@@ -34,11 +34,11 @@ public class Intake extends Module<Intake.State> {
         dropL = hardwareMap.get(Servo.class, "dropL");
         dropR = hardwareMap.get(Servo.class, "dropR");
         blockSensor = hardwareMap.get(DistanceSensor.class, "block");
-        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         isBlock = false;
-        dropL.setPosition(/*insert number*/0.25);
+        dropL.setPosition(0.25);
         dropR.setDirection(Servo.Direction.REVERSE);
-        dropR.setPosition(/*insert number*/0.95);
+        dropR.setPosition(0.95);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class Intake extends Module<Intake.State> {
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    @Override
+
     public boolean isDoingWork() {
         return false;
     }
 
-    @Override
+
     public void update() {
         functions();
     }
@@ -64,6 +64,9 @@ public class Intake extends Module<Intake.State> {
         setState(State.INTAKING);
         dropL.setPosition(0.45);
         dropR.setPosition(0.75);
+    }
+    public int returnTicks(){
+        return intake.getCurrentPosition();
     }
     private void out(){
         intake.setPower(-1);
