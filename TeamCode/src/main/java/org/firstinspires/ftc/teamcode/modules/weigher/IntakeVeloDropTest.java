@@ -23,7 +23,7 @@ public class IntakeVeloDropTest extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        
+
         while(opModeIsActive()){
             intake.update();
             Details.packet = new TelemetryPacket();
