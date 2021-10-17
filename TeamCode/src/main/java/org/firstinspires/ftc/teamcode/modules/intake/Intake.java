@@ -22,7 +22,6 @@ public class Intake extends Module<Intake.State> {
         INTAKING,
         EXTAKING,
         IDLE
-
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -40,6 +39,7 @@ public class Intake extends Module<Intake.State> {
         dropL.setPosition(/*insert number*/0);
         dropR.setDirection(Servo.Direction.REVERSE);
         dropR.setPosition(/*insert number*/0);
+       
     }
 
     @Override
@@ -49,10 +49,10 @@ public class Intake extends Module<Intake.State> {
     }
 
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isDoingWork() {
         return false;
     }
 
@@ -63,20 +63,22 @@ public class Intake extends Module<Intake.State> {
     private void in(){
         intake.setPower(1);
         setState(State.INTAKING);
-        dropL.setPosition(/*insert number*/0);
-        dropR.setPosition(/*insert number*/0);
+        dropL.setPosition(1/*insert number*/);
+        dropR.setPosition(1/*insert number*/);
     }
     private void out(){
         intake.setPower(-1);
         setState(State.EXTAKING);
         dropL.setPosition(/*insert number*/0);
         dropR.setPosition(/*insert number*/0);
+        
     }
     private void off(){
         intake.setPower(0);
         setState(State.IDLE);
         dropL.setPosition(/*insert number*/0);
         dropR.setPosition(/*insert number*/0);
+      
     }
      private void checkBlock(){
         if(blockSensor.getDistance(DistanceUnit.INCH) < 2){

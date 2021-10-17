@@ -56,7 +56,7 @@ public class Weigher extends Module<Weigher.State> {
     }
 
     @Override
-    public boolean isHazardous() {
+    public boolean isDoingWork() {
         return false;
     }
     private void weighing(){
@@ -85,5 +85,4 @@ public class Weigher extends Module<Weigher.State> {
             //set led yellow
         }
     }
-
 }

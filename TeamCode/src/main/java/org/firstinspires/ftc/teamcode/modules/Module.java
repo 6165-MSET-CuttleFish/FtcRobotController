@@ -51,7 +51,7 @@ public abstract class Module<T> {
 
     /**
      *
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    public abstract boolean isHazardous();
+    public abstract boolean isDoingWork();
 }

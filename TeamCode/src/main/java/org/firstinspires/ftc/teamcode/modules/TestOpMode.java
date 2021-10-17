@@ -24,7 +24,7 @@ public class TestOpMode extends LinearOpMode {
             }
 
             @Override
-            public boolean isHazardous() {
+            public boolean isDoingWork() {
                 return false;
             }
         };
