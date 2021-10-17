@@ -36,10 +36,9 @@ public class Intake extends Module<Intake.State> {
         blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         isBlock = false;
-        dropL.setPosition(/*insert number*/0);
+        dropL.setPosition(/*insert number*/0.25);
         dropR.setDirection(Servo.Direction.REVERSE);
-        dropR.setPosition(/*insert number*/0);
-       
+        dropR.setPosition(/*insert number*/0.95);
     }
 
     @Override
@@ -63,22 +62,20 @@ public class Intake extends Module<Intake.State> {
     private void in(){
         intake.setPower(1);
         setState(State.INTAKING);
-        dropL.setPosition(1/*insert number*/);
-        dropR.setPosition(1/*insert number*/);
+        dropL.setPosition(0.45);
+        dropR.setPosition(0.75);
     }
     private void out(){
         intake.setPower(-1);
         setState(State.EXTAKING);
-        dropL.setPosition(/*insert number*/0);
-        dropR.setPosition(/*insert number*/0);
-        
+        dropL.setPosition(0.55);
+        dropR.setPosition(0.85);
     }
     private void off(){
         intake.setPower(0);
         setState(State.IDLE);
-        dropL.setPosition(/*insert number*/0);
-        dropR.setPosition(/*insert number*/0);
-      
+        dropL.setPosition(0.55);
+        dropR.setPosition(0.85);
     }
      private void checkBlock(){
         if(blockSensor.getDistance(DistanceUnit.INCH) < 2){
@@ -91,7 +88,7 @@ public class Intake extends Module<Intake.State> {
     }
     private void functions(){
         checkBlock();
-        if(!isBlock == false){
+        //if(!isBlock == false){
             //temporary buttons
             if(gamepad1.b){
                 in();
@@ -100,7 +97,7 @@ public class Intake extends Module<Intake.State> {
                 out();
             }
             else off();
-        }
-        else off();
+        //}
+        //else off();
     }
 }
