@@ -52,6 +52,9 @@ object Easy265 {
             if(value != null && isStarted) {
                 camera.setPose(value.toFTCLibPose2d().toMeters())
             }
+            while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
+                update()
+            }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()
 
