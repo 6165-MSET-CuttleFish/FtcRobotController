@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.carousel;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 /**
@@ -17,7 +17,7 @@ public class Carousel extends Module<Carousel.State> {
 
     }
 
-    CRServo driver1, driver2;
+    CRServo driver1;
 
     /**
      * Constructor which calls the 'init' function
@@ -41,7 +41,12 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void update() {
-
+        if(gamepad1.a){
+            driver1.setPower(.8);
+        }
+        else {
+            driver1.setPower(0);
+        }
     }
 
     /**
