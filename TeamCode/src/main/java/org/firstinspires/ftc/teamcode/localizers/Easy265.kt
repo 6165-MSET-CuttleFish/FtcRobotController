@@ -49,11 +49,11 @@ object Easy265 {
     @JvmStatic var lastPose
         //set and get are in inches
         set(value) {
-            if(value != null && isStarted) {
-                camera.setPose(value.toFTCLibPose2d().toMeters())
-            }
             while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
                 update()
+            }
+            if(value != null && isStarted) {
+                camera.setPose(value.toFTCLibPose2d().toMeters())
             }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()
