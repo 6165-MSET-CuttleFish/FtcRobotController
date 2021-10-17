@@ -143,9 +143,9 @@ public class Robot extends TankDrive {
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
+        motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
+        rightMotors = Arrays.asList(rightFront, rightRear, rightMid);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -163,8 +163,8 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        //leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
-        //rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
         Easy265.init(opMode);
         setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
