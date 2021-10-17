@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.Details;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 
@@ -14,7 +15,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gam
  * @author Matthew Song
  */
 public class Intake extends Module<Intake.State> {
-    private DcMotor intake;
+    private DcMotorEx intake;
     private Servo dropL, dropR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
@@ -30,7 +31,7 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void init() {
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         dropL = hardwareMap.get(Servo.class, "dropL");
         dropR = hardwareMap.get(Servo.class, "dropR");
         blockSensor = hardwareMap.get(DistanceSensor.class, "block");
@@ -58,6 +59,7 @@ public class Intake extends Module<Intake.State> {
 
     public void update() {
         functions();
+        Details.packet.put("ticks", intake.getVelocity());
     }
     private void in(){
         intake.setPower(1);
