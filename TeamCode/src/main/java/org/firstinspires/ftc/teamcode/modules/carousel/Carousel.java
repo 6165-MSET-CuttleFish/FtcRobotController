@@ -16,8 +16,7 @@ public class Carousel extends Module<Carousel.State> {
         IDLE,
     }
 
-    CRServo driver1;
-    CRServo driver;
+    CRServo driver, driver1;
 
     /**
      * Constructor which calls the 'init' function
@@ -44,10 +43,10 @@ public class Carousel extends Module<Carousel.State> {
     public void update() {
         switch (getState()) {
             case ON:
-                // code to turn on drivers
+                // TODO: code to turn on drivers
                 break;
             case IDLE:
-                // code to turn off drivers
+                // TODO: code to turn off drivers
                 break;
         }
     }
