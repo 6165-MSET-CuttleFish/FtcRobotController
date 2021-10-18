@@ -7,6 +7,10 @@ import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
+import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
+import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence
+import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
+import java.util.*;
 
 class Path {
 
