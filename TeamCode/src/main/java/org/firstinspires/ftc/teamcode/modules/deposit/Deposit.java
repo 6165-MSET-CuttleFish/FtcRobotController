@@ -1,25 +1,35 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.noahbres.jotai.StateMachine;
+import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.BPIDFController;
 
+/**
+ * @author Martin Xu
+ */
 public class Deposit extends Module<Deposit.State> {
     enum State {
-        LEVEL3(3),
-        LEVEL2(2),
-        LEVEL1(1),
-        IDLE(0);
+        LEVEL3(3, 6),
+        LEVEL2(2, 4),
+        LEVEL1(1, 2),
+        IDLE(0, 0);
         final double dist;
-        State(double dist) {
+        final double time;
+        State(double dist, double time) {
             this.dist = dist;
+            this.time = time;
+
         }
     }
     DcMotorEx slides;
     Platform platform;
+    StateMachine<Integer> stateMachine;
 
     public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0,0,0);
     public static double kV = 0;
@@ -35,8 +45,6 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
-
-    final double ANGLE_DEGREES = 30;
 
     /**
      * Constructor which calls the 'init' function
@@ -54,6 +62,7 @@ public class Deposit extends Module<Deposit.State> {
     public void init() {
         platform = new Platform(hardwareMap);
         slides = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        pidController.setInputBounds(-1, 1);
     }
 
     /**
@@ -61,9 +70,15 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void update() {
-        pidController.setTargetPosition(getNeededDistance(getState().dist));
-        pidController.update(slides.getCurrentPosition(), getHorizontalVelocity());
+        platform.update(); // update subsystems
+        pidController.setTargetPosition(getState().dist);
+        if (getState() == State.IDLE) {
+            platform.setState(Platform.State.IN);
+            // set power to 0 if error is close to 0
+        }
+        slides.setPower(pidController.update(ticksToInches(slides.getCurrentPosition())));
 
+        // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || integralBand != lastIntegralBand || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
             lastKv = kV;
             lastKa = kA;
@@ -78,26 +93,22 @@ public class Deposit extends Module<Deposit.State> {
         
     }
 
-    private double getHorizontalVelocity() {
-        return slides.getVelocity() * Math.cos(Math.toRadians(ANGLE_DEGREES));
+    // convert motor ticks to inches traveled by the slides
+    private double ticksToInches(double ticks) {
+        // TODO: return inches traveled by slides
+        return 0;
     }
 
-    /**
-     * @param dist The wanted vertical distance
-     * @return The needed distance for the slides to travel in order to achieve a particular vertical distance
-     */
-    private double getNeededDistance(double dist) {
-        return dist / Math.sin(Math.toRadians(ANGLE_DEGREES));
-    }
-
-    /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
-     */
+    
     @Override
     public boolean isHazardous() {
         if(getState()==State.LEVEL3){
-            return true;
-        }
+    }
+      
+    /**
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
+     */
+    public boolean isDoingWork() {
         return false;
     }
 }

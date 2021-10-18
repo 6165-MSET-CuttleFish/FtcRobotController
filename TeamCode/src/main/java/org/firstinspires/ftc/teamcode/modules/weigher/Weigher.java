@@ -4,13 +4,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
+/**
+ * Weighing the Freight to determine type
+ *
+ * @author Matthew Song
+ */
 public class Weigher extends Module<Weigher.State> {
     enum State {
         NONE,
         BALL,
         CUBE_LIGHT,
         CUBE_MEDIUM,
-        CUBE_HEAVY
+        CUBE_HEAVY,
+        DUCK
     }
     State state = State.NONE;
 
@@ -28,7 +34,7 @@ public class Weigher extends Module<Weigher.State> {
      */
     @Override
     public void update() {
-
+        weighing();
     }
 
     /**
@@ -36,7 +42,9 @@ public class Weigher extends Module<Weigher.State> {
      */
     @Override
     public void init() {
-
+        //insert servos and sensors and stuff
+        // led light to reveal object?
+        // probably gradient for cubes, yellow for duck, white for ball
     }
 
     /**
@@ -48,7 +56,33 @@ public class Weigher extends Module<Weigher.State> {
     }
 
     @Override
-    public boolean isHazardous() {
+    public boolean isDoingWork() {
         return false;
+    }
+    private void weighing(){
+        if(true/*no thing*/){
+            setState(State.NONE);
+            //set led off
+        }
+        else if(false/*light cube*/){
+            setState(State.CUBE_LIGHT);
+            //set led light
+        }
+        else if(false/*medium cube*/){
+            setState(State.CUBE_MEDIUM);
+            //set led med
+        }
+        else if(false/*heavy cube*/){
+            setState(State.CUBE_HEAVY);
+            //set led dark
+        }
+        else if(false/*ball*/){
+            setState(State.BALL);
+            //set led white
+        }
+        else if(false/*duck*/){
+            setState(State.DUCK);
+            //set led yellow
+        }
     }
 }

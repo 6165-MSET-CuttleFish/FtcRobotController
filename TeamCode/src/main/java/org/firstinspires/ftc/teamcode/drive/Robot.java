@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -56,6 +55,7 @@ import androidx.annotation.NonNull;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -93,7 +93,7 @@ public class Robot extends TankDrive {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 2;
+    public static double OMEGA_WEIGHT = 1;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -139,13 +139,13 @@ public class Robot extends TankDrive {
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"),
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
-        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
+        motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
+        rightMotors = Arrays.asList(rightFront, rightRear, rightMid);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -165,10 +165,13 @@ public class Robot extends TankDrive {
         }
         leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        Easy265.init(opMode);
+        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
+        setPoseEstimate(robotPose);
     }
 
     public void autoInit() {
@@ -291,6 +294,9 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
+        for (DcMotorEx motor : motors) {
+            telemetry.addData(motor.getDeviceName(), motor.getPower());
+        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
@@ -354,6 +360,12 @@ public class Robot extends TankDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
+        vel = new Pose2d(
+                drivePower.getX(),
+                drivePower.getY(),
+                drivePower.getHeading() * 2
+        );
+
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
@@ -364,6 +376,8 @@ public class Robot extends TankDrive {
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
+            telemetry.addData("denom", denom);
+            telemetry.addData("VX", VX_WEIGHT * Math.abs(drivePower.getX()));
         }
 
         setDrivePower(vel);

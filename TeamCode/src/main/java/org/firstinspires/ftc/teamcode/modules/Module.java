@@ -25,14 +25,14 @@ public abstract class Module<T> {
     }
 
     /**
-     * This function updates all necessary controls in a loop
-     */
-    public abstract void update();
-
-    /**
      * This function initializes all necessary hardware modules
      */
     public abstract void init();
+
+    /**
+     * This function updates all necessary controls in a loop
+     */
+    public abstract void update();
 
     /**
      * @return The state of the module
@@ -51,7 +51,7 @@ public abstract class Module<T> {
 
     /**
      *
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    public abstract boolean isHazardous();
+    public abstract boolean isDoingWork();
 }

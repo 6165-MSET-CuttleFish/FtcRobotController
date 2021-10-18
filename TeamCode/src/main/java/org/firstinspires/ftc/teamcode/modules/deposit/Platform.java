@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+
 /**
+ * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
  * @author Srey Das Sarma
  */
 public class Platform extends Module<Platform.State> {
@@ -27,7 +29,6 @@ public class Platform extends Module<Platform.State> {
     Servo platformL;
     Servo platformR;
     ElapsedTime elapsedTime;
-    private Platform state;
     /**
      * Constructor which calls the 'init' function
      *
@@ -36,25 +37,23 @@ public class Platform extends Module<Platform.State> {
     public Platform(HardwareMap hardwareMap) {
         super(hardwareMap);
         stateMachine = new StateMachineBuilder<State>()
-                .build();
-    }
+                .state(State.IN)
+                .onEnter(this::out)
+                .transition(() -> true) // () -> is anonymous function that returns true
 
-    /**
-     * This function updates all necessary controls in a loop
-     */
-    @Override
-    public void update() {
-        if(stateMachine.getState()==State.TRANSIT_IN){
-            setState(State.IN);
-        }else if(stateMachine.getState()==State.IN){
-            setState(State.OUT);
-        }else if(stateMachine.getState()==State.OUT){
-            setState(State.TRANSIT_IN);
-        }
-        elapsedTime.startTime();
-        platformL.setPosition(state.getState().angle);
-        platformR.setPosition(state.getState().angle);
-        elapsedTime.reset();
+                .state(State.TRANSIT_OUT)
+                .onEnter(this::out)
+                .transitionTimed(0.5)
+
+                .state(State.OUT)
+                .transition(() -> true)
+
+                .state(State.TRANSIT_IN)
+
+
+                .state(State.IN)
+
+                .build();
     }
 
     /**
@@ -76,13 +75,37 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
-     * Set a new state for the module
-     * @param state New state of the module
+     * This function updates all necessary controls in a loop
      */
-    public void setState(Platform state) {
-        this.state = state;
+    @Override
+    public void update() {
+        if(stateMachine.getState()==State.TRANSIT_IN){
+            setState(State.IN);
+        }else if(stateMachine.getState()==State.IN){
+            setState(State.OUT);
+        }else if(stateMachine.getState()==State.OUT){
+            setState(State.TRANSIT_IN);
+        }
+        elapsedTime.startTime();
+        platformL.setPosition(state.getState().angle);
+        platformR.setPosition(state.getState().angle);
+        elapsedTime.reset();
     }
 
+    /**
+     * Extends the platform out
+     */
+    private void out() {
+        platform.setPosition(1);
+    }
+
+    /**
+     * Return platform to rest
+     */
+    private void in() {
+        platform.setPosition(0);
+    }
+  
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
@@ -96,6 +119,13 @@ public class Platform extends Module<Platform.State> {
         }else if(platformL.getPosition()!=(1-platformR.getPosition())){
             return true;
         }
+    }
+  
+    /**
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
+     */
+    @Override
+    public boolean isDoingWork() {
         return false;
     }
 }
