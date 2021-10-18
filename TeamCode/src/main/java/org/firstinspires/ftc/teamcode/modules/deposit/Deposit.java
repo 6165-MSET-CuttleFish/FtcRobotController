@@ -102,7 +102,7 @@ public class Deposit extends Module<Deposit.State> {
     
     @Override
     public boolean isHazardous() {
-        if(getState()==State.LEVEL3){
+        return false;
     }
       
     /**

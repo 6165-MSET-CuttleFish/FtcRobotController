@@ -91,6 +91,7 @@ public class Platform extends Module<Platform.State> {
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
+    @Override
     public boolean isHazardous() {
         /* Conditions:
          * elapsed time passes set time before module reaches position
