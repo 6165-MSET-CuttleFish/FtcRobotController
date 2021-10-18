@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Carousel extends Module<Carousel.State> {
     enum State {
-
+        ON,
+        IDLE,
     }
 
     CRServo driver1;
@@ -28,14 +29,6 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
-     * This function updates all necessary controls in a loop
-     */
-    @Override
-    public void update() {
-
-    }
-
-    /**
      * This function initializes all necessary hardware modules
      */
     @Override
@@ -45,11 +38,18 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
-     * @return The state of the module
+     * This function updates all necessary controls in a loop
      */
     @Override
-    public State getState() {
-        return null;
+    public void update() {
+        switch (getState()) {
+            case ON:
+                // code to turn on drivers
+                break;
+            case IDLE:
+                // code to turn off drivers
+                break;
+        }
     }
 
     /**
