@@ -57,4 +57,12 @@ public class Carousel extends Module<Carousel.State> {
     public boolean isDoingWork() {
         return false;
     }
+
+    /**
+     * @return Whether the module is currently in a hazardous state
+     */
+    @Override
+    public boolean isHazardous() {
+        return false;
+    }
 }

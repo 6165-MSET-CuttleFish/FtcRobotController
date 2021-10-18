@@ -55,6 +55,7 @@ import androidx.annotation.NonNull;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.Details.side;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -142,9 +143,9 @@ public class Robot extends TankDrive {
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{};
-        motors = Arrays.asList(leftFront, leftMid, leftRear, rightFront, rightMid, rightRear);
-        leftMotors = Arrays.asList(leftFront, leftMid, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightMid, rightRear);
+        motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
+        leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
+        rightMotors = Arrays.asList(rightFront, rightRear, rightMid);
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -164,10 +165,13 @@ public class Robot extends TankDrive {
         }
         leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        Easy265.init(opMode);
+        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
+        setPoseEstimate(robotPose);
     }
 
     public void autoInit() {

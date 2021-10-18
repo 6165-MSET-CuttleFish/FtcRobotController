@@ -50,7 +50,15 @@ public class Intake extends Module<Intake.State> {
         return false;
     }
 
+    /**
+     * @return Whether the module is currently in a hazardous state
+     */
+    @Override
+    public boolean isHazardous() {
+        return false;
+    }
 
+    @Override
     public void update() {
         functions();
         Details.packet.put("ticks", intake.getVelocity());
