@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.BPIDFController;
+
 /**
  * @author Martin Xu
  */
-
 public class Deposit extends Module<Deposit.State> {
     enum State {
         LEVEL3(3, 6),
@@ -90,6 +90,7 @@ public class Deposit extends Module<Deposit.State> {
 
             pidController = new BPIDFController(MOTOR_PID, integralBand, kV, kA, kStatic);
         }
+        
     }
 
     // convert motor ticks to inches traveled by the slides
@@ -98,14 +99,16 @@ public class Deposit extends Module<Deposit.State> {
         return 0;
     }
 
+    
+    @Override
+    public boolean isHazardous() {
+        if(getState()==State.LEVEL3){
+    }
+      
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    @Override
     public boolean isDoingWork() {
-        if(getState() != State.IDLE){
-            return true;
-        }
         return false;
     }
 }
