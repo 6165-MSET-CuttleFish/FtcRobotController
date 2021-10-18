@@ -15,9 +15,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Platform extends Module<Platform.State> {
     enum State {
-        TRANSIT_IN (0,0),
-        IN(0.2,1),
-        OUT(0.5,1);
+        TRANSIT_IN (0,0.5),
+        IN(0.2,0),
+        TRANSIT_OUT(0.5, 0.5),
+        OUT(0.5,0.1);
         final double angle;
         final double time;
         State(double angle,double time) {
@@ -26,9 +27,7 @@ public class Platform extends Module<Platform.State> {
         }
     }
     StateMachine<State> stateMachine;
-    Servo platformL;
-    Servo platformR;
-    ElapsedTime elapsedTime;
+    Servo platformL, platformR;
     /**
      * Constructor which calls the 'init' function
      *
@@ -36,24 +35,6 @@ public class Platform extends Module<Platform.State> {
      */
     public Platform(HardwareMap hardwareMap) {
         super(hardwareMap);
-        stateMachine = new StateMachineBuilder<State>()
-                .state(State.IN)
-                .onEnter(this::out)
-                .transition(() -> true) // () -> is anonymous function that returns true
-
-                .state(State.TRANSIT_OUT)
-                .onEnter(this::out)
-                .transitionTimed(0.5)
-
-                .state(State.OUT)
-                .transition(() -> true)
-
-                .state(State.TRANSIT_IN)
-
-
-                .state(State.IN)
-
-                .build();
     }
 
     /**
@@ -64,14 +45,6 @@ public class Platform extends Module<Platform.State> {
         platformL = hardwareMap.servo.get("platformLeft");
         platformR = hardwareMap.servo.get("platformRight");
         platformR.setDirection(Servo.Direction.REVERSE);
-        setState(State.TRANSIT_IN);
-        platformL.setPosition(state.getState().angle);
-        platformR.setPosition(state.getState().angle);
-    }
-
-    @Override
-    public State getState() {
-        return stateMachine.getState();
     }
 
     /**
@@ -79,16 +52,25 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void update() {
-        if(stateMachine.getState()==State.TRANSIT_IN){
-            setState(State.IN);
-        }else if(stateMachine.getState()==State.IN){
-            setState(State.OUT);
-        }else if(stateMachine.getState()==State.OUT){
-            setState(State.TRANSIT_IN);
+        switch (getState()) {
+            case TRANSIT_IN:
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.IN);
+                }
+            case IN:
+                in();
+                break;
+            case TRANSIT_OUT:
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.OUT);
+                }
+            case OUT:
+                out();
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.TRANSIT_IN);
+                }
+                break;
         }
-        elapsedTime.startTime();
-        platformL.setPosition(state.getState().angle);
-        platformR.setPosition(state.getState().angle);
         elapsedTime.reset();
     }
 
@@ -96,29 +78,26 @@ public class Platform extends Module<Platform.State> {
      * Extends the platform out
      */
     private void out() {
-        platform.setPosition(1);
+        platformL.setPosition(0.5);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        platform.setPosition(0);
+        platformR.setPosition(0.2);
     }
   
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    @Override
     public boolean isHazardous() {
-        /**Conditions:
+        /* Conditions:
          * elapsed time passes set time before module reaches position
          */
         if(platformL.getPosition()!= getState().angle&&elapsedTime.time()>getState().time){
             return true;
-        }else if(platformL.getPosition()!=(1-platformR.getPosition())){
-            return true;
-        }
+        } else return platformL.getPosition() != platformR.getPosition();
     }
   
     /**
@@ -126,6 +105,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return false;
+        return getState() == State.OUT || getState() == State.TRANSIT_OUT;
     }
 }
