@@ -42,12 +42,6 @@ public class Intake extends Module<Intake.State> {
         dropR.setPosition(0.95);
     }
 
-    @Override
-    public State getState() {
-
-        return this.getState();
-    }
-
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
