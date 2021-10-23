@@ -29,7 +29,6 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import static org.firstinspires.ftc.teamcode.util.Details.packet;
 
 @Config
 public class TrajectorySequenceRunner {
@@ -96,7 +95,7 @@ public class TrajectorySequenceRunner {
         Pose2d targetPose = null;
         DriveSignal driveSignal = null;
 
-        Canvas fieldOverlay = packet.fieldOverlay();
+       // Canvas fieldOverlay = packet.fieldOverlay();
 
         SequenceSegment currentSegment = null;
 
@@ -223,7 +222,7 @@ public class TrajectorySequenceRunner {
             poseHistory.removeFirst();
         }
 
-        packet.put("x", poseEstimate.getX());
+       /* packet.put("x", poseEstimate.getX());
         packet.put("y", poseEstimate.getY());
         packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));
 
@@ -236,7 +235,7 @@ public class TrajectorySequenceRunner {
         dashboard.sendTelemetryPacket(packet);
 
         packet = new TelemetryPacket();
-
+*/
         return driveSignal;
     }
 
