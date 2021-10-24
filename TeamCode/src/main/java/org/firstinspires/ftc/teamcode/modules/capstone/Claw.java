@@ -41,6 +41,14 @@ public class Claw extends Module<Claw.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     @Override
+    public boolean isDoingWork() {
+        return false;
+    }
+
+    /**
+     * @return Whether the module is currently in a hazardous state
+     */
+    @Override
     public boolean isHazardous() {
         return false;
     }

@@ -24,6 +24,14 @@ public class TestOpMode extends LinearOpMode {
             }
 
             @Override
+            public boolean isDoingWork() {
+                return false;
+            }
+
+            /**
+             * @return Whether the module is currently in a hazardous state
+             */
+            @Override
             public boolean isHazardous() {
                 return false;
             }

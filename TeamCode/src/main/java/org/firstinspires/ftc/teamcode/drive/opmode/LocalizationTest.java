@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.localizers.Easy265;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -20,6 +25,8 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
+        GamepadEx gamepadEx = new GamepadEx(gamepad1);
+        ButtonReader buttonReader = new ButtonReader(gamepadEx, GamepadKeys.Button.A);
 
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -32,8 +39,14 @@ public class LocalizationTest extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
-            if (gamepad1.a) {
+            buttonReader.readValue();
+            // gamepadEx.readButtons();
+            if (buttonReader.wasJustPressed()) {
                 robot.setPoseEstimate(new Pose2d());
+            }
+
+            if (gamepad1.b) {
+                Easy265.stop();
             }
 
             robot.update();

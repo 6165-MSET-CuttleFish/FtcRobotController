@@ -1,23 +1,22 @@
 package org.firstinspires.ftc.teamcode.modules.carousel;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+
 /**
  * Mechanism at the back of the robot to deposit freight
  *
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
-    /**
-     * States of the Carousel module
-     */
     enum State {
-
+        ON,
+        IDLE,
     }
 
-    CRServo driver1, driver2;
+    CRServo driver, driver1;
 
     /**
      * Constructor which calls the 'init' function
@@ -33,6 +32,7 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void init() {
+        driver = hardwareMap.crservo.get("driver");
         driver1 = hardwareMap.crservo.get("driver1");
     }
 
@@ -41,19 +41,28 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void update() {
-
+        switch (getState()) {
+            case ON:
+                driver.setPower(0.8);
+                driver1.setPower(0.8);
+                break;
+            case IDLE:
+                driver.setPower(0);
+                driver1.setPower(0);
+                break;
+        }
     }
 
     /**
-     * @return The state of the module
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public State getState() {
-        return null;
+    public boolean isDoingWork() {
+        return false;
     }
 
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently in a hazardous state
      */
     @Override
     public boolean isHazardous() {
