@@ -162,8 +162,6 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
