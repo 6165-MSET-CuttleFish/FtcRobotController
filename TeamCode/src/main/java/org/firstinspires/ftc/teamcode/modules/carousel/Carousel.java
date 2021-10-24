@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.carousel;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 
@@ -12,9 +12,11 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Carousel extends Module<Carousel.State> {
     enum State {
-
+        ON,
+        IDLE,
     }
-    CRServo driver;
+
+    CRServo driver, driver1;
 
     /**
      * Constructor which calls the 'init' function
@@ -26,28 +28,29 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
-     * This function updates all necessary controls in a loop
-     */
-    @Override
-    public void update() {
-
-    }
-
-    /**
      * This function initializes all necessary hardware modules
      */
     @Override
     public void init() {
         driver = hardwareMap.crservo.get("driver");
-
+        driver1 = hardwareMap.crservo.get("driver1");
     }
 
     /**
-     * @return The state of the module
+     * This function updates all necessary controls in a loop
      */
     @Override
-    public State getState() {
-        return null;
+    public void update() {
+        switch (getState()) {
+            case ON:
+                driver.setPower(0.8);
+                driver1.setPower(0.8);
+                break;
+            case IDLE:
+                driver.setPower(0);
+                driver1.setPower(0);
+                break;
+        }
     }
 
     /**
