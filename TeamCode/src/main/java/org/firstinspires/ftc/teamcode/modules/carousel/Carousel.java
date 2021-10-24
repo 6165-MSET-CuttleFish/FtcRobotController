@@ -43,10 +43,12 @@ public class Carousel extends Module<Carousel.State> {
     public void update() {
         switch (getState()) {
             case ON:
-                // TODO: code to turn on drivers
+                driver.setPower(0.8);
+                driver1.setPower(0.8);
                 break;
             case IDLE:
-                // TODO: code to turn off drivers
+                driver.setPower(0);
+                driver1.setPower(0);
                 break;
         }
     }
