@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -31,6 +33,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.localizers.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
@@ -93,7 +96,7 @@ public class Robot extends TankDrive {
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 1;
+    public static double OMEGA_WEIGHT = 5;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
@@ -163,10 +166,6 @@ public class Robot extends TankDrive {
         for (DcMotorEx motor : rightMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        leftMid.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMid.setDirection(DcMotorSimple.Direction.FORWARD);
-        Easy265.init(opMode);
-        setLocalizer(new T265Localizer());
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
@@ -294,9 +293,13 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
+        double current = 0;
         for (DcMotorEx motor : motors) {
             telemetry.addData(motor.getDeviceName(), motor.getPower());
+            current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
+        telemetry.addData("Motor Current", current);
+        Log.println(Log.INFO, "motor_current", ""+current);
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
