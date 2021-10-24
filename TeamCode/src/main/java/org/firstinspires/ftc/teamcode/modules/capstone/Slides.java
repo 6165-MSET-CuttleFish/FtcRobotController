@@ -82,16 +82,14 @@ public class Slides extends Module<Slides.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     private void out() {
-        slideLeft.setPosition(0.0);
-        slideRight.setPosition(0.26);
+        placeset(0.8);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        slideLeft.setPosition(0.96);
-        slideRight.setPosition(0.7);
+        placeset(1);
     }
     @Override
     public boolean isDoingWork() {
@@ -103,7 +101,7 @@ public class Slides extends Module<Slides.State> {
     /**
      * @return Whether the module is currently in a hazardous state
      */
-    public void placeset(double pos){
+    private void placeset(double pos){
         slideLeft.setPosition(pos);
         slideRight.setPosition(1-pos);
     }

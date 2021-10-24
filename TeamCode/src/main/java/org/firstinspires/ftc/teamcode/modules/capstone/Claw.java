@@ -17,8 +17,7 @@ public class Claw extends Module<Claw.State> {
         IN(0.2,0.5),
         IDLEOut(0,0.5),
         TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1),
-        IDLEIn(0,0.5);
+        OUT(0.5,0.1);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -76,11 +75,6 @@ public class Claw extends Module<Claw.State> {
                 open();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Claw.State.TRANSIT_IN);
-                }
-                break;
-            case IDLEIn:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_OUT);
                 }
                 break;
         }
