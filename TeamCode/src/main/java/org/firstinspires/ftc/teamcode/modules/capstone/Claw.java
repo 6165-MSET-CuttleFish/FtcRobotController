@@ -44,6 +44,7 @@ public class Claw extends Module<Claw.State> {
     public void init() {
         clawL = hardwareMap.servo.get("clawL");
         clawR = hardwareMap.servo.get("clawR");
+        clawR.setDirection(Servo.Direction.REVERSE);
         setState(State.IN);
     }
 

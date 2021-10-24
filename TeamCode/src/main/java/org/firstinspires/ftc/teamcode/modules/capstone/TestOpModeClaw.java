@@ -12,14 +12,18 @@ public class TestOpModeClaw extends LinearOpMode {
         Slides slides = new Slides(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-            slides.update();
+            /*slides.update();
             if(gamepad1.a){
-               slides.setState(Slides.State.TRANSIT_OUT);
+
             }
             telemetry.addData("Seconds", slides.elapsedTime.seconds());
             telemetry.addData("State", slides.getState().toString());
             telemetry.addData("Target", slides.getState().time);
-            telemetry.update();
+            telemetry.update();*/
+            slides.placeset(1);
+            sleep(1000);
+            slides.placeset(0.5);
+            sleep(1000);
         }
     }
 }

@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Slides extends Module<Slides.State> {
     enum State {
-        TRANSIT_IN (0,0.5),
-        IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1);
+        TRANSIT_IN (0,1),
+        IN(0.2,1),
+        TRANSIT_OUT(0.5, 1),
+        OUT(0.5,1);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -59,10 +59,10 @@ public class Slides extends Module<Slides.State> {
                 }
             case IN:
                 in();
-                claw.open();
+                //claw.open();
                 break;
             case TRANSIT_OUT:
-                claw.close();
+                //claw.close();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Slides.State.OUT);
                 }
@@ -70,7 +70,7 @@ public class Slides extends Module<Slides.State> {
                 break;
             case OUT:
                 out();
-                claw.open();
+                //claw.open();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Slides.State.TRANSIT_IN);
                 }
@@ -103,6 +103,10 @@ public class Slides extends Module<Slides.State> {
     /**
      * @return Whether the module is currently in a hazardous state
      */
+    public void placeset(double pos){
+        slideLeft.setPosition(pos);
+        slideRight.setPosition(1-pos);
+    }
     @Override
     public boolean isHazardous() {
         return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
