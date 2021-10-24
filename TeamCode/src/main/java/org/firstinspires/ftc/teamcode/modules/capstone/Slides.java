@@ -5,20 +5,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
-public class Claw extends Module<Claw.State> {
+public class Slides extends Module<Slides.State> {
     enum State {
         TRANSIT_IN (0,0.5),
         IN(0.2,0.5),
-        IDLEOut(0,0.5),
         TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1),
-        IDLEIn(0,0.5);
+        OUT(0.5,0.1);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -27,13 +24,14 @@ public class Claw extends Module<Claw.State> {
         }
     }
     StateMachine<State> stateMachine;
-    Servo clawL, clawR;
+    Servo slideLeft, slideRight;
+    Claw claw;
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Claw(HardwareMap hardwareMap) {
+    public Slides(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
 
@@ -42,8 +40,9 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public void init() {
-        clawL = hardwareMap.servo.get("clawL");
-        clawR = hardwareMap.servo.get("clawR");
+        slideLeft = hardwareMap.servo.get("slideLeft");
+        slideRight = hardwareMap.servo.get("slideRight");
+        claw=new Claw(hardwareMap);
         setState(State.IN);
     }
 
@@ -52,34 +51,28 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public void update() {
+        claw.update();
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.IN);
+                    setState(Slides.State.IN);
                 }
             case IN:
-                close();
-                break;
-            case IDLEOut:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_OUT);
-                }
+                in();
+                claw.open();
                 break;
             case TRANSIT_OUT:
+                claw.close();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.OUT);
+                    setState(Slides.State.OUT);
                 }
-                open();
+                out();
                 break;
             case OUT:
-                open();
+                out();
+                claw.open();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.TRANSIT_IN);
-                }
-                break;
-            case IDLEIn:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_OUT);
+                    setState(Slides.State.TRANSIT_IN);
                 }
                 break;
         }
@@ -88,23 +81,23 @@ public class Claw extends Module<Claw.State> {
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    public void open() {
-        clawL.setPosition(0.0);
-        clawR.setPosition(0.26);
+    private void out() {
+        slideLeft.setPosition(0.0);
+        slideRight.setPosition(0.26);
     }
 
     /**
      * Return platform to rest
      */
-    public void close() {
-        clawL.setPosition(0.96);
-        clawR.setPosition(0.7);
+    private void in() {
+        slideLeft.setPosition(0.96);
+        slideRight.setPosition(0.7);
     }
     @Override
     public boolean isDoingWork() {
-        if(clawL.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
+        if(slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
             return true;
-        } else return clawL.getPosition() != clawR.getPosition();
+        } else return slideLeft.getPosition() != slideRight.getPosition();
     }
 
     /**
@@ -112,7 +105,7 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public boolean isHazardous() {
-        return getState() == Claw.State.OUT || getState() == Claw.State.TRANSIT_OUT;
+        return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
     }
 
 }
