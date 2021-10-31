@@ -42,8 +42,10 @@ public class Intake extends Module<Intake.State> {
 
         outL.setPosition(1);
         outR.setPosition(0.15);
-        //flipL.setPosition(1);
-        //flipR.setPosition(0.9);
+        flipL.setDirection(Servo.Direction.REVERSE);
+        flipR.setDirection(Servo.Direction.REVERSE);
+        flipL.setPosition(.9);
+        flipR.setPosition(0.1);
 
     }
 
@@ -83,11 +85,10 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(0.5);
         outR.setPosition(0.65);
 
-        flipL.setPosition(0.57);
-        flipR.setPosition(0.43);
+        flipL.setPosition(0.43);
+        flipR.setPosition(0.57);
 
-        //flipL.setPosition(0.57);
-        //flipR.setPosition(0.43);
+
         setState(State.INTAKING);
 
 
@@ -100,11 +101,9 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(0.5);
         outR.setPosition(0.65);
 
-        flipL.setPosition(0.57);
-        flipR.setPosition(0.43);
+        flipL.setPosition(0.43);
+        flipR.setPosition(0.57);
 
-        //flipL.setPosition(0.57);
-        //flipR.setPosition(0.43);
         setState(State.EXTAKING);
 
 
@@ -114,11 +113,10 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(1);
         outR.setPosition(0.15);
 
-        flipL.setPosition(1);
-        flipR.setPosition(0.9);
+        flipL.setPosition(0.9);
+        flipR.setPosition(0.1);
 
-        //flipL.setPosition(1);
-        //flipR.setPosition(0.9);
+
         setState(State.IDLE);
 
     }
