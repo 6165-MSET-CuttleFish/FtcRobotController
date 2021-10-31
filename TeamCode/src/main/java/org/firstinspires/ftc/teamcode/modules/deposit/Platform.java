@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * @author Srey Das Sarma
  */
 public class Platform extends Module<Platform.State> {
-    enum State {
+    public enum State {
         TRANSIT_IN (0,0.5),
-        IN(0.2,0),
+        IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.5),
         OUT(0.5,0.1);
         final double angle;
@@ -34,7 +34,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IN);
     }
 
     /**
@@ -42,9 +42,9 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        platformL = hardwareMap.servo.get("platformLeft");
-        platformR = hardwareMap.servo.get("platformRight");
-        platformR.setDirection(Servo.Direction.REVERSE);
+        platformL = hardwareMap.servo.get("platformL");
+        platformR = hardwareMap.servo.get("platformR");
+        setState(State.IN);
     }
 
     /**
@@ -64,6 +64,8 @@ public class Platform extends Module<Platform.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.OUT);
                 }
+                out();
+                break;
             case OUT:
                 out();
                 if (elapsedTime.seconds() > getState().time) {
@@ -71,21 +73,23 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
         }
-        elapsedTime.reset();
     }
 
     /**
      * Extends the platform out
      */
+
     private void out() {
         platformL.setPosition(0.5);
+        platformR.setPosition(0.5);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        platformR.setPosition(0.2);
+        platformL.setPosition(0.9);
+        platformR.setPosition(0.1);
     }
   
     /**

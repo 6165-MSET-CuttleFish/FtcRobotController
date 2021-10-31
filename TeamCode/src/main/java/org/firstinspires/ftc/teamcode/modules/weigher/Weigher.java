@@ -26,7 +26,7 @@ public class Weigher extends Module<Weigher.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Weigher(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.NONE);
     }
 
     /**

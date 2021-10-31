@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.Details;
 public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Module module = new Module(hardwareMap) {
+        Module module = new Module(hardwareMap, null) {
             @Override
             public void update() {
 
