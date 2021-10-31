@@ -42,7 +42,9 @@ public class Intake extends Module<Intake.State> {
 
         outL.setPosition(1);
         outR.setPosition(0.15);
-        //flipL.setPosition(1);
+        flipL.setDirection(Servo.Direction.REVERSE);
+        flipR.setDirection(Servo.Direction.REVERSE);
+        //flipL.setPosition(.1);
         //flipR.setPosition(0.9);
 
     }
@@ -114,7 +116,7 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(1);
         outR.setPosition(0.15);
 
-        flipL.setPosition(1);
+        flipL.setPosition(.1);
         flipR.setPosition(0.9);
 
         //flipL.setPosition(1);
