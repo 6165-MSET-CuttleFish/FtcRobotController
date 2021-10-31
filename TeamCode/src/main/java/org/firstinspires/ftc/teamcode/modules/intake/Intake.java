@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.Details;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 
@@ -14,55 +15,48 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gam
  * @author Matthew Song
  */
 public class Intake extends Module<Intake.State> {
-    private DcMotor intake;
-    private Servo dropL, dropR;
+    private DcMotorEx intake;
+    private Servo outL, outR, flipL, flipR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
-    enum State {
+    public enum State {
         INTAKING,
         EXTAKING,
         IDLE
     }
 
     public Intake(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IDLE);
     }
 
     @Override
     public void init() {
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        dropL = hardwareMap.get(Servo.class, "dropL");
-        dropR = hardwareMap.get(Servo.class, "dropR");
-        blockSensor = hardwareMap.get(DistanceSensor.class, "block");
-        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        isBlock = false;
-        dropL.setPosition(/*insert number*/);
-        dropR.setDirection(Servo.Direction.REVERSE);
-        dropR.setPosition(/*insert number*/);
-    }
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        outL = hardwareMap.get(Servo.class, "outR");
+        outR = hardwareMap.get(Servo.class, "outL");
+        flipL = hardwareMap.get(Servo.class, "flipL");
+        flipR = hardwareMap.get(Servo.class, "flipR");
+        //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-    @Override
-    public State getState() {
 
-        return this.getState();
+        outL.setPosition(1);
+        outR.setPosition(0.15);
+        //flipL.setPosition(1);
+        //flipR.setPosition(0.9);
+
     }
 
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    @Override
-    public boolean isHazardous() {
+
+    public boolean isDoingWork() {
         return false;
     }
 
-    @Override
-    public State getState() {
-        // TODO: return the state of the module
-        return null;
-    }
-
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the module is currently in a hazardous state
      */
     @Override
     public boolean isHazardous() {
@@ -71,47 +65,63 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void update() {
-        functions();
+        switch(getState()){
+            case INTAKING:
+                in();
+                break;
+            case EXTAKING:
+                out();
+                break;
+            case IDLE:
+                off();
+                break;
+        }
+        Details.packet.put("Intake Velocity", intake.getVelocity());
     }
     private void in(){
         intake.setPower(1);
+        outL.setPosition(0.5);
+        outR.setPosition(0.65);
+
+        flipL.setPosition(0.57);
+        flipR.setPosition(0.43);
+
+        //flipL.setPosition(0.57);
+        //flipR.setPosition(0.43);
         setState(State.INTAKING);
-        dropL.setPosition(/*insert number*/);
-        dropR.setPosition(/*insert number*/);
+
+
+    }
+    public int returnTicks(){
+        return intake.getCurrentPosition();
     }
     private void out(){
         intake.setPower(-1);
+        outL.setPosition(0.5);
+        outR.setPosition(0.65);
+
+        flipL.setPosition(0.57);
+        flipR.setPosition(0.43);
+
+        //flipL.setPosition(0.57);
+        //flipR.setPosition(0.43);
         setState(State.EXTAKING);
-        dropL.setPosition(/*insert number*/);
-        dropR.setPosition(/*insert number*/);
+
+
     }
     private void off(){
         intake.setPower(0);
+        outL.setPosition(1);
+        outR.setPosition(0.15);
+
+        flipL.setPosition(1);
+        flipR.setPosition(0.9);
+
+        //flipL.setPosition(1);
+        //flipR.setPosition(0.9);
         setState(State.IDLE);
-        dropL.setPosition(/*insert number*/);
-        dropR.setPosition(/*insert number*/);
+
     }
-     private void checkBlock(){
-        if(blockSensor.getDistance(DistanceUnit.INCH) < 2){
-            off();
-            isBlock = true;
-        }
-        else{
-            isBlock = false;
-        }
-    }
-    private void functions(){
-        checkBlock();
-        if(!isBlock == false){
-            //temporary buttons
-            if(gamepad1.b){
-                in();
-            }
-            else if(gamepad1.a){
-                out();
-            }
-            else off();
-        }
-        else off();
-    }
+
+
 }
