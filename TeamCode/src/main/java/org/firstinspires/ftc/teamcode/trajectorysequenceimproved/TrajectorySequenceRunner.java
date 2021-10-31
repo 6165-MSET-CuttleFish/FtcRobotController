@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.Details.packet;
 
+
 @Config
 public class TrajectorySequenceRunner {
     public static String COLOR_INACTIVE_TRAJECTORY = "#4caf507a";
