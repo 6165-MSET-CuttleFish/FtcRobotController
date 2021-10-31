@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
-    enum State {
+    public enum State {
         ON,
         IDLE,
     }
@@ -24,7 +24,7 @@ public class Carousel extends Module<Carousel.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Carousel(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IDLE);
     }
 
     /**
@@ -32,8 +32,8 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void init() {
-        driver = hardwareMap.crservo.get("driver");
-        driver1 = hardwareMap.crservo.get("driver1");
+        driver = hardwareMap.crservo.get("duckyR");
+        driver1 = hardwareMap.crservo.get("duckyL");
     }
 
     /**

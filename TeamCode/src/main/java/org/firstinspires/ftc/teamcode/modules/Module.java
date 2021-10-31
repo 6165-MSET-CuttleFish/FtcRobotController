@@ -21,7 +21,8 @@ public abstract class Module<T> {
      * Constructor which calls the 'init' function
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Module(HardwareMap hardwareMap) {
+    public Module(HardwareMap hardwareMap, T initialState) {
+        setState(initialState);
         this.hardwareMap = hardwareMap;
         init();
     }

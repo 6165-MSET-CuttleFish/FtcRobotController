@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
  * @author Sreyash Das Sarma
  */
 public class Claw extends Module<Claw.State> {
-    enum State {
+    public enum State {
         TRANSIT_IN (0,0.5),
         IN(0.2,0.5),
         IDLEOut(0,0.5),
@@ -33,7 +33,7 @@ public class Claw extends Module<Claw.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Claw(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IDLEOut);
     }
 
     /**

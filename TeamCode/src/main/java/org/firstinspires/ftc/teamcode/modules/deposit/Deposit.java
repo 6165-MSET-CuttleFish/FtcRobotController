@@ -1,20 +1,18 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.noahbres.jotai.StateMachine;
-import com.noahbres.jotai.StateMachineBuilder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.BPIDFController;
 
 /**
  * @author Martin Xu
  */
 public class Deposit extends Module<Deposit.State> {
-    enum State {
+    public enum State {
         LEVEL3(3, 6),
         LEVEL2(2, 4),
         LEVEL1(1, 2),
@@ -36,7 +34,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double kA = 0;
     public static double kStatic = 0;
     public static double integralBand = Double.POSITIVE_INFINITY;
-    BPIDFController pidController = new BPIDFController(MOTOR_PID, integralBand, kV, kA, kStatic);
+    PIDFController pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
 
     double lastKv = kV;
     double lastKa = kA;
@@ -52,7 +50,8 @@ public class Deposit extends Module<Deposit.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Deposit(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IDLE);
+        pidController.setInputBounds(-1, 1);
     }
 
     /**
@@ -61,8 +60,7 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void init() {
         platform = new Platform(hardwareMap);
-        slides = hardwareMap.get(DcMotorEx.class, "linearSlide");
-        pidController.setInputBounds(-1, 1);
+        slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
     }
 
     /**
@@ -88,7 +86,7 @@ public class Deposit extends Module<Deposit.State> {
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;
 
-            pidController = new BPIDFController(MOTOR_PID, integralBand, kV, kA, kStatic);
+            pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
         
     }

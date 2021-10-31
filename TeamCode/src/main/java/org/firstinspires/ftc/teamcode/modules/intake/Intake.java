@@ -19,30 +19,25 @@ public class Intake extends Module<Intake.State> {
     private Servo outL, outR, flipL, flipR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
-    enum State {
+    public enum State {
         INTAKING,
         EXTAKING,
         IDLE
     }
 
     public Intake(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IDLE);
     }
 
     @Override
     public void init() {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        outL = hardwareMap.get(Servo.class, "outL");
-        outR = hardwareMap.get(Servo.class, "outR");
+        outL = hardwareMap.get(Servo.class, "outR");
+        outR = hardwareMap.get(Servo.class, "outL");
         flipL = hardwareMap.get(Servo.class, "flipL");
         flipR = hardwareMap.get(Servo.class, "flipR");
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        outL.setPosition(1);
-        outR.setPosition(0.15);
-        flipL.setPosition(1);
-        flipR.setPosition(0.9);
     }
 
     /**
@@ -66,12 +61,15 @@ public class Intake extends Module<Intake.State> {
         switch(getState()){
             case INTAKING:
                 in();
+                break;
             case EXTAKING:
                 out();
+                break;
             case IDLE:
                 off();
+                break;
         }
-        Details.packet.put("ticks", intake.getVelocity());
+        Details.packet.put("Intake Velocity", intake.getVelocity());
     }
     private void in(){
         intake.setPower(1);
@@ -79,21 +77,16 @@ public class Intake extends Module<Intake.State> {
         outR.setPosition(0.65);
         flipL.setPosition(0.57);
         flipR.setPosition(0.43);
-        setState(State.INTAKING);
-
     }
     public int returnTicks(){
         return intake.getCurrentPosition();
     }
     private void out(){
-
         intake.setPower(-1);
         outL.setPosition(0.5);
         outR.setPosition(0.65);
         flipL.setPosition(0.57);
         flipR.setPosition(0.43);
-        setState(State.EXTAKING);
-
     }
     private void off(){
         intake.setPower(0);
@@ -101,8 +94,6 @@ public class Intake extends Module<Intake.State> {
         outR.setPosition(0.15);
         flipL.setPosition(1);
         flipR.setPosition(0.9);
-        setState(State.IDLE);
-
     }
 
 
