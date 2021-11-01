@@ -20,9 +20,14 @@ public class Intake extends Module<Intake.State> {
     private DistanceSensor blockSensor;
     private boolean isBlock;
     public enum State {
-        INTAKING,
-        EXTAKING,
-        IDLE
+        INTAKING(0),
+        EXTAKING(0),
+        IDLE(0.5),
+        OFF(0);
+        final double time;
+        State(double time){
+            this.time = time;
+        }
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -38,12 +43,14 @@ public class Intake extends Module<Intake.State> {
         flipR = hardwareMap.get(Servo.class, "flipR");
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        intake.setDirection(DcMotorEx.Direction.REVERSE);
 
         outL.setPosition(1);
         outR.setPosition(0.15);
-        //flipL.setPosition(1);
-        //flipR.setPosition(0.9);
+        flipL.setDirection(Servo.Direction.REVERSE);
+        flipR.setDirection(Servo.Direction.REVERSE);
+        flipL.setPosition(.9);
+        flipR.setPosition(0.1);
 
     }
 
@@ -73,7 +80,11 @@ public class Intake extends Module<Intake.State> {
                 out();
                 break;
             case IDLE:
+                if(elapsedTime.seconds()>getState().time) setState(State.OFF);
                 off();
+                break;
+            case OFF:
+                motorOff();
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
@@ -83,11 +94,10 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(0.5);
         outR.setPosition(0.65);
 
-        flipL.setPosition(0.57);
-        flipR.setPosition(0.43);
+        flipL.setPosition(0.43);
+        flipR.setPosition(0.57);
 
-        //flipL.setPosition(0.57);
-        //flipR.setPosition(0.43);
+
         setState(State.INTAKING);
 
 
@@ -100,27 +110,27 @@ public class Intake extends Module<Intake.State> {
         outL.setPosition(0.5);
         outR.setPosition(0.65);
 
-        flipL.setPosition(0.57);
-        flipR.setPosition(0.43);
+        flipL.setPosition(0.43);
+        flipR.setPosition(0.57);
 
-        //flipL.setPosition(0.57);
-        //flipR.setPosition(0.43);
         setState(State.EXTAKING);
 
 
     }
     private void off(){
-        intake.setPower(0);
+
         outL.setPosition(1);
         outR.setPosition(0.15);
 
-        flipL.setPosition(1);
-        flipR.setPosition(0.9);
+        flipL.setPosition(0.9);
+        flipR.setPosition(0.1);
 
-        //flipL.setPosition(1);
-        //flipR.setPosition(0.9);
+
         setState(State.IDLE);
 
+    }
+    private void motorOff(){
+        intake.setPower(0);
     }
 
 
