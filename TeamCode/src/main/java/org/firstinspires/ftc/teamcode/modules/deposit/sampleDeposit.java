@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,6 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.Details;
+
+import static org.firstinspires.ftc.teamcode.util.Details.packet;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -33,7 +36,7 @@ public class sampleDeposit extends LinearOpMode
 {
     // Declare OpMode members.
     Deposit deposit;
-
+    FtcDashboard dashboard;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -54,8 +57,8 @@ public class sampleDeposit extends LinearOpMode
              if (gamepad1.y) {
                  deposit.setState(Deposit.State.IDLE);
              }
-
-             Details.packet = new TelemetryPacket();
+             dashboard.sendTelemetryPacket(packet);
+             packet = new TelemetryPacket();
              telemetry.addData("Target Height: ", deposit.getState().dist);
              telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
          }
