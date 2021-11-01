@@ -38,14 +38,14 @@ public class Intake extends Module<Intake.State> {
         flipR = hardwareMap.get(Servo.class, "flipR");
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake.setDirection(DcMotorEx.Direction.REVERSE);
 
-
-        outL.setPosition(1);
-        outR.setPosition(0.15);
+//        outL.setPosition(1);
+//        outR.setPosition(0.15);
         flipL.setDirection(Servo.Direction.REVERSE);
         flipR.setDirection(Servo.Direction.REVERSE);
-        flipL.setPosition(.9);
-        flipR.setPosition(0.1);
+//        flipL.setPosition(.9);
+//        flipR.setPosition(0.1);
 
     }
 
