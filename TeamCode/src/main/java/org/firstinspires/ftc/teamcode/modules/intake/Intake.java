@@ -20,9 +20,14 @@ public class Intake extends Module<Intake.State> {
     private DistanceSensor blockSensor;
     private boolean isBlock;
     public enum State {
-        INTAKING,
-        EXTAKING,
-        IDLE
+        INTAKING(0),
+        EXTAKING(0),
+        IDLE(0.5),
+        OFF(0);
+        final double time;
+        State(double time){
+            this.time = time;
+        }
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -75,7 +80,11 @@ public class Intake extends Module<Intake.State> {
                 out();
                 break;
             case IDLE:
+                if(elapsedTime.seconds()>getState().time) setState(State.OFF);
                 off();
+                break;
+            case OFF:
+                motorOff();
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
@@ -115,17 +124,12 @@ public class Intake extends Module<Intake.State> {
 
         flipL.setPosition(0.9);
         flipR.setPosition(0.1);
-        intakeDelay();
+
 
         setState(State.IDLE);
 
     }
-    private void intakeDelay(){
-        long timeElapsed = System.currentTimeMillis();
-        int millis = 0;
-        while(millis<300){
-            millis += timeElapsed - System.currentTimeMillis();
-        }
+    private void motorOff(){
         intake.setPower(0);
     }
 
