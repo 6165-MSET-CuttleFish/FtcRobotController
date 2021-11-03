@@ -14,7 +14,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(group = "visionTest")
+@TeleOp(name = "visionTest")
 //@Disabled
 public class TestOpMode extends LinearOpMode {
 
@@ -32,6 +32,11 @@ public class TestOpMode extends LinearOpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
             }
 
         });
