@@ -45,10 +45,10 @@ public class sampleDeposit extends LinearOpMode
         TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
          waitForStart();
          while(opModeIsActive()) {
+             packet = new TelemetryPacket();
              deposit.update();
              deposit.setState(tuningController.update());
              dashboard.sendTelemetryPacket(packet);
-             packet = new TelemetryPacket();
              telemetry.addData("Target Height: ", deposit.getState().dist);
              telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
          }
