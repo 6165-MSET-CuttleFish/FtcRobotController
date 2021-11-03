@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
-import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.util.Details;
 /**
  * @author Sreyash, Martin
  */
+@Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
         LEVEL3(22.0),
@@ -31,13 +32,11 @@ public class Deposit extends Module<Deposit.State> {
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
-    public static double integralBand = Double.POSITIVE_INFINITY;
     PIDFController pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
 
     double lastKv = kV;
     double lastKa = kA;
     double lastKStatic = kStatic;
-    double lastIntegralBand = integralBand;
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
@@ -82,11 +81,10 @@ public class Deposit extends Module<Deposit.State> {
         slides.setPower(pidController.update(ticksToInches(slides.getCurrentPosition())));
 
         // for dashboard
-        if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || integralBand != lastIntegralBand || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
+        if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
             lastKv = kV;
             lastKa = kA;
             lastKStatic = kStatic;
-            lastIntegralBand = integralBand;
             lastKp = MOTOR_PID.kP;
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;

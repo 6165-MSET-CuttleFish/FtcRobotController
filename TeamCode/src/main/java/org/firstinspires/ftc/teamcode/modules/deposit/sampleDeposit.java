@@ -37,7 +37,7 @@ public class sampleDeposit extends LinearOpMode
 {
     // Declare OpMode members.
     Deposit deposit;
-    FtcDashboard dashboard;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,7 +48,7 @@ public class sampleDeposit extends LinearOpMode
              packet = new TelemetryPacket();
              deposit.update();
              deposit.setState(tuningController.update());
-             dashboard.sendTelemetryPacket(packet);
+             if (packet != null) dashboard.sendTelemetryPacket(packet);
              telemetry.addData("Target Height: ", deposit.getState().dist);
              telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
          }
