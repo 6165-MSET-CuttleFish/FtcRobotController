@@ -26,9 +26,8 @@ public class Deposit extends Module<Deposit.State> {
     }
     DcMotorEx slides;
     Platform platform;
-    StateMachine<Integer> stateMachine;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(8,0,0);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;

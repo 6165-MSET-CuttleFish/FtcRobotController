@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.TuningController;
 
 import static org.firstinspires.ftc.teamcode.util.Details.packet;
 
@@ -41,22 +42,11 @@ public class sampleDeposit extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException {
          deposit = new Deposit(hardwareMap, telemetry);
+        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
          waitForStart();
          while(opModeIsActive()) {
              deposit.update();
-
-             if (gamepad1.a) {
-                 deposit.setState(Deposit.State.LEVEL1);
-             }
-             if (gamepad1.b) {
-                 deposit.setState(Deposit.State.LEVEL2);
-             }
-             if (gamepad1.x) {
-                 deposit.setState(Deposit.State.LEVEL3);
-             }
-             if (gamepad1.y) {
-                 deposit.setState(Deposit.State.IDLE);
-             }
+             deposit.setState(tuningController.update());
              dashboard.sendTelemetryPacket(packet);
              packet = new TelemetryPacket();
              telemetry.addData("Target Height: ", deposit.getState().dist);
