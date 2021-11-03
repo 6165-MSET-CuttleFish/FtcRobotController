@@ -78,7 +78,7 @@ public class Deposit extends Module<Deposit.State> {
 //            // set power to 0 if error is close to 0
 //        }
         powerValues = pidController.update(slides.getCurrentPosition());
-        slides.setPower(pidController.update(ticksToInches(slides.getCurrentPosition())));
+        // slides.setPower(pidController.update(ticksToInches(slides.getCurrentPosition())));
 
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
