@@ -20,9 +20,14 @@ public class Intake extends Module<Intake.State> {
     private DistanceSensor blockSensor;
     private boolean isBlock;
     public enum State {
-        INTAKING,
-        EXTAKING,
-        IDLE
+        INTAKING(0),
+        EXTAKING(0),
+        IDLE(0.5),
+        OFF(0);
+        final double time;
+        State(double time){
+            this.time = time;
+        }
     }
 
     public Intake(HardwareMap hardwareMap) {
@@ -39,7 +44,6 @@ public class Intake extends Module<Intake.State> {
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
-
 //        outL.setPosition(1);
 //        outR.setPosition(0.15);
         flipL.setDirection(Servo.Direction.REVERSE);
@@ -75,7 +79,11 @@ public class Intake extends Module<Intake.State> {
                 out();
                 break;
             case IDLE:
+                if(elapsedTime.seconds()>getState().time) setState(State.OFF);
                 off();
+                break;
+            case OFF:
+                motorOff();
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
@@ -109,7 +117,7 @@ public class Intake extends Module<Intake.State> {
 
     }
     private void off(){
-        intake.setPower(0);
+
         outL.setPosition(1);
         outR.setPosition(0.15);
 
@@ -119,6 +127,9 @@ public class Intake extends Module<Intake.State> {
 
         setState(State.IDLE);
 
+    }
+    private void motorOff(){
+        intake.setPower(0);
     }
 
 
