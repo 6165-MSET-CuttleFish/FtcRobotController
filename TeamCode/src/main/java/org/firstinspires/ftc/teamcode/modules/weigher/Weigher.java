@@ -26,7 +26,7 @@ public class Weigher extends Module<Weigher.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Weigher(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.NONE);
     }
 
     /**
@@ -59,28 +59,37 @@ public class Weigher extends Module<Weigher.State> {
     public boolean isDoingWork() {
         return false;
     }
+
+    /**
+     * @return Whether the module is currently in a hazardous state
+     */
+    @Override
+    public boolean isHazardous() {
+        return false;
+    }
+
     private void weighing(){
-        if(true/*no thing*/){
+        if(/*no thing*/true){
             setState(State.NONE);
             //set led off
         }
-        else if(false/*light cube*/){
+        else if(true/*light cube*/){
             setState(State.CUBE_LIGHT);
             //set led light
         }
-        else if(false/*medium cube*/){
+        else if(true/*medium cube*/){
             setState(State.CUBE_MEDIUM);
             //set led med
         }
-        else if(false/*heavy cube*/){
+        else if(true/*heavy cube*/){
             setState(State.CUBE_HEAVY);
             //set led dark
         }
-        else if(false/*ball*/){
+        else if(true/*ball*/){
             setState(State.BALL);
             //set led white
         }
-        else if(false/*duck*/){
+        else if(true/*duck*/){
             setState(State.DUCK);
             //set led yellow
         }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -14,12 +15,14 @@ public abstract class Module<T> {
      */
     public HardwareMap hardwareMap;
     private T state;
+    public ElapsedTime elapsedTime = new ElapsedTime();
 
     /**
      * Constructor which calls the 'init' function
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Module(HardwareMap hardwareMap) {
+    public Module(HardwareMap hardwareMap, T initialState) {
+        setState(initialState);
         this.hardwareMap = hardwareMap;
         init();
     }
@@ -46,6 +49,7 @@ public abstract class Module<T> {
      * @param state New state of the module
      */
     public void setState(T state) {
+        elapsedTime.reset();
         this.state = state;
     }
 
@@ -54,4 +58,10 @@ public abstract class Module<T> {
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     public abstract boolean isDoingWork();
+
+    /**
+     *
+     * @return Whether the module is currently in a hazardous state
+     */
+    public abstract boolean isHazardous();
 }
