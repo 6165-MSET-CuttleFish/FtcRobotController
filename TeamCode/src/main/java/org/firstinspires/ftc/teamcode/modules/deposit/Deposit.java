@@ -108,7 +108,7 @@ public class Deposit extends Module<Deposit.State> {
     // convert motor ticks to inches traveled by the slides
     public static double ticksToInches(double ticks) {
         // TODO: return inches traveled by slides
-        return -1 * ((ticks / 754.52) * 29.1415926536); /* distance pulley covers per revolution, arc length */
+        return ticks/145.1; /* distance pulley covers per revolution, arc length */
     }
     public static double inchesToTicks(double inches) {
         return (( inches / 29.1415926536) * 754.52); /* distance pulley covers per revolution, arc length */
