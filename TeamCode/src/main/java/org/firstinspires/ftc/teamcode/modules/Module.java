@@ -48,7 +48,7 @@ public abstract class Module<T> {
      * Set a new state for the module
      * @param state New state of the module
      */
-    public void setState(T state) {
+    protected void setState(T state) {
         if (this.state != state) elapsedTime.reset();
         this.state = state;
     }

@@ -44,8 +44,6 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
-    Telemetry data;
-    double powerValue;
     public static double TICKS_PER_INCH = 61.379;
 
     /**
@@ -53,10 +51,13 @@ public class Deposit extends Module<Deposit.State> {
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Deposit(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Deposit(HardwareMap hardwareMap) {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
-        data = telemetry;
+    }
+
+    public void setState(State state) {
+        super.setState(state);
     }
 
     /**
@@ -70,16 +71,6 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-
-    public double getPower() {
-        return powerValue;
-    }
-
-    public void setPower(double power) {
-        // setState(State.MANUAL);
-        powerValue = power;
-    }
-
     /**
      * This function updates all necessary controls in a loop
      */
@@ -92,7 +83,7 @@ public class Deposit extends Module<Deposit.State> {
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-            platform.setState(Platform.State.IN);
+            platform.retrieve();
             // set power to 0 if error is close to 0
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
@@ -110,19 +101,12 @@ public class Deposit extends Module<Deposit.State> {
 
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Details.packet.put("Target Height: ", getState().dist);
-        Details.packet.put("Actual Height: ", ticksToInches(slides.getCurrentPosition()));
-        Details.packet.put("Power: ", power);
+        Details.packet.put("Target Height", getState().dist);
+        Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+        Details.packet.put("Lift Power", power);
         Details.packet.put("Elapsed Time", elapsedTime.seconds());
-        Details.packet.put("Motor Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
-        Details.packet.put("Velocity", slides.getVelocity());
-
-        data.addData("Target Height: ", getState().dist);
-        data.addData("Actual Height: ", ticksToInches(slides.getCurrentPosition()));
-        data.addData("inches to ticks: ", inchesToTicks(getState().dist));
-
-        data.update();
-
+        Details.packet.put("Lift Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
+        Details.packet.put("Lift Velocity", slides.getVelocity());
     }
 
     // convert motor ticks to inches traveled by the slides

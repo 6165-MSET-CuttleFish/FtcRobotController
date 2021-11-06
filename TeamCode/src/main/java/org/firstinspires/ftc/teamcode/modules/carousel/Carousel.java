@@ -37,6 +37,13 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     /**
+     *
+     */
+    public void setState(State state) {
+        super.setState(state);
+    }
+
+    /**
      * This function updates all necessary controls in a loop
      */
     @Override

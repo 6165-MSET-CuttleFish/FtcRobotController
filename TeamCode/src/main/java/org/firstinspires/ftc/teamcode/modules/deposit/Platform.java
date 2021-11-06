@@ -55,6 +55,13 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
+     *
+     */
+    public void retrieve() {
+       setState(State.IN);
+    }
+
+    /**
      * This function updates all necessary controls in a loop
      */
     @Override

@@ -70,11 +70,11 @@ public class DriverPractice extends LinearOpMode {
 
     void setIntake() {
         if (intakeButton.isDown()) {
-            intake.setState(Intake.State.INTAKING);
+            intake.setPower(1);
         } else if (outtakeButton.isDown()) {
-            intake.setState(Intake.State.EXTAKING);
+            intake.setPower(-1);
         } else {
-            intake.setState(Intake.State.IDLE);
+            intake.setPower(0);
         }
     }
 
@@ -106,7 +106,7 @@ public class DriverPractice extends LinearOpMode {
         }
 
         if (dumpButton.wasJustPressed()) {
-            deposit.platform.setState(Platform.State.TRANSIT_OUT);
+            deposit.platform.dump();
         }
     }
 
