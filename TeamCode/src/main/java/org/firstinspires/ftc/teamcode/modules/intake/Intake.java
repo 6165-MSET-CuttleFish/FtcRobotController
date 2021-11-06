@@ -22,7 +22,7 @@ public class Intake extends Module<Intake.State> {
     public enum State {
         INTAKING(0),
         EXTAKING(0),
-        IDLE(0.5),
+        IDLE(0.8),
         OFF(0);
         final double time;
         State(double time){
@@ -79,11 +79,11 @@ public class Intake extends Module<Intake.State> {
                 out();
                 break;
             case IDLE:
-                if(elapsedTime.seconds()>getState().time) setState(State.OFF);
-                off();
-                break;
-            case OFF:
-                motorOff();
+                if(elapsedTime.seconds()>getState().time && elapsedTime.seconds() < getState().time + 0.5) {
+                    intake.setPower(-1);
+                } else {
+                    off();
+                }
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
@@ -117,7 +117,7 @@ public class Intake extends Module<Intake.State> {
 
     }
     private void off(){
-
+        intake.setPower(0);
         outL.setPosition(1);
         outR.setPosition(0.15);
 

@@ -12,13 +12,12 @@ public class testIntake extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Intake intake = new Intake(hardwareMap);
-        intake.init();
         waitForStart();
         while (opModeIsActive()) {
-            if(gamepad1.a == true){
+            if(gamepad1.a){
                 intake.setState(Intake.State.INTAKING);
             }
-            else if(gamepad1.b == true){
+            else if(gamepad1.b){
                 intake.setState(Intake.State.EXTAKING);
             }
             else intake.setState(Intake.State.IDLE);

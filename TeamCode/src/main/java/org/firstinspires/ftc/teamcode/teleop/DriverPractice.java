@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
 
@@ -27,7 +28,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, outtakeButton;
-    ButtonReader levelIncrementor, levelDecrementor;
+    ButtonReader levelIncrementor, levelDecrementor, dumpButton;
     ToggleButtonReader depositButton, carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -46,6 +47,7 @@ public class DriverPractice extends LinearOpMode {
                 levelDecrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 depositButton = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
         waitForStart();
         while (opModeIsActive()) {
@@ -101,6 +103,10 @@ public class DriverPractice extends LinearOpMode {
             deposit.setState(defaultDepositState);
         } else {
             deposit.setState(Deposit.State.IDLE);
+        }
+
+        if (dumpButton.wasJustPressed()) {
+            deposit.platform.setState(Platform.State.TRANSIT_OUT);
         }
     }
 
