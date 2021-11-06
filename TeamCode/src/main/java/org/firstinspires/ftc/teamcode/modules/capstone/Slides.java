@@ -25,7 +25,7 @@ public class Slides extends Module<Slides.State> {
     }
     StateMachine<State> stateMachine;
     Servo slideLeft, slideRight;
-    Claw claw;
+   // Servo claw;
     /**
      * Constructor which calls the 'init' function
      *
@@ -42,7 +42,7 @@ public class Slides extends Module<Slides.State> {
     public void init() {
         slideLeft = hardwareMap.servo.get("slideLeft");
         slideRight = hardwareMap.servo.get("slideRight");
-        claw=new Claw(hardwareMap);
+       // claw=hardwareMap.servo.get("claw");
         setState(State.IN);
     }
 
@@ -51,7 +51,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void update() {
-        claw.update();
+      //  claw.setPosition(slideLeft.getPosition());
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -59,10 +59,8 @@ public class Slides extends Module<Slides.State> {
                 }
             case IN:
                 in();
-                //claw.open();
                 break;
             case TRANSIT_OUT:
-                //claw.close();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Slides.State.OUT);
                 }
@@ -70,7 +68,6 @@ public class Slides extends Module<Slides.State> {
                 break;
             case OUT:
                 out();
-                //claw.open();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Slides.State.TRANSIT_IN);
                 }
@@ -82,14 +79,14 @@ public class Slides extends Module<Slides.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     private void out() {
-        placeset(0.8);
+        placeset(0.7);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        placeset(1);
+        placeset(0.95);
     }
     @Override
     public boolean isDoingWork() {

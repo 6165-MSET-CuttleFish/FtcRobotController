@@ -42,8 +42,8 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        platformL = hardwareMap.servo.get("platformLeft");
-        platformR = hardwareMap.servo.get("platformRight");
+        platformL = hardwareMap.servo.get("platformL");
+        platformR = hardwareMap.servo.get("platformR");
         setState(State.IN);
     }
 
@@ -88,8 +88,8 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void in() {
-        platformL.setPosition(0.9);
-        platformR.setPosition(0.1);
+        platformL.setPosition(0.1);
+        platformR.setPosition(0.9);
     }
   
     /**
