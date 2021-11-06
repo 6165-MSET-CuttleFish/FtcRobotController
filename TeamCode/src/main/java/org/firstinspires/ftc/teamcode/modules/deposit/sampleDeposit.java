@@ -42,8 +42,9 @@ public class sampleDeposit extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException {
          deposit = new Deposit(hardwareMap, telemetry);
-        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
+         TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
          waitForStart();
+         tuningController.start();
          while(opModeIsActive()) {
              packet = new TelemetryPacket();
              deposit.update();

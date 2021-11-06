@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.Details;
 
@@ -16,10 +19,11 @@ import org.firstinspires.ftc.teamcode.util.Details;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(22.0),
-        LEVEL2(13.5),
-        LEVEL1(3.0),
-        IDLE(0.0);
+        LEVEL3(6),
+        LEVEL2(3),
+        LEVEL1(1),
+        IDLE(0);
+        // MANUAL(0);
         final double dist;
         State(double dist) {
             this.dist = dist;
@@ -28,7 +32,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(8,0,0);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.8,0.2,0.01);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -41,7 +45,8 @@ public class Deposit extends Module<Deposit.State> {
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
     Telemetry data;
-    double powerValues;
+    double powerValue;
+    public static double TICKS_PER_INCH = 61.379;
 
     /**
      * Constructor which calls the 'init' function
@@ -50,7 +55,7 @@ public class Deposit extends Module<Deposit.State> {
      */
     public Deposit(HardwareMap hardwareMap, Telemetry telemetry) {
         super(hardwareMap, State.IDLE);
-        pidController.setInputBounds(-1, 1);
+        pidController.setOutputBounds(-1, 1);
         data = telemetry;
     }
 
@@ -61,24 +66,38 @@ public class Deposit extends Module<Deposit.State> {
     public void init() {
         platform = new Platform(hardwareMap);
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slides.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public double getPower() {
+        return powerValue;
+    }
+
+    public void setPower(double power) {
+        // setState(State.MANUAL);
+        powerValue = power;
     }
 
     /**
      * This function updates all necessary controls in a loop
      */
-    public double power() {
-        return powerValues;
-    }
     @Override
     public void update() {
-        //platform.update(); // update subsystems
-//        pidController.setTargetPosition(getState().dist);
-//        if (getState() == State.IDLE) {
-//            platform.setState(Platform.State.IN);
-//            // set power to 0 if error is close to 0
-//        }
-        powerValues = pidController.update(slides.getCurrentPosition());
-        slides.setPower(pidController.update(ticksToInches(slides.getCurrentPosition())));
+        // platform.update(); // update subsystems
+        pidController.setTargetPosition(getState().dist);
+        if (getState() == State.IDLE) {
+            if (slides.getCurrent(CurrentUnit.MILLIAMPS) > 3000 && slides.getVelocity() < 5) {
+                slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            // platform.setState(Platform.State.IN);
+            // set power to 0 if error is close to 0
+        }
+        double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
+
+        slides.setPower(power);
 
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
@@ -93,11 +112,14 @@ public class Deposit extends Module<Deposit.State> {
         }
         Details.packet.put("Target Height: ", getState().dist);
         Details.packet.put("Actual Height: ", ticksToInches(slides.getCurrentPosition()));
+        Details.packet.put("Power: ", power);
+        Details.packet.put("Elapsed Time", elapsedTime.seconds());
+        Details.packet.put("Motor Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
+        Details.packet.put("Velocity", slides.getVelocity());
 
         data.addData("Target Height: ", getState().dist);
         data.addData("Actual Height: ", ticksToInches(slides.getCurrentPosition()));
         data.addData("inches to ticks: ", inchesToTicks(getState().dist));
-        data.addData("power ", power());
 
         data.update();
 
@@ -106,7 +128,8 @@ public class Deposit extends Module<Deposit.State> {
     // convert motor ticks to inches traveled by the slides
     public static double ticksToInches(double ticks) {
         // TODO: return inches traveled by slides
-        return ticks/145.1; /* distance pulley covers per revolution, arc length */
+        // 145.1 ticks per rev
+        return ticks/TICKS_PER_INCH; /* distance pulley covers per revolution, arc length */
     }
     public static double inchesToTicks(double inches) {
         return (( inches / 29.1415926536) * 754.52); /* distance pulley covers per revolution, arc length */
