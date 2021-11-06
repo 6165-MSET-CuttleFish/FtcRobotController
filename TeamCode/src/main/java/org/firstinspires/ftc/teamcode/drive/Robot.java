@@ -178,6 +178,8 @@ public class Robot extends TankDrive {
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
+        Easy265.init(opMode);
+        setLocalizer(new T265Localizer());
         setPoseEstimate(robotPose);
     }
 

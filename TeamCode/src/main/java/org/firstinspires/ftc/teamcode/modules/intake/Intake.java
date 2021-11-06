@@ -79,8 +79,8 @@ public class Intake extends Module<Intake.State> {
                 out();
                 break;
             case IDLE:
-                if(elapsedTime.seconds()>getState().time && elapsedTime.seconds() < getState().time + 0.5) {
-                    intake.setPower(-1);
+                if(elapsedTime.seconds() > getState().time && elapsedTime.seconds() < getState().time + 0.2) {
+                    intake.setPower(-0.8);
                 } else {
                     off();
                 }
@@ -113,8 +113,6 @@ public class Intake extends Module<Intake.State> {
         flipR.setPosition(0.57);
 
         setState(State.EXTAKING);
-
-
     }
     private void off(){
         intake.setPower(0);

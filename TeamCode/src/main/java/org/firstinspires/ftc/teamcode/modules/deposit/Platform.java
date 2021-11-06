@@ -48,6 +48,13 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
+     * Dumps the loaded element onto hub
+     */
+    public void dump() {
+        setState(State.TRANSIT_OUT);
+    }
+
+    /**
      * This function updates all necessary controls in a loop
      */
     @Override
