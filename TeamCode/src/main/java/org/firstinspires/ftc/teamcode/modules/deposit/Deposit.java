@@ -85,14 +85,14 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void update() {
-        // platform.update(); // update subsystems
+        platform.update(); // update subsystems
         pidController.setTargetPosition(getState().dist);
         if (getState() == State.IDLE) {
             if (slides.getCurrent(CurrentUnit.MILLIAMPS) > 3000 && slides.getVelocity() < 5) {
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-            // platform.setState(Platform.State.IN);
+            platform.setState(Platform.State.IN);
             // set power to 0 if error is close to 0
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
