@@ -91,7 +91,9 @@ public class Platform extends Module<Platform.State> {
         platformL.setPosition(0.1);
         platformR.setPosition(0.9);
     }
-  
+    public void dump(){
+        setState(Platform.State.TRANSIT_OUT);
+    }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
