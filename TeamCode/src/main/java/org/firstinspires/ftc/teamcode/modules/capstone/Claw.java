@@ -80,9 +80,7 @@ public class Claw extends Module<Claw.State> {
         }
     }
 
-    /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
-     */
+    // TODO: Comment code
     public void open() {
         clawL.setPosition(0.0);
         clawR.setPosition(0.26);
@@ -95,6 +93,10 @@ public class Claw extends Module<Claw.State> {
         clawL.setPosition(0.96);
         clawR.setPosition(0.7);
     }
+
+    /**
+     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     */
     @Override
     public boolean isDoingWork() {
         if(clawL.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
