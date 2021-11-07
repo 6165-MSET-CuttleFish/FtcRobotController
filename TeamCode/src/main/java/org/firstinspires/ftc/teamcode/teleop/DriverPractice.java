@@ -82,17 +82,11 @@ public class DriverPractice extends LinearOpMode {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
                     break;
-                case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
-                    break;
             }
         } else if (levelDecrementor.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
                     defaultDepositState = Deposit.State.LEVEL2;
-                    break;
-                case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
                     break;
             }
         }
