@@ -31,7 +31,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.8,0.2,0.01);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.8,0,0.01);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -87,7 +87,7 @@ public class Deposit extends Module<Deposit.State> {
         platform.update(); // update subsystems
         pidController.setTargetPosition(getState().dist);
         if (getState() == State.IDLE) {
-            if (slides.getCurrent(CurrentUnit.MILLIAMPS) > 3000 && slides.getVelocity() < 5) {
+            if (elapsedTime.seconds() > 0.5) {
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
