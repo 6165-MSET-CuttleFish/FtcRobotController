@@ -19,10 +19,9 @@ import org.firstinspires.ftc.teamcode.util.Details;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(6),
-        LEVEL2(3),
-        LEVEL1(1),
-        IDLE(0);
+        LEVEL3(11.75), //tilted 11
+        LEVEL2(4), //tilted 7
+        IDLE(0.5);
         // MANUAL(0);
         final double dist;
         State(double dist) {
@@ -91,6 +90,8 @@ public class Deposit extends Module<Deposit.State> {
             if (slides.getCurrent(CurrentUnit.MILLIAMPS) > 3000 && slides.getVelocity() < 5) {
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                slides.setPower(0);
+                return;
             }
             platform.setState(Platform.State.IN);
             // set power to 0 if error is close to 0
@@ -119,7 +120,6 @@ public class Deposit extends Module<Deposit.State> {
 
         data.addData("Target Height: ", getState().dist);
         data.addData("Actual Height: ", ticksToInches(slides.getCurrentPosition()));
-        data.addData("inches to ticks: ", inchesToTicks(getState().dist));
 
         data.update();
 
@@ -129,11 +129,9 @@ public class Deposit extends Module<Deposit.State> {
     public static double ticksToInches(double ticks) {
         // TODO: return inches traveled by slides
         // 145.1 ticks per rev
-        return ticks/TICKS_PER_INCH; /* distance pulley covers per revolution, arc length */
+        return ticks/TICKS_PER_INCH;
     }
-    public static double inchesToTicks(double inches) {
-        return (( inches / 29.1415926536) * 754.52); /* distance pulley covers per revolution, arc length */
-    }
+
 
     
     @Override
