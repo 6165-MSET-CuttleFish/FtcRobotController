@@ -48,13 +48,6 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
-     * Dumps the loaded element onto hub
-     */
-    public void dump() {
-        setState(State.TRANSIT_OUT);
-    }
-
-    /**
      *
      */
     public void retrieve() {
@@ -105,6 +98,9 @@ public class Platform extends Module<Platform.State> {
         platformL.setPosition(0.1);
         platformR.setPosition(0.9);
     }
+    /**
+     * Dumps the loaded element onto hub
+     */
     public void dump(){
         setState(Platform.State.TRANSIT_OUT);
     }

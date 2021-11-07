@@ -25,7 +25,7 @@ public class Slides extends Module<Slides.State> {
     }
     StateMachine<State> stateMachine;
     Servo slideLeft, slideRight;
-   // Servo claw;
+    Servo claw;
     /**
      * Constructor which calls the 'init' function
      *
@@ -51,7 +51,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void update() {
-      //  claw.setPosition(slideLeft.getPosition());
+       // claw.setPosition(slideLeft.getPosition());
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -87,6 +87,10 @@ public class Slides extends Module<Slides.State> {
      */
     private void in() {
         placeset(0.95);
+    }
+
+    public void cap(){
+        setState(Slides.State.TRANSIT_OUT);
     }
     @Override
     public boolean isDoingWork() {
