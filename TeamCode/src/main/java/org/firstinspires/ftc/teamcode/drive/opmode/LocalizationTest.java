@@ -25,8 +25,6 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
-        GamepadEx gamepadEx = new GamepadEx(gamepad1);
-        ButtonReader buttonReader = new ButtonReader(gamepadEx, GamepadKeys.Button.A);
 
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -36,18 +34,9 @@ public class LocalizationTest extends LinearOpMode {
                     new Pose2d(
                             -gamepad1.left_stick_y,
                             0,
-                            gamepad1.right_stick_x
+                            -gamepad1.right_stick_x
                     )
             );
-            buttonReader.readValue();
-            // gamepadEx.readButtons();
-            if (buttonReader.wasJustPressed()) {
-                robot.setPoseEstimate(new Pose2d());
-            }
-
-            if (gamepad1.b) {
-                Easy265.stop();
-            }
 
             robot.update();
 

@@ -1,3 +1,8 @@
+## Wireless ADB
+
+Connect to Control Hub and then enter `adb connect 192.168.43.1:5555` in terminal.
+
+
 ## TeamCode Module
 
 Welcome!

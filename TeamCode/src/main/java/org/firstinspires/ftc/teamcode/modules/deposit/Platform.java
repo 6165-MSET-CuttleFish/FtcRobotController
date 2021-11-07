@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * @author Srey Das Sarma
  */
 public class Platform extends Module<Platform.State> {
-    enum State {
+    public enum State {
         TRANSIT_IN (0,0.5),
         IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.5),
@@ -34,7 +34,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IN);
     }
 
     /**
@@ -45,6 +45,20 @@ public class Platform extends Module<Platform.State> {
         platformL = hardwareMap.servo.get("platformL");
         platformR = hardwareMap.servo.get("platformR");
         setState(State.IN);
+    }
+
+    /**
+     * Dumps the loaded element onto hub
+     */
+    public void dump() {
+        setState(State.TRANSIT_OUT);
+    }
+
+    /**
+     *
+     */
+    public void retrieve() {
+       setState(State.IN);
     }
 
     /**

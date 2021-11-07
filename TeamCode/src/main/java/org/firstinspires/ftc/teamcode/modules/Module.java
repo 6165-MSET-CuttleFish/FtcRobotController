@@ -21,7 +21,8 @@ public abstract class Module<T> {
      * Constructor which calls the 'init' function
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Module(HardwareMap hardwareMap) {
+    public Module(HardwareMap hardwareMap, T initialState) {
+        setState(initialState);
         this.hardwareMap = hardwareMap;
         init();
     }
@@ -47,8 +48,8 @@ public abstract class Module<T> {
      * Set a new state for the module
      * @param state New state of the module
      */
-    public void setState(T state) {
-        elapsedTime.reset();
+    protected void setState(T state) {
+        if (this.state != state) elapsedTime.reset();
         this.state = state;
     }
 

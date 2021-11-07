@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
-import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.util.*
 
 /**
@@ -23,7 +22,6 @@ object Easy265 {
     private const val TAG = "Easy265"
     private val ODOMETRY_COVARIANCE = 1.0
     private val INCH_TO_METER = 0.0254
-    private lateinit var telemetry: Telemetry
 
 
     /**
@@ -76,13 +74,12 @@ object Easy265 {
     @JvmStatic @JvmOverloads fun init(
         opMode: OpMode,
         cameraToRobot: Transform2d = Transform2d(
-            Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), Rotation2d(
+            Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
                 Math.toRadians(180.0)
             )
         ),
         attempts: Int = 6
     ) {
-        telemetry = opMode.telemetry
         try {
             if(!::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
@@ -119,7 +116,7 @@ object Easy265 {
     @JvmStatic @JvmOverloads fun initWithoutStop(
         opMode: OpMode,
         cameraToRobot: Transform2d = Transform2d(
-            Translation2d(-8 * INCH_TO_METER, 0 * INCH_TO_METER), Rotation2d(
+            Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
                 Math.toRadians(180.0)
             )
         )
@@ -139,7 +136,6 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            telemetry.addData("Confidence", lastCameraUpdate?.confidence)
         }
     }
 

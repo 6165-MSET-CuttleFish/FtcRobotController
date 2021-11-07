@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * @author Sreyash Das Sarma
  */
 public class Slides extends Module<Slides.State> {
-    enum State {
+    public enum State {
         TRANSIT_IN (0,1),
         IN(0.2,1),
         TRANSIT_OUT(0.5, 1),
@@ -32,7 +32,7 @@ public class Slides extends Module<Slides.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Slides(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, State.IN);
     }
 
     /**

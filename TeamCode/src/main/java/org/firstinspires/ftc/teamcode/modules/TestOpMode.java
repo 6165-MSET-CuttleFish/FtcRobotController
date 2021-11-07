@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,9 +11,10 @@ import org.firstinspires.ftc.teamcode.util.Details;
 @TeleOp
 @Disabled
 public class TestOpMode extends LinearOpMode {
+    FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override
     public void runOpMode() throws InterruptedException {
-        Module module = new Module(hardwareMap) {
+        Module module = new Module(hardwareMap, null) {
             @Override
             public void update() {
 
@@ -39,6 +41,7 @@ public class TestOpMode extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             module.update();
+            dashboard.sendTelemetryPacket(Details.packet);
             Details.packet = new TelemetryPacket();
         }
     }

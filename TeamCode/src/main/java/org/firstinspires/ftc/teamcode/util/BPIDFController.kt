@@ -13,7 +13,7 @@ import kotlin.math.sign
  */
 class BPIDFController
 /**
- * Constructor for [ModifiedPIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
+ * Constructor for [BPIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
  *
  * @param pid traditional PID coefficients
