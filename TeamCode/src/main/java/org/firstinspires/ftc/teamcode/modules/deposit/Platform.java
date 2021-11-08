@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -26,8 +27,9 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    StateMachine<State> stateMachine;
     Servo platformL, platformR;
+    private Intake intake;
+
     /**
      * Constructor which calls the 'init' function
      *
@@ -104,15 +106,13 @@ public class Platform extends Module<Platform.State> {
     public void dump(){
         setState(Platform.State.TRANSIT_OUT);
     }
+
     /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     * @return Whether the elapsed time passes set time before module reaches position
      */
     @Override
     public boolean isHazardous() {
-        /* Conditions:
-         * elapsed time passes set time before module reaches position
-         */
-        if(platformL.getPosition()!= getState().angle&&elapsedTime.time()>getState().time){
+        if(platformL.getPosition()!= getState().angle && elapsedTime.time()>getState().time){
             return true;
         } else return platformL.getPosition() != platformR.getPosition();
     }
