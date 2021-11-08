@@ -115,11 +115,6 @@ public class Intake extends Module<Intake.State> {
     public int returnTicks(){
         return intake.getCurrentPosition();
     }
-    private void out(){
-        intake.setPower(-1);
-//        outL.setPosition(0.5);
-//        outR.setPosition(0.65);
-    }
 
     private void in(){
         intake.setPower(0);
