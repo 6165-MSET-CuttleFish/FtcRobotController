@@ -45,12 +45,12 @@ public class Intake extends Module<Intake.State> {
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
-//        outL.setPosition(1);
-//        outR.setPosition(0.15);
+        outL.setPosition(1);
+        outR.setPosition(0.15);
         flipL.setDirection(Servo.Direction.REVERSE);
         flipR.setDirection(Servo.Direction.REVERSE);
-//        flipL.setPosition(.9);
-//        flipR.setPosition(0.1);
+        flipL.setPosition(.9);
+        flipR.setPosition(0.1);
 
     }
 
@@ -81,6 +81,8 @@ public class Intake extends Module<Intake.State> {
     @Override
     public void update() {
         intake.setPower(power);
+        outL.setPosition(1);
+        outR.setPosition(0.15);
         switch(getState()){
             case TRANSIT_OUT:
                 if (elapsedTime.seconds() > getState().time) {
@@ -102,19 +104,27 @@ public class Intake extends Module<Intake.State> {
     }
     private void out(){
         intake.setPower(1);
-        outL.setPosition(0.5);
-        outR.setPosition(0.65);
+//        outL.setPosition(0.5);
+//        outR.setPosition(0.65);
 
-        flipL.setPosition(0.43);
-        flipR.setPosition(0.57);
+        flipL.setPosition(0.41);
+        flipR.setPosition(0.59);
 
 
+    }
+    public int returnTicks(){
+        return intake.getCurrentPosition();
+    }
+    private void out(){
+        intake.setPower(-1);
+//        outL.setPosition(0.5);
+//        outR.setPosition(0.65);
     }
 
     private void in(){
         intake.setPower(0);
-        outL.setPosition(1);
-        outR.setPosition(0.15);
+//        outL.setPosition(1);
+//        outR.setPosition(0.15);
 
         flipL.setPosition(0.9);
         flipR.setPosition(0.1);
