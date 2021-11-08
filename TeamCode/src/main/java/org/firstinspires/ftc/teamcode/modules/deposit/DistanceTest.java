@@ -32,8 +32,8 @@ import static org.firstinspires.ftc.teamcode.util.Details.packet;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Deposit Test", group="TeleOp")
-public class sampleDeposit extends LinearOpMode
+@TeleOp(name="Distance Test", group="TeleOp")
+public class DistanceTest extends LinearOpMode
 {
     // Declare OpMode members.
     Deposit deposit;
@@ -41,18 +41,29 @@ public class sampleDeposit extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-         deposit = new Deposit(hardwareMap);
-         TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
-         waitForStart();
-         tuningController.start();
-         while(opModeIsActive()) {
-             packet = new TelemetryPacket();
-             deposit.update();
-             deposit.setState(tuningController.update());
-             if (packet != null) dashboard.sendTelemetryPacket(packet);
-             telemetry.addData("Target Height: ", deposit.getState().dist);
-             telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
-         }
+        deposit = new Deposit(hardwareMap, telemetry);
+        Platform platform = deposit.platform;
+//        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
+        waitForStart();
+//        tuningController.start();
+        while(opModeIsActive()) {
+            deposit.update();
+            platform.update();
+            if (gamepad1.x) {
+                deposit.setState(Deposit.State.LEVEL2);
+            }
+            if (gamepad1.b) {
+                deposit.setState(Deposit.State.LEVEL3);
+            }
+            if (gamepad1.y) {
+                deposit.setState(Deposit.State.IDLE);
+            }
+            if (gamepad1.a) {
+                platform.setState(Platform.State.TRANSIT_OUT);
+            }
+            telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
+            telemetry.update();
+        }
 
     }
 

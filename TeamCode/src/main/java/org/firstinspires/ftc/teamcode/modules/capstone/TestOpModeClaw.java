@@ -14,7 +14,7 @@ public class TestOpModeClaw extends LinearOpMode {
         while (opModeIsActive()) {
             slides.update();
             if(gamepad1.a){
-                slides.setState(Slides.State.TRANSIT_OUT);
+               slides.cap();
             }
             telemetry.addData("Seconds", slides.elapsedTime.seconds());
             telemetry.addData("State", slides.getState().toString());

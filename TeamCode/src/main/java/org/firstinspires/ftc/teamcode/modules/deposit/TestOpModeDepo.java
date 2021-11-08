@@ -16,7 +16,7 @@ public class TestOpModeDepo extends LinearOpMode {
         while (opModeIsActive()) {
             platform.update();
             if(gamepad1.a){
-               platform.setState(Platform.State.TRANSIT_OUT);
+               platform.dump();
             }
             telemetry.addData("Seconds", platform.elapsedTime.seconds());
             telemetry.addData("State", platform.getState().toString());

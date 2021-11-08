@@ -177,7 +177,7 @@ public class Robot extends TankDrive {
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr");
         modules = new Module[]{
                 intake = new Intake(hardwareMap),
-                deposit = new Deposit(hardwareMap, telemetry),
+                deposit = new Deposit(hardwareMap),
                 carousel = new Carousel(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
@@ -203,6 +203,8 @@ public class Robot extends TankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
+            Easy265.init(opMode);
+            setLocalizer(new T265Localizer());
         }
         setPoseEstimate(robotPose);
     }

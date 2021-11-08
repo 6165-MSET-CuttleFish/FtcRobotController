@@ -3,11 +3,8 @@ package org.firstinspires.ftc.teamcode.modules.intake;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.Details;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 
 /**
  * Frontal mechanism for collecting freight
@@ -19,11 +16,13 @@ public class Intake extends Module<Intake.State> {
     private Servo outL, outR, flipL, flipR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
+    private double power;
     public enum State {
-        INTAKING(0),
-        EXTAKING(0),
-        IDLE(0.5),
-        OFF(0);
+        PREP_OUT(0.3),
+        TRANSIT_OUT(0.3),
+        OUT(0),
+        TRANSIT_IN(0.3),
+        IN(0);
         final double time;
         State(double time){
             this.time = time;
@@ -31,7 +30,7 @@ public class Intake extends Module<Intake.State> {
     }
 
     public Intake(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.IN);
     }
 
     @Override
@@ -44,13 +43,16 @@ public class Intake extends Module<Intake.State> {
         //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
-//        outL.setPosition(1);
-//        outR.setPosition(0.15);
+        slidesIn();
         flipL.setDirection(Servo.Direction.REVERSE);
         flipR.setDirection(Servo.Direction.REVERSE);
-//        flipL.setPosition(.9);
-//        flipR.setPosition(0.1);
+        raiseIntake();
+    }
 
+    public void setPower(double power) {
+        this.power = power;
+        if (power != 0 && !isDoingWork()) setState(State.PREP_OUT);
+        else setState(State.TRANSIT_IN);
     }
 
     /**
@@ -58,7 +60,7 @@ public class Intake extends Module<Intake.State> {
      */
 
     public boolean isDoingWork() {
-        return false;
+        return getState() == State.TRANSIT_OUT || getState() == State.OUT;
     }
 
     /**
@@ -71,66 +73,60 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void update() {
+        intake.setPower(power);
         switch(getState()){
-            case INTAKING:
-                in();
+            case PREP_OUT:
+                dropIntake();
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.TRANSIT_OUT);
+                }
                 break;
-            case EXTAKING:
-                out();
+            case TRANSIT_OUT:
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.OUT);
+                }
+            case OUT:
+                deploy();
                 break;
-            case IDLE:
-                if(elapsedTime.seconds()>getState().time) setState(State.OFF);
-                off();
-                break;
-            case OFF:
-                motorOff();
+            case TRANSIT_IN:
+                if(elapsedTime.seconds() > getState().time && elapsedTime.seconds() < getState().time + 0.2) {
+                    setPower(-0.8);
+                    setState(State.IN);
+                }
+            case IN:
+                retract();
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
     }
-    private void in(){
-        intake.setPower(1);
-        outL.setPosition(0.5);
-        outR.setPosition(0.65);
 
-        flipL.setPosition(0.43);
-        flipR.setPosition(0.57);
-
-
-        setState(State.INTAKING);
-
-
+    private void dropIntake() {
+        flipL.setPosition(0.41);
+        flipR.setPosition(0.59);
     }
-    public int returnTicks(){
-        return intake.getCurrentPosition();
-    }
-    private void out(){
-        intake.setPower(-1);
-        outL.setPosition(0.5);
-        outR.setPosition(0.65);
 
-        flipL.setPosition(0.43);
-        flipR.setPosition(0.57);
-
-        setState(State.EXTAKING);
-
-
-    }
-    private void off(){
-
-        outL.setPosition(1);
-        outR.setPosition(0.15);
-
+    private void raiseIntake() {
         flipL.setPosition(0.9);
         flipR.setPosition(0.1);
-
-
-        setState(State.IDLE);
-
-    }
-    private void motorOff(){
-        intake.setPower(0);
     }
 
+    private void deploy(){
+        slidesOut();
+        dropIntake();
+    }
 
+    private void retract(){
+        slidesIn();
+        raiseIntake();
+    }
+
+    private void slidesOut() {
+        outL.setPosition(0.5);
+        outR.setPosition(0.65);
+    }
+
+    private void slidesIn() {
+        outL.setPosition(1);
+        outR.setPosition(0.15);
+    }
 }
