@@ -92,7 +92,7 @@ a common code organization, with each being able to *see* the others code but ea
 their own team module with their own code that they maintain themselves.
 
 In this situation, you might wish to clone the TeamCode module, once for each of these teams.
-Each of the clones would then appear along side each other in the Android Studio module list,
+Each of the clones would then appear along alliance each other in the Android Studio module list,
 together with the FtcRobotController module (and the original TeamCode module).
 
 Selective Team phones can then be programmed by selecting the desired Module from the pulldown list

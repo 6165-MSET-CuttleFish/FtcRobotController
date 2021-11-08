@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -37,18 +36,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
-import org.firstinspires.ftc.teamcode.localizers.Easy265;
-import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
-import org.firstinspires.ftc.teamcode.util.Side;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.util.Side;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -58,10 +55,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.Details.side;
+import static org.firstinspires.ftc.teamcode.util.Details.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -73,6 +69,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.util.Details.side;
 
 /**
  * This class represents the robot and its drivetrain
@@ -108,27 +105,56 @@ public class Robot extends TankDrive {
     private final VoltageSensor batteryVoltageSensor;
     FtcDashboard dashboard;
 
-    public Robot(OpMode opMode, Pose2d pose2d) {
-        this(opMode, pose2d, OpModeType.NONE, Side.NONE);
+    public static Pose2d[] duckLocations(){
+        if (alliance == Alliance.BLUE) {
+            if (side == Side.CAROUSEL) {
+                return new Pose2d[]{
+                        new Pose2d(3.0, -50.0),
+                        new Pose2d(3.0, -35.0),
+                        new Pose2d(3.0, -35.0)
+                };
+            }
+            return new Pose2d[]{
+                    new Pose2d(3.0, -50.0),
+                    new Pose2d(3.0, -35.0),
+                    new Pose2d(3.0, -35.0)
+            };
+        }
+        if (side == Side.CAROUSEL) {
+            return new Pose2d[]{
+                    new Pose2d(-32.0, -50.0, Math.toRadians(20)),
+                    new Pose2d(-40.0, -50.0, Math.toRadians(20)),
+                    new Pose2d(-50.0, -50.0, Math.toRadians(20))
+            };
+        }
+        return new Pose2d[]{
+                new Pose2d(3.0, -50.0),
+                new Pose2d(11.5, -50.0),
+                new Pose2d(20.0, -50.0)
+        };
     }
 
-    public Robot(OpMode opMode, OpModeType type, Side side) {
-        this(opMode, Details.robotPose, type, side);
+    public Robot(OpMode opMode, Pose2d pose2d) {
+        this(opMode, pose2d, OpModeType.NONE, Alliance.NONE);
+    }
+
+    public Robot(OpMode opMode, OpModeType type, Alliance alliance) {
+        this(opMode, Details.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode, OpModeType type) {
-        this(opMode, Details.robotPose, type, side);
+        this(opMode, Details.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode) {
-        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Side.NONE);
+        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Alliance.NONE);
     }
 
-    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Side side) {
+    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
         super(kV, kA, kStatic, TRACK_WIDTH);
         Details.opModeType = type;
         Details.robotPose = pose2d;
-        Details.side = side;
+        Details.alliance = alliance;
         linearOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;

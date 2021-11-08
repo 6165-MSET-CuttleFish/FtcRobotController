@@ -1,12 +1,11 @@
-package com.example.meepmeepsequences
+package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
 fun TrajectorySequenceBuilder.waitCondition(condition: () -> Boolean): TrajectorySequenceBuilder {
-    this.waitSeconds(1.0)
-    return this
+    return this.waitSeconds(1.0)
 }
 
 /**
