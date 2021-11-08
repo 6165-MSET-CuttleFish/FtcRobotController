@@ -14,15 +14,15 @@ public class testIntake extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
+            intake.update();
             if(gamepad1.a){
-                intake.setState(Intake.State.INTAKING);
+                intake.setPower(1);
             }
             else if(gamepad1.b){
-                intake.setState(Intake.State.EXTAKING);
+                intake.setPower(-1);
             }
-            else intake.setState(Intake.State.IDLE);
+            else intake.setPower(0);
             Details.packet = new TelemetryPacket();
-            intake.update();
         }
     }
 }

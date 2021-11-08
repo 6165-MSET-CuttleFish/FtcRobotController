@@ -19,11 +19,12 @@ public class Intake extends Module<Intake.State> {
     private Servo outL, outR, flipL, flipR;
     private DistanceSensor blockSensor;
     private boolean isBlock;
+    private double power;
     public enum State {
-        INTAKING(0),
-        EXTAKING(0),
-        IDLE(0.8),
-        OFF(0);
+        TRANSIT_OUT(0.3),
+        OUT(0),
+        TRANSIT_IN(0.3),
+        IN(0);
         final double time;
         State(double time){
             this.time = time;
@@ -31,7 +32,7 @@ public class Intake extends Module<Intake.State> {
     }
 
     public Intake(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.IN);
     }
 
     @Override
@@ -53,6 +54,14 @@ public class Intake extends Module<Intake.State> {
 
     }
 
+
+
+    public void setPower(double power) {
+        this.power = power;
+        if (power != 0) setState(State.TRANSIT_OUT);
+        else setState(State.TRANSIT_IN);
+    }
+
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
@@ -71,35 +80,35 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void update() {
+        intake.setPower(power);
         outL.setPosition(1);
         outR.setPosition(0.15);
         switch(getState()){
-            case INTAKING:
+            case TRANSIT_OUT:
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.OUT);
+                }
+            case OUT:
                 in();
                 break;
-            case EXTAKING:
-                out();
-                break;
-            case IDLE:
+            case TRANSIT_IN:
                 if(elapsedTime.seconds() > getState().time && elapsedTime.seconds() < getState().time + 0.2) {
                     intake.setPower(-0.8);
-                } else {
-                    off();
+                    setState(State.IN);
                 }
+            case IN:
+                in();
                 break;
         }
         Details.packet.put("Intake Velocity", intake.getVelocity());
     }
-    private void in(){
+    private void out(){
         intake.setPower(1);
 //        outL.setPosition(0.5);
 //        outR.setPosition(0.65);
 
         flipL.setPosition(0.41);
         flipR.setPosition(0.59);
-
-
-        setState(State.INTAKING);
 
 
     }
@@ -110,22 +119,15 @@ public class Intake extends Module<Intake.State> {
         intake.setPower(-1);
 //        outL.setPosition(0.5);
 //        outR.setPosition(0.65);
-
-        flipL.setPosition(0.43);
-        flipR.setPosition(0.57);
-
-        setState(State.EXTAKING);
     }
-    private void off(){
+
+    private void in(){
         intake.setPower(0);
 //        outL.setPosition(1);
 //        outR.setPosition(0.15);
 
         flipL.setPosition(0.9);
         flipR.setPosition(0.1);
-
-
-        setState(State.IDLE);
 
     }
     private void motorOff(){

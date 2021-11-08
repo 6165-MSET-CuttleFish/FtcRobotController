@@ -48,10 +48,10 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
-     * Dumps the loaded element onto hub
+     *
      */
-    public void dump() {
-        setState(State.TRANSIT_OUT);
+    public void retrieve() {
+       setState(State.IN);
     }
 
     /**
@@ -98,7 +98,12 @@ public class Platform extends Module<Platform.State> {
         platformL.setPosition(0.1);
         platformR.setPosition(0.9);
     }
-  
+    /**
+     * Dumps the loaded element onto hub
+     */
+    public void dump(){
+        setState(Platform.State.TRANSIT_OUT);
+    }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
