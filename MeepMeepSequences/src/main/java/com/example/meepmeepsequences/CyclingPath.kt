@@ -3,31 +3,29 @@ package com.example.meepmeepsequences
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
-import com.example.meepmeepsequences.util.Robot.*
 import com.noahbres.meepmeep.MeepMeep
-import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
-class CarouselPath {
+class CyclingPath {
     val carouselPathRed: MeepMeep
         get() {
-            side = Side.CAROUSEL
-            alliance = Alliance.RED
+            Robot.side = Side.CAROUSEL
+            Robot.alliance = Alliance.RED
             return MeepMeep(800)
-                .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
+                .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
                 .configure() // configure robot
                 .followTrajectorySequence { robot ->
-                    val trajectoryBuilder =
-                        robot.trajectorySequenceBuilder(startingPosition())
+                    var trajectoryBuilder =
+                        robot.trajectorySequenceBuilder(Robot.startingPosition())
                             .setReversed(true)
                             .splineTo(
-                                duckLocations()[0].vec(),
-                                Math.toRadians(90.0) + duckLocations()[0].heading
+                                Robot.duckLocations()[0].vec(),
+                                Math.toRadians(90.0) + Robot.duckLocations()[0].heading
                             )
                             .waitCondition { true } // duck loaded
-                            .splineTo(cycleDump().vec(), cycleDump().heading)
+                            .splineTo(Robot.cycleDump().vec(), Robot.cycleDump().heading)
                             .setReversed(false)
                             .waitCondition { true } // wait for platform to dump
                             .splineTo(Vector2d(-55.0, -55.0), Math.toRadians(210.0))
@@ -38,8 +36,8 @@ class CarouselPath {
                             .setReversed(false)
                             .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)))
                             .splineTo(Vector2d(10.0, -30.0), Math.toRadians(-90.0))
-                    for (i in 1..5)
-                        trajectoryBuilder
+                    for (i in 1..5) {
+                        trajectoryBuilder = trajectoryBuilder
                             .splineTo(
                                 Vector2d(39.0, -50.0).plus(
                                     Vector2d(
@@ -52,6 +50,7 @@ class CarouselPath {
                             .splineTo(Vector2d(4.1, -34.0), Math.toRadians(150.0))
                             .waitCondition { true } // wait for platform to dump
                             .setReversed(false)
+                    }
                     trajectoryBuilder
                         .splineTo(Vector2d(45.0, -45.0), Math.toRadians(-35.0))
                         .build()
@@ -60,23 +59,23 @@ class CarouselPath {
 
     val carouselPathBlue: MeepMeep
         get() {
-            side = Side.CAROUSEL
-            alliance = Alliance.BLUE
+            Robot.side = Side.CAROUSEL
+            Robot.alliance = Alliance.BLUE
             return MeepMeep(800)
-                .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
+                .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
                 .configure() // configure robot
                 .followTrajectorySequence { robot ->
-                    val trajectoryBuilder =
-                        robot.trajectorySequenceBuilder(startingPosition())
+                    var trajectoryBuilder =
+                        robot.trajectorySequenceBuilder(Robot.startingPosition())
                             .setReversed(true)
                             .splineTo(
-                                duckLocations()[0].vec(),
-                                Math.toRadians(-90.0) + duckLocations()[0].heading
+                                Robot.duckLocations()[0].vec(),
+                                Math.toRadians(-90.0) + Robot.duckLocations()[0].heading
                             )
                             .waitCondition { true } // duck loaded
-                            .splineTo(cycleDump().vec(), cycleDump().heading)
+                            .splineTo(Robot.cycleDump().vec(), Robot.cycleDump().heading)
                             .setReversed(false)
                             .waitCondition { true } // wait for platform to dump
                             .splineTo(Vector2d(-55.0, -55.0).flip(true), Math.toRadians(210.0).flip(true))
@@ -87,20 +86,21 @@ class CarouselPath {
                             .setReversed(false)
                             .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(true))
                             .splineTo(Vector2d(10.0, -30.0).flip(true), Math.toRadians(-90.0).flip(true))
-                    for (i in 1..5)
-                        trajectoryBuilder
+                    for (i in 1..5) {
+                        trajectoryBuilder = trajectoryBuilder
                             .splineTo(
                                 Vector2d(39.0, -50.0).plus(
                                     Vector2d(
                                         5 * Math.random(),
                                         5 * Math.random()
                                     )
-                                ).flip(true), Math.toRadians(-35.0 + 10 * Math.random()).flip(true)
+                                ).flip(true), Math.toRadians(-35.0 + 5.0.random()).flip(true)
                             )
                             .setReversed(true)
                             .splineTo(Vector2d(4.1, -34.0).flip(true), Math.toRadians(150.0).flip(true))
                             .waitCondition { true } // wait for platform to dump
                             .setReversed(false)
+                    }
                     trajectoryBuilder
                         .splineTo(Vector2d(45.0, -45.0).flip(true), Math.toRadians(-35.0).flip(true))
                         .build()
