@@ -42,7 +42,7 @@ public class Slides extends Module<Slides.State> {
     public void init() {
         slideLeft = hardwareMap.servo.get("slideLeft");
         slideRight = hardwareMap.servo.get("slideRight");
-       // claw=hardwareMap.servo.get("claw");
+        claw=hardwareMap.servo.get("claw");
         setState(State.IN);
     }
 
@@ -51,7 +51,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void update() {
-       // claw.setPosition(slideLeft.getPosition());
+        claw.setPosition(slideLeft.getPosition());
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -105,6 +105,7 @@ public class Slides extends Module<Slides.State> {
     private void placeset(double pos){
         slideLeft.setPosition(pos);
         slideRight.setPosition(1-pos);
+        claw.setPosition(pos/2);
     }
     @Override
     public boolean isHazardous() {
