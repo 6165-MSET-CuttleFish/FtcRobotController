@@ -26,6 +26,8 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
 fun MeepMeep.configure(): MeepMeep {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
+        .setDarkMode(true)
+        .setBotDimensions(18.0, 18.0)
         .setConstraints(80.0, 80.0, Math.toRadians(720.0), Math.toRadians(720.0), 15.0)
 }
 

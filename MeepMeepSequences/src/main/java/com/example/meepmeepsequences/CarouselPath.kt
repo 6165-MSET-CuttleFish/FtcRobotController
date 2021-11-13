@@ -13,7 +13,7 @@ class CarouselPath {
         get() {
             side = Side.CAROUSEL
             alliance = Alliance.RED
-            return MeepMeep(800)
+            return MeepMeep(600)
                 .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
@@ -43,10 +43,10 @@ class CarouselPath {
                             .splineTo(
                                 Vector2d(39.0, -50.0).plus(
                                     Vector2d(
-                                        5 * Math.random(),
-                                        5 * Math.random()
+                                        5.0,
+                                        5.0.random()
                                     )
-                                ), Math.toRadians(-35.0 + 5 * Math.random())
+                                ), Math.toRadians(-35.0 + 5.0.random())
                             )
                             .setReversed(true)
                             .splineTo(Vector2d(4.1, -34.0), Math.toRadians(150.0))
