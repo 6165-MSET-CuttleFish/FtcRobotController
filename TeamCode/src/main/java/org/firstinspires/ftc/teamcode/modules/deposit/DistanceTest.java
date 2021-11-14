@@ -41,7 +41,7 @@ public class DistanceTest extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        deposit = new Deposit(hardwareMap, telemetry);
+        deposit = new Deposit(hardwareMap);
         Platform platform = deposit.platform;
 //        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
         waitForStart();
@@ -59,7 +59,7 @@ public class DistanceTest extends LinearOpMode
                 deposit.setState(Deposit.State.IDLE);
             }
             if (gamepad1.a) {
-                platform.setState(Platform.State.TRANSIT_OUT);
+                platform.dump();
             }
             telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
             telemetry.update();
