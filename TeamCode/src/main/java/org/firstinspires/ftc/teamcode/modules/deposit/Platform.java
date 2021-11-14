@@ -58,7 +58,7 @@ public class Platform extends Module<Platform.State> {
      *
      */
     public void retrieve() {
-       setState(State.IN);
+        setState(State.IN);
     }
 
     /**
