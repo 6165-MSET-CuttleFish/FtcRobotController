@@ -23,6 +23,34 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
     return this
 }
 
+fun TrajectorySequenceBuilder.liftUp(lift: Lift): TrajectorySequenceBuilder {
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        println("Lift Up")
+    }
+    return this
+}
+
+fun TrajectorySequenceBuilder.intakeOn(intake: Intake): TrajectorySequenceBuilder {
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        println("Intake On")
+    }
+    return this
+}
+
+fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuilder {
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        println("Intake Off")
+    }
+    return this
+}
+
+fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        println("Capstone Ready")
+    }
+    return this
+}
+
 fun MeepMeep.configure(): MeepMeep {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
@@ -33,6 +61,18 @@ fun MeepMeep.configure(): MeepMeep {
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
+}
+
+class Intake {
+
+}
+
+class Lift {
+
+}
+
+class Capstone {
+
 }
 
 fun Double.flip(negative: Boolean): Double {

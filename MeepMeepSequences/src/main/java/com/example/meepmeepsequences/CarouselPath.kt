@@ -13,7 +13,7 @@ class CarouselPath {
         get() {
             side = Side.CAROUSEL
             alliance = Alliance.RED
-            return MeepMeep(600)
+            return MeepMeep(windowSize)
                 .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
@@ -62,7 +62,7 @@ class CarouselPath {
         get() {
             side = Side.CAROUSEL
             alliance = Alliance.BLUE
-            return MeepMeep(800)
+            return MeepMeep(windowSize)
                 .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
@@ -71,10 +71,15 @@ class CarouselPath {
                     val trajectoryBuilder =
                         robot.trajectorySequenceBuilder(startingPosition())
                             .setReversed(true)
+                            .capstoneReady(Capstone())
                             .splineTo(
                                 duckLocations()[0].vec(),
                                 Math.toRadians(-90.0) + duckLocations()[0].heading
                             )
+                            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                                println("Capstone Collected")
+                                println("Lift Up")
+                            }
                             .waitCondition { true } // duck loaded
                             .splineTo(cycleDump().vec(), cycleDump().heading)
                             .setReversed(false)
@@ -89,6 +94,9 @@ class CarouselPath {
                             .splineTo(Vector2d(10.0, -30.0).flip(true), Math.toRadians(-90.0).flip(true))
                     for (i in 1..5)
                         trajectoryBuilder
+                            .UNSTABLE_addDisplacementMarkerOffset(10.0) {
+                                println("Intake Extended")
+                            }
                             .splineTo(
                                 Vector2d(39.0, -50.0).plus(
                                     Vector2d(

@@ -3,6 +3,7 @@ package com.example.meepmeepsequences
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
+import com.example.meepmeepsequences.util.Robot.windowSize
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
@@ -11,7 +12,7 @@ class CyclingPath {
         get() {
             Robot.side = Side.CAROUSEL
             Robot.alliance = Alliance.RED
-            return MeepMeep(800)
+            return MeepMeep(windowSize)
                 .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
@@ -61,7 +62,7 @@ class CyclingPath {
         get() {
             Robot.side = Side.CAROUSEL
             Robot.alliance = Alliance.BLUE
-            return MeepMeep(800)
+            return MeepMeep(windowSize)
                 .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
                 .setTheme(ColorSchemeRedDark()) // Set theme
                 .setBackgroundAlpha(1f)
