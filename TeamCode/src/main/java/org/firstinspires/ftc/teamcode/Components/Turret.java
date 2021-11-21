@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.PurePursuit.MathFunctions;
+import org.firstinspires.ftc.teamcode.util.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.TurretTuner;
 
@@ -33,7 +34,7 @@ public class Turret implements Component {
     public static double kStatic = 0;
     public static double kA = 0;
     private double lastKv = kV, lastKp = ANGLE_PID.kP, lastKi = ANGLE_PID.kI, lastKd = ANGLE_PID.kD, lastKStatic = kStatic, lastKa = kA;
-    PIDFController angleControl;
+    BPIDFController angleControl;
     private double targetAngle = 0;
     VoltageSensor batteryVoltageSensor;
     public int offset = 2;
@@ -111,7 +112,7 @@ public class Turret implements Component {
     }
 
     private void setPIDCoeffecients() {
-        angleControl = new PIDFController(ANGLE_PID, kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
+        angleControl = new BPIDFController(ANGLE_PID, Math.toRadians(5), kV * 12 / batteryVoltageSensor.getVoltage(), kA, kStatic);
     }
 
     public State getState() {

@@ -12,7 +12,6 @@ import static org.firstinspires.ftc.teamcode.Components.Details.packet;
 
 
 @TeleOp(name = "TurretTest", group = "Test")
-@Disabled
 public class TurretTest extends LinearOpMode {
     Turret turret;
     FtcDashboard dashboard;
