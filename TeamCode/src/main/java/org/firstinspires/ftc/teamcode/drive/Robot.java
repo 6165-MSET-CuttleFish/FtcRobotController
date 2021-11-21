@@ -20,6 +20,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -85,7 +86,7 @@ public class Robot extends TankDrive {
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     public OpenCvCamera webcam;
 
-    final OpMode linearOpMode;
+    final OpMode opMode;
     final HardwareMap hardwareMap;
     Telemetry telemetry;
 
@@ -106,6 +107,8 @@ public class Robot extends TankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     FtcDashboard dashboard;
+    private BNO055IMU imu;
+
 
     public static Pose2d flipSide(Pose2d pose2d) {
         return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
@@ -170,7 +173,7 @@ public class Robot extends TankDrive {
         Details.opModeType = type;
         Details.robotPose = pose2d;
         Details.alliance = alliance;
-        linearOpMode = opMode;
+        this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
         dashboard = FtcDashboard.getInstance();
@@ -184,6 +187,10 @@ public class Robot extends TankDrive {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
@@ -218,7 +225,7 @@ public class Robot extends TankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
-            Easy265.init(opMode);
+            Easy265.init(opMode, leftMid, rightMid, imu);
             setLocalizer(new T265Localizer());
         }
         setPoseEstimate(robotPose);
@@ -489,6 +496,6 @@ public class Robot extends TankDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return 0;
+        return imu.getAngularOrientation().firstAngle;
     }
 }
