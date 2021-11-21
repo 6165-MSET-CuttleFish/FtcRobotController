@@ -58,11 +58,6 @@ public class TourneyTele extends OpMode {
         shooter.setState(Shooter.State.CONTINUOUS);
         telemetry.addData("Initialized", true);
         telemetry.update();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         //robot.setPoseEstimate(new Pose2d(16.5275, -37.7225, Math.toRadians(180)));
         turret.setTarget(Robot.goal());
     }
@@ -86,7 +81,6 @@ public class TourneyTele extends OpMode {
 
     @Override
     public void stop() {
-        T265.stopCam();
         super.stop();
     }
 

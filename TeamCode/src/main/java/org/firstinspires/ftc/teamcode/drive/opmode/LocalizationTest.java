@@ -18,12 +18,11 @@ import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-@Disabled
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this);
-        DcMotor left = hardwareMap.dcMotor.get("intake");
+        DcMotor left = hardwareMap.dcMotor.get("fr");
         DcMotor right = hardwareMap.dcMotor.get("fl");
 
 
