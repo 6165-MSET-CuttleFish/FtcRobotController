@@ -6,13 +6,12 @@ import com.arcrobotics.ftclib.geometry.Translation2d
 import com.intel.realsense.librealsense.UsbUtilities
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.*
+import kotlin.math.cos
 
 /**
  * Static accessibility class which allows for easy
@@ -148,9 +147,10 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            Details.telemetry.addData("Pitch", Math.toDegrees(imu.angularOrientation.thirdAngle.toDouble()))
+            val pitch = imu.angularOrientation.thirdAngle
+            Details.telemetry.addData("Pitch", Math.toDegrees(pitch.toDouble()))
             Details.telemetry.update()
-            camera.sendOdometry(DriveConstants.rpmToVelocity((leftEncoder.correctedVelocity + rightEncoder.correctedVelocity) / 2) * INCH_TO_METER * imu.angularOrientation.thirdAngle, 0.0)
+            camera.sendOdometry(DriveConstants.rpmToVelocity((leftEncoder.correctedVelocity + rightEncoder.correctedVelocity) / 2) * INCH_TO_METER * cos(pitch.toDouble()), 0.0)
         }
     }
 
