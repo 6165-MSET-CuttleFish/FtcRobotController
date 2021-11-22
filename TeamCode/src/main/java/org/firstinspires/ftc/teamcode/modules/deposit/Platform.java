@@ -83,18 +83,18 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        platformL.setPosition(0.5);
-        platformR.setPosition(0.5);
-        cover.setPosition(0.5);
+        platformL.setPosition(0.6);
+        platformR.setPosition(0.4);
+        cover.setPosition(0.75);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        platformL.setPosition(0.1);
-        platformR.setPosition(0.9);
-        cover.setPosition(0.5);
+        platformL.setPosition(0.18);
+        platformR.setPosition(0.82);
+        cover.setPosition(1);
     }
     /**
      * Dumps the loaded element onto hub
