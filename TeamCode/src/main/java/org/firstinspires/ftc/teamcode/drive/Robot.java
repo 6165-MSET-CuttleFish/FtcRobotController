@@ -20,6 +20,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -29,26 +30,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.localizers.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
-import org.firstinspires.ftc.teamcode.localizers.Easy265;
-import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.PurePursuit.Coordinate;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
-import org.firstinspires.ftc.teamcode.util.Side;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.util.Side;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -58,10 +58,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_POWER;
 import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.Details.side;
+import static org.firstinspires.ftc.teamcode.util.Details.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -73,6 +72,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.util.Details.side;
 
 /**
  * This class represents the robot and its drivetrain
@@ -86,7 +86,7 @@ public class Robot extends TankDrive {
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     public OpenCvCamera webcam;
 
-    final OpMode linearOpMode;
+    final OpMode opMode;
     final HardwareMap hardwareMap;
     Telemetry telemetry;
 
@@ -107,29 +107,73 @@ public class Robot extends TankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     FtcDashboard dashboard;
+    private BNO055IMU imu;
 
-    public Robot(OpMode opMode, Pose2d pose2d) {
-        this(opMode, pose2d, OpModeType.NONE, Side.NONE);
+
+    public static Pose2d flipSide(Pose2d pose2d) {
+        return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
     }
 
-    public Robot(OpMode opMode, OpModeType type, Side side) {
-        this(opMode, Details.robotPose, type, side);
+    public static Pose2d midPoint() {
+        Pose2d regular = new Pose2d(-55.0, -55.0, Math.toRadians(-210.0));
+        return alliance == Alliance.RED ? regular : flipSide(regular);
+    }
+
+    public static Pose2d startingPosition() {
+        Pose2d regular = new Pose2d(-36, -58, Math.toRadians(-90));
+        return alliance == Alliance.RED ? regular : flipSide(regular);
+    }
+
+    public static Pose2d cycleDump() {
+        Pose2d regular = new Pose2d(-28.0, -31.0, Math.toRadians(20.0));
+        return alliance == Alliance.RED ? regular : flipSide(regular);
+    }
+
+    public static Pose2d[] duckLocations() {
+        Pose2d[] values;
+        if (side == Side.CAROUSEL) {
+            values = new Pose2d[] {
+                    new Pose2d(-32.0, -50.0, Math.toRadians(0)),
+                    new Pose2d(-40.0, -50.0, Math.toRadians(0)),
+                    new Pose2d(-50.0, -50.0, Math.toRadians(0))
+            };
+        } else {
+            values = new Pose2d[] {
+                    new Pose2d(3.0, -50.0),
+                    new Pose2d(11.5, -50.0),
+                    new Pose2d(20.0, -50.0)
+            };
+        }
+        if (alliance == Alliance.BLUE) {
+            for (int i = 0; i < values.length; i++) {
+                values[i] = flipSide(values[i]);
+            }
+        }
+        return values;
+    }
+
+    public Robot(OpMode opMode, Pose2d pose2d) {
+        this(opMode, pose2d, OpModeType.NONE, Alliance.NONE);
+    }
+
+    public Robot(OpMode opMode, OpModeType type, Alliance alliance) {
+        this(opMode, Details.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode, OpModeType type) {
-        this(opMode, Details.robotPose, type, side);
+        this(opMode, Details.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode) {
-        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Side.NONE);
+        this(opMode, new Pose2d(0, 0, 0), OpModeType.NONE, Alliance.NONE);
     }
 
-    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Side side) {
+    public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
         super(kV, kA, kStatic, TRACK_WIDTH);
         Details.opModeType = type;
         Details.robotPose = pose2d;
-        Details.side = side;
-        linearOpMode = opMode;
+        Details.alliance = alliance;
+        this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
         dashboard = FtcDashboard.getInstance();
@@ -143,6 +187,10 @@ public class Robot extends TankDrive {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml");
@@ -177,9 +225,9 @@ public class Robot extends TankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
+            Easy265.init(opMode, leftMid, rightMid, imu);
+            setLocalizer(new T265Localizer());
         }
-        Easy265.init(opMode);
-        setLocalizer(new T265Localizer());
         setPoseEstimate(robotPose);
     }
 
@@ -448,6 +496,6 @@ public class Robot extends TankDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return 0;
+        return imu.getAngularOrientation().firstAngle;
     }
 }

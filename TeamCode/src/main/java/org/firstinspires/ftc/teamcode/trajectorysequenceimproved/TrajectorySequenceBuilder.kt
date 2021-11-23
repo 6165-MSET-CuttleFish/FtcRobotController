@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import com.acmerobotics.roadrunner.util.Angle.norm
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
+import org.firstinspires.ftc.teamcode.util.flip
 import java.util.*
 
 class TrajectorySequenceBuilder(
@@ -41,6 +42,7 @@ class TrajectorySequenceBuilder(
     private var currentDisplacement: Double
     private var lastDurationTraj: Double
     private var lastDisplacementTraj: Double
+    private var isFlipped = false
 
     constructor(
         startPose: Pose2d,
@@ -54,121 +56,121 @@ class TrajectorySequenceBuilder(
         baseTurnConstraintMaxAngVel, baseTurnConstraintMaxAngAccel
     )
 
-    fun lineTo(endPosition: Vector2d?): TrajectorySequenceBuilder {
+    fun lineTo(endPosition: Vector2d): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineTo(
-                    endPosition!!, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.lineTo(
+                    endPosition.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
     }
 
     fun lineTo(
-        endPosition: Vector2d?,
+        endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineTo(
-                    endPosition!!, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.lineTo(
+                    endPosition.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun lineToConstantHeading(endPosition: Vector2d?): TrajectorySequenceBuilder {
+    fun lineToConstantHeading(endPosition: Vector2d): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToConstantHeading(
-                    endPosition!!, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.lineToConstantHeading(
+                    endPosition.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
     }
 
     fun lineToConstantHeading(
-        endPosition: Vector2d?,
+        endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToConstantHeading(
-                    endPosition!!, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.lineToConstantHeading(
+                    endPosition.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun lineToLinearHeading(endPose: Pose2d?): TrajectorySequenceBuilder {
+    fun lineToLinearHeading(endPose: Pose2d): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToLinearHeading(
-                    endPose!!, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.lineToLinearHeading(
+                    endPose.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
     }
 
     fun lineToLinearHeading(
-        endPose: Pose2d?,
+        endPose: Pose2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToLinearHeading(
-                    endPose!!, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.lineToLinearHeading(
+                    endPose.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun lineToSplineHeading(endPose: Pose2d?): TrajectorySequenceBuilder {
+    fun lineToSplineHeading(endPose: Pose2d): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToSplineHeading(
-                    endPose!!, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.lineToSplineHeading(
+                    endPose.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
     }
 
     fun lineToSplineHeading(
-        endPose: Pose2d?,
+        endPose: Pose2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.lineToSplineHeading(
-                    endPose!!, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.lineToSplineHeading(
+                    endPose.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun strafeTo(endPosition: Vector2d?): TrajectorySequenceBuilder {
+    fun strafeTo(endPosition: Vector2d): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeTo(
-                    endPosition!!, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.strafeTo(
+                    endPosition.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
     }
 
     fun strafeTo(
-        endPosition: Vector2d?,
+        endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeTo(
-                    endPosition!!, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.strafeTo(
+                    endPosition.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
@@ -177,7 +179,7 @@ class TrajectorySequenceBuilder(
     fun forward(distance: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.forward(
+                currentTrajectoryBuilder?.forward(
                     distance,
                     currentVelConstraint,
                     currentAccelConstraint
@@ -193,7 +195,7 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.forward(
+                currentTrajectoryBuilder?.forward(
                     distance,
                     velConstraint,
                     accelConstraint
@@ -205,7 +207,7 @@ class TrajectorySequenceBuilder(
     fun back(distance: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.back(
+                currentTrajectoryBuilder?.back(
                     distance,
                     currentVelConstraint,
                     currentAccelConstraint
@@ -221,7 +223,7 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.back(
+                currentTrajectoryBuilder?.back(
                     distance,
                     velConstraint,
                     accelConstraint
@@ -233,7 +235,7 @@ class TrajectorySequenceBuilder(
     fun strafeLeft(distance: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeLeft(
+                currentTrajectoryBuilder?.strafeLeft(
                     distance,
                     currentVelConstraint,
                     currentAccelConstraint
@@ -249,7 +251,7 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeLeft(
+                currentTrajectoryBuilder?.strafeLeft(
                     distance,
                     velConstraint,
                     accelConstraint
@@ -261,7 +263,7 @@ class TrajectorySequenceBuilder(
     fun strafeRight(distance: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeRight(
+                currentTrajectoryBuilder?.strafeRight(
                     distance,
                     currentVelConstraint,
                     currentAccelConstraint
@@ -277,7 +279,7 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.strafeRight(
+                currentTrajectoryBuilder?.strafeRight(
                     distance,
                     velConstraint,
                     accelConstraint
@@ -289,8 +291,8 @@ class TrajectorySequenceBuilder(
     fun splineTo(endPosition: Vector2d, endHeading: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineTo(
-                    endPosition, endHeading, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.splineTo(
+                    endPosition.flip(isFlipped), endHeading.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
@@ -304,8 +306,8 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineTo(
-                    endPosition, endHeading, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.splineTo(
+                    endPosition.flip(isFlipped), endHeading.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
@@ -317,8 +319,8 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToConstantHeading(
-                    endPosition, endHeading, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.splineToConstantHeading(
+                    endPosition.flip(isFlipped), endHeading.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
@@ -332,18 +334,18 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToConstantHeading(
-                    endPosition, endHeading, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.splineToConstantHeading(
+                    endPosition.flip(isFlipped), endHeading.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun splineToLinearHeading(endPose: Pose2d?, endHeading: Double): TrajectorySequenceBuilder {
+    fun splineToLinearHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToLinearHeading(
-                    endPose!!, endHeading, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.splineToLinearHeading(
+                    endPose.flip(isFlipped), endHeading.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
@@ -357,18 +359,18 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToLinearHeading(
-                    endPose, endHeading, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.splineToLinearHeading(
+                    endPose.flip(isFlipped), endHeading.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
     }
 
-    fun splineToSplineHeading(endPose: Pose2d?, endHeading: Double): TrajectorySequenceBuilder {
+    fun splineToSplineHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToSplineHeading(
-                    endPose!!, endHeading, currentVelConstraint, currentAccelConstraint
+                currentTrajectoryBuilder?.splineToSplineHeading(
+                    endPose.flip(isFlipped), endHeading.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
@@ -382,8 +384,8 @@ class TrajectorySequenceBuilder(
     ): TrajectorySequenceBuilder {
         return addPath(object : AddPathCallback {
             override fun run() {
-                currentTrajectoryBuilder!!.splineToSplineHeading(
-                    endPose, endHeading, velConstraint, accelConstraint
+                currentTrajectoryBuilder?.splineToSplineHeading(
+                    endPose.flip(isFlipped), endHeading.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
@@ -599,6 +601,14 @@ class TrajectorySequenceBuilder(
         sequenceSegments.add(
             future
         )
+        return this
+    }
+
+    /**
+     * reflect path across the x-axis
+     */
+    fun flipSide(): TrajectorySequenceBuilder {
+        isFlipped = true
         return this
     }
 

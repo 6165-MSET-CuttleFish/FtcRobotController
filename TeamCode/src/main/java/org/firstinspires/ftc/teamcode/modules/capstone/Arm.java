@@ -1,21 +1,21 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
-public class Claw extends Module<Claw.State> {
+public class Arm extends Module<Arm.State> {
     public enum State {
         TRANSIT_IN (0,0.5),
         IN(0.2,0.5),
-        IDLEOut(0,0.5),
         TRANSIT_OUT(0.5, 0.5),
         OUT(0.5,0.1);
         final double dist;
@@ -25,15 +25,15 @@ public class Claw extends Module<Claw.State> {
             this.time = time;
         }
     }
-    StateMachine<State> stateMachine;
-    Servo clawL, clawR;
+    ServoEx arm;
+
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Claw(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IDLEOut);
+    public Arm(HardwareMap hardwareMap) {
+        super(hardwareMap, State.IN);
     }
 
     /**
@@ -41,10 +41,16 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public void init() {
-        clawL = hardwareMap.servo.get("clawL");
-        clawR = hardwareMap.servo.get("clawR");
-        clawR.setDirection(Servo.Direction.REVERSE);
+        arm = hardwareMap.get(ServoEx.class,"arm");
         setState(State.IN);
+    }
+
+    /**
+     *
+     * @param theta the desired angle in RADIANS
+     */
+    public void setAngle(double theta) {
+        arm.turnToAngle(theta, AngleUnit.RADIANS);
     }
 
     /**
@@ -55,43 +61,21 @@ public class Claw extends Module<Claw.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.IN);
+                    setState(Arm.State.IN);
                 }
             case IN:
-                close();
-                break;
-            case IDLEOut:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_OUT);
-                }
                 break;
             case TRANSIT_OUT:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.OUT);
+                    setState(Arm.State.OUT);
                 }
-                open();
                 break;
             case OUT:
-                open();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Claw.State.TRANSIT_IN);
+                    setState(Arm.State.TRANSIT_IN);
                 }
                 break;
         }
-    }
-
-    // TODO: Comment code
-    public void open() {
-        clawL.setPosition(0.0);
-        clawR.setPosition(0.26);
-    }
-
-    /**
-     * Return platform to rest
-     */
-    public void close() {
-        clawL.setPosition(0.96);
-        clawR.setPosition(0.7);
     }
 
     /**
@@ -99,9 +83,7 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public boolean isDoingWork() {
-        if(clawL.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
-            return true;
-        } else return clawL.getPosition() != clawR.getPosition();
+        return getState() == Arm.State.OUT || getState() == Arm.State.TRANSIT_OUT;
     }
 
     /**
@@ -109,7 +91,7 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public boolean isHazardous() {
-        return getState() == Claw.State.OUT || getState() == Claw.State.TRANSIT_OUT;
+        return false;
     }
 
 }

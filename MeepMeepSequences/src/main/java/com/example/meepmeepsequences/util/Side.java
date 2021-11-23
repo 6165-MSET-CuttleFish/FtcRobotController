@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package com.example.meepmeepsequences.util;
 
 public enum Side {
     NONE,

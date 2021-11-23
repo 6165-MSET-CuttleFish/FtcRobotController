@@ -4,11 +4,14 @@ import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
 import com.intel.realsense.librealsense.UsbUtilities
+import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.*
+import kotlin.math.cos
 
 /**
  * Static accessibility class which allows for easy
@@ -22,6 +25,14 @@ object Easy265 {
     private const val TAG = "Easy265"
     private val ODOMETRY_COVARIANCE = 1.0
     private val INCH_TO_METER = 0.0254
+    private val defaultTransform2d = Transform2d(
+        Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
+            Math.toRadians(180.0)
+        )
+    )
+    private lateinit var leftEncoder: Encoder
+    private lateinit var rightEncoder: Encoder
+    private lateinit var imu: BNO055IMU
 
 
     /**
@@ -73,13 +84,14 @@ object Easy265 {
      */
     @JvmStatic @JvmOverloads fun init(
         opMode: OpMode,
-        cameraToRobot: Transform2d = Transform2d(
-            Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
-                Math.toRadians(180.0)
-            )
-        ),
-        attempts: Int = 6
+        cameraToRobot: Transform2d = defaultTransform2d,
+        attempts: Int = 6,
+        leftMotor: DcMotorEx,
+        rightMotor: DcMotorEx,
+        imu: BNO055IMU
     ) {
+        leftEncoder = Encoder(leftMotor)
+        rightEncoder = Encoder(rightMotor)
         try {
             if(!::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
@@ -100,7 +112,7 @@ object Easy265 {
                 throw RuntimeException("Unable to start T265Camera after various attempts", e)
             } else {
                 RobotLog.w(TAG, "Unable to start T265Camera, retrying...", e)
-                init(opMode, cameraToRobot, attempts - 1)
+                init(opMode, cameraToRobot, attempts - 1, leftMotor, rightMotor, imu)
             }
         }
     }
@@ -115,12 +127,11 @@ object Easy265 {
      */
     @JvmStatic @JvmOverloads fun initWithoutStop(
         opMode: OpMode,
-        cameraToRobot: Transform2d = Transform2d(
-            Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
-                Math.toRadians(180.0)
-            )
-        )
-    ) = init(opMode, cameraToRobot, Int.MAX_VALUE)
+        cameraToRobot: Transform2d = defaultTransform2d,
+        leftMotor: DcMotorEx,
+        rightMotor: DcMotorEx,
+        imu: BNO055IMU,
+    ) = init(opMode, cameraToRobot, Int.MAX_VALUE, leftMotor, rightMotor, imu)
 
     /**
      * Pulls the last data from the camera and stores it the
@@ -136,6 +147,10 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
+            val pitch = imu.angularOrientation.thirdAngle
+            Details.telemetry.addData("Pitch", Math.toDegrees(pitch.toDouble()))
+            Details.telemetry.update()
+            camera.sendOdometry(DriveConstants.rpmToVelocity((leftEncoder.correctedVelocity + rightEncoder.correctedVelocity) / 2) * INCH_TO_METER * cos(pitch.toDouble()), 0.0)
         }
     }
 
