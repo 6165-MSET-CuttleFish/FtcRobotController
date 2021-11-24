@@ -33,8 +33,8 @@ import static org.firstinspires.ftc.teamcode.util.Details.packet;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Deposit Test", group="TeleOp")
-public class sampleDeposit extends LinearOpMode
+@TeleOp(name="Distance Test", group="TeleOp")
+public class DistanceTest extends LinearOpMode
 {
     // Declare OpMode members.
     Deposit deposit;
@@ -46,19 +46,29 @@ public class sampleDeposit extends LinearOpMode
         Details.telemetry = telemetry;
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap, intake);
-        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
+        Platform platform = deposit.platform;
+//        TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
         waitForStart();
-        tuningController.start();
+//        tuningController.start();
         while(opModeIsActive()) {
             intake.setPower(gamepad1.right_trigger);
-            packet = new TelemetryPacket();
             deposit.update();
             intake.update();
-            deposit.setState(tuningController.update());
-            if (packet != null) dashboard.sendTelemetryPacket(packet);
-            telemetry.addData("Target Height: ", deposit.getState().dist);
-            telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
-         }
+            if (gamepad1.x) {
+                deposit.setState(Deposit.State.LEVEL2);
+            }
+            if (gamepad1.b) {
+                deposit.setState(Deposit.State.LEVEL3);
+            }
+            if (gamepad1.y) {
+                deposit.setState(Deposit.State.IDLE);
+            }
+            if (gamepad1.a) {
+                platform.dump();
+            }
+            dashboard.sendTelemetryPacket(packet);
+            packet = new TelemetryPacket();
+        }
 
     }
 

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
 
@@ -26,8 +27,8 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
-    TriggerReader intakeButton, outtakeButton;
-    ButtonReader levelIncrementor, levelDecrementor;
+    TriggerReader intakeButton, ninjaMode;
+    ButtonReader levelIncrementor, levelDecrementor, dumpButton, outtakeButton;
     ToggleButtonReader depositButton, carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -41,11 +42,13 @@ public class DriverPractice extends LinearOpMode {
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[]{
                 intakeButton = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER),
-                outtakeButton = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
+                outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
+                ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
                 levelDecrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 depositButton = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
         waitForStart();
         while (opModeIsActive()) {
@@ -53,13 +56,13 @@ public class DriverPractice extends LinearOpMode {
             for (KeyReader reader : keyReaders) {
                 reader.readValue();
             }
-            robot.setWeightedDrivePower(
-                    new Pose2d(
-                            -gamepad1.left_stick_y,
-                            0,
-                            -gamepad1.right_stick_x
-                    )
+            Pose2d drivePower = new Pose2d(
+                    -gamepad1.left_stick_y,
+                    0,
+                    -gamepad1.right_stick_x
             );
+            if (ninjaMode.isDown()) drivePower = drivePower.div(2);
+            robot.setWeightedDrivePower(drivePower);
             setIntake();
             setDeposit();
             setCarousel();
@@ -68,11 +71,11 @@ public class DriverPractice extends LinearOpMode {
 
     void setIntake() {
         if (intakeButton.isDown()) {
-            intake.setState(Intake.State.INTAKING);
+            intake.setPower(1);
         } else if (outtakeButton.isDown()) {
-            intake.setState(Intake.State.EXTAKING);
+            intake.setPower(-1);
         } else {
-            intake.setState(Intake.State.IDLE);
+            intake.setPower(0);
         }
     }
 
@@ -82,17 +85,11 @@ public class DriverPractice extends LinearOpMode {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
                     break;
-                case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
-                    break;
             }
         } else if (levelDecrementor.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
                     defaultDepositState = Deposit.State.LEVEL2;
-                    break;
-                case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
                     break;
             }
         }
@@ -101,6 +98,10 @@ public class DriverPractice extends LinearOpMode {
             deposit.setState(defaultDepositState);
         } else {
             deposit.setState(Deposit.State.IDLE);
+        }
+
+        if (dumpButton.wasJustPressed()) {
+            deposit.platform.dump();
         }
     }
 
