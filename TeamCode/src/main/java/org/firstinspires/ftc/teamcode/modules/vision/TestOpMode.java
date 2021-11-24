@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,6 +23,7 @@ public class TestOpMode extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     public OpenCvWebcam webcam;
     private Detector detector;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,6 +54,8 @@ public class TestOpMode extends LinearOpMode {
             }
 
         });
+
+        dashboard.startCameraStream(webcam, 30);
 
         telemetry.addLine("waiting for start");
         telemetry.update();
