@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.Details;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -67,12 +68,12 @@ public class Platform extends Module<Platform.State> {
             case IDLE:
                 closeLatch();
                 in();
-                if(intake.getState() == Intake.State.IN)
+                if(intake.getState() == Intake.State.IN && isLoaded)
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if(intake.getState() == Intake.State.IN)
-                    setState(State.TRANSIT_OUT);
+                if(isLoaded && getState().time > elapsedTime.seconds())
+                    setState(State.OUT);
                 out();
                 break;
             case OUT:
@@ -83,6 +84,8 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
         }
+        Details.telemetry.addData("State", getState());
+        Details.telemetry.update();
     }
 
     /**
@@ -90,14 +93,14 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.6);
+        dump.setPosition(0.4);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        dump.setPosition(0.18);
+        dump.setPosition(0.82);
     }
     /**
      * Dumps the loaded element onto hub
@@ -107,6 +110,7 @@ public class Platform extends Module<Platform.State> {
     }
     private void openLatch() {
         latch.setPosition(0.75);
+        isLoaded = false;
     }
     private void closeLatch() {
         latch.setPosition(1);

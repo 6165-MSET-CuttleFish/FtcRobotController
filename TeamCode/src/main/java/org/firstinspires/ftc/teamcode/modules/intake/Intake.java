@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.util.Details;
 
 /**
@@ -50,9 +51,11 @@ public class Intake extends Module<Intake.State> {
     }
 
     public void setPower(double power) {
-        this.power = power;
-        if (power != 0 && !isDoingWork()) setState(State.PREP_OUT);
-        else setState(State.TRANSIT_IN);
+        if (this.power != power) {
+            this.power = power;
+            if (power != 0 && !isDoingWork()) setState(State.PREP_OUT);
+            else setState(State.TRANSIT_IN);
+        }
     }
 
     /**
@@ -92,6 +95,7 @@ public class Intake extends Module<Intake.State> {
                 if(elapsedTime.seconds() > getState().time && elapsedTime.seconds() < getState().time + 0.2) {
                     setPower(-0.8);
                     setState(State.IN);
+                    Platform.isLoaded = true;
                 }
             case IN:
                 retract();

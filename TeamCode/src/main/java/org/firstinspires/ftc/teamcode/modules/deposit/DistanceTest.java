@@ -43,6 +43,7 @@ public class DistanceTest extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
+        Details.telemetry = telemetry;
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap, intake);
         Platform platform = deposit.platform;
@@ -52,7 +53,6 @@ public class DistanceTest extends LinearOpMode
         while(opModeIsActive()) {
             intake.setPower(gamepad1.right_trigger);
             deposit.update();
-            platform.update();
             intake.update();
             if (gamepad1.x) {
                 deposit.setState(Deposit.State.LEVEL2);
@@ -66,8 +66,6 @@ public class DistanceTest extends LinearOpMode
             if (gamepad1.a) {
                 platform.dump();
             }
-            telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
-            telemetry.update();
         }
 
     }
