@@ -57,6 +57,7 @@ public class Platform extends Module<Platform.State> {
     public void update() {
         switch (getState()) {
             case TRANSIT_IN:
+                cover.setPosition(0.5);
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.IN);
                 }
@@ -74,6 +75,7 @@ public class Platform extends Module<Platform.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.TRANSIT_IN);
                 }
+                cover.setPosition(0.5);
                 break;
         }
     }
@@ -85,7 +87,6 @@ public class Platform extends Module<Platform.State> {
     private void out() {
         platformL.setPosition(0.5);
         platformR.setPosition(0.5);
-        cover.setPosition(0.5);
     }
 
     /**
@@ -94,7 +95,6 @@ public class Platform extends Module<Platform.State> {
     private void in() {
         platformL.setPosition(0.1);
         platformR.setPosition(0.9);
-        cover.setPosition(0.5);
     }
     /**
      * Dumps the loaded element onto hub
