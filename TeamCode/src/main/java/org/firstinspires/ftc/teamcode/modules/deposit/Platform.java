@@ -46,7 +46,14 @@ public class Platform extends Module<Platform.State> {
     public void init() {
         platformL = hardwareMap.servo.get("platformL");
         platformR = hardwareMap.servo.get("platformR");
-        setState(State.OUT);
+        setState(State.IN);
+    }
+
+    /**
+     *
+     */
+    public void retrieve() {
+       setState(State.IN);
     }
 
     /**
