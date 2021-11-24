@@ -41,7 +41,7 @@ public class DriverPractice extends LinearOpMode {
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[]{
-                intakeButton = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER),
+                intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
@@ -94,11 +94,7 @@ public class DriverPractice extends LinearOpMode {
             }
         }
 
-        if (depositButton.getState()) {
-            deposit.setState(defaultDepositState);
-        } else {
-            deposit.setState(Deposit.State.IDLE);
-        }
+        deposit.setState(defaultDepositState);
 
         if (dumpButton.wasJustPressed()) {
             deposit.platform.dump();
@@ -107,9 +103,9 @@ public class DriverPractice extends LinearOpMode {
 
     void setCarousel() {
         if(carouselButton.getState()) {
-            carousel.setState(Carousel.State.ON);
+            // carousel.setState(Carousel.State.ON);
         } else {
-            carousel.setState(Carousel.State.IDLE);
+           // carousel.setState(Carousel.State.IDLE);
         }
     }
 }

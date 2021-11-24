@@ -16,7 +16,7 @@ public class Platform extends Module<Platform.State> {
         TRANSIT_IN (0.5),
         IDLE(0.5),
         TRANSIT_OUT(0),
-        OUT(0.5);
+        OUT(0.3);
         final double time;
         State(double time) {
             this.time = time;
@@ -43,13 +43,6 @@ public class Platform extends Module<Platform.State> {
     public void init() {
         dump = hardwareMap.servo.get("depositDump");
         latch = hardwareMap.servo.get("depositLatch");
-        setState(State.IDLE);
-    }
-
-    /**
-     *
-     */
-    public void retrieve() {
         setState(State.IDLE);
     }
 
@@ -89,7 +82,7 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.6);
+        dump.setPosition(0.55);
     }
 
     /**
@@ -125,6 +118,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.OUT;
+        return getState() == State.OUT || getState() == State.TRANSIT_OUT;
     }
 }

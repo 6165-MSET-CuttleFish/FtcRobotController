@@ -22,7 +22,7 @@ public abstract class Module<T> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Module(HardwareMap hardwareMap, T initialState) {
-        setState(initialState);
+        this.state = initialState;
         this.hardwareMap = hardwareMap;
         init();
     }
