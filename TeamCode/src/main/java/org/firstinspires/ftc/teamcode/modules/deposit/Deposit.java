@@ -114,7 +114,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double ticksToInches(double ticks) {
         // TODO: return inches traveled by slides
         // 145.1 ticks per rev
-        return ticks/TICKS_PER_INCH;
+        return (ticks/TICKS_PER_INCH) * 3.7;
     }
 
 

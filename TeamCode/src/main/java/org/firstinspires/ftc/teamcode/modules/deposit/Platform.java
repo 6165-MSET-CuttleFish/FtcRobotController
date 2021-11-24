@@ -27,7 +27,7 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo platformL, platformR;
+    Servo dump, latch;
     private Intake intake;
 
     /**
@@ -44,8 +44,8 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        platformL = hardwareMap.servo.get("platformL");
-        platformR = hardwareMap.servo.get("platformR");
+        dump = hardwareMap.servo.get("depositDump");
+        latch = hardwareMap.servo.get("depositLatch");
         setState(State.IN);
     }
 
@@ -89,16 +89,16 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        platformL.setPosition(0.5);
-        platformR.setPosition(0.5);
+        dump.setPosition(0.6);
+        latch.setPosition(0.75);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        platformL.setPosition(0.1);
-        platformR.setPosition(0.9);
+        dump.setPosition(0.18);
+        latch.setPosition(1);
     }
     /**
      * Dumps the loaded element onto hub
@@ -112,9 +112,10 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isHazardous() {
-        if(platformL.getPosition()!= getState().angle && elapsedTime.time()>getState().time){
+        if(dump.getPosition()!= getState().angle && elapsedTime.time()>getState().time){
             return true;
-        } else return platformL.getPosition() != platformR.getPosition();
+        }
+        return false;
     }
   
     /**
