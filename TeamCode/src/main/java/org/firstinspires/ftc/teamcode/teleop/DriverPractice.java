@@ -13,9 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @TeleOp
 public class DriverPractice extends LinearOpMode {
@@ -85,11 +84,17 @@ public class DriverPractice extends LinearOpMode {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
                     break;
+                case IDLE:
+                    defaultDepositState = Deposit.State.LEVEL2;
+                    break;
             }
         } else if (levelDecrementor.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
                     defaultDepositState = Deposit.State.LEVEL2;
+                    break;
+                case LEVEL2:
+                    defaultDepositState = Deposit.State.IDLE;
                     break;
             }
         }

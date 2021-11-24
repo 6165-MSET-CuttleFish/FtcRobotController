@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 
 /**
  * Frontal mechanism for collecting freight

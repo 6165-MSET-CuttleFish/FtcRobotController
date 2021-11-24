@@ -9,9 +9,7 @@ import org.firstinspires.ftc.teamcode.drive.Robot.*
 import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
-import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
-import org.firstinspires.ftc.teamcode.util.Details
-import org.firstinspires.ftc.teamcode.util.OpModeType
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import kotlin.Throws
 
 @Autonomous

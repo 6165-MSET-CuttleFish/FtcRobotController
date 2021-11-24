@@ -43,12 +43,12 @@ import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySeque
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.field.Alliance;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
-import org.firstinspires.ftc.teamcode.util.Side;
+import org.firstinspires.ftc.teamcode.util.field.Side;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -58,9 +58,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
+import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -72,7 +72,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.util.Details.side;
+import static org.firstinspires.ftc.teamcode.util.field.Details.side;
 
 /**
  * This class represents the robot and its drivetrain
