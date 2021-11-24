@@ -13,19 +13,17 @@ import org.firstinspires.ftc.teamcode.util.Details;
  */
 public class Platform extends Module<Platform.State> {
     public enum State {
-        TRANSIT_IN (0,0.5),
-        IDLE(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1);
-        final double angle;
+        TRANSIT_IN (0.5),
+        IDLE(0.5),
+        TRANSIT_OUT(0),
+        OUT(0.5);
         final double time;
-        State(double angle,double time) {
-            this.angle = angle;
+        State(double time) {
             this.time = time;
         }
     }
     Servo dump, latch;
-    private Intake intake;
+    private final Intake intake;
     public static boolean isLoaded;
 
     /**
@@ -72,9 +70,9 @@ public class Platform extends Module<Platform.State> {
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if(isLoaded && getState().time > elapsedTime.seconds())
-                    setState(State.OUT);
                 out();
+                if (intake.isDoingWork())
+                    setState(State.IDLE);
                 break;
             case OUT:
                 out();
@@ -85,7 +83,6 @@ public class Platform extends Module<Platform.State> {
                 break;
         }
         Details.telemetry.addData("State", getState());
-        Details.telemetry.update();
     }
 
     /**
@@ -93,14 +90,14 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.4);
+        dump.setPosition(0.6);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        dump.setPosition(0.82);
+        dump.setPosition(0.18);
     }
     /**
      * Dumps the loaded element onto hub
@@ -108,6 +105,7 @@ public class Platform extends Module<Platform.State> {
     public void dump(){
         setState(State.OUT);
     }
+
     private void openLatch() {
         latch.setPosition(0.75);
         isLoaded = false;
@@ -120,10 +118,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isHazardous() {
-        if(dump.getPosition()!= getState().angle && elapsedTime.time()>getState().time){
-            return true;
-        }
-        return false;
+        return false; //dump.getPosition() != getState().angle && elapsedTime.time() > getState().time;
     }
   
     /**
@@ -131,6 +126,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.OUT || getState() == State.TRANSIT_OUT;
+        return getState() == State.OUT;
     }
 }
