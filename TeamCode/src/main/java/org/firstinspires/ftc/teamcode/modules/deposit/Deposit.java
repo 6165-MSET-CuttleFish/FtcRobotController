@@ -5,13 +5,12 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 
 /**
  * @author Sreyash, Martin
@@ -21,7 +20,7 @@ public class Deposit extends Module<Deposit.State> {
     public enum State {
         LEVEL3(11.75), //tilted 11
         LEVEL2(4), //tilted 7
-        IDLE(0.5);
+        IDLE(0);
         // MANUAL(0);
         final double dist;
         State(double dist) {
@@ -43,20 +42,17 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 61.379;
+    public static double TICKS_PER_INCH = 43.93;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Deposit(HardwareMap hardwareMap) {
+    public Deposit(HardwareMap hardwareMap, Intake intake) {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
-    }
-
-    public void setState(State state) {
-        super.setState(state);
+        platform = new Platform(hardwareMap, intake);
     }
 
     /**
@@ -64,12 +60,18 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void init() {
-        platform = new Platform(hardwareMap);
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        slides.setDirection(DcMotorSimple.Direction.REVERSE);
     }
+
+    private State defaultState = State.LEVEL3;
+
+    @Override
+    public void setState(State state) {
+        defaultState = state;
+    }
+
     /**
      * This function updates all necessary controls in a loop
      */
@@ -77,14 +79,19 @@ public class Deposit extends Module<Deposit.State> {
     public void update() {
         platform.update(); // update subsystems
         pidController.setTargetPosition(getState().dist);
+        if (platform.isDoingWork()) {
+            super.setState(defaultState);
+        } else {
+            super.setState(State.IDLE);
+        }
         if (getState() == State.IDLE) {
-            if (elapsedTime.seconds() > 0.5) {
+            if (elapsedTime.seconds() > 1) {
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
+                Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
                 return;
             }
-            platform.retrieve();
             // set power to 0 if error is close to 0
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
@@ -99,7 +106,6 @@ public class Deposit extends Module<Deposit.State> {
             lastKp = MOTOR_PID.kP;
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;
-
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
         Details.packet.put("Target Height", getState().dist);
@@ -112,9 +118,7 @@ public class Deposit extends Module<Deposit.State> {
 
     // convert motor ticks to inches traveled by the slides
     public static double ticksToInches(double ticks) {
-        // TODO: return inches traveled by slides
-        // 145.1 ticks per rev
-        return ticks/TICKS_PER_INCH;
+        return (ticks/TICKS_PER_INCH);
     }
 
 

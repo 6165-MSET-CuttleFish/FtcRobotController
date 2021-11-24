@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
-import com.noahbres.jotai.StateMachine;
-import com.noahbres.jotai.StateMachineBuilder;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
@@ -16,27 +12,28 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
  */
 public class Platform extends Module<Platform.State> {
     public enum State {
-        TRANSIT_IN (0,0.5),
-        IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1);
-        final double angle;
+        TRANSIT_IN (0.5),
+        IDLE(0.5),
+        TRANSIT_OUT(0),
+        OUT(0.2),
+        DUMPING(0.3);
         final double time;
-        State(double angle,double time) {
-            this.angle = angle;
+        State(double time) {
             this.time = time;
         }
     }
-    Servo platformL, platformR;
-    private Intake intake;
+    Servo dump, latch;
+    private final Intake intake;
+    public static boolean isLoaded;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Platform(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IN);
+    public Platform(HardwareMap hardwareMap, Intake intake) {
+        super(hardwareMap, State.IDLE);
+        this.intake = intake;
     }
 
     /**
@@ -44,16 +41,9 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        platformL = hardwareMap.servo.get("platformL");
-        platformR = hardwareMap.servo.get("platformR");
-        setState(State.IN);
-    }
-
-    /**
-     *
-     */
-    public void retrieve() {
-       setState(State.IN);
+        dump = hardwareMap.servo.get("depositDump");
+        latch = hardwareMap.servo.get("depositLatch");
+        setState(State.IDLE);
     }
 
     /**
@@ -64,24 +54,31 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.IN);
+                    setState(State.IDLE);
                 }
-            case IN:
+            case IDLE:
+                closeLatch();
                 in();
+                if(intake.getState() == Intake.State.IN && isLoaded)
+                    setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.OUT);
                 }
-                out();
-                break;
             case OUT:
                 out();
+                break;
+            case DUMPING:
+                out();
+                openLatch();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
         }
+        if (intake.isDoingWork())
+            setState(State.IDLE);
     }
 
     /**
@@ -89,32 +86,35 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        platformL.setPosition(0.5);
-        platformR.setPosition(0.5);
+        dump.setPosition(0.55);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        platformL.setPosition(0.1);
-        platformR.setPosition(0.9);
+        dump.setPosition(0.18);
     }
     /**
      * Dumps the loaded element onto hub
      */
     public void dump(){
-        setState(Platform.State.TRANSIT_OUT);
+        setState(State.DUMPING);
     }
 
+    private void openLatch() {
+        latch.setPosition(0.75);
+        isLoaded = false;
+    }
+    private void closeLatch() {
+        latch.setPosition(1);
+    }
     /**
      * @return Whether the elapsed time passes set time before module reaches position
      */
     @Override
     public boolean isHazardous() {
-        if(platformL.getPosition()!= getState().angle && elapsedTime.time()>getState().time){
-            return true;
-        } else return platformL.getPosition() != platformR.getPosition();
+        return false; //dump.getPosition() != getState().angle && elapsedTime.time() > getState().time;
     }
   
     /**
@@ -122,6 +122,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.OUT || getState() == State.TRANSIT_OUT;
+        return getState() == State.DUMPING || getState() == State.OUT;
     }
 }

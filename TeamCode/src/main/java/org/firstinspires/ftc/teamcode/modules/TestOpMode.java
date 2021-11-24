@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 
-@TeleOp
+//@TeleOp
 @Disabled
+//http://192.168.43.1:8080/dash
 public class TestOpMode extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override

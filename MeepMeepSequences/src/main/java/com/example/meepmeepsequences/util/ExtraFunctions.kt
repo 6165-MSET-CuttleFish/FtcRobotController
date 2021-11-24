@@ -19,36 +19,33 @@ fun TrajectorySequenceBuilder.addFutureTrajectory(callback: FutureCallback, pose
 }
 
 fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): TrajectorySequenceBuilder {
-    addTrajectory(segment.trajectory)
-    return this
+    return addTrajectory(segment.trajectory)
 }
 
-fun TrajectorySequenceBuilder.liftUp(lift: Lift): TrajectorySequenceBuilder {
-    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.liftUp(deposit: Deposit): TrajectorySequenceBuilder {
+    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
         println("Lift Up")
     }
-    return this
 }
 
 fun TrajectorySequenceBuilder.intakeOn(intake: Intake): TrajectorySequenceBuilder {
-    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
         println("Intake On")
     }
-    return this
 }
 
 fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuilder {
-    UNSTABLE_addDisplacementMarkerOffset(0.0) {
-        println("Intake Off")
+    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        intake.setPower(0.0)
     }
-    return this
 }
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
-    UNSTABLE_addDisplacementMarkerOffset(0.0) {
-        println("Capstone Ready")
-    }
-    return this
+    return UNSTABLE_addDisplacementMarkerOffset(0.0, capstone::ready)
+}
+
+fun TrajectorySequenceBuilder.dump(platform: Platform): TrajectorySequenceBuilder {
+    return UNSTABLE_addDisplacementMarkerOffset(0.0, platform::dump)
 }
 
 fun MeepMeep.configure(): MeepMeep {
@@ -64,15 +61,35 @@ interface FutureCallback {
 }
 
 class Intake {
-
+    fun setPower(power: Double) {
+        println("Intake Power $power")
+    }
 }
 
-class Lift {
+class Deposit {
+    enum class State {
+        LEVEL3,
+        LEVEL2,
+        IDLE
+    }
+    fun setState(state: State) {
+        println("Lift State $state")
+    }
+}
 
+class Platform {
+    fun dump() {
+        print("Dump Freight")
+    }
 }
 
 class Capstone {
-
+    fun pickUp() {
+        println("Capstone retrieved")
+    }
+    fun ready() {
+        println("Capstone picked up")
+    }
 }
 
 fun Double.flip(negative: Boolean): Double {

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
  */
 public class Encoder {
     private final static int CPS_STEP = 0x10000;
-    private MovingStatistics velocityEstimates;
+    private final MovingStatistics velocityEstimates;
 
     private static double inverseOverflow(double input, double estimate) {
         double real = input;

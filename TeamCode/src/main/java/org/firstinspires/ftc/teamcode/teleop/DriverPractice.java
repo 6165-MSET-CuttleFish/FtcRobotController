@@ -13,9 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @TeleOp
 public class DriverPractice extends LinearOpMode {
@@ -41,7 +40,7 @@ public class DriverPractice extends LinearOpMode {
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[]{
-                intakeButton = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER),
+                intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
@@ -85,20 +84,22 @@ public class DriverPractice extends LinearOpMode {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
                     break;
+                case IDLE:
+                    defaultDepositState = Deposit.State.LEVEL2;
+                    break;
             }
         } else if (levelDecrementor.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
                     defaultDepositState = Deposit.State.LEVEL2;
                     break;
+                case LEVEL2:
+                    defaultDepositState = Deposit.State.IDLE;
+                    break;
             }
         }
 
-        if (depositButton.getState()) {
-            deposit.setState(defaultDepositState);
-        } else {
-            deposit.setState(Deposit.State.IDLE);
-        }
+        deposit.setState(defaultDepositState);
 
         if (dumpButton.wasJustPressed()) {
             deposit.platform.dump();
@@ -107,9 +108,9 @@ public class DriverPractice extends LinearOpMode {
 
     void setCarousel() {
         if(carouselButton.getState()) {
-            carousel.setState(Carousel.State.ON);
+            // carousel.setState(Carousel.State.ON);
         } else {
-            carousel.setState(Carousel.State.IDLE);
+           // carousel.setState(Carousel.State.IDLE);
         }
     }
 }
