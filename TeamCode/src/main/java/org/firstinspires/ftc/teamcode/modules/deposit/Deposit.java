@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.Details;
 
 /**
@@ -43,16 +44,17 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 61.379;
+    public static double TICKS_PER_INCH = 229.431623931;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Deposit(HardwareMap hardwareMap) {
+    public Deposit(HardwareMap hardwareMap, Intake intake) {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
+        platform = new Platform(hardwareMap, intake);
     }
 
     public void setState(State state) {
@@ -64,7 +66,6 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void init() {
-        platform = new Platform(hardwareMap);
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -99,7 +100,9 @@ public class Deposit extends Module<Deposit.State> {
             lastKp = MOTOR_PID.kP;
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;
-
+// 60 mm per rev
+            // 536.87 ticks/rev
+            //0.039 inch per mm
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
         Details.packet.put("Target Height", getState().dist);
@@ -114,7 +117,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double ticksToInches(double ticks) {
         // TODO: return inches traveled by slides
         // 145.1 ticks per rev
-        return ticks/TICKS_PER_INCH;
+        return (ticks/TICKS_PER_INCH);
     }
 
 

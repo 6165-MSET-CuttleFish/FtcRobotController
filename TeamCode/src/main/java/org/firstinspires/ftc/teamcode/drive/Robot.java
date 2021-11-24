@@ -199,7 +199,7 @@ public class Robot extends TankDrive {
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[]{
                 intake = new Intake(hardwareMap),
-                deposit = new Deposit(hardwareMap),
+                deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
