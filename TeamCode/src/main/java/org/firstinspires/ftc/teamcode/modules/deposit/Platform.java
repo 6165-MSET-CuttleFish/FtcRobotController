@@ -82,7 +82,6 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
         }
-        Details.telemetry.addData("State", getState());
     }
 
     /**

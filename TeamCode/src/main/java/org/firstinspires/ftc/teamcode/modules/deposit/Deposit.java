@@ -44,7 +44,7 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 229.431623931;
+    public static double TICKS_PER_INCH = 50;
 
     /**
      * Constructor which calls the 'init' function
@@ -69,7 +69,6 @@ public class Deposit extends Module<Deposit.State> {
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        slides.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     /**
      * This function updates all necessary controls in a loop
@@ -80,9 +79,10 @@ public class Deposit extends Module<Deposit.State> {
         pidController.setTargetPosition(getState().dist);
         if (getState() == State.IDLE) {
             if (elapsedTime.seconds() > 0.5) {
-                slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                //slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                // slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
+                Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
                 return;
             }
             platform.retrieve();
@@ -101,7 +101,7 @@ public class Deposit extends Module<Deposit.State> {
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;
 // 60 mm per rev
-            // 536.87 ticks/rev
+            // 384.5 ticks/rev
             //0.039 inch per mm
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
@@ -115,8 +115,6 @@ public class Deposit extends Module<Deposit.State> {
 
     // convert motor ticks to inches traveled by the slides
     public static double ticksToInches(double ticks) {
-        // TODO: return inches traveled by slides
-        // 145.1 ticks per rev
         return (ticks/TICKS_PER_INCH);
     }
 

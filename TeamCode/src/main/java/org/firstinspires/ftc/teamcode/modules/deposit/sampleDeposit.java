@@ -52,12 +52,12 @@ public class sampleDeposit extends LinearOpMode
         while(opModeIsActive()) {
             intake.setPower(gamepad1.right_trigger);
             packet = new TelemetryPacket();
-             deposit.update();
-             intake.update();
-             deposit.setState(tuningController.update());
-             if (packet != null) dashboard.sendTelemetryPacket(packet);
-             telemetry.addData("Target Height: ", deposit.getState().dist);
-             telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
+            deposit.update();
+            intake.update();
+            deposit.setState(tuningController.update());
+            if (packet != null) dashboard.sendTelemetryPacket(packet);
+            telemetry.addData("Target Height: ", deposit.getState().dist);
+            telemetry.addData("Actual Height: ", Deposit.ticksToInches(deposit.slides.getCurrentPosition()));
          }
 
     }

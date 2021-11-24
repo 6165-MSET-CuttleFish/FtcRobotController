@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.util.Details;
 
 @TeleOp
 @Disabled
+//http://192.168.43.1:8080/dash
 public class TestOpMode extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     @Override

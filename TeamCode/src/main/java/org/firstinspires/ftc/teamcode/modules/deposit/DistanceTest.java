@@ -66,7 +66,8 @@ public class DistanceTest extends LinearOpMode
             if (gamepad1.a) {
                 platform.dump();
             }
-            Details.telemetry.update();
+            dashboard.sendTelemetryPacket(packet);
+            packet = new TelemetryPacket();
         }
 
     }
