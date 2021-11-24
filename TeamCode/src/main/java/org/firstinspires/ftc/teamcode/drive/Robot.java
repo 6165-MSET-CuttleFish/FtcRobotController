@@ -19,7 +19,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -37,8 +36,10 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.modules.vision.Detector;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
@@ -83,9 +84,9 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.side;
 public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
-    private static final int HORIZON = 100; // horizon value to tune
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    public OpenCvCamera webcam;
+    private OpenCvCamera webcam;
+    private Detector detector;
 
     final OpMode opMode;
     final HardwareMap hardwareMap;
@@ -95,6 +96,7 @@ public class Robot extends TankDrive {
     public Intake intake;
     public Deposit deposit;
     public Carousel carousel;
+    public Capstone capstone;
 
     private BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
@@ -247,21 +249,12 @@ public class Robot extends TankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-
-        UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
-
-        UGContourRingPipeline.Config.setHORIZON(HORIZON);
-
-//        RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
-//
-//        RingLocalizer.HORIZON = HORIZON;
-        // webcam.setPipeline(pipeline = new UGContourRingPipeline());
-        webcam.openCameraDevice();
-        webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-        //dashboard.startCameraStream(webcam, 30);
+        webcam.setPipeline(detector = new Detector());
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        dashboard.startCameraStream(webcam, 30);
     }
 
-    public void switchPipeline(OpenCvPipeline pipeline) {
+    public void setPipeline(OpenCvPipeline pipeline) {
         webcam.setPipeline(pipeline);
     }
 

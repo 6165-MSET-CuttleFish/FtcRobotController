@@ -17,17 +17,13 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * and op modes themselves.
  */
 @Config
-public class    DriveConstants {
+public class DriveConstants {
+
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 424.233421752;
-    public static final double MAX_RPM = 397.088021178;
-
-    /*
-     * Manual overriding constants for drive motors
-     */
-    public static final double MAX_POWER = 1;
+    public static final double TICKS_PER_REV = 378;
+    public static final double MAX_RPM = 444.444444444;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -49,9 +45,9 @@ public class    DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 3; // in
-    public static double GEAR_RATIO = 13.72; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 16; // in
+    public static double WHEEL_RADIUS = 1.88976; // in
+    public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 15.6043307; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -59,9 +55,9 @@ public class    DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.0162;
-    public static double kA = 0.0028;
-    public static double kStatic = 0.1;
+    public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0;
+    public static double kStatic = 0;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -74,39 +70,27 @@ public class    DriveConstants {
      * Note from LearnRoadRunner.com:
      * The velocity and acceleration constraints were calculated based on the following equation:
      * ((MAX_RPM / 60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI) * 0.85
-     * Resulting in 274.9255476819778 in/s.
+     * Resulting in 74.76041056423146 in/s.
      * This is only 85% of the theoretical maximum velocity of the bot, following the recommendation above.
      * This is capped at 85% because there are a number of variables that will prevent your bot from actually
      * reaching this maximum velocity: voltage dropping over the game, bot weight, general mechanical inefficiencies, etc.
      * However, you can push this higher yourself if you'd like. Perhaps raise it to 90-95% of the theoretically
-     * max velocity. The theoretically maximum velocity is 323.4418208023268 in/s.
+     * max velocity. The theoretically maximum velocity is 87.9534241932135 in/s.
      * Just make sure that your bot can actually reach this maximum velocity. Path following will be detrimentally
      * affected if it is aiming for a velocity not actually possible.
      *
      * The maximum acceleration is somewhat arbitrary and it is recommended that you tweak this yourself based on
      * actual testing. Just set it at a reasonable value and keep increasing until your path following starts
-     * to degrade. As of now, it simply mirrors the velocity, resulting in 274.9255476819778 in/s/s
+     * to degrade. As of now, it simply mirrors the velocity, resulting in 74.76041056423146 in/s/s
      *
      * Maximum Angular Velocity is calculated as: maximum velocity / trackWidth * (180 / Math.PI) but capped at 360°/s.
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
-     *
-     * WARNING: LearnRoadRunner.com's constant generator has capped the calculated recommended velocity at 90in/s.
-     * This message is showing because your gear ratio/motor RPM/etc. configuration, results in a recommended
-     * velocity (85% of max velocity) exceeding 90in/s.
-     * (Your recommended velocity was 274.9255476819778in/s)
-     * This is simply insanely fast for an FTC bot and chances are your bot cannot properly reach these speeds.
-     *
-     * Just to be safe, LearnRoadRunner.com has arbitrarily limited your velocity to 90in/s.
-     * You are free to increase it yourself. If you do run into issues, please lower the maximum velocity.
-     *
-     * A documented case of a similar error which served as an impetus for this reasoning can be found here:
-     * https://github.com/acmerobotics/road-runner-quickstart/issues/91
 
      */
-    public static double MAX_VEL = 54;
-    public static double MAX_ACCEL = 54;
-    public static double MAX_ANG_VEL = Math.toRadians(180);
-    public static double MAX_ANG_ACCEL = Math.toRadians(180);
+    public static double MAX_VEL = 74.76041056423146;
+    public static double MAX_ACCEL = 74.76041056423146;
+    public static double MAX_ANG_VEL = Math.toRadians(274.5043079608481);
+    public static double MAX_ANG_ACCEL = Math.toRadians(274.5043079608481);
 
 
     public static double encoderTicksToInches(double ticks) {

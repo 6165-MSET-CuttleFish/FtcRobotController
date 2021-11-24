@@ -47,7 +47,7 @@ class CarouselPath {
                             .setReversed(false)
                             .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
                             .splineTo(Vector2d(10.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
-                    for (i in 1..5)
+                    for (i in 1..4)
                         trajectoryBuilder
                             .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                                 intake.setPower(1.0)
