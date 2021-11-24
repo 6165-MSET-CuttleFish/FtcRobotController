@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.localizers
+package org.firstinspires.ftc.teamcode.localizers.t265
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.Localizer
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265
 
 /**
  * A RoadRunner localizer using the Easy265 wrapper

@@ -23,29 +23,41 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
 }
 
 fun TrajectorySequenceBuilder.liftUp(deposit: Deposit): TrajectorySequenceBuilder {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
-        println("Lift Up")
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {
+        deposit.setState(Deposit.State.LEVEL3)
     }
 }
 
 fun TrajectorySequenceBuilder.intakeOn(intake: Intake): TrajectorySequenceBuilder {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
-        println("Intake On")
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {
+        intake.setPower(1.0)
     }
 }
 
 fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuilder {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {
         intake.setPower(0.0)
     }
 }
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0, capstone::ready)
+    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
 }
 
-fun TrajectorySequenceBuilder.dump(platform: Platform): TrajectorySequenceBuilder {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0, platform::dump)
+fun TrajectorySequenceBuilder.capstonePickup(capstone: Capstone): TrajectorySequenceBuilder {
+    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::pickUp)
+}
+
+fun TrajectorySequenceBuilder.dump(deposit: Deposit): TrajectorySequenceBuilder {
+    return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::dump)
+}
+
+fun TrajectorySequenceBuilder.carouselOn(carousel: Carousel): TrajectorySequenceBuilder {
+    return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::on)
+}
+
+fun TrajectorySequenceBuilder.carouselOff(carousel: Carousel): TrajectorySequenceBuilder {
+    return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::off)
 }
 
 fun MeepMeep.configure(): MeepMeep {
@@ -58,38 +70,6 @@ fun MeepMeep.configure(): MeepMeep {
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
-}
-
-class Intake {
-    fun setPower(power: Double) {
-        println("Intake Power $power")
-    }
-}
-
-class Deposit {
-    enum class State {
-        LEVEL3,
-        LEVEL2,
-        IDLE
-    }
-    fun setState(state: State) {
-        println("Lift State $state")
-    }
-}
-
-class Platform {
-    fun dump() {
-        print("Dump Freight")
-    }
-}
-
-class Capstone {
-    fun pickUp() {
-        println("Capstone retrieved")
-    }
-    fun ready() {
-        println("Capstone picked up")
-    }
 }
 
 fun Double.flip(negative: Boolean): Double {

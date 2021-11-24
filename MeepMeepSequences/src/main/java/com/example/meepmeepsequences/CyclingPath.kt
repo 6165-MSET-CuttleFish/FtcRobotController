@@ -9,10 +9,10 @@ import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
 class CyclingPath {
-    val capstone = Capstone()
-    val lift = Deposit()
-    fun carouselPath(blue: Boolean): MeepMeep {
-        side = Side.CAROUSEL
+    private val capstone = Capstone()
+    private val deposit = Deposit()
+    fun cyclingPath(blue: Boolean): MeepMeep {
+        side = Side.CYCLING
         alliance = if (blue) Alliance.BLUE else Alliance.RED
         return MeepMeep(windowSize)
             .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
@@ -28,14 +28,13 @@ class CyclingPath {
                             duckLocations()[0].vec(),
                             Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
                         )
-                        .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                            println("Capstone Collected")
-                            println("Lift Up")
-                        }
-                        .waitCondition { true } // duck loaded
+                        .capstonePickup(capstone)
+                        .liftUp(deposit)
+                        .waitCondition(capstone::isDoingWork) // capstone loaded
                         .splineTo(cycleDump().vec(), cycleDump().heading)
                         .setReversed(false)
-                        .waitCondition { true } // wait for platform to dump
+                        .dump(deposit)
+                        .waitCondition(deposit::isDoingWork) // wait for platform to dump
                         .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
                         .waitSeconds(1.5) // drop the ducky
                         .setReversed(true)

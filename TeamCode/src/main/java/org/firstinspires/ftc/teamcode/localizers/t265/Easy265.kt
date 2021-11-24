@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.localizers
+package org.firstinspires.ftc.teamcode.localizers.t265
 
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.field.Details
@@ -34,6 +36,7 @@ object Easy265 {
     private lateinit var leftEncoder: Encoder
     private lateinit var rightEncoder: Encoder
     private lateinit var imu: BNO055IMU
+    private var pitchOffset: Double = 0.0
 
 
     /**
@@ -93,8 +96,9 @@ object Easy265 {
     ) {
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
+        pitchOffset = imu.angularOrientation.thirdAngle.toDouble();
         try {
-            if(!::camera.isInitialized) {
+            if(!Easy265::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
                 camera = T265Camera(cameraToRobot, ODOMETRY_COVARIANCE, opMode.hardwareMap.appContext
                 )
@@ -151,7 +155,7 @@ object Easy265 {
             val pitch = imu.angularOrientation.thirdAngle
             Details.telemetry.addData("Pitch", Math.toDegrees(pitch.toDouble()))
             Details.telemetry.update()
-            camera.sendOdometry(DriveConstants.rpmToVelocity((leftEncoder.correctedVelocity + rightEncoder.correctedVelocity) / 2) * INCH_TO_METER * cos(pitch.toDouble()), 0.0)
+            camera.sendOdometry(DriveConstants.encoderTicksToInches((leftEncoder.rawVelocity + rightEncoder.rawVelocity) / 2) * INCH_TO_METER * cos(pitch.toDouble() - pitchOffset), 0.0)
         }
     }
 

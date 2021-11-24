@@ -116,7 +116,6 @@ public class Intake extends Module<Intake.State> {
                 break;
         }
         intake.setPower(power);
-        Details.packet.put("Distance Sensor", blockSensor.getDistance(DistanceUnit.CM));
         Details.packet.put("Intake Velocity", intake.getVelocity());
         Details.telemetry.addData("Intake State", getState());
     }

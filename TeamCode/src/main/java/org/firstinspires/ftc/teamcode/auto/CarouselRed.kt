@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
@@ -17,7 +18,7 @@ class CarouselRed : LinearOpMode() {
     lateinit var robot: Robot
     lateinit var deposit: Deposit
     lateinit var intake: Intake
-    lateinit var slides: Slides
+    lateinit var capstone: Capstone
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         robot = Robot(this, OpModeType.AUTO)

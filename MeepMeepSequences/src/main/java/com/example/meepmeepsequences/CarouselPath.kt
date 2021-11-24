@@ -10,7 +10,9 @@ import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
 class CarouselPath {
     val capstone = Capstone()
-    val lift = Deposit()
+    val deposit = Deposit()
+    val intake = Intake()
+    val carousel = Carousel()
     fun carouselPath(blue: Boolean): MeepMeep {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
@@ -28,16 +30,17 @@ class CarouselPath {
                                 duckLocations()[0].vec(),
                                 Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
                             )
-                            .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                                println("Capstone Collected")
-                                println("Lift Up")
-                            }
-                            .waitCondition { true } // duck loaded
+                            .capstonePickup(capstone)
+                            .liftUp(deposit)
+                            .waitCondition { !capstone.isDoingWork() } // capstone loaded
                             .splineTo(cycleDump().vec(), cycleDump().heading)
                             .setReversed(false)
-                            .waitCondition { true } // wait for platform to dump
+                            .dump(deposit)
+                            .waitCondition { !deposit.isDoingWork() } // wait for platform to dump
+                            .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                             .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
-                            .waitSeconds(1.5) // drop the ducky
+                            .waitSeconds(1.5)
+                            .carouselOff(carousel)// drop the ducky
                             .setReversed(true)
                             .splineTo(Vector2d(-24.0, -4.0).flip(blue), Math.toRadians(0.0).flip(blue))
                             .turn(Math.toRadians(-180.0).flip(blue))
@@ -47,8 +50,9 @@ class CarouselPath {
                     for (i in 1..5)
                         trajectoryBuilder
                             .UNSTABLE_addDisplacementMarkerOffset(10.0) {
-                                println("Intake Extended")
+                                intake.setPower(1.0)
                             }
+                            .splineTo(Vector2d(20.0, -40.0), 0.0)
                             .splineTo(
                                 Vector2d(39.0, -50.0).plus(
                                     Vector2d(
@@ -58,10 +62,14 @@ class CarouselPath {
                                 ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
                             )
                             .setReversed(true)
-                            .splineTo(Vector2d(4.1, -34.0).flip(blue), Math.toRadians(150.0).flip(blue))
-                            .waitCondition { true } // wait for platform to dump
+                            .intakeOff(intake)
+                            .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
+                            .splineTo(Vector2d(7.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                            .dump(deposit)
+                            .waitCondition { !deposit.isDoingWork() } // wait for platform to dump
                             .setReversed(false)
                     trajectoryBuilder
+                        .splineTo(Vector2d(20.0, -40.0), 0.0)
                         .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
                         .build()
                 }
