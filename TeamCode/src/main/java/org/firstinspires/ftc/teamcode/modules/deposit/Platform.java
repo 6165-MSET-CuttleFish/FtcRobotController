@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.Details;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -16,7 +15,8 @@ public class Platform extends Module<Platform.State> {
         TRANSIT_IN (0.5),
         IDLE(0.5),
         TRANSIT_OUT(0),
-        OUT(0.5);
+        OUT(0.2),
+        DUMPING(0.3);
         final double time;
         State(double time) {
             this.time = time;
@@ -47,13 +47,6 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
-     *
-     */
-    public void retrieve() {
-        setState(State.IDLE);
-    }
-
-    /**
      * This function updates all necessary controls in a loop
      */
     @Override
@@ -70,11 +63,13 @@ public class Platform extends Module<Platform.State> {
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                out();
-                if (intake.isDoingWork())
-                    setState(State.IDLE);
-                break;
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.OUT);
+                }
             case OUT:
+                out();
+                break;
+            case DUMPING:
                 out();
                 openLatch();
                 if (elapsedTime.seconds() > getState().time) {
@@ -82,6 +77,8 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
         }
+        if (intake.isDoingWork())
+            setState(State.IDLE);
     }
 
     /**
@@ -89,7 +86,7 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.6);
+        dump.setPosition(0.55);
     }
 
     /**
@@ -102,7 +99,7 @@ public class Platform extends Module<Platform.State> {
      * Dumps the loaded element onto hub
      */
     public void dump(){
-        setState(State.OUT);
+        setState(State.DUMPING);
     }
 
     private void openLatch() {
@@ -125,6 +122,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.OUT;
+        return getState() == State.DUMPING || getState() == State.OUT;
     }
 }

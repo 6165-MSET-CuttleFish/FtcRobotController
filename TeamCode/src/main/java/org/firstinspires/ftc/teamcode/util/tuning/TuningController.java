@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.tuning;
 
 import com.noahbres.jotai.StateMachine;
 import com.noahbres.jotai.StateMachineBuilder;

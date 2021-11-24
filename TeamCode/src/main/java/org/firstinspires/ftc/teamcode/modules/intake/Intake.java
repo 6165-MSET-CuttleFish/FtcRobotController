@@ -3,9 +3,10 @@ package org.firstinspires.ftc.teamcode.modules.intake;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 
 /**
  * Frontal mechanism for collecting freight
@@ -23,7 +24,7 @@ public class Intake extends Module<Intake.State> {
         TRANSIT_OUT(0.3),
         OUT(0),
         TRANSIT_IN(0.8),
-        TRANSFER(0.4),
+        TRANSFER(0.2),
         IN(0);
         final double time;
         State(double time){
@@ -42,7 +43,7 @@ public class Intake extends Module<Intake.State> {
         outL = hardwareMap.get(Servo.class, "outL");
         flipR = hardwareMap.get(Servo.class, "flipL");
         flipL = hardwareMap.get(Servo.class, "flipR");
-        //blockSensor = hardwareMap.get(DistanceSensor.class, "block");
+        blockSensor = hardwareMap.get(DistanceSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         slidesIn();
@@ -94,7 +95,11 @@ public class Intake extends Module<Intake.State> {
                 break;
             case TRANSIT_IN:
                 if(elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSFER);
+                    if (blockSensor.getDistance(DistanceUnit.CM) < 10) {
+                        setState(State.TRANSFER);
+                    } else {
+                        setState(State.IN);
+                    }
                 }
                 power = 0.8;
                 Details.telemetry.addData("Elapsed Time", elapsedTime.seconds());
@@ -111,6 +116,7 @@ public class Intake extends Module<Intake.State> {
                 break;
         }
         intake.setPower(power);
+        Details.packet.put("Distance Sensor", blockSensor.getDistance(DistanceUnit.CM));
         Details.packet.put("Intake Velocity", intake.getVelocity());
         Details.telemetry.addData("Intake State", getState());
     }
@@ -137,12 +143,12 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesOut() {
-        outL.setPosition(0.55);
-        outR.setPosition(0.60);
+        outL.setPosition(0.5);
+        outR.setPosition(0.5);
     }
 
     private void slidesIn() {
-        outL.setPosition(1);
-        outR.setPosition(0);
+        outL.setPosition(0);
+        outR.setPosition(1);
     }
 }

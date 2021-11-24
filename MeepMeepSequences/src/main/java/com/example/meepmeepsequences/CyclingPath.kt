@@ -10,7 +10,7 @@ import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
 class CyclingPath {
     val capstone = Capstone()
-    val lift = Lift()
+    val lift = Deposit()
     fun carouselPath(blue: Boolean): MeepMeep {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED

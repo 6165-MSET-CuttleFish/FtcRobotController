@@ -43,12 +43,12 @@ import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySeque
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.Details;
+import org.firstinspires.ftc.teamcode.util.field.Alliance;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
-import org.firstinspires.ftc.teamcode.util.Side;
+import org.firstinspires.ftc.teamcode.util.field.Side;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -58,9 +58,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-import static org.firstinspires.ftc.teamcode.util.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.util.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
+import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -72,7 +72,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.util.Details.side;
+import static org.firstinspires.ftc.teamcode.util.field.Details.side;
 
 /**
  * This class represents the robot and its drivetrain
@@ -200,7 +200,7 @@ public class Robot extends TankDrive {
         modules = new Module[]{
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-                carousel = new Carousel(hardwareMap),
+                //carousel = new Carousel(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -343,6 +343,8 @@ public class Robot extends TankDrive {
 
     public boolean intakeReq = false;
 
+    double current;
+
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -351,13 +353,17 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
-        double current = 0;
         for (DcMotorEx motor : motors) {
             telemetry.addData(motor.getDeviceName(), motor.getPower());
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
+        if (current > 30000) {
+            setMotorPowers(0, 0);
+        }
+        Details.packet.put("Total Motor Current", current);
         telemetry.addData("Motor Current", current);
         Log.println(Log.INFO, "motor_current", ""+current);
+        current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
@@ -419,14 +425,12 @@ public class Robot extends TankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = drivePower;
-
-        vel = new Pose2d(
+        if (current > 3000) return;
+        Pose2d vel = new Pose2d(
                 drivePower.getX(),
                 drivePower.getY(),
                 drivePower.getHeading() * 2
         );
-
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
@@ -440,7 +444,6 @@ public class Robot extends TankDrive {
             telemetry.addData("denom", denom);
             telemetry.addData("VX", VX_WEIGHT * Math.abs(drivePower.getX()));
         }
-
         setDrivePower(vel);
     }
 

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.util.*
+import org.firstinspires.ftc.teamcode.util.field.Details
 import kotlin.math.cos
 
 /**
