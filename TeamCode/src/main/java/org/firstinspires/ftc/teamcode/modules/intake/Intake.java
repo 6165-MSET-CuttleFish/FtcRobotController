@@ -101,13 +101,13 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void dropIntake() {
-        flipL.setPosition(0.41);
-        flipR.setPosition(0.59);
+        flipR.setPosition(0.41);
+        flipL.setPosition(0.59);
     }
 
     private void raiseIntake() {
-        flipL.setPosition(0.9);
-        flipR.setPosition(0.1);
+        flipR.setPosition(0.84);
+        flipL.setPosition(0.16);
     }
 
     private void deploy(){
@@ -121,12 +121,12 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesOut() {
-        outL.setPosition(0.5);
-        outR.setPosition(0.65);
+        outL.setPosition(0.55);
+        outR.setPosition(0.60);
     }
 
     private void slidesIn() {
-        outL.setPosition(1);
-        outR.setPosition(0.15);
+        outL.setPosition(0.94);
+        outR.setPosition(0.21);
     }
 }
