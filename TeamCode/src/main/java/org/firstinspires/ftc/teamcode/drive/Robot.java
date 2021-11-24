@@ -191,12 +191,12 @@ public class Robot extends TankDrive {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"),
-                leftRear = hardwareMap.get(DcMotorEx.class, "bl"),
-                leftMid = hardwareMap.get(DcMotorEx.class, "ml");
-        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"),
-                rightFront = hardwareMap.get(DcMotorEx.class, "fr"),
-                rightMid = hardwareMap.get(DcMotorEx.class, "mr");
+        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
+                leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
+                leftMid = hardwareMap.get(DcMotorEx.class, "ml"); // enc
+        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
+                rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
+                rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[]{
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
