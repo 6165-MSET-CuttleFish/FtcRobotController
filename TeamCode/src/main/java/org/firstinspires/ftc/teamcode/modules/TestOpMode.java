@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.field.Details;
 
-@TeleOp
+//@TeleOp
 @Disabled
 //http://192.168.43.1:8080/dash
 public class TestOpMode extends LinearOpMode {
