@@ -27,7 +27,7 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo platformL, platformR, cover;
+    Servo platformL, platformR;
     private Intake intake;
 
     /**
@@ -46,7 +46,6 @@ public class Platform extends Module<Platform.State> {
     public void init() {
         platformL = hardwareMap.servo.get("platformL");
         platformR = hardwareMap.servo.get("platformR");
-        cover = hardwareMap.servo.get("cover");
         setState(State.OUT);
     }
 
@@ -57,7 +56,6 @@ public class Platform extends Module<Platform.State> {
     public void update() {
         switch (getState()) {
             case TRANSIT_IN:
-                cover.setPosition(0.5);
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.IN);
                 }
@@ -75,7 +73,6 @@ public class Platform extends Module<Platform.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.TRANSIT_IN);
                 }
-                cover.setPosition(0.5);
                 break;
         }
     }
