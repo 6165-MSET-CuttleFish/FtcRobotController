@@ -17,7 +17,8 @@ public class Arm extends Module<Arm.State> {
         TRANSIT_IN (0,0.5),
         IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1);
+        OUT(0.5,0.1),
+        IDLE(0,0);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -63,21 +64,41 @@ public class Arm extends Module<Arm.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.IN);
                 }
+                in();
             case IN:
+                in();
                 break;
             case TRANSIT_OUT:
+                out();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.OUT);
                 }
                 break;
             case OUT:
                 if (elapsedTime.seconds() > getState().time) {
+                    setState(Arm.State.IDLE);
+                }
+                break;
+            case IDLE:
+                if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.TRANSIT_IN);
                 }
                 break;
         }
     }
+    private void out() {
+        setAngle(216.0);
+    }
 
+    /**
+     * Return platform to rest
+     */
+    private void in() {
+        setAngle(0.0);
+    }
+    public void cap(){
+        setState(Arm.State.TRANSIT_OUT);
+    }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */

@@ -15,7 +15,8 @@ public class Slides extends Module<Slides.State> {
         TRANSIT_IN (0,1),
         IN(0.2,1),
         TRANSIT_OUT(0.5, 1),
-        OUT(0.5,1);
+        OUT(0.5,1),
+        IDLE(0,1);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -25,7 +26,8 @@ public class Slides extends Module<Slides.State> {
     }
     StateMachine<State> stateMachine;
     Servo slideLeft, slideRight;
-    Servo claw;
+    Arm arm;
+
     /**
      * Constructor which calls the 'init' function
      *
@@ -42,7 +44,7 @@ public class Slides extends Module<Slides.State> {
     public void init() {
         slideLeft = hardwareMap.servo.get("slideLeft");
         slideRight = hardwareMap.servo.get("slideRight");
-        claw=hardwareMap.servo.get("claw");
+        arm.init();
         setState(State.IN);
     }
 
@@ -51,7 +53,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void update() {
-        claw.setPosition(slideLeft.getPosition());
+        arm.update();
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -69,7 +71,13 @@ public class Slides extends Module<Slides.State> {
             case OUT:
                 out();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Slides.State.TRANSIT_IN);
+                    setState(State.IDLE);
+                }
+                arm.cap();
+                break;
+            case IDLE:
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.TRANSIT_IN);
                 }
                 break;
         }
@@ -88,7 +96,6 @@ public class Slides extends Module<Slides.State> {
     private void in() {
         placeset(0.95);
     }
-
     public void cap(){
         setState(Slides.State.TRANSIT_OUT);
     }
@@ -105,7 +112,6 @@ public class Slides extends Module<Slides.State> {
     private void placeset(double pos){
         slideLeft.setPosition(pos);
         slideRight.setPosition(1-pos);
-        claw.setPosition(pos/2);
     }
     @Override
     public boolean isHazardous() {
