@@ -56,7 +56,7 @@ public class TestOpMode extends ModuleTest {
 
         webcam.setPipeline(detector = new Detector());
 
-        // webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
 
         dashboard.startCameraStream(webcam, 30);
 
