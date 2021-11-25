@@ -107,7 +107,6 @@ public class Intake extends Module<Intake.State> {
                     }
                 }
                 power = 0.8;
-                Details.telemetry.addData("Elapsed Time", elapsedTime.seconds());
             case IN:
                 retract();
                 break;
@@ -130,8 +129,8 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void raiseIntake() {
-        flipR.setPosition(0.9);
-        flipL.setPosition(0.1);
+        flipR.setPosition(0.88);
+        flipL.setPosition(0.12);
     }
 
     private void deploy() {

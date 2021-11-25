@@ -64,7 +64,7 @@ fun MeepMeep.configure(): MeepMeep {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
         .setDarkMode(true)
-        .setBotDimensions(18.0, 18.0)
+        .setBotDimensions(17.2, 17.192913)
         .setConstraints(74.76041056423146, 74.76041056423146, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
 }
 

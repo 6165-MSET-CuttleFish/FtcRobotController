@@ -9,9 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches
 import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.field.Details
 import kotlin.math.cos
@@ -152,13 +150,14 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val leftVelo = DriveConstants.encoderTicksToInches(leftEncoder.rawVelocity)
-            val rightVelo = DriveConstants.encoderTicksToInches(rightEncoder.rawVelocity)
+            val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity)
+            val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity)
             val velo = (leftVelo + rightVelo / 2)
-            val pitch = imu.angularOrientation.thirdAngle;
+            val pitch = imu.angularOrientation.thirdAngle.toDouble() - pitchOffset;
             Details.telemetry?.addData("Velocity", velo)
+            Details.telemetry?.addData("Pitch", pitch)
             Details.telemetry?.update()
-            camera.sendOdometry(velo * INCH_TO_METER * cos(pitch.toDouble() - pitchOffset), 0.0)
+            camera.sendOdometry(velo * INCH_TO_METER * cos(pitch), 0.0)
         }
     }
 

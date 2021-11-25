@@ -14,7 +14,7 @@ public class Platform extends Module<Platform.State> {
     public enum State {
         TRANSIT_IN (0.4),
         IDLE(0.5),
-        TRANSIT_OUT(0.4),
+        TRANSIT_OUT(0.08),
         OUT(0),
         DUMPING(0.3);
         final double time;
@@ -43,6 +43,7 @@ public class Platform extends Module<Platform.State> {
     public void init() {
         dump = hardwareMap.servo.get("depositDump");
         latch = hardwareMap.servo.get("depositLatch");
+        lock = hardwareMap.servo.get("lock");
         setState(State.IDLE);
     }
 
@@ -69,7 +70,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.OUT);
                 }
             case OUT:
-                lock();
+                if (getState() == State.OUT) lock();
                 out();
                 break;
             case DUMPING:
@@ -113,11 +114,11 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void lock() {
-
+        lock.setPosition(0);
     }
 
     private void unlock() {
-
+        lock.setPosition(0.71);
     }
 
     /**

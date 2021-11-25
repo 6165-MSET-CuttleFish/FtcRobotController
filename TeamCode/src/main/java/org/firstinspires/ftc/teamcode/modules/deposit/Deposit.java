@@ -91,8 +91,8 @@ public class Deposit extends Module<Deposit.State> {
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-            power = -0.6;
-            if (elapsedTime.seconds() > 1) { // anti-stall code
+            power = -1;
+            if (elapsedTime.seconds() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
