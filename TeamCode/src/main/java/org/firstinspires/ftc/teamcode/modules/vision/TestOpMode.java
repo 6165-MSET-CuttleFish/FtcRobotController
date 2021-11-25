@@ -1,23 +1,16 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.Details;
-import org.openftc.easyopencv.OpenCvCamera;
+import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp(name = "visionTest")
-//@Disabled
-public class TestOpMode extends LinearOpMode {
+public class TestOpMode extends ModuleTest {
 
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
@@ -26,7 +19,28 @@ public class TestOpMode extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void init() {
+        init(new Module(hardwareMap, null) {
+            @Override
+            public void init() {
+
+            }
+
+            @Override
+            public void update() {
+
+            }
+
+            @Override
+            public boolean isDoingWork() {
+                return false;
+            }
+
+            @Override
+            public boolean isHazardous() {
+                return false;
+            }
+        });
 
         int cameraMonitorViewId = this
                 .hardwareMap
@@ -40,29 +54,20 @@ public class TestOpMode extends LinearOpMode {
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        webcam.setPipeline(detector = new Detector(telemetry));
+        webcam.setPipeline(detector = new Detector());
 
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-
-        });
+        // webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
 
         dashboard.startCameraStream(webcam, 30);
 
         telemetry.addLine("waiting for start");
         telemetry.update();
+    }
 
-        waitForStart();
-        while (opModeIsActive()) {
-
-        }
+    @Override
+    public void loop() {
+        update();
+        telemetry.addData("Location", detector.getLocation());
+        telemetry.update();
     }
 }

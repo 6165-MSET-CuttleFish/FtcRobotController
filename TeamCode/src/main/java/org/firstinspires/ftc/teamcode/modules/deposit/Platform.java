@@ -8,21 +8,21 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
- * @author Srey Das Sarma
+ * @author Martin
  */
 public class Platform extends Module<Platform.State> {
     public enum State {
-        TRANSIT_IN (0.5),
+        TRANSIT_IN (0.4),
         IDLE(0.5),
-        TRANSIT_OUT(0),
-        OUT(0.2),
+        TRANSIT_OUT(0.4),
+        OUT(0),
         DUMPING(0.3);
         final double time;
         State(double time) {
             this.time = time;
         }
     }
-    Servo dump, latch;
+    Servo dump, latch, lock;
     private final Intake intake;
     public static boolean isLoaded;
 
@@ -58,6 +58,7 @@ public class Platform extends Module<Platform.State> {
                 }
             case IDLE:
                 closeLatch();
+                unlock();
                 in();
                 if(intake.getState() == Intake.State.IN && isLoaded)
                     setState(State.TRANSIT_OUT);
@@ -67,12 +68,13 @@ public class Platform extends Module<Platform.State> {
                     setState(State.OUT);
                 }
             case OUT:
+                lock();
                 out();
                 break;
             case DUMPING:
                 out();
                 openLatch();
-                if (elapsedTime.seconds() > getState().time) {
+                if (Platform.isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
@@ -86,7 +88,7 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.55);
+        dump.setPosition(0.58);
     }
 
     /**
@@ -98,7 +100,7 @@ public class Platform extends Module<Platform.State> {
     /**
      * Dumps the loaded element onto hub
      */
-    public void dump(){
+    public void dump() {
         setState(State.DUMPING);
     }
 
@@ -106,9 +108,19 @@ public class Platform extends Module<Platform.State> {
         latch.setPosition(0.75);
         isLoaded = false;
     }
+
     private void closeLatch() {
         latch.setPosition(1);
     }
+
+    private void lock() {
+
+    }
+
+    private void unlock() {
+
+    }
+
     /**
      * @return Whether the elapsed time passes set time before module reaches position
      */

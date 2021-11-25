@@ -19,7 +19,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -30,14 +29,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.localizers.Easy265;
-import org.firstinspires.ftc.teamcode.localizers.T265Localizer;
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.modules.vision.Detector;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
@@ -82,18 +84,23 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.side;
 public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
-    private static final int HORIZON = 100; // horizon value to tune
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    public OpenCvCamera webcam;
+    private OpenCvCamera webcam;
+    private Detector detector;
 
     final OpMode opMode;
     final HardwareMap hardwareMap;
-    Telemetry telemetry;
+    final Telemetry telemetry;
 
     private final Module[] modules;
     public Intake intake;
     public Deposit deposit;
     public Carousel carousel;
+    public Capstone capstone;
+
+    private BNO055IMU imu;
+    private final List<DcMotorEx> motors, leftMotors, rightMotors;
+    private final VoltageSensor batteryVoltageSensor;
 
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0, 0, 0);
@@ -104,10 +111,9 @@ public class Robot extends TankDrive {
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
-    private final List<DcMotorEx> motors, leftMotors, rightMotors;
-    private final VoltageSensor batteryVoltageSensor;
-    FtcDashboard dashboard;
-    private BNO055IMU imu;
+    private final FtcDashboard dashboard;
+    private final ElapsedTime currentTimer = new ElapsedTime();
+
 
 
     public static Pose2d flipSide(Pose2d pose2d) {
@@ -170,15 +176,15 @@ public class Robot extends TankDrive {
 
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
         super(kV, kA, kStatic, TRACK_WIDTH);
+        dashboard = FtcDashboard.getInstance();
         Details.opModeType = type;
         Details.robotPose = pose2d;
         Details.alliance = alliance;
         this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
+        opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         telemetry = opMode.telemetry;
-        dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         Details.telemetry = telemetry;
         TrajectoryFollower follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -194,13 +200,13 @@ public class Robot extends TankDrive {
         DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml"); // enc
-        DcMotorEx  rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
+        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[]{
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-                //carousel = new Carousel(hardwareMap),
+                carousel = new Carousel(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -225,7 +231,7 @@ public class Robot extends TankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType == OpModeType.AUTO) {
             autoInit();
-            Easy265.init(opMode, leftMid, rightMid, imu);
+            Easy265.init(opMode, leftMid, rightRear, imu);
             setLocalizer(new T265Localizer());
         }
         setPoseEstimate(robotPose);
@@ -243,21 +249,12 @@ public class Robot extends TankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-
-        UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
-
-        UGContourRingPipeline.Config.setHORIZON(HORIZON);
-
-//        RingLocalizer.CAMERA_WIDTH = CAMERA_WIDTH;
-//
-//        RingLocalizer.HORIZON = HORIZON;
-        // webcam.setPipeline(pipeline = new UGContourRingPipeline());
-        webcam.openCameraDevice();
-        webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-        //dashboard.startCameraStream(webcam, 30);
+        webcam.setPipeline(detector = new Detector());
+        // webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        dashboard.startCameraStream(webcam, 30);
     }
 
-    public void switchPipeline(OpenCvPipeline pipeline) {
+    public void setPipeline(OpenCvPipeline pipeline) {
         webcam.setPipeline(pipeline);
     }
 
@@ -358,7 +355,16 @@ public class Robot extends TankDrive {
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         if (current > 30000) {
-            setMotorPowers(0, 0);
+            for (DcMotorEx motor : motors) {
+                motor.setMotorDisable();
+            }
+            currentTimer.reset();
+        } else if (currentTimer.seconds() > 0.3) {
+            for (DcMotorEx motor : motors) {
+                if (!motor.isMotorEnabled()) {
+                    motor.setMotorEnable();
+                }
+            }
         }
         Details.packet.put("Total Motor Current", current);
         telemetry.addData("Motor Current", current);

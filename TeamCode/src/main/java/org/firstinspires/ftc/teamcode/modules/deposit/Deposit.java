@@ -13,15 +13,15 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Details;
 
 /**
- * @author Sreyash, Martin
+ * Slides that go up to the level for depositing freight
+ * @author Martin
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(11.75), //tilted 11
+        LEVEL3(11.3), //tilted 11
         LEVEL2(4), //tilted 7
         IDLE(0);
-        // MANUAL(0);
         final double dist;
         State(double dist) {
             this.dist = dist;
@@ -40,7 +40,7 @@ public class Deposit extends Module<Deposit.State> {
     double lastKa = kA;
     double lastKStatic = kStatic;
     double lastKp = MOTOR_PID.kP;
-    double lastKi = MOTOR_PID.kI;;
+    double lastKi = MOTOR_PID.kI;
     double lastKd = MOTOR_PID.kD;
     public static double TICKS_PER_INCH = 43.93;
 
@@ -72,6 +72,10 @@ public class Deposit extends Module<Deposit.State> {
         defaultState = state;
     }
 
+    public void dump() {
+       platform.dump();
+    }
+
     /**
      * This function updates all necessary controls in a loop
      */
@@ -85,14 +89,13 @@ public class Deposit extends Module<Deposit.State> {
             super.setState(State.IDLE);
         }
         if (getState() == State.IDLE) {
-            if (elapsedTime.seconds() > 1) {
+            if (elapsedTime.seconds() > 1) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
                 Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
                 return;
             }
-            // set power to 0 if error is close to 0
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
 
@@ -116,12 +119,13 @@ public class Deposit extends Module<Deposit.State> {
         Details.packet.put("Lift Velocity", slides.getVelocity());
     }
 
-    // convert motor ticks to inches traveled by the slides
-    public static double ticksToInches(double ticks) {
+    /**
+     * @param ticks current position of the motor
+     * @return inches traveled by the slides
+     */
+    private static double ticksToInches(double ticks) {
         return (ticks/TICKS_PER_INCH);
     }
-
-
     
     @Override
     public boolean isHazardous() {
