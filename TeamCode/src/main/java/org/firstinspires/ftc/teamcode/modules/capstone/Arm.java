@@ -46,14 +46,6 @@ public class Arm extends Module<Arm.State> {
     }
 
     /**
-     *
-     * @param theta the desired angle in RADIANS
-     */
-    public void setAngle(double theta) {
-
-    }
-
-    /**
      * This function updates all necessary controls in a loop
      */
     @Override
@@ -86,14 +78,14 @@ public class Arm extends Module<Arm.State> {
         }
     }
     private void out() {
-        setAngle(0.0);
+        arm.setPosition(0.2);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        setAngle(216.0);
+        arm.setPosition(1);
     }
     public void cap(){
         setState(Arm.State.TRANSIT_OUT);
