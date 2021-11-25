@@ -19,11 +19,16 @@ public abstract class ModuleTest extends OpMode {
     }
 
     public void update() {
+        printStates(modules);
+        dashboard.sendTelemetryPacket(packet);
+        packet = new TelemetryPacket();
+    }
+
+    private void printStates(Module[] modules) {
         for (Module module : modules) {
             module.update();
             telemetry.addData(module.getClass().getSimpleName() +" State", module.getState());
+            if (module.nestedModules.length != 0) printStates(module.nestedModules);
         }
-        dashboard.sendTelemetryPacket(packet);
-        packet = new TelemetryPacket();
     }
 }

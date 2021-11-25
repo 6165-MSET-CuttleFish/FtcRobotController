@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(11.3), //tilted 11
+        LEVEL3(11.4), //tilted 11
         LEVEL2(4), //tilted 7
         IDLE(0);
         final double dist;
@@ -30,7 +30,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.8,0,0.01);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(2.6,0,0.08);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -53,6 +53,7 @@ public class Deposit extends Module<Deposit.State> {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake);
+        nestedModules = new Module[]{platform};
     }
 
     /**
@@ -82,23 +83,28 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void update() {
         platform.update(); // update subsystems
-        pidController.setTargetPosition(getState().dist);
+        pidController.setTargetPosition(getState().dist + (Platform.isUnbalanced ? 2 : 0));
         if (platform.isDoingWork()) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
         }
+        double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
+            power = -0.6;
             if (elapsedTime.seconds() > 1) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(0);
+                Details.packet.put("Target Height", getState().dist);
                 Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+                Details.packet.put("Lift Power", power);
+                Details.packet.put("Elapsed Time", elapsedTime.seconds());
+                Details.packet.put("Lift Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
+                Details.packet.put("Lift Velocity", slides.getVelocity());
                 return;
             }
         }
-        double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
-
         slides.setPower(power);
 
         // for dashboard

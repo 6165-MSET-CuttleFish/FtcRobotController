@@ -26,10 +26,10 @@ import kotlin.math.cos
 object Easy265 {
 
     private const val TAG = "Easy265"
-    private val ODOMETRY_COVARIANCE = 1.0
-    private val INCH_TO_METER = 0.0254
+    private const val ODOMETRY_COVARIANCE = 1.0
+    private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
-        Translation2d(-8 * INCH_TO_METER, 1.18 * INCH_TO_METER), Rotation2d(
+        Translation2d(-7.5 * INCH_TO_METER, 0.3 * INCH_TO_METER), Rotation2d(
             Math.toRadians(180.0)
         )
     )
@@ -94,9 +94,10 @@ object Easy265 {
         rightMotor: DcMotorEx,
         imu: BNO055IMU
     ) {
+        this.imu = imu
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
-        pitchOffset = imu.angularOrientation.thirdAngle.toDouble();
+        pitchOffset = imu.angularOrientation.thirdAngle.toDouble()
         try {
             if(!Easy265::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
@@ -109,7 +110,6 @@ object Easy265 {
                 update()
                 return
             }
-
             camera.start()
             update()
         } catch(e: Exception) {
@@ -152,10 +152,13 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val pitch = imu.angularOrientation.thirdAngle
-            Details.telemetry.addData("Pitch", Math.toDegrees(pitch.toDouble()))
-            Details.telemetry.update()
-            camera.sendOdometry(DriveConstants.encoderTicksToInches((leftEncoder.rawVelocity + rightEncoder.rawVelocity) / 2) * INCH_TO_METER * cos(pitch.toDouble() - pitchOffset), 0.0)
+            val leftVelo = DriveConstants.encoderTicksToInches(leftEncoder.rawVelocity)
+            val rightVelo = DriveConstants.encoderTicksToInches(rightEncoder.rawVelocity)
+            val velo = (leftVelo + rightVelo / 2)
+            val pitch = imu.angularOrientation.thirdAngle;
+            Details.telemetry?.addData("Velocity", velo)
+            Details.telemetry?.update()
+            camera.sendOdometry(velo * INCH_TO_METER * cos(pitch.toDouble() - pitchOffset), 0.0)
         }
     }
 
