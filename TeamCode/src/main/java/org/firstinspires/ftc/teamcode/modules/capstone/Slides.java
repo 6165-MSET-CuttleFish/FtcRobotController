@@ -26,7 +26,7 @@ public class Slides extends Module<Slides.State> {
     }
     StateMachine<State> stateMachine;
     Servo slideLeft, slideRight;
-    Arm arm=new Arm(hardwareMap);
+    Arm arm;
 
     /**
      * Constructor which calls the 'init' function
@@ -44,11 +44,12 @@ public class Slides extends Module<Slides.State> {
     public void init() {
         slideLeft = hardwareMap.servo.get("capstoneLowerLift");
         slideRight = hardwareMap.servo.get("capstoneUpperLift");
+        arm=new Arm(hardwareMap);
         arm.init();
         setState(State.IN);
     }
 
-    /**
+    /**w
      * This function updates all necessary controls in a loop
      */
     @Override
@@ -73,7 +74,7 @@ public class Slides extends Module<Slides.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.IDLE);
                 }
-                arm.cap();
+              //  arm.cap();
                 break;
             case IDLE:
                 if (elapsedTime.seconds() > getState().time) {
@@ -87,17 +88,17 @@ public class Slides extends Module<Slides.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     private void out() {
-        placeset(0.7);
+        placeset(0);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        placeset(0.95);
+        placeset(0.8);
     }
     public void cap(){
-        setState(Slides.State.TRANSIT_OUT);
+        setState(State.TRANSIT_OUT);
     }
     @Override
     public boolean isDoingWork() {

@@ -86,14 +86,14 @@ public class Arm extends Module<Arm.State> {
         }
     }
     private void out() {
-        setAngle(216.0);
+        setAngle(0.0);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        setAngle(0.0);
+        setAngle(216.0);
     }
     public void cap(){
         setState(Arm.State.TRANSIT_OUT);

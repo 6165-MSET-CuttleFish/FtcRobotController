@@ -51,10 +51,6 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,7 +81,7 @@ public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    private OpenCvCamera webcam;
+    //private OpenCvCamera webcam;
     private Detector detector;
 
     final OpMode opMode;
@@ -229,8 +225,8 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.init(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+        //Easy265.init(opMode, leftMid, rightRear, imu);
+       //    setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
@@ -246,22 +242,22 @@ public class Robot extends TankDrive {
                         "id",
                         hardwareMap.appContext.getPackageName()
                 );
-        webcam = OpenCvCameraFactory
+       /* webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(detector = new Detector());
-        // webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-        dashboard.startCameraStream(webcam, 30);
+       // webcam.setPipeline(detector = new Detector());
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        dashboard.startCameraStream(webcam, 30);*/
     }
 
-    public void setPipeline(OpenCvPipeline pipeline) {
+  /*  public void setPipeline(OpenCvPipeline pipeline) {
         webcam.setPipeline(pipeline);
-    }
+    }*/
 
-    public void turnOffVision() {
+   /* public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
-    }
+    }*/
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
