@@ -27,10 +27,11 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
-    ButtonReader levelIncrementor, levelDecrementor, dumpButton, outtakeButton;
-    ToggleButtonReader depositButton, carouselButton;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton;
+    ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
@@ -43,11 +44,10 @@ public class DriverPractice extends LinearOpMode {
                 intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
-                levelIncrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
-                levelDecrementor = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
-                depositButton = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
+                levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
+                levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                dumpButton = new ButtonReader(secondary, GamepadKeys.Button.A),
         };
         waitForStart();
         while (opModeIsActive()) {
@@ -79,7 +79,7 @@ public class DriverPractice extends LinearOpMode {
     }
 
     void setDeposit() {
-        if (levelIncrementor.wasJustPressed()) {
+        if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
@@ -88,7 +88,7 @@ public class DriverPractice extends LinearOpMode {
                     defaultDepositState = Deposit.State.LEVEL2;
                     break;
             }
-        } else if (levelDecrementor.wasJustPressed()) {
+        } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
                     defaultDepositState = Deposit.State.LEVEL2;
@@ -108,9 +108,9 @@ public class DriverPractice extends LinearOpMode {
 
     void setCarousel() {
         if(carouselButton.getState()) {
-            // carousel.setState(Carousel.State.ON);
+           carousel.on();
         } else {
-           // carousel.setState(Carousel.State.IDLE);
+           carousel.off();
         }
     }
 }

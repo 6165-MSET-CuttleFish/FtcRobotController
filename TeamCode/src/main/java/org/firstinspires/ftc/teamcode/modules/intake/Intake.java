@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
-import org.firstinspires.ftc.teamcode.util.field.Details;
 
 /**
  * Frontal mechanism for collecting freight
@@ -16,8 +15,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details;
 public class Intake extends Module<Intake.State> {
     private DcMotorEx intake;
     private Servo outL, outR, flipL, flipR;
-    private DistanceSensor blockSensor;
-    private boolean isBlock;
+    private ColorRangeSensor blockSensor;
     private double power;
     public enum State {
         PREP_OUT(0.3),
@@ -43,7 +41,7 @@ public class Intake extends Module<Intake.State> {
         outL = hardwareMap.get(Servo.class, "outL");
         flipR = hardwareMap.get(Servo.class, "flipL");
         flipL = hardwareMap.get(Servo.class, "flipR");
-        blockSensor = hardwareMap.get(DistanceSensor.class, "block");
+        blockSensor = hardwareMap.get(ColorRangeSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         slidesIn();
@@ -120,7 +118,6 @@ public class Intake extends Module<Intake.State> {
                 break;
         }
         intake.setPower(power);
-        Details.packet.put("Intake Velocity", intake.getVelocity());
     }
 
     private void dropIntake() {

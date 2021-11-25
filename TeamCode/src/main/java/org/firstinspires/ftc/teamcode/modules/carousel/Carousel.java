@@ -37,11 +37,16 @@ public class Carousel extends Module<Carousel.State> {
         duckyL.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    /**
-     *
-     */
-    public void setState(State state) {
-        super.setState(state);
+    public void on() {
+        duckyR.setPower(0.8);
+        duckyL.setPower(0.8);
+        setState(State.ON);
+    }
+
+    public void off() {
+        duckyR.setPower(0);
+        duckyL.setPower(0);
+        setState(State.IDLE);
     }
 
     /**
@@ -49,16 +54,6 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void update() {
-        switch (getState()) {
-            case ON:
-                duckyR.setPower(0.8);
-                duckyL.setPower(0.8);
-                break;
-            case IDLE:
-                duckyR.setPower(0);
-                duckyL.setPower(0);
-                break;
-        }
     }
 
     /**

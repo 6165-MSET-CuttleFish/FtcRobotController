@@ -24,7 +24,7 @@ public abstract class ModuleTest extends OpMode {
         packet = new TelemetryPacket();
     }
 
-    private void printStates(Module[] modules) {
+    private void printStates(Module... modules) {
         for (Module module : modules) {
             module.update();
             telemetry.addData(module.getClass().getSimpleName() +" State", module.getState());

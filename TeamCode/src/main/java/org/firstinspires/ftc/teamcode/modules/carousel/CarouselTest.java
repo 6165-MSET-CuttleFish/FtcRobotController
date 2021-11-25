@@ -16,12 +16,11 @@ public class CarouselTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             carousel.update();
-            // TODO: add driver control for testing module here
             if (gamepad1.b) {
-                carousel.setState(Carousel.State.ON);
+                carousel.on();
             }
             if (gamepad1.a) {
-                carousel.setState(Carousel.State.IDLE);
+                carousel.off();
             }
             Details.packet = new TelemetryPacket();
         }

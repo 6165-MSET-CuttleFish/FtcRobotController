@@ -98,7 +98,7 @@ public class Robot extends TankDrive {
     public Carousel carousel;
     public Capstone capstone;
 
-    private BNO055IMU imu;
+    private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
@@ -449,7 +449,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return Arrays.asList(leftSum, rightSum);
     }
 
     public List<Double> getWheelVelocities() {
@@ -460,7 +460,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return Arrays.asList(leftSum, rightSum);
     }
 
     @Override
@@ -471,11 +471,6 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);
         }
-    }
-
-    public void correctHeading() {
-        Pose2d currPose = getPoseEstimate();
-        setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), getExternalHeading()));
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

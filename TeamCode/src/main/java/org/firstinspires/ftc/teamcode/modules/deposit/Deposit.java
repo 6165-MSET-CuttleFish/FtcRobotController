@@ -6,11 +6,14 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Details;
+
+import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -22,9 +25,17 @@ public class Deposit extends Module<Deposit.State> {
         LEVEL3(11.4), //tilted 11
         LEVEL2(4), //tilted 7
         IDLE(0);
-        final double dist;
+        final private double dist;
         State(double dist) {
             this.dist = dist;
+        }
+        public double getDist() {
+            switch (balance) {
+                case BALANCED: return dist;
+                case AWAY: return dist + 2;
+                case TOWARD: return Range.clip(dist - 1, -1, 12);
+            }
+            return dist;
         }
     }
     DcMotorEx slides;
@@ -83,7 +94,7 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void update() {
         platform.update(); // update subsystems
-        pidController.setTargetPosition(getState().dist + (Platform.isUnbalanced ? 2 : 0));
+        pidController.setTargetPosition(getState().getDist());
         if (platform.isDoingWork()) {
             super.setState(defaultState);
         } else {

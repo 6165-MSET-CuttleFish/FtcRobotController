@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 
+import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
  * @author Martin
@@ -22,9 +24,10 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo dump, latch, lock;
+    Servo dumpR, dumpL, latch, lock;
     private final Intake intake;
-    public static boolean isLoaded, isUnbalanced;
+    public static boolean isLoaded;
+
 
     /**
      * Constructor which calls the 'init' function
@@ -41,7 +44,8 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        dump = hardwareMap.servo.get("depositDump");
+        dumpR = hardwareMap.servo.get("depositDumpR");
+        dumpL = hardwareMap.servo.get("depositDumpL");
         latch = hardwareMap.servo.get("depositLatch");
         lock = hardwareMap.servo.get("lock");
         setState(State.IDLE);
@@ -87,17 +91,34 @@ public class Platform extends Module<Platform.State> {
     }
 
     /**
+     * @return servo position based on balance of hub
+     */
+    private double outPosition() {
+        switch (balance) {
+            case BALANCED:
+            case TOWARD:
+                return 0.58;
+            case AWAY: return 0.54;
+        }
+        return 0.58;
+    }
+
+    /**
      * Extends the platform out
      */
     private void out() {
-        dump.setPosition(isUnbalanced ? 0.54 : 0.58);
+        double position = outPosition();
+        dumpR.setPosition(position);
+        dumpL.setPosition(1 - position);
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        dump.setPosition(0.18);
+        double position = 0.18;
+        dumpR.setPosition(position);
+        dumpL.setPosition(1 - position);
     }
     /**
      * Dumps the loaded element onto hub
@@ -127,7 +148,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isHazardous() {
-        return false; //dump.getPosition() != getState().angle && elapsedTime.time() > getState().time;
+        return false;
     }
   
     /**
