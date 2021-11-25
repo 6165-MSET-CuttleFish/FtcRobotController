@@ -14,7 +14,7 @@ public class Platform extends Module<Platform.State> {
     public enum State {
         TRANSIT_IN (0.4),
         IDLE(0.5),
-        TRANSIT_OUT(0.2),
+        TRANSIT_OUT(0.4),
         OUT(0),
         DUMPING(0.3);
         final double time;
@@ -74,7 +74,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 out();
                 openLatch();
-                if (elapsedTime.seconds() > getState().time) {
+                if (Platform.isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
@@ -88,7 +88,7 @@ public class Platform extends Module<Platform.State> {
      */
 
     private void out() {
-        dump.setPosition(0.55);
+        dump.setPosition(0.58);
     }
 
     /**

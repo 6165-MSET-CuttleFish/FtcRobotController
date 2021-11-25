@@ -19,10 +19,9 @@ import org.firstinspires.ftc.teamcode.util.field.Details;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(11.75), //tilted 11
+        LEVEL3(11.3), //tilted 11
         LEVEL2(4), //tilted 7
         IDLE(0);
-        // MANUAL(0);
         final double dist;
         State(double dist) {
             this.dist = dist;
@@ -74,7 +73,7 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public void dump() {
-        platform.dump();
+       platform.dump();
     }
 
     /**

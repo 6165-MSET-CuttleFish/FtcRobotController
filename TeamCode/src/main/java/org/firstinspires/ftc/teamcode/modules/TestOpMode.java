@@ -7,22 +7,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 //@TeleOp
 @Disabled
 //http://192.168.43.1:8080/dash
-public class TestOpMode extends LinearOpMode {
-    FtcDashboard dashboard = FtcDashboard.getInstance();
+public class TestOpMode extends ModuleTest {
+    Module module;
     @Override
-    public void runOpMode() throws InterruptedException {
-        Module module = new Module(hardwareMap, null) {
+    public void init() {
+        module = new Module(hardwareMap, null) {
             @Override
-            public void update() {
+            public void init() {
 
             }
 
             @Override
-            public void init() {
+            public void update() {
 
             }
 
@@ -31,19 +32,16 @@ public class TestOpMode extends LinearOpMode {
                 return false;
             }
 
-            /**
-             * @return Whether the module is currently in a hazardous state
-             */
             @Override
             public boolean isHazardous() {
                 return false;
             }
         };
-        waitForStart();
-        while (opModeIsActive()) {
-            module.update();
-            dashboard.sendTelemetryPacket(Details.packet);
-            Details.packet = new TelemetryPacket();
-        }
+
+    }
+
+    @Override
+    public void loop() {
+
     }
 }
