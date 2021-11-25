@@ -129,8 +129,8 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void raiseIntake() {
-        flipR.setPosition(0.88);
-        flipL.setPosition(0.12);
+        flipR.setPosition(0.87);
+        flipL.setPosition(0.13);
     }
 
     private void deploy() {
