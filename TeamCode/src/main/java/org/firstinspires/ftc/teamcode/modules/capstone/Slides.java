@@ -26,7 +26,7 @@ public class Slides extends Module<Slides.State> {
     }
     StateMachine<State> stateMachine;
     Servo slideLeft, slideRight;
-    Arm arm;
+    Arm arm=new Arm(hardwareMap);
 
     /**
      * Constructor which calls the 'init' function

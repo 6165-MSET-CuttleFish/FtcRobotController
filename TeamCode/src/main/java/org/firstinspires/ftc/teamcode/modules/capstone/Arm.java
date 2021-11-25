@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -26,7 +25,7 @@ public class Arm extends Module<Arm.State> {
             this.time = time;
         }
     }
-    ServoEx arm;
+    Servo arm;
 
     /**
      * Constructor which calls the 'init' function
@@ -42,7 +41,7 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public void init() {
-        arm = hardwareMap.get(ServoEx.class,"capstoneArm");
+        arm = hardwareMap.servo.get("capstoneArm");
         setState(State.IN);
     }
 
@@ -51,7 +50,7 @@ public class Arm extends Module<Arm.State> {
      * @param theta the desired angle in RADIANS
      */
     public void setAngle(double theta) {
-        arm.turnToAngle(theta, AngleUnit.RADIANS);
+
     }
 
     /**
