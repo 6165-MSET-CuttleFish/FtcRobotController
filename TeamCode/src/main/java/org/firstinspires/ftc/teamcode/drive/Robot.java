@@ -250,7 +250,7 @@ public class Robot extends TankDrive {
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
         webcam.setPipeline(detector = new Detector());
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        // webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
         dashboard.startCameraStream(webcam, 30);
     }
 

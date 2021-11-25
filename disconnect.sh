@@ -1,0 +1,1 @@
+sudo adb disconnect 192.168.43.1:5555s
