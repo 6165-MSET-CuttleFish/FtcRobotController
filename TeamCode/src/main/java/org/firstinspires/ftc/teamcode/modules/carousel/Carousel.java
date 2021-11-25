@@ -16,7 +16,7 @@ public class Carousel extends Module<Carousel.State> {
         IDLE,
     }
 
-    CRServo driver, driver1;
+    CRServo duckyR, duckyL;
 
     /**
      * Constructor which calls the 'init' function
@@ -32,8 +32,9 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void init() {
-        driver = hardwareMap.crservo.get("duckyR");
-        driver1 = hardwareMap.crservo.get("duckyL");
+        duckyR = hardwareMap.crservo.get("duckyR");
+        duckyL = hardwareMap.crservo.get("duckyL");
+        duckyL.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -50,12 +51,12 @@ public class Carousel extends Module<Carousel.State> {
     public void update() {
         switch (getState()) {
             case ON:
-                driver.setPower(0.8);
-                driver1.setPower(0.8);
+                duckyR.setPower(0.8);
+                duckyL.setPower(0.8);
                 break;
             case IDLE:
-                driver.setPower(0);
-                driver1.setPower(0);
+                duckyR.setPower(0);
+                duckyL.setPower(0);
                 break;
         }
     }

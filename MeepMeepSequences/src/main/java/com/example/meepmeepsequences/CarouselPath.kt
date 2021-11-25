@@ -47,7 +47,7 @@ class CarouselPath {
                             .setReversed(false)
                             .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
                             .splineTo(Vector2d(10.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
-                    for (i in 1..4)
+                    for (i in 1..3)
                         trajectoryBuilder
                             .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                                 intake.setPower(1.0)
@@ -64,10 +64,11 @@ class CarouselPath {
                             .setReversed(true)
                             .intakeOff(intake)
                             .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
-                            .splineTo(Vector2d(7.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                            .splineTo(Vector2d(9.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
                             .dump(deposit)
                             .waitCondition { !deposit.isDoingWork() } // wait for platform to dump
                             .setReversed(false)
+                            .turn(Math.toRadians(-90.0).flip(blue))
                     trajectoryBuilder
                         .splineTo(Vector2d(20.0, -40.0), 0.0)
                         .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))

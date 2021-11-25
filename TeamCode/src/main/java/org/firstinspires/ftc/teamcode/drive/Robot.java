@@ -259,7 +259,7 @@ public class Robot extends TankDrive {
     }
 
     public void turnOffVision() {
-        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
+        webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
     }
 
