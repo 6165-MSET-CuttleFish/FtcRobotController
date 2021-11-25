@@ -372,6 +372,28 @@ public class Robot extends TankDrive {
         return false;
     }
 
+    public boolean isDoingWorkHelper(Module... modules) {
+        for (Module module : modules) {
+            if (module.isDoingWork()) {
+                return true;
+            }
+            if (module.nestedModules.length != 0) {
+                if (isDoingWorkHelper(module.nestedModules)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return Whether the robot is currently doing work
+     */
+    public boolean isDoingWork() {
+        return isDoingWorkHelper(modules);
+    }
+
     /**
      * Hold the robot in place until all hazardous actions are completed
      */
