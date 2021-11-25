@@ -42,8 +42,8 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void init() {
-        slideLeft = hardwareMap.servo.get("slideLeft");
-        slideRight = hardwareMap.servo.get("slideRight");
+        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
+        slideRight = hardwareMap.servo.get("capstoneUpperLift");
         arm.init();
         setState(State.IN);
     }

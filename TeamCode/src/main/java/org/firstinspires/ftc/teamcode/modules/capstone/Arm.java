@@ -42,7 +42,7 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public void init() {
-        arm = hardwareMap.get(ServoEx.class,"arm");
+        arm = hardwareMap.get(ServoEx.class,"capstoneArm");
         setState(State.IN);
     }
 
