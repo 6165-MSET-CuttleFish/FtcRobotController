@@ -25,7 +25,7 @@ public class Slides extends Module<Slides.State> {
         }
     }
     StateMachine<State> stateMachine;
-    Servo slideLeft, slideRight;
+    Servo slideLeft;
     Arm arm;
 
     /**
@@ -43,7 +43,6 @@ public class Slides extends Module<Slides.State> {
     @Override
     public void init() {
         slideLeft = hardwareMap.servo.get("capstoneLowerLift");
-        slideRight = hardwareMap.servo.get("capstoneUpperLift");
         arm=new Arm(hardwareMap);
         arm.init();
         setState(State.IN);
@@ -104,7 +103,7 @@ public class Slides extends Module<Slides.State> {
     public boolean isDoingWork() {
         if(slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
             return true;
-        } else return slideLeft.getPosition() != slideRight.getPosition();
+        } else return false;
     }
 
     /**
@@ -112,7 +111,6 @@ public class Slides extends Module<Slides.State> {
      */
     private void placeset(double pos){
         slideLeft.setPosition(pos);
-        slideRight.setPosition(1-pos);
     }
     @Override
     public boolean isHazardous() {
