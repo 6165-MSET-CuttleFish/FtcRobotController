@@ -23,8 +23,8 @@ public class Intake extends Module<Intake.State> {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
         OUT(0),
-        TRANSIT_IN(0.8),
-        TRANSFER(0.5),
+        TRANSIT_IN(0.7),
+        TRANSFER(0.45),
         IN(0);
         final double time;
         State(double time){
@@ -54,9 +54,13 @@ public class Intake extends Module<Intake.State> {
 
     public void setPower(double power) {
         if ((this.power > 0 && power <= 0) || (this.power < 0 && power >= 0) || (this.power == 0 && power != 0)) {
-            if (power != 0 && !isDoingWork()) setState(State.PREP_OUT);
-            else if (isDoingWork()) setState(State.TRANSIT_IN);
-            Details.telemetry.addData("Transition Intake", getState());
+            if (power != 0 && !isDoingWork()) {
+                if (getState() == State.IN) setState(State.PREP_OUT);
+                else setState(State.TRANSIT_OUT);
+            }
+            else if (isDoingWork()) {
+                setState(State.TRANSIT_IN);
+            }
         }
         this.power = power;
     }
@@ -79,6 +83,7 @@ public class Intake extends Module<Intake.State> {
 
     @Override
     public void update() {
+        double power = this.power;
         switch(getState()){
             case PREP_OUT:
                 dropIntake();
@@ -107,17 +112,16 @@ public class Intake extends Module<Intake.State> {
                 retract();
                 break;
             case TRANSFER:
-                power = -0.8;
+                power = -1;
                 Platform.isLoaded = true;
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.IN);
-                    power = 0;
+                    this.power = power = 0;
                 }
                 break;
         }
         intake.setPower(power);
         Details.packet.put("Intake Velocity", intake.getVelocity());
-        Details.telemetry.addData("Intake State", getState());
     }
 
     private void dropIntake() {

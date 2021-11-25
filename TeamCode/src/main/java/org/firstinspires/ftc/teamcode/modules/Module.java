@@ -14,6 +14,7 @@ public abstract class Module<T> {
      * Instance of the hardwareMap passed to the constructor
      */
     public HardwareMap hardwareMap;
+    public Module[] nestedModules = {};
     private T state;
     public ElapsedTime elapsedTime = new ElapsedTime();
 

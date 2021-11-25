@@ -34,6 +34,7 @@ public abstract class ImprovedOpMode extends LinearOpMode {
         platform = deposit.platform;
         carousel = robot.carousel;
         intake = robot.intake;
+        buttonMap();
     }
 
     public void buttonMap() {

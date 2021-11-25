@@ -24,7 +24,7 @@ public class Platform extends Module<Platform.State> {
     }
     Servo dump, latch, lock;
     private final Intake intake;
-    public static boolean isLoaded;
+    public static boolean isLoaded, isUnbalanced;
 
     /**
      * Constructor which calls the 'init' function
@@ -53,6 +53,7 @@ public class Platform extends Module<Platform.State> {
     public void update() {
         switch (getState()) {
             case TRANSIT_IN:
+                isLoaded = false;
                 if (elapsedTime.seconds() > getState().time) {
                     setState(State.IDLE);
                 }
@@ -74,7 +75,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 out();
                 openLatch();
-                if (Platform.isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
+                if (isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
@@ -86,9 +87,8 @@ public class Platform extends Module<Platform.State> {
     /**
      * Extends the platform out
      */
-
     private void out() {
-        dump.setPosition(0.58);
+        dump.setPosition(isUnbalanced ? 0.54 : 0.58);
     }
 
     /**
@@ -106,7 +106,6 @@ public class Platform extends Module<Platform.State> {
 
     private void openLatch() {
         latch.setPosition(0.75);
-        isLoaded = false;
     }
 
     private void closeLatch() {

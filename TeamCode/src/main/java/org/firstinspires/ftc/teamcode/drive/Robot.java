@@ -112,7 +112,6 @@ public class Robot extends TankDrive {
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final FtcDashboard dashboard;
-    private final ElapsedTime currentTimer = new ElapsedTime();
 
 
 
@@ -215,6 +214,7 @@ public class Robot extends TankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
+            motor.setCurrentAlert(33.0 / 6, CurrentUnit.AMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -229,10 +229,10 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        Easy265.init(opMode, leftMid, rightRear);
+        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
-            Easy265.init(opMode, leftMid, rightRear, imu);
-            setLocalizer(new T265Localizer());
         }
         setPoseEstimate(robotPose);
     }
@@ -354,20 +354,7 @@ public class Robot extends TankDrive {
             telemetry.addData(motor.getDeviceName(), motor.getPower());
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
-        if (current > 30000) {
-            for (DcMotorEx motor : motors) {
-                motor.setMotorDisable();
-            }
-            currentTimer.reset();
-        } else if (currentTimer.seconds() > 0.3) {
-            for (DcMotorEx motor : motors) {
-                if (!motor.isMotorEnabled()) {
-                    motor.setMotorEnable();
-                }
-            }
-        }
         Details.packet.put("Total Motor Current", current);
-        telemetry.addData("Motor Current", current);
         Log.println(Log.INFO, "motor_current", ""+current);
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -431,7 +418,6 @@ public class Robot extends TankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        if (current > 3000) return;
         Pose2d vel = new Pose2d(
                 drivePower.getX(),
                 drivePower.getY(),
