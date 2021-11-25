@@ -74,6 +74,7 @@ public class Platform extends Module<Platform.State> {
                 out();
                 break;
             case DUMPING:
+                lock();
                 out();
                 openLatch();
                 if (isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
