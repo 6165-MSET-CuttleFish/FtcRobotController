@@ -258,7 +258,8 @@ public class Robot extends TankDrive {
             @Override
             public void onError(int errorCode) {
             }
-        });        dashboard.startCameraStream(webcam, 30);
+        });
+        dashboard.startCameraStream(webcam, 30);
     }
 
     public void setPipeline(OpenCvPipeline pipeline) {
