@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
