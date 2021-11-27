@@ -69,6 +69,7 @@ public class Detector extends OpenCvPipeline {
         double pos_2_val = Core.sumElems(pos_2).val[0] / POS_2.area() / 255;
         double pos_3_val = Core.sumElems(pos_3).val[0] / POS_3.area() / 255;
 
+        assert telemetry != null;
         telemetry.addData("Position 1 raw", (int) Core.sumElems(pos_1).val[0]);
         telemetry.addData("Position 2 raw", (int) Core.sumElems(pos_2).val[0]);
         telemetry.addData("Position 3 raw", (int) Core.sumElems(pos_3).val[0]);

@@ -24,10 +24,10 @@ import kotlin.math.cos
 object Easy265 {
 
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 1.0
+    private const val ODOMETRY_COVARIANCE = 0.2
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
-        Translation2d(-7.5 * INCH_TO_METER, 0.3 * INCH_TO_METER), Rotation2d(
+        Translation2d(-8 * INCH_TO_METER, 0.3 * INCH_TO_METER), Rotation2d(
             Math.toRadians(180.0)
         )
     )
@@ -95,12 +95,11 @@ object Easy265 {
         this.imu = imu
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
-        pitchOffset = imu.angularOrientation.thirdAngle.toDouble()
+        pitchOffset = imu.angularOrientation.secondAngle.toDouble()
         try {
             if(!Easy265::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
-                camera = T265Camera(cameraToRobot, ODOMETRY_COVARIANCE, opMode.hardwareMap.appContext
-                )
+                camera = T265Camera(cameraToRobot, ODOMETRY_COVARIANCE, opMode.hardwareMap.appContext)
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
             }
 
@@ -153,10 +152,9 @@ object Easy265 {
             val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity)
             val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity)
             val velo = (leftVelo + rightVelo / 2)
-            val pitch = imu.angularOrientation.thirdAngle.toDouble() - pitchOffset;
+            val pitch = imu.angularOrientation.secondAngle.toDouble() - pitchOffset;
             Details.telemetry?.addData("Velocity", velo)
             Details.telemetry?.addData("Pitch", pitch)
-            Details.telemetry?.update()
             camera.sendOdometry(velo * INCH_TO_METER * cos(pitch), 0.0)
         }
     }

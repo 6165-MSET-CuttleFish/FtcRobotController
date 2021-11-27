@@ -1,18 +1,14 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
-//@TeleOp
-@Disabled
 //http://192.168.43.1:8080/dash
-public class TestOpMode extends ModuleTest {
+@TeleOp
+@Disabled
+public class ModuleTestOpMode extends ModuleTest {
     Module module;
     @Override
     public void init() {
@@ -37,11 +33,11 @@ public class TestOpMode extends ModuleTest {
                 return false;
             }
         };
-
+        init(module);
     }
 
     @Override
     public void loop() {
-
+        update();
     }
 }
