@@ -14,8 +14,8 @@ public class Slides extends Module<Slides.State> {
     public enum State {
         TRANSIT_IN (0,1),
         IN(0.2,1),
-        TRANSIT_OUT(0.5, 1),
-        OUT(0.5,1);
+        TRANSIT_OUT(0.5, 0.1),
+        OUT(0.5,0.4);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -24,8 +24,9 @@ public class Slides extends Module<Slides.State> {
         }
     }
     StateMachine<State> stateMachine;
-    Servo slideLeft, slideRight;
-    Servo claw;
+    Servo slideLeft;
+    Arm arm;
+
     /**
      * Constructor which calls the 'init' function
      *
@@ -40,18 +41,17 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void init() {
-        slideLeft = hardwareMap.servo.get("slideLeft");
-        slideRight = hardwareMap.servo.get("slideRight");
-        claw=hardwareMap.servo.get("claw");
+        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
+        arm = new Arm(hardwareMap);
+        nestedModules = new Module[]{arm};
         setState(State.IN);
     }
 
-    /**
+    /**w
      * This function updates all necessary controls in a loop
      */
     @Override
     public void update() {
-        claw.setPosition(slideLeft.getPosition());
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -69,7 +69,7 @@ public class Slides extends Module<Slides.State> {
             case OUT:
                 out();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Slides.State.TRANSIT_IN);
+                    setState(State.TRANSIT_IN);
                 }
                 break;
         }
@@ -79,24 +79,24 @@ public class Slides extends Module<Slides.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     private void out() {
-        placeset(0.7);
+        placeset(0);
+        arm.hold();
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        placeset(0.95);
+        placeset(0.2);
     }
-
     public void cap(){
-        setState(Slides.State.TRANSIT_OUT);
+        setState(State.TRANSIT_OUT);
     }
     @Override
     public boolean isDoingWork() {
         if(slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
             return true;
-        } else return slideLeft.getPosition() != slideRight.getPosition();
+        } else return false;
     }
 
     /**
@@ -104,8 +104,6 @@ public class Slides extends Module<Slides.State> {
      */
     private void placeset(double pos){
         slideLeft.setPosition(pos);
-        slideRight.setPosition(1-pos);
-        claw.setPosition(pos/2);
     }
     @Override
     public boolean isHazardous() {

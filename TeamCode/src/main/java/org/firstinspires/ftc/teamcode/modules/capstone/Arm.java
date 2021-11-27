@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,9 +13,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Arm extends Module<Arm.State> {
     public enum State {
-        TRANSIT_IN (0,0.5),
+        TRANSIT_IN (0,0.2),
         IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.5),
+        TRANSIT_OUT(0.5, 0.1),
         OUT(0.5,0.1);
         final double dist;
         final double time;
@@ -25,7 +24,7 @@ public class Arm extends Module<Arm.State> {
             this.time = time;
         }
     }
-    ServoEx arm;
+    Servo arm;
 
     /**
      * Constructor which calls the 'init' function
@@ -41,16 +40,7 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public void init() {
-        arm = hardwareMap.get(ServoEx.class,"arm");
-        setState(State.IN);
-    }
-
-    /**
-     *
-     * @param theta the desired angle in RADIANS
-     */
-    public void setAngle(double theta) {
-        arm.turnToAngle(theta, AngleUnit.RADIANS);
+        arm = hardwareMap.servo.get("capstoneArm");
     }
 
     /**
@@ -63,21 +53,42 @@ public class Arm extends Module<Arm.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.IN);
                 }
+                //in();
             case IN:
+                //in();
                 break;
             case TRANSIT_OUT:
+                //in();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.OUT);
                 }
                 break;
             case OUT:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Arm.State.TRANSIT_IN);
+                    setState(State.TRANSIT_IN);
                 }
                 break;
+
         }
     }
+    private void out() {
+        arm.setPosition(0.199);
+    }
 
+    /**
+     * Return platform to rest
+     */
+    private void in() {
+        arm.setPosition(1);
+    }
+    public void pickup(){
+        setState(Arm.State.TRANSIT_OUT);
+        out();
+    }
+    public void hold(){
+        setState(Arm.State.TRANSIT_IN);
+        in();
+    }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
