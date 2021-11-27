@@ -22,6 +22,7 @@ public abstract class ModuleTest extends OpMode {
         printStates(modules);
         dashboard.sendTelemetryPacket(packet);
         packet = new TelemetryPacket();
+        telemetry.update();
     }
 
     private void printStates(Module... modules) {

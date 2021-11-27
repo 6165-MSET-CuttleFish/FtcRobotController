@@ -24,7 +24,7 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo dumpR, dumpL, latch, lock;
+    Servo dumpLeft, dumpRight, latch, lock;
     private final Intake intake;
     public static boolean isLoaded;
 
@@ -44,8 +44,8 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void init() {
-        dumpR = hardwareMap.servo.get("depositDumpR");
-        dumpL = hardwareMap.servo.get("depositDumpL");
+        dumpLeft = hardwareMap.servo.get("depositDumpL");
+        dumpRight = hardwareMap.servo.get("depositDumpR");
         latch = hardwareMap.servo.get("depositLatch");
         lock = hardwareMap.servo.get("lock");
         setState(State.IDLE);
@@ -108,8 +108,8 @@ public class Platform extends Module<Platform.State> {
      */
     private void out() {
         double position = outPosition();
-        dumpR.setPosition(position);
-        dumpL.setPosition(1 - position);
+        dumpLeft.setPosition(position);
+        dumpRight.setPosition(1 - position);
     }
 
     /**
@@ -117,8 +117,8 @@ public class Platform extends Module<Platform.State> {
      */
     private void in() {
         double position = 0.18;
-        dumpR.setPosition(position);
-        dumpL.setPosition(1 - position);
+        dumpLeft.setPosition(position);
+        dumpRight.setPosition(1 - position);
     }
     /**
      * Dumps the loaded element onto hub
