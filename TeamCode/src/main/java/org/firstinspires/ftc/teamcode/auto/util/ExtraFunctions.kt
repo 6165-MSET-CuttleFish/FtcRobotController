@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto.util
 
-import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
+import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
@@ -29,11 +29,11 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
     }
 }
 
-fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.capstoneReady(capstone: Slides): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
 }
 
-fun TrajectorySequenceBuilder.capstonePickup(capstone: Capstone): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.capstonePickup(capstone: Slides): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::pickUp)
 }
 

@@ -35,7 +35,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
-import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
+import org.firstinspires.ftc.teamcode.modules.capstone.Slides;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.Detector;
@@ -84,7 +84,7 @@ public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    private OpenCvCamera webcam;
+    private OpenCVCamera webcam;
     private Detector detector;
 
     final OpMode opMode;
@@ -95,7 +95,7 @@ public class Robot extends TankDrive {
     public Intake intake;
     public Deposit deposit;
     public Carousel carousel;
-    public Capstone capstone;
+    public Slides capstone;
 
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
@@ -205,7 +205,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
-                capstone = new Capstone(hardwareMap),
+                capstone = new Slides(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);

@@ -6,21 +6,21 @@ import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 @TeleOp
 public class TestOpModeClaw extends ModuleTest {
-    Capstone slides;
+    Capstone capstone;
 
     @Override
     public void init() {
-        slides = new Capstone(hardwareMap);
-        init(slides);
-        slides.ready();
+        capstone=new Capstone(hardwareMap, Capstone.State.PICKING_UP);
+        capstone.init();
     }
 
     @Override
     public void loop() {
         update();
         if(gamepad1.a){
-            slides.pickUp();
+           capstone.pickUp();
+        }if(gamepad1.b){
+            capstone.cap();
         }
-        telemetry.addData("Seconds", slides.elapsedTime.seconds());
     }
 }

@@ -2,74 +2,65 @@ package org.firstinspires.ftc.teamcode.modules.capstone;
 
 import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
-/**
- * Module to collect the team marker at the start of the match
- * @author Sreyash Das Sarma
- */
-public class Capstone extends Module<Capstone.State> {
+public class Capstone extends Module <Capstone.State> {
+    Slides capstoneSlides;
+    Arm capstoneArm;
     public enum State {
-        TRANSIT_IN (0,1),
-        IN(0.2,1),
-        TRANSIT_OUT(0.5, 0.1),
-        OUT(0.5,0.4);
-        final double dist;
+        PICKING_UP(0.5),
+        HOLDING(0.5),
+        CAPPING(0.5);
         final double time;
-        State(double dist,double time) {
-            this.dist = dist;
-            this.time = time;
+        State(double time) {
+            this.time=time;
         }
     }
-    StateMachine<State> stateMachine;
-    Servo slideLeft;
-    Arm arm;
 
     /**
      * Constructor which calls the 'init' function
      *
-     * @param hardwareMap instance of the hardware map provided by the OpMode
+     * @param hardwareMap  instance of the hardware map provided by the OpMode
+     * @param initialState
      */
-    public Capstone(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IN);
+    public Capstone(HardwareMap hardwareMap, Object initialState) {
+        super(hardwareMap, State.PICKING_UP);
     }
 
-    /**
-     * This function initializes all necessary hardware modules
-     */
-    @Override
     public void init() {
-        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
-        arm = new Arm(hardwareMap);
-        nestedModules = new Module[]{arm};
-        setState(State.IN);
+        capstoneSlides=new Slides(capstoneSlides.hardwareMap);
+        capstoneArm=new Arm(capstoneArm.hardwareMap);
+        capstoneArm.init();
+        capstoneSlides.init();
     }
 
-    /**w
-     * This function updates all necessary controls in a loop
-     */
     @Override
     public void update() {
         switch (getState()) {
-            case TRANSIT_IN:
+            case PICKING_UP:
+                capstoneArm.ready();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Capstone.State.IN);
+                    setState(State.HOLDING);
                 }
-            case IN:
-                in();
                 break;
-            case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(Capstone.State.OUT);
+            case HOLDING:
+                capstoneSlides.pickUp();
+                if(capstoneArm.getState()== Arm.State.TRANSIT_OUT){
+                    capstoneArm.hold();
                 }
-                out();
-                break;
-            case OUT:
-                out();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_IN);
+                    setState(State.CAPPING);
+                }
+                break;
+            case CAPPING:
+                capstoneSlides.cap();
+                if(capstoneArm.getState()== Arm.State.TRANSIT_OUT){
+                    capstoneArm.hold();
+                }
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.PICKING_UP);
                 }
                 break;
         }
@@ -78,40 +69,25 @@ public class Capstone extends Module<Capstone.State> {
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    private void out() {
-        placeset(0);
-        arm.hold();
-    }
-
-    /**
-     * Return platform to rest
-     */
-    private void in() {
-        placeset(0.2);
-    }
     public void ready(){
-        arm.ready();
+        setState(State.PICKING_UP);
     }
-
-    public void pickUp() {
-        setState(State.TRANSIT_OUT);
+    public void pickUp(){
+        setState(State.HOLDING);
     }
-
-    @Override
+    public void cap(){
+        setState(State.CAPPING);
+    }
     public boolean isDoingWork() {
-        if (slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
+        if (capstoneSlides.isDoingWork()||capstoneArm.isDoingWork()){
             return true;
-        } else return false;
+        }
+        else
+            return false;
     }
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    private void placeset(double pos){
-        slideLeft.setPosition(pos);
-    }
+
     @Override
     public boolean isHazardous() {
-        return getState() == Capstone.State.OUT || getState() == Capstone.State.TRANSIT_OUT;
+        return false;
     }
-
 }
