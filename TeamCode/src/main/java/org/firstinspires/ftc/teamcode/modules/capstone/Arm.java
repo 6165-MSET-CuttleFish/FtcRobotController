@@ -53,12 +53,9 @@ public class Arm extends Module<Arm.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.IN);
                 }
-                //in();
             case IN:
-                //in();
                 break;
             case TRANSIT_OUT:
-                //in();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.OUT);
                 }
@@ -71,15 +68,14 @@ public class Arm extends Module<Arm.State> {
 
         }
     }
-    private void out() {
+    public void out() {
         arm.setPosition(0.199);
     }
-
     /**
      * Return platform to rest
      */
     private void in() {
-        arm.setPosition(1);
+        arm.setPosition(0.8);
     }
     public void pickup(){
         setState(Arm.State.TRANSIT_OUT);

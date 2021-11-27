@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.auto.util
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.geometry.Vector2d
-import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake

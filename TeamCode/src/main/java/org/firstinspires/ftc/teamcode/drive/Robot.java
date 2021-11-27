@@ -31,8 +31,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.Detector;
@@ -47,6 +49,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,7 +83,7 @@ public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    //private OpenCvCamera webcam;
+    private OpenCvCamera webcam;
     private Detector detector;
 
     final OpMode opMode;
@@ -255,14 +261,14 @@ public class Robot extends TankDrive {
         dashboard.startCameraStream(webcam, 30);
     }
 
-  /*  public void setPipeline(OpenCvPipeline pipeline) {
+    public void setPipeline(OpenCvPipeline pipeline) {
         webcam.setPipeline(pipeline);
-    }*/
+    }
 
-   /* public void turnOffVision() {
+    public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
-    }*/
+    }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
