@@ -44,11 +44,11 @@ class CarouselRed : LinearOpMode() {
                 )
                 .capstonePickup(capstone)
                 .liftUp(deposit)
-                .waitCondition { !capstone.isDoingWork } // capstone loaded
+                .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(cycleDump().vec(), cycleDump().heading)
                 .setReversed(false)
                 .dump(deposit)
-                .waitCondition { !deposit.isDoingWork } // wait for platform to dump
+                .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                 .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
                 .waitSeconds(1.5)
@@ -78,7 +78,7 @@ class CarouselRed : LinearOpMode() {
                 .splineTo(Vector2d(20.0,-40.0), Math.toRadians(180.0).flip(blue))
                 .splineTo(Vector2d(9.0,-23.0).flip(blue), Math.toRadians(180.0).flip(blue))
                 .dump(deposit)
-                .waitCondition { !deposit.isDoingWork } // wait for platform to dump
+                .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .setReversed(false)
                 .turn(Math.toRadians(-90.0).flip(blue))
         val trajectorySequence = trajectoryBuilder

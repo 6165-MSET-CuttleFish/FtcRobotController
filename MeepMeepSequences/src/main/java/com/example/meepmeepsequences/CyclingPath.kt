@@ -30,11 +30,11 @@ class CyclingPath {
                         )
                         .capstonePickup(capstone)
                         .liftUp(deposit)
-                        .waitCondition(capstone::isDoingWork) // capstone loaded
+                        .waitWhile(capstone::isDoingWork) // capstone loaded
                         .splineTo(cycleDump().vec(), cycleDump().heading)
                         .setReversed(false)
                         .dump(deposit)
-                        .waitCondition(deposit::isDoingWork) // wait for platform to dump
+                        .waitWhile(deposit::isDoingWork) // wait for platform to dump
                         .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
                         .waitSeconds(1.5) // drop the ducky
                         .setReversed(true)
@@ -58,7 +58,7 @@ class CyclingPath {
                         )
                         .setReversed(true)
                         .splineTo(Vector2d(4.1, -34.0).flip(blue), Math.toRadians(150.0).flip(blue))
-                        .waitCondition { true } // wait for platform to dump
+                        .waitWhile { true } // wait for platform to dump
                         .setReversed(false)
                 trajectoryBuilder
                     .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))

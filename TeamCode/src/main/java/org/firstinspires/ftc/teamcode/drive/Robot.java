@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.TankDrive;
+import com.acmerobotics.roadrunner.followers.RamseteFollower;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -105,6 +106,8 @@ public class Robot extends TankDrive {
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.03,0,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
+    public static double b = 0;
+    public static double zeta = 0;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;

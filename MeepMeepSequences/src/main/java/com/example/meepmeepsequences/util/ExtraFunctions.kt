@@ -7,7 +7,7 @@ import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
-fun TrajectorySequenceBuilder.waitCondition(condition: () -> Boolean): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
     return this.waitSeconds(0.5)
 }
 
