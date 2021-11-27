@@ -121,8 +121,10 @@ public class TrajectorySequenceRunner {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
-                if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
-                    offset += time.seconds();
+                if (lastSegmentIndex >= 0) {
+                    if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
+                        offset += time.seconds();
+                    }
                 }
                 time.reset();
                 currentSegmentStartTime = now;

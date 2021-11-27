@@ -44,7 +44,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 @Autonomous(group = "drive")
-@Disabled
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 58; // in
 
@@ -119,10 +118,10 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     robot.updatePoseEstimate();
 
                     Pose2d poseVelo = Objects.requireNonNull(robot.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
-                    double currentVelo = poseVelo.getX();
+                    double currentVelo = Math.hypot(poseVelo.getX(), poseVelo.getY());
 
                     // update telemetry
-                    telemetry.addData("targetVelocity", motionState.getV());
+                    telemetry.addData("targetVelocity", Math.abs(motionState.getV()));
                     telemetry.addData("measuredVelocity", currentVelo);
                     telemetry.addData("error", motionState.getV() - currentVelo);
                     break;
@@ -137,7 +136,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     robot.setWeightedDrivePower(
                             new Pose2d(
                                     -gamepad1.left_stick_y,
-                                    -gamepad1.left_stick_x,
+                                    -0,
                                     -gamepad1.right_stick_x
                             )
                     );

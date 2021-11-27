@@ -88,6 +88,7 @@ public class DriverPractice extends LinearOpMode {
                     defaultDepositState = Deposit.State.LEVEL2;
                     break;
             }
+            deposit.setState(defaultDepositState);
         } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
@@ -97,9 +98,8 @@ public class DriverPractice extends LinearOpMode {
                     defaultDepositState = Deposit.State.IDLE;
                     break;
             }
+            deposit.setState(defaultDepositState);
         }
-
-        deposit.setState(defaultDepositState);
 
         if (dumpButton.wasJustPressed()) {
             deposit.platform.dump();
