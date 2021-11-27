@@ -35,6 +35,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.Detector;

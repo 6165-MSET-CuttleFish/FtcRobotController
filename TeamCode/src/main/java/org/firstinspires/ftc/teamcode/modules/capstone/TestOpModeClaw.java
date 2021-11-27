@@ -12,14 +12,14 @@ public class TestOpModeClaw extends ModuleTest {
     public void init() {
         slides = new Capstone(hardwareMap);
         init(slides);
-        slides.arm.pickup();
+        slides.ready();
     }
 
     @Override
     public void loop() {
         update();
         if(gamepad1.a){
-            slides.cap();
+            slides.pickUp();
         }
         telemetry.addData("Seconds", slides.elapsedTime.seconds());
     }
