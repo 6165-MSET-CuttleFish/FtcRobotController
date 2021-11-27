@@ -14,9 +14,8 @@ public class Slides extends Module<Slides.State> {
     public enum State {
         TRANSIT_IN (0,1),
         IN(0.2,1),
-        TRANSIT_OUT(0.5, 1),
-        OUT(0.5,1),
-        IDLE(0,1);
+        TRANSIT_OUT(0.5, 0.1),
+        OUT(0.5,0.4);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -43,8 +42,8 @@ public class Slides extends Module<Slides.State> {
     @Override
     public void init() {
         slideLeft = hardwareMap.servo.get("capstoneLowerLift");
-        arm=new Arm(hardwareMap);
-        arm.init();
+        arm = new Arm(hardwareMap);
+        nestedModules = new Module[]{arm};
         setState(State.IN);
     }
 
@@ -53,7 +52,6 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void update() {
-        arm.update();
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -71,12 +69,6 @@ public class Slides extends Module<Slides.State> {
             case OUT:
                 out();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.IDLE);
-                }
-              //  arm.cap();
-                break;
-            case IDLE:
-                if (elapsedTime.seconds() > getState().time) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
@@ -88,13 +80,14 @@ public class Slides extends Module<Slides.State> {
      */
     private void out() {
         placeset(0);
+        arm.hold();
     }
 
     /**
      * Return platform to rest
      */
     private void in() {
-        placeset(0.8);
+        placeset(0.2);
     }
     public void cap(){
         setState(State.TRANSIT_OUT);

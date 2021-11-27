@@ -13,11 +13,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Arm extends Module<Arm.State> {
     public enum State {
-        TRANSIT_IN (0,0.5),
+        TRANSIT_IN (0,0.2),
         IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.5),
-        OUT(0.5,0.1),
-        IDLE(0,0);
+        TRANSIT_OUT(0.5, 0.1),
+        OUT(0.5,0.1);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -42,7 +41,6 @@ public class Arm extends Module<Arm.State> {
     @Override
     public void init() {
         arm = hardwareMap.servo.get("capstoneArm");
-        setState(State.IN);
     }
 
     /**
@@ -55,30 +53,26 @@ public class Arm extends Module<Arm.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.IN);
                 }
-                in();
+                //in();
             case IN:
-                in();
+                //in();
                 break;
             case TRANSIT_OUT:
-                out();
+                //in();
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Arm.State.OUT);
                 }
                 break;
             case OUT:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(Arm.State.IDLE);
+                    setState(State.TRANSIT_IN);
                 }
                 break;
-            case IDLE:
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(Arm.State.TRANSIT_IN);
-                }
-                break;
+
         }
     }
     private void out() {
-        arm.setPosition(0.2);
+        arm.setPosition(0.199);
     }
 
     /**
@@ -87,8 +81,13 @@ public class Arm extends Module<Arm.State> {
     private void in() {
         arm.setPosition(1);
     }
-    public void cap(){
+    public void pickup(){
         setState(Arm.State.TRANSIT_OUT);
+        out();
+    }
+    public void hold(){
+        setState(Arm.State.TRANSIT_IN);
+        in();
     }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
