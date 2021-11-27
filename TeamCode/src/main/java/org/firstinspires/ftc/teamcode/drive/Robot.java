@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
@@ -85,7 +86,7 @@ public class Robot extends TankDrive {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
-    private Detector detector;
+    private final Detector detector = new Detector();
 
     final OpMode opMode;
     final HardwareMap hardwareMap;
@@ -111,8 +112,6 @@ public class Robot extends TankDrive {
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final FtcDashboard dashboard;
-
-
 
     public static Pose2d flipSide(Pose2d pose2d) {
         return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
@@ -229,10 +228,8 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        if (opModeType == OpModeType.AUTO) {
-            Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-            setLocalizer(new T265Localizer());
-        }
+        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
@@ -251,7 +248,7 @@ public class Robot extends TankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(detector = new Detector());
+        webcam.setPipeline(detector);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
