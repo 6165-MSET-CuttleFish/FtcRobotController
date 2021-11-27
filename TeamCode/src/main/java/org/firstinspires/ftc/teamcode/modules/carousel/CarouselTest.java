@@ -16,10 +16,10 @@ public class CarouselTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             carousel.update();
-            if (gamepad1.b) {
+            if (gamepad1.a) {
                 carousel.on();
             }
-            if (gamepad1.a) {
+            if (gamepad1.b) {
                 carousel.off();
             }
             Details.packet = new TelemetryPacket();

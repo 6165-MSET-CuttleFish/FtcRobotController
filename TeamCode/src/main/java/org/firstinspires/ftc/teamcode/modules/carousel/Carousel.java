@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 
 /**
  * Mechanism at the back of the robot to deposit freight
@@ -38,8 +41,9 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     public void on() {
-        duckyR.setPower(0.8);
-        duckyL.setPower(0.8);
+        double power = opModeType == OpModeType.AUTO ? 0.8 : 1;
+        duckyR.setPower(power);
+        duckyL.setPower(power);
         setState(State.ON);
     }
 
