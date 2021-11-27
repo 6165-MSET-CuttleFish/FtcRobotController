@@ -29,9 +29,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
@@ -47,6 +51,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,7 +85,7 @@ public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    //private OpenCvCamera webcam;
+    private OpenCvCamera webcam;
     private Detector detector;
 
     final OpMode opMode;
@@ -90,7 +98,7 @@ public class Robot extends TankDrive {
     public Carousel carousel;
     public Capstone capstone;
 
-    private BNO055IMU imu;
+    private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
@@ -198,6 +206,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
+                capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -221,8 +230,8 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        //Easy265.init(opMode, leftMid, rightRear, imu);
-       //    setLocalizer(new T265Localizer());
+        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
@@ -238,22 +247,30 @@ public class Robot extends TankDrive {
                         "id",
                         hardwareMap.appContext.getPackageName()
                 );
-       /* webcam = OpenCvCameraFactory
+        webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-       // webcam.setPipeline(detector = new Detector());
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
-        dashboard.startCameraStream(webcam, 30);*/
+        webcam.setPipeline(detector = new Detector());
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
+        dashboard.startCameraStream(webcam, 30);
     }
 
-  /*  public void setPipeline(OpenCvPipeline pipeline) {
+    public void setPipeline(OpenCvPipeline pipeline) {
         webcam.setPipeline(pipeline);
-    }*/
+    }
 
-   /* public void turnOffVision() {
+    public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
-    }*/
+    }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
@@ -330,8 +347,6 @@ public class Robot extends TankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    public boolean intakeReq = false;
-
     double current;
 
     public void update() {
@@ -343,7 +358,6 @@ public class Robot extends TankDrive {
             module.update();
         }
         for (DcMotorEx motor : motors) {
-            telemetry.addData(motor.getDeviceName(), motor.getPower());
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         Details.packet.put("Total Motor Current", current);
@@ -364,6 +378,28 @@ public class Robot extends TankDrive {
      */
     public boolean isHazardous() {
         return false;
+    }
+
+    public boolean isDoingWorkHelper(Module... modules) {
+        for (Module module : modules) {
+            if (module.isDoingWork()) {
+                return true;
+            }
+            if (module.nestedModules.length != 0) {
+                if (isDoingWorkHelper(module.nestedModules)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return Whether the robot is currently doing work
+     */
+    public boolean isDoingWork() {
+        return isDoingWorkHelper(modules);
     }
 
     /**
@@ -441,7 +477,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return Arrays.asList(leftSum, rightSum);
     }
 
     public List<Double> getWheelVelocities() {
@@ -452,7 +488,7 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        return Arrays.asList(leftSum, rightSum);
     }
 
     @Override
@@ -463,11 +499,6 @@ public class Robot extends TankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);
         }
-    }
-
-    public void correctHeading() {
-        Pose2d currPose = getPoseEstimate();
-        setPoseEstimate(new Pose2d(currPose.getX(), currPose.getY(), getExternalHeading()));
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
