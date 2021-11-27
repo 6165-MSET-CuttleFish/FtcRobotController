@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.tuning.TuningController;
 @TeleOp
 public class LiftTest extends ModuleTest {
     Deposit deposit;
-    TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 1);
+    TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
     @Override
     public void init() {
         deposit = new Deposit(hardwareMap, new Intake(hardwareMap));

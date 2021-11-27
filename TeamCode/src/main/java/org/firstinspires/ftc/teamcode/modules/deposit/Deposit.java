@@ -41,7 +41,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1.6,0,0.017);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(2,0,0.035);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -106,14 +106,7 @@ public class Deposit extends Module<Deposit.State> {
             if (elapsedTime.seconds() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                slides.setPower(0);
-                Details.packet.put("Target Height", getState().dist);
-                Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
-                Details.packet.put("Lift Power", power);
-                Details.packet.put("Elapsed Time", elapsedTime.seconds());
-                Details.packet.put("Lift Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
-                Details.packet.put("Lift Velocity", slides.getVelocity());
-                return;
+                power = 0;
             }
         }
         slides.setPower(power);
