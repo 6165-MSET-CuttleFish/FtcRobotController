@@ -206,6 +206,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
+                capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -229,7 +230,7 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.init(opMode, leftMid, rightRear, imu);
+        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
         setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
@@ -357,7 +358,6 @@ public class Robot extends TankDrive {
             module.update();
         }
         for (DcMotorEx motor : motors) {
-            telemetry.addData(motor.getDeviceName(), motor.getPower());
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         Details.packet.put("Total Motor Current", current);

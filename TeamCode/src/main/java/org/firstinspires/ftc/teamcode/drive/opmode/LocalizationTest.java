@@ -33,12 +33,10 @@ public class LocalizationTest extends LinearOpMode {
             );
 
             robot.update();
-
-            Pose2d poseEstimate = robot.getPoseEstimate();
 //            telemetry.addData("x", poseEstimate.getX());
 //            telemetry.addData("y", poseEstimate.getY());
 //            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-//            telemetry.update();
+            telemetry.update();
         }
     }
 }
