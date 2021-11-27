@@ -89,17 +89,19 @@ public class Capstone extends Module<Capstone.State> {
     private void in() {
         placeset(0.2);
     }
-    public void cap(){
+    public void ready(){
+        arm.ready();
+    }
+
+    public void pickUp() {
         setState(State.TRANSIT_OUT);
     }
+
     @Override
     public boolean isDoingWork() {
-        if(slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
+        if (slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
             return true;
         } else return false;
-    }
-    public void ready(){
-        arm.out();
     }
     /**
      * @return Whether the module is currently in a hazardous state

@@ -68,6 +68,7 @@ public class Arm extends Module<Arm.State> {
 
         }
     }
+
     public void out() {
         arm.setPosition(0.199);
     }
@@ -77,7 +78,8 @@ public class Arm extends Module<Arm.State> {
     private void in() {
         arm.setPosition(0.8);
     }
-    public void pickup(){
+
+    public void ready(){
         setState(Arm.State.TRANSIT_OUT);
         out();
     }
