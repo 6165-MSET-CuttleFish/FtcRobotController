@@ -47,7 +47,7 @@ public class DriverPractice extends LinearOpMode {
                 levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                dumpButton = new ButtonReader(secondary, GamepadKeys.Button.A),
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
         waitForStart();
         while (opModeIsActive()) {
@@ -65,6 +65,10 @@ public class DriverPractice extends LinearOpMode {
             setIntake();
             setDeposit();
             setCarousel();
+            telemetry.addData("Intake State", intake.getState());
+            telemetry.addData("Platform State", deposit.platform.getState());
+            telemetry.addData("Deposit State", deposit.getState());
+            telemetry.update();
         }
     }
 
@@ -102,15 +106,15 @@ public class DriverPractice extends LinearOpMode {
         }
 
         if (dumpButton.wasJustPressed()) {
-            deposit.platform.dump();
+            deposit.dump();
         }
     }
 
     void setCarousel() {
         if(carouselButton.getState()) {
-           carousel.on();
+           // carousel.on();
         } else {
-           carousel.off();
+           // carousel.off();
         }
     }
 }

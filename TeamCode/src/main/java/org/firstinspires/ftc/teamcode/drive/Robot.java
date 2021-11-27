@@ -229,8 +229,10 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+        if (opModeType == OpModeType.AUTO) {
+            Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+            setLocalizer(new T265Localizer());
+        }
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
@@ -360,7 +362,6 @@ public class Robot extends TankDrive {
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         Details.packet.put("Total Motor Current", current);
-        Log.println(Log.INFO, "motor_current", ""+current);
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
