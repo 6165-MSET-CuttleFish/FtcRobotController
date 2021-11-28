@@ -56,13 +56,16 @@ object Easy265 {
      * Returns null if update() hasn't been called or the camera hasn't been started
      * The pose is only sent to the camera if it isn't null and the camera has been started.
      */
+    @JvmStatic var poseHasBeenSet = false
+
     @JvmStatic var lastPose
         //set and get are in inches
         set(value) {
             while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
                 update()
             }
-            if(value != null && isStarted) {
+            if(value != null && isStarted && !poseHasBeenSet) {
+                poseHasBeenSet = true
                 camera.setPose(value.toFTCLibPose2d().toMeters())
             }
         }

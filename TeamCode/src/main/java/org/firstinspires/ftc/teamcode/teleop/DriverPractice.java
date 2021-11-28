@@ -65,10 +65,6 @@ public class DriverPractice extends LinearOpMode {
             setIntake();
             setDeposit();
             setCarousel();
-            telemetry.addData("Intake State", intake.getState());
-            telemetry.addData("Platform State", deposit.platform.getState());
-            telemetry.addData("Deposit State", deposit.getState());
-            telemetry.update();
         }
     }
 

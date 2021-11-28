@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
@@ -30,6 +31,11 @@ public class DepositTest extends ModuleTest {
 
     @Override
     public void loop() {
+        assert Details.telemetry != null;
+        telemetry.addData("isLoaded", Platform.isLoaded);
+        telemetry.addData("balance", balance);
+        telemetry.addData("LB", tippedAway.getState());
+        telemetry.addData("RB", tippedToward.getState());
         update();
         tippedToward.readValue();
         tippedAway.readValue();
@@ -46,14 +52,12 @@ public class DepositTest extends ModuleTest {
         if (gamepad1.a) {
             deposit.dump();
         }
-        if (tippedAway.getState() == tippedToward.getState()) {
+        if (tippedAway.isDown() && tippedToward.isDown()) {
             balance = Balance.BALANCED;
-        } else if (tippedAway.getState()) {
+        } else if (tippedAway.isDown()) {
             balance = Balance.AWAY;
-        } else if (tippedToward.getState()) {
+        } else if (tippedToward.isDown()) {
             balance = Balance.TOWARD;
         }
-        telemetry.addData("isLoaded", Platform.isLoaded);
-        telemetry.addData("isUnbalanced", balance);
     }
 }

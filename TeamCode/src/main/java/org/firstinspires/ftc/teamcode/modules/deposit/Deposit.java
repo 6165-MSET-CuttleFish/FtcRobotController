@@ -124,7 +124,6 @@ public class Deposit extends Module<Deposit.State> {
         Details.packet.put("Target Height", getState().dist);
         Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
         Details.packet.put("Lift Power", power);
-        Details.packet.put("Elapsed Time", elapsedTime.seconds());
         Details.packet.put("Lift Current", slides.getCurrent(CurrentUnit.MILLIAMPS));
         Details.packet.put("Lift Velocity", slides.getVelocity());
     }
