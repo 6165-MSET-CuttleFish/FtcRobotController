@@ -52,6 +52,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
+import org.firstinspires.ftc.teamcode.util.opmode.ImprovedRamsete;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -107,10 +108,8 @@ public class Robot extends TankDrive {
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0.1);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.09,0,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
-    public static double b = 0.03;
-    private static double lastB = b;
-    public static double zeta = 0;
-    private static double lastZeta = zeta;
+    public static double b = 0.035;
+    public static double zeta = 0.6;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -191,6 +190,7 @@ public class Robot extends TankDrive {
         Details.telemetry = telemetry;
         TrajectoryFollower follower = new RamseteFollower(b, zeta,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -377,13 +377,6 @@ public class Robot extends TankDrive {
             if (current <= 3000) currentTimer.reset();
         }
         current = 0;
-//        if (b != lastB && zeta != lastZeta) {
-//            TrajectoryFollower follower = new RamseteFollower(b, zeta,
-//                    new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-//            lastB = b;
-//            lastZeta = zeta;
-//            trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-//        }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
