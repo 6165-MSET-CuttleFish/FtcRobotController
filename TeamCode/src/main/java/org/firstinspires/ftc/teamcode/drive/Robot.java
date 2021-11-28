@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -9,7 +7,6 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
-import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -52,7 +49,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
-import org.firstinspires.ftc.teamcode.util.opmode.ImprovedRamsete;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedRamsete;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -61,7 +58,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
@@ -234,8 +230,8 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-//        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-//        setLocalizer(new T265Localizer());
+        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
         }
