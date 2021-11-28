@@ -18,7 +18,7 @@ public class Platform extends Module<Platform.State> {
         IDLE(0.5),
         TRANSIT_OUT(0.08),
         OUT(0),
-        DUMPING(0.3);
+        DUMPING(0.35);
         final double time;
         State(double time) {
             this.time = time;
@@ -97,8 +97,8 @@ public class Platform extends Module<Platform.State> {
         switch (balance) {
             case BALANCED:
             case TOWARD:
-                return 0.58;
-            case AWAY: return 0.54;
+                return 0.60;
+            case AWAY: return 0.58;
         }
         return 0.58;
     }

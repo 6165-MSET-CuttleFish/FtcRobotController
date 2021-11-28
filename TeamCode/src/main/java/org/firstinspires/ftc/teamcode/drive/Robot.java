@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -9,7 +7,6 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
-import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -30,6 +27,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -51,6 +49,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.util.field.Side;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedRamsete;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -59,7 +58,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
@@ -103,11 +101,11 @@ public class Robot extends TankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
-    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0);
-    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.03,0,0);
+    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0.1);
+    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.09,0,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
-    public static double b = 0;
-    public static double zeta = 0;
+    public static double b = 0.035;
+    public static double zeta = 0.6;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -186,8 +184,9 @@ public class Robot extends TankDrive {
         telemetry = opMode.telemetry;
         dashboard.setTelemetryTransmissionInterval(25);
         Details.telemetry = telemetry;
-        TrajectoryFollower follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID,
+        TrajectoryFollower follower = new RamseteFollower(b, zeta,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -216,7 +215,6 @@ public class Robot extends TankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
-            motor.setCurrentAlert(33.0 / 6, CurrentUnit.AMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -327,7 +325,8 @@ public class Robot extends TankDrive {
         trajectorySequenceRunner.followTrajectorySequenceAsync(
                 trajectorySequenceBuilder(trajectory.start())
                         .addTrajectory(trajectory)
-                        .build());
+                        .build()
+        );
     }
 
     public void followTrajectory(Trajectory trajectory) {
@@ -349,6 +348,9 @@ public class Robot extends TankDrive {
     }
 
     double current;
+    boolean isRobotDisabled;
+    ElapsedTime currentTimer = new ElapsedTime();
+    ElapsedTime cooldown = new ElapsedTime();
 
     public void update() {
         updatePoseEstimate();
@@ -362,6 +364,13 @@ public class Robot extends TankDrive {
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         Details.packet.put("Total Motor Current", current);
+        if (current > 30000 && currentTimer.seconds() > 0.9) {
+            isRobotDisabled = true;
+            cooldown.reset();
+        } else {
+            if (cooldown.seconds() > 1) isRobotDisabled = false;
+            if (current <= 3000) currentTimer.reset();
+        }
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -447,22 +456,19 @@ public class Robot extends TankDrive {
 
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = new Pose2d(
-                drivePower.getX(),
-                drivePower.getY(),
-                drivePower.getHeading() * 2
+                isRobotDisabled ? 0 : drivePower.getX(),
+                isRobotDisabled ? 0 : drivePower.getY(),
+                isRobotDisabled ? 0 : drivePower.getHeading() * 2
         );
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
-
             vel = new Pose2d(
                     VX_WEIGHT * drivePower.getX(),
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
-            telemetry.addData("denom", denom);
-            telemetry.addData("VX", VX_WEIGHT * Math.abs(drivePower.getX()));
         }
         setDrivePower(vel);
     }

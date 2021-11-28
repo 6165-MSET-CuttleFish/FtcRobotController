@@ -52,7 +52,7 @@ public class Intake extends Module<Intake.State> {
         if ((this.power > 0 && power <= 0) || (this.power < 0 && power >= 0) || (this.power == 0 && power != 0)) {
             if (power != 0 && !isDoingWork()) {
                 if (getState() == State.IN) setState(State.PREP_OUT);
-                else setState(State.TRANSIT_OUT);
+                else setState(State.PREP_OUT);
             }
             else if (isDoingWork()) {
                 setState(State.TRANSIT_IN);
@@ -66,7 +66,7 @@ public class Intake extends Module<Intake.State> {
      */
 
     public boolean isDoingWork() {
-        return getState() != State.IN;
+        return getState() != State.IN && getState() != State.TRANSIT_IN;
     }
 
     /**

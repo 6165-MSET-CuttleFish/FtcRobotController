@@ -23,7 +23,7 @@ import kotlin.math.cos
 @Suppress("UNUSED")
 object Easy265 {
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 0.2
+    private const val ODOMETRY_COVARIANCE = 0.1
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
         Translation2d(-7.24 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
@@ -56,13 +56,16 @@ object Easy265 {
      * Returns null if update() hasn't been called or the camera hasn't been started
      * The pose is only sent to the camera if it isn't null and the camera has been started.
      */
+    @JvmStatic var poseHasBeenSet = false
+
     @JvmStatic var lastPose
         //set and get are in inches
         set(value) {
             while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
                 update()
             }
-            if(value != null && isStarted) {
+            if(value != null && isStarted && !poseHasBeenSet) {
+                poseHasBeenSet = true
                 camera.setPose(value.toFTCLibPose2d().toMeters())
             }
         }
