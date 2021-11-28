@@ -14,7 +14,10 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 
 @TeleOp
 public class DriverPractice extends LinearOpMode {
@@ -27,7 +30,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton, tippedToward, tippedAway;
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -46,6 +49,8 @@ public class DriverPractice extends LinearOpMode {
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
+                tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
+                tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
@@ -60,11 +65,18 @@ public class DriverPractice extends LinearOpMode {
                     0,
                     -gamepad1.right_stick_x
             );
-            if (ninjaMode.isDown()) drivePower = drivePower.div(2);
+            if (ninjaMode.isDown()) drivePower = drivePower.div(3);
             robot.setWeightedDrivePower(drivePower);
             setIntake();
             setDeposit();
             setCarousel();
+            if (tippedAway.isDown() && tippedToward.isDown()) {
+                balance = Balance.BALANCED;
+            } else if (tippedAway.isDown()) {
+                balance = Balance.AWAY;
+            } else if (tippedToward.isDown()) {
+                balance = Balance.TOWARD;
+            }
         }
     }
 
