@@ -39,14 +39,12 @@ public class Intake extends Module<Intake.State> {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         outR = hardwareMap.get(Servo.class, "outR");
         outL = hardwareMap.get(Servo.class, "outL");
-        flipR = hardwareMap.get(Servo.class, "flipL");
-        flipL = hardwareMap.get(Servo.class, "flipR");
+        flipR = hardwareMap.get(Servo.class, "flipR");
+        flipL = hardwareMap.get(Servo.class, "flipL");
         blockSensor = hardwareMap.get(ColorRangeSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         slidesIn();
-        flipL.setDirection(Servo.Direction.REVERSE);
-        flipR.setDirection(Servo.Direction.REVERSE);
         raiseIntake();
     }
 
@@ -68,7 +66,7 @@ public class Intake extends Module<Intake.State> {
      */
 
     public boolean isDoingWork() {
-        return getState() == State.TRANSIT_OUT || getState() == State.OUT || getState() == State.PREP_OUT;
+        return getState() != State.IN;
     }
 
     /**

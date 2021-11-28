@@ -121,8 +121,10 @@ public class TrajectorySequenceRunner {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
-                if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
-                    offset += time.seconds();
+                if (lastSegmentIndex >= 0) {
+                    if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
+                        offset += time.seconds();
+                    }
                 }
                 time.reset();
                 currentSegmentStartTime = now;
@@ -205,7 +207,7 @@ public class TrajectorySequenceRunner {
 
                 targetPose = currentSegment.getStartPose();
                 driveSignal = new DriveSignal();
-                if (((ConditionalWait) currentSegment).getCondition().invoke()) {
+                if (!((ConditionalWait) currentSegment).getCondition().invoke()) {
                     offset += time.seconds();
                     time.reset();
                     currentSegmentIndex++;

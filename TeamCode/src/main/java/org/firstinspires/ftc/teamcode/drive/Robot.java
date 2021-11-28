@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.TankDrive;
+import com.acmerobotics.roadrunner.followers.RamseteFollower;
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -35,7 +36,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
-import org.firstinspires.ftc.teamcode.modules.capstone.Slides;
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.Detector;
@@ -58,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
@@ -84,8 +86,8 @@ public class Robot extends TankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-    private OpenCVCamera webcam;
-    private Detector detector;
+    private OpenCvCamera webcam;
+    private final Detector detector = new Detector();
 
     final OpMode opMode;
     final HardwareMap hardwareMap;
@@ -95,24 +97,24 @@ public class Robot extends TankDrive {
     public Intake intake;
     public Deposit deposit;
     public Carousel carousel;
-    public Slides capstone;
+    public Capstone capstone;
 
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
-    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0);
+    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.03,0,0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
+    public static double b = 0;
+    public static double zeta = 0;
 
     public static double VX_WEIGHT = 1;
-    public static double OMEGA_WEIGHT = 5;
+    public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final FtcDashboard dashboard;
-
-
 
     public static Pose2d flipSide(Pose2d pose2d) {
         return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
@@ -205,7 +207,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
-                capstone = new Slides(hardwareMap),
+                capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -249,7 +251,7 @@ public class Robot extends TankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(detector = new Detector());
+        webcam.setPipeline(detector);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -360,7 +362,6 @@ public class Robot extends TankDrive {
             current += motor.getCurrent(CurrentUnit.MILLIAMPS);
         }
         Details.packet.put("Total Motor Current", current);
-        Log.println(Log.INFO, "motor_current", ""+current);
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);

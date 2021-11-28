@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.util.opmode.ImprovedOpMode;
 
 @TeleOp
+@Disabled
 public class BetterDriverPractice extends ImprovedOpMode {
 
     @Override

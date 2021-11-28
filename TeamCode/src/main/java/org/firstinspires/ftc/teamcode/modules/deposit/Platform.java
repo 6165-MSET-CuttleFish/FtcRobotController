@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
  */
 public class Platform extends Module<Platform.State> {
     public enum State {
-        TRANSIT_IN (0.4),
+        TRANSIT_IN (0.3),
         IDLE(0.5),
         TRANSIT_OUT(0.08),
         OUT(0),
@@ -66,7 +66,7 @@ public class Platform extends Module<Platform.State> {
                 closeLatch();
                 unlock();
                 in();
-                if(intake.getState() == Intake.State.IN && isLoaded)
+                if(!intake.isDoingWork() && isLoaded)
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
@@ -116,7 +116,7 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void in() {
-        double position = 0.18;
+        double position = 0.24;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(1 - position);
     }
@@ -140,7 +140,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void unlock() {
-        lock.setPosition(0.71);
+        lock.setPosition(0.36);
     }
 
     /**
@@ -156,6 +156,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.DUMPING || getState() == State.OUT;
+        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN;
     }
 }

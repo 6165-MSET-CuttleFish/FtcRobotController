@@ -11,7 +11,10 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
+import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.util.flip
 import kotlin.Throws
 
@@ -24,11 +27,13 @@ class CarouselRed : LinearOpMode() {
     lateinit var carousel: Carousel
     @Throws(InterruptedException::class)
     override fun runOpMode() {
-        robot = Robot(this, OpModeType.AUTO)
+        robot = Robot(this, OpModeType.AUTO, Alliance.RED)
         intake = robot.intake
+        capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
         val blue = false
+        side = Side.CAROUSEL
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
@@ -39,11 +44,11 @@ class CarouselRed : LinearOpMode() {
                 )
                 .capstonePickup(capstone)
                 .liftUp(deposit)
-                .waitCondition { !capstone.isDoingWork } // capstone loaded
+                .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(cycleDump().vec(), cycleDump().heading)
                 .setReversed(false)
                 .dump(deposit)
-                .waitCondition { !deposit.isDoingWork } // wait for platform to dump
+                .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                 .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
                 .waitSeconds(1.5)
@@ -59,21 +64,21 @@ class CarouselRed : LinearOpMode() {
                 .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                     intake.setPower(1.0)
                 }
-                .splineTo(Vector2d(20.0, -40.0), 0.0)
+                .splineTo(Vector2d(20.0,-40.0), 0.0)
                 .splineTo(
-                    Vector2d(39.0, -50.0).plus(
+                    Vector2d(39.0,-50.0).plus(
                         Vector2d(
                             5 * Math.random(),
-                            5 * Math.random()
+                            5 * Math.random(),
                         )
                     ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
                 )
                 .setReversed(true)
                 .intakeOff(intake)
-                .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
-                .splineTo(Vector2d(9.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(20.0,-40.0), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(9.0,-23.0).flip(blue), Math.toRadians(180.0).flip(blue))
                 .dump(deposit)
-                .waitCondition { !deposit.isDoingWork } // wait for platform to dump
+                .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .setReversed(false)
                 .turn(Math.toRadians(-90.0).flip(blue))
         val trajectorySequence = trajectoryBuilder

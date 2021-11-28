@@ -13,7 +13,9 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.ConditionalWait;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TurnSegment;
@@ -46,6 +48,8 @@ public class TrajectorySequenceRunner {
     private final PIDFController turnController;
 
     private final NanoClock clock;
+    private double offset;
+    private ElapsedTime time = new ElapsedTime();
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
@@ -169,6 +173,15 @@ public class TrajectorySequenceRunner {
                 driveSignal = new DriveSignal();
 
                 if (deltaTime >= currentSegment.getDuration()) {
+                    currentSegmentIndex++;
+                }
+            } else if (currentSegment instanceof ConditionalWait) {
+                lastPoseError = new Pose2d();
+                targetPose = currentSegment.getStartPose();
+                driveSignal = new DriveSignal();
+                if (((ConditionalWait) currentSegment).getCondition().invoke()) {
+                    offset += time.seconds();
+                    time.reset();
                     currentSegmentIndex++;
                 }
             }
