@@ -90,7 +90,7 @@ public class Slides extends Module<Slides.State> {
         setState(State.TRANSIT_OUT);
     }
 
-    public void cap() {
+    public void dropDown() {
         setState(State.TRANSIT_IN);
     }
 

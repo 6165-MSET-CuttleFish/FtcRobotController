@@ -1,22 +1,16 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
-import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 public class Capstone extends Module <Capstone.State> {
     Slides capstoneSlides;
     Arm capstoneArm;
     public enum State {
-        PICKING_UP(0.5),
-        HOLDING(0.5),
-        CAPPING(0.5);
-        final double time;
-        State(double time) {
-            this.time=time;
-        }
+        PICKING_UP,
+        HOLDING,
+        CAPPING;
     }
 
     /**
@@ -25,7 +19,7 @@ public class Capstone extends Module <Capstone.State> {
      * @param hardwareMap  instance of the hardware map provided by the OpMode
      * @param initialState
      */
-    public Capstone(HardwareMap hardwareMap, Object initialState) {
+    public Capstone(HardwareMap hardwareMap) {
         super(hardwareMap, State.PICKING_UP);
     }
 
@@ -38,29 +32,46 @@ public class Capstone extends Module <Capstone.State> {
 
     @Override
     public void update() {
+        capstoneArm.update();
+        capstoneSlides.update();
         switch (getState()) {
             case PICKING_UP:
-                capstoneArm.ready();
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.HOLDING);
+                switch (capstoneArm.getState()) {
+                    case OUT:
+                        capstoneSlides.pickUp();
+                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                            capstoneArm.hold();
+                        }
+                        break;
+                    case TRANSIT_IN:
+                        break;
+                    case IN:
+                        capstoneSlides.dropDown();
+                        if (capstoneSlides.getState() == Slides.State.IN) {
+                            setState(State.HOLDING);
+                        }
                 }
                 break;
             case HOLDING:
-                capstoneSlides.pickUp();
-                if(capstoneArm.getState()== Arm.State.TRANSIT_OUT){
-                    capstoneArm.hold();
-                }
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.CAPPING);
-                }
+                //TODO: Implement
                 break;
             case CAPPING:
-                capstoneSlides.cap();
-                if(capstoneArm.getState()== Arm.State.TRANSIT_OUT){
-                    capstoneArm.hold();
-                }
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.PICKING_UP);
+                //TODO
+                switch (capstoneArm.getState()) {
+                    case OUT:
+                        capstoneSlides.pickUp();
+                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                            capstoneArm.ready();
+                        }
+                        break;
+                    case TRANSIT_IN:
+                        break;
+                    case IN:
+                        capstoneSlides.dropDown();
+                        if (capstoneSlides.getState() == Slides.State.IN) {
+                            setState(State.HOLDING);
+                        }
+                        capstoneArm.hold();
                 }
                 break;
         }
