@@ -111,7 +111,7 @@ public class Robot extends TankDrive {
     public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
-    private TrajectorySequenceRunner trajectorySequenceRunner;
+    private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final FtcDashboard dashboard;
 
     public static Pose2d flipSide(Pose2d pose2d) {
@@ -215,7 +215,6 @@ public class Robot extends TankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
-            // motor.setCurrentAlert(33.0 / 6, CurrentUnit.AMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
