@@ -360,16 +360,14 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
-        for (DcMotorEx motor : motors) {
-            current += motor.getCurrent(CurrentUnit.MILLIAMPS);
-        }
+        current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Total Motor Current", current);
-        if (current > 30000 && currentTimer.seconds() > 0.9) {
+        if (current > 5000 && currentTimer.seconds() > 0.9) {
             isRobotDisabled = true;
             cooldown.reset();
         } else {
             if (cooldown.seconds() > 1) isRobotDisabled = false;
-            if (current <= 3000) currentTimer.reset();
+            if (current <= 5000) currentTimer.reset();
         }
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
