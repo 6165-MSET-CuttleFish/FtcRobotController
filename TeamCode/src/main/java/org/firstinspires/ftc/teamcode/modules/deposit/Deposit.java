@@ -22,7 +22,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public enum State {
-        LEVEL3(11.4), //tilted 11
+        LEVEL3(12.8), //tilted 11
         LEVEL2(4), //tilted 7
         IDLE(0);
         final private double dist;

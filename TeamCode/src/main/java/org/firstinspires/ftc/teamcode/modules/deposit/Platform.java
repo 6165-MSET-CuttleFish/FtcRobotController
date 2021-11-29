@@ -98,9 +98,9 @@ public class Platform extends Module<Platform.State> {
             case BALANCED:
             case TOWARD:
                 return 0.60;
-            case AWAY: return 0.58;
+            case AWAY: return 0.50;
         }
-        return 0.58;
+        return 0.55;
     }
 
     /**
@@ -116,7 +116,7 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void in() {
-        double position = 0.24;
+        double position = 0.3;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(1 - position);
     }
