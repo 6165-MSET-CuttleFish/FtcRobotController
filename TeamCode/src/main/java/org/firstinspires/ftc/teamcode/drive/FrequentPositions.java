@@ -1,12 +1,14 @@
-package com.example.meepmeepsequences.util;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-public class Robot {
-    public static int windowSize = 600;
-    public static Alliance alliance = Alliance.BLUE;
-    public static Side side = Side.CAROUSEL;
+import org.firstinspires.ftc.teamcode.util.field.Alliance;
+import org.firstinspires.ftc.teamcode.util.field.Side;
 
+import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.side;
+
+public class FrequentPositions {
     public static Pose2d flipSide(Pose2d pose2d) {
         return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
     }
