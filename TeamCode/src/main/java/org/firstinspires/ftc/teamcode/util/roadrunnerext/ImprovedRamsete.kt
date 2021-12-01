@@ -46,12 +46,12 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetPose = trajectory[t].toMeters()
         val targetVel = trajectory.velocity(t).toMeters()
 
-        val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose, targetVel)
+        val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose.toInches(), targetVel.toInches()).toMeters()
 
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        val error = Kinematics.calculateFieldPoseError(targetPose, currentPose)
+        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
         val k1 = 2 * zeta * sqrt(targetOmega * targetOmega + b * targetV * targetV)
         val k3 = k1
@@ -63,9 +63,9 @@ class ImprovedRamsete @JvmOverloads constructor(
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
-        lastError = Kinematics.calculateRobotPoseError(targetPose, currentPose).toInches()
+        lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
 
         // TODO: is Ramsete acceleration FF worth?
-        return DriveSignal(Pose2d(v, 0.0, omega))
+        return DriveSignal(Pose2d(v, 0.0, omega).toInches())
     }
 }

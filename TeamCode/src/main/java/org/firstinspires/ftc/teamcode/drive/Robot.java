@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.TankDrive;
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
+import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -101,11 +102,11 @@ public class Robot extends TankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
-    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0.1);
-    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.09,0,0);
+    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(6,0,0.001);
+    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0,3,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
-    public static double b = 0.035;
-    public static double zeta = 0.6;
+    public static double b = 0.01;
+    public static double zeta = 0.09;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -144,7 +145,8 @@ public class Robot extends TankDrive {
         Details.telemetry = telemetry;
         TrajectoryFollower follower = new RamseteFollower(b, zeta,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        follower = new ImprovedRamsete();
+        follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        // follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -187,8 +189,8 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+//        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+//        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
             setPoseEstimate(robotPose);
