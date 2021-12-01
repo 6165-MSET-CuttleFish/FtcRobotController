@@ -31,7 +31,7 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
 }
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
-    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
+    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::pickUp)
 }
 
 fun TrajectorySequenceBuilder.capstonePickup(capstone: Capstone): TrajectorySequenceBuilder {
