@@ -8,7 +8,7 @@ import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 
-class CarouselPath {
+class BasicCarouselPath {
     val capstone = Capstone()
     val deposit = Deposit()
     val intake = Intake()
