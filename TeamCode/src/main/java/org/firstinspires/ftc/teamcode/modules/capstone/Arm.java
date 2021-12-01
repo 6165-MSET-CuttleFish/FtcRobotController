@@ -13,10 +13,12 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Arm extends Module<Arm.State> {
     public enum State {
-        TRANSIT_IN (0,0.2),
+        TRANSIT_IN (0,0.75),
         IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.1),
-        OUT(0.5,0.1);
+        TRANSIT_OUT(0.5, 0.75),
+        OUT(0.5,0.1),
+        CAP(0,0.5),
+        IDLE(0,0);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -63,27 +65,37 @@ public class Arm extends Module<Arm.State> {
             case OUT:
                 out();
                 break;
+            case CAP:
+                cappos();
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.IDLE);
+                }
+                break;
 
         }
     }
 
     private void out() {
-        arm.setPosition(0.199);
+        arm.setPosition(0.19);
     }
     /**
      * Return platform to rest
      */
     private void in() {
-        arm.setPosition(0.8);
+        arm.setPosition(0.95);
+    }
+    private void cappos() {
+        arm.setPosition(0.5);
     }
 
     public void ready(){
         setState(Arm.State.TRANSIT_OUT);
-        out();
     }
     public void hold(){
         setState(Arm.State.TRANSIT_IN);
-        in();
+    }
+    public void cap(){
+        setState(State.CAP);
     }
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume

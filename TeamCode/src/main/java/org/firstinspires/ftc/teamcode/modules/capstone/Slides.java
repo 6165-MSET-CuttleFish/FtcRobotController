@@ -14,8 +14,9 @@ public class Slides extends Module<Slides.State> {
     public enum State {
         TRANSIT_IN (0,1),
         IN(0.2,1),
-        TRANSIT_OUT(0.5, 0.1),
-        OUT(0.5,0.4);
+        TRANSIT_OUT(0.5, 0.5),
+        OUT(0.5,0.4),
+        HALF(0,0.5);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -41,7 +42,6 @@ public class Slides extends Module<Slides.State> {
     @Override
     public void init() {
         slideLeft = hardwareMap.servo.get("capstoneLowerLift");
-        setState(State.IN);
     }
 
     /**w
@@ -61,14 +61,13 @@ public class Slides extends Module<Slides.State> {
                 if (elapsedTime.seconds() > getState().time) {
                     setState(Slides.State.OUT);
                 }
-                out();
-                break;
             case OUT:
                 out();
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.TRANSIT_IN);
-                }
                 break;
+            case HALF:
+                halfcase();
+                break;
+
         }
     }
 
@@ -79,6 +78,7 @@ public class Slides extends Module<Slides.State> {
         placeset(0);
     }
 
+    private void halfcase(){placeset(0.05);}
     /**
      * Return platform to rest
      */
@@ -87,11 +87,15 @@ public class Slides extends Module<Slides.State> {
     }
 
     public void pickUp() {
-        setState(State.TRANSIT_OUT);
+        if (getState() != State.TRANSIT_OUT) setState(State.TRANSIT_OUT);
     }
 
     public void dropDown() {
-        setState(State.TRANSIT_IN);
+        if (getState() != State.TRANSIT_IN) setState(State.TRANSIT_IN);
+    }
+
+    public void half() {
+        if (getState() != State.HALF) setState(State.HALF);
     }
 
     @Override

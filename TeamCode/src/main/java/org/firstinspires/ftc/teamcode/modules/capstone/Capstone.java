@@ -8,6 +8,7 @@ public class Capstone extends Module <Capstone.State> {
     Slides capstoneSlides;
     Arm capstoneArm;
     public enum State {
+        IDLE,
         PICKING_UP,
         HOLDING,
         CAPPING;
@@ -17,17 +18,18 @@ public class Capstone extends Module <Capstone.State> {
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap  instance of the hardware map provided by the OpMode
-     * @param initialState
      */
     public Capstone(HardwareMap hardwareMap) {
-        super(hardwareMap, State.PICKING_UP);
+        super(hardwareMap, State.IDLE);
     }
 
     public void init() {
-        capstoneSlides=new Slides(capstoneSlides.hardwareMap);
-        capstoneArm=new Arm(capstoneArm.hardwareMap);
+        capstoneSlides=new Slides(hardwareMap);
+        capstoneArm=new Arm(hardwareMap);
         capstoneArm.init();
         capstoneSlides.init();
+        nestedModules=new Module[]{capstoneArm,capstoneSlides};
+      //  capstoneArm.ready();
     }
 
     @Override
@@ -35,13 +37,16 @@ public class Capstone extends Module <Capstone.State> {
         capstoneArm.update();
         capstoneSlides.update();
         switch (getState()) {
+            case IDLE:
+                capstoneArm.ready();
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
-                        capstoneSlides.pickUp();
                         if (capstoneSlides.getState() == Slides.State.OUT) {
                             capstoneArm.hold();
                         }
+                        capstoneSlides.pickUp();
+
                         break;
                     case TRANSIT_IN:
                         break;
@@ -58,33 +63,30 @@ public class Capstone extends Module <Capstone.State> {
             case CAPPING:
                 //TODO
                 switch (capstoneArm.getState()) {
-                    case OUT:
-                        capstoneSlides.pickUp();
-                        if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.ready();
-                        }
-                        break;
-                    case TRANSIT_IN:
-                        break;
                     case IN:
-                        capstoneSlides.dropDown();
-                        if (capstoneSlides.getState() == Slides.State.IN) {
+                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                            capstoneArm.cap();
+                        }
+                        capstoneSlides.pickUp();
+                    case TRANSIT_OUT:
+                        break;
+                    case OUT:
+                        capstoneSlides.half();
+                        if (capstoneSlides.getState() == Slides.State.HALF) {
                             setState(State.HOLDING);
                         }
-                        capstoneArm.hold();
+                        break;
                 }
                 break;
         }
+
     }
 
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    public void ready(){
-        setState(State.PICKING_UP);
-    }
     public void pickUp(){
-        setState(State.HOLDING);
+        setState(State.PICKING_UP);
     }
     public void cap(){
         setState(State.CAPPING);
