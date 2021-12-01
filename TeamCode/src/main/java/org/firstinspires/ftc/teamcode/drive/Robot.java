@@ -191,8 +191,10 @@ public class Robot extends TankDrive {
         setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
+            setPoseEstimate(robotPose);
         }
-        setPoseEstimate(robotPose);
+        telemetry.addData("Init", "Complete");
+        telemetry.update();
     }
 
     public void autoInit() {
@@ -317,7 +319,7 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
-        current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
+        if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Total Motor Current", current);
         if (current > 5000 && currentTimer.seconds() > 0.9) {
             isRobotDisabled = true;
