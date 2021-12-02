@@ -145,8 +145,8 @@ public class Robot extends TankDrive {
         Details.telemetry = telemetry;
         TrajectoryFollower follower = new RamseteFollower(b, zeta,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        // follower = new ImprovedRamsete();
+        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -166,7 +166,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
-                capstone = new Capstone(hardwareMap),
+               // capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
