@@ -68,6 +68,6 @@ class ImprovedRamsete @JvmOverloads constructor(
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
 
         // TODO: is Ramsete acceleration FF worth?
-        return DriveSignal(Pose2d(v, 0.0, omega).toInches(), targetRobotAccel)
+        return DriveSignal(Pose2d(v, 0.0, omega).toInches(), targetRobotAccel.toInches())
     }
 }
