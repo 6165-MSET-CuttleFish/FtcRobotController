@@ -31,6 +31,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.packet;
+import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 
 @Config

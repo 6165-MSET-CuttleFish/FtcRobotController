@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.b
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.zeta
 import org.firstinspires.ftc.teamcode.util.toInches
 import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
@@ -23,8 +25,6 @@ import kotlin.math.sqrt
  * @param clock clock
  */
 class ImprovedRamsete @JvmOverloads constructor(
-    private val b: Double = 2.0,
-    private val zeta: Double = 0.7,
     admissibleError: Pose2d = Pose2d(0.5, 0.5, Math.toRadians(5.0)),
     timeout: Double = 0.5,
     clock: NanoClock = NanoClock.system()
@@ -67,7 +67,6 @@ class ImprovedRamsete @JvmOverloads constructor(
 
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
 
-        // TODO: is Ramsete acceleration FF worth?
         return DriveSignal(Pose2d(v, 0.0, omega).toInches(), targetRobotAccel.toInches())
     }
 }

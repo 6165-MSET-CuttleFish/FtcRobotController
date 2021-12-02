@@ -14,8 +14,8 @@ class AdvancedPaths {
     val intake = Intake()
     val carousel = Carousel()
     fun carouselPath(blue: Boolean): MeepMeep {
-        Robot.side = Side.CAROUSEL
-        Robot.alliance = if (blue) Alliance.BLUE else Alliance.RED
+        side = Side.CAROUSEL
+        alliance = if (blue) Alliance.BLUE else Alliance.RED
         return MeepMeep(Robot.windowSize)
             .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
             .setTheme(ColorSchemeRedDark()) // Set theme
