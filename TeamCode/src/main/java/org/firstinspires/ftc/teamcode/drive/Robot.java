@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
+import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -138,10 +139,8 @@ public class Robot extends ImprovedTankDrive {
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
-        TrajectoryFollower follower = new RamseteFollower(b, zeta,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        TrajectoryFollower follower = new ImprovedRamsete();
         // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {

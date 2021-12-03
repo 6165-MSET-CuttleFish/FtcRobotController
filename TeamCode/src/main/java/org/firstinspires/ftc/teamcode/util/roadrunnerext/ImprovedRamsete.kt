@@ -6,8 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.b
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.zeta
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.*
 import org.firstinspires.ftc.teamcode.util.toInches
 import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
@@ -27,7 +26,7 @@ import kotlin.math.sqrt
 class ImprovedRamsete @JvmOverloads constructor(
     admissibleError: Pose2d = Pose2d(0.5, 0.5, Math.toRadians(5.0)),
     timeout: Double = 0.5,
-    clock: NanoClock = NanoClock.system()
+    clock: NanoClock = NanoClock.system(),
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
@@ -40,7 +39,6 @@ class ImprovedRamsete @JvmOverloads constructor(
 
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val currentPose = currentPose.toMeters()
-        val currentRobotVel = currentRobotVel?.toMeters()
         val t = elapsedTime()
 
         val targetPose = trajectory[t].toMeters()
@@ -50,8 +48,8 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose.toInches(), targetVel.toInches()).toMeters()
         val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose.toInches(), targetVel.toInches(), targetAccel.toInches()).toMeters()
 
-        val targetV = targetRobotVel.x
-        val targetOmega = targetRobotVel.heading
+        val targetV = targetRobotVel.x + (currentRobotVel?.let { kLinear * (targetRobotVel.toInches().x - it.x) } ?: 0.0)
+        val targetOmega = targetRobotVel.heading + (currentRobotVel?.let { kHeading * (targetRobotVel.toInches().heading - it.heading) } ?: 0.0)
 
         val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 

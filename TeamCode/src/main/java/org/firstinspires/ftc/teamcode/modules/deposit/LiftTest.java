@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
-import org.firstinspires.ftc.teamcode.util.tuning.TuningController;
+import org.firstinspires.ftc.teamcode.util.controllers.TuningController;
 
 @TeleOp
 public class LiftTest extends ModuleTest {
