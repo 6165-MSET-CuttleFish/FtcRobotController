@@ -18,7 +18,7 @@ public class Platform extends Module<Platform.State> {
         IDLE(0.5),
         TRANSIT_OUT(0.08),
         OUT(0),
-        DUMPING(0.35);
+        DUMPING(0.38);
         final double time;
         State(double time) {
             this.time = time;
@@ -97,8 +97,9 @@ public class Platform extends Module<Platform.State> {
         switch (balance) {
             case BALANCED:
             case TOWARD:
-                return 0.60;
-            case AWAY: return 0.50;
+                return 0.58;
+            case AWAY:
+                return 0.57;
         }
         return 0.55;
     }
@@ -116,7 +117,7 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void in() {
-        double position = 0.3;
+        double position = 0.29;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(1 - position);
     }
@@ -132,7 +133,11 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void closeLatch() {
-        latch.setPosition(0);
+        latch.setPosition(0.15);
+    }
+
+    private void closeLatch() {
+        latch.setPosition(0.06);
     }
 
     private void lock() {

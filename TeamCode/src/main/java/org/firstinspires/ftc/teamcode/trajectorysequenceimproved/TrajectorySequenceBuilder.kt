@@ -578,6 +578,7 @@ class TrajectorySequenceBuilder(
     }
 
     fun waitWhile(condition: () -> Boolean) : TrajectorySequenceBuilder {
+        waitSeconds(0.1)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition))
         currentDuration += 0

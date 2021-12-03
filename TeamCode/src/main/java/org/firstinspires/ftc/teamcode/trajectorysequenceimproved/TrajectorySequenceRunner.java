@@ -31,6 +31,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.packet;
+import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 
 @Config
@@ -215,7 +216,7 @@ public class TrajectorySequenceRunner {
                 }
             }
 
-            while (remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime() + offset) {
+            while (!(currentSegment instanceof ConditionalWait) && remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime() + offset) {
                 remainingMarkers.get(0).getCallback().onMarkerReached();
                 remainingMarkers.remove(0);
             }

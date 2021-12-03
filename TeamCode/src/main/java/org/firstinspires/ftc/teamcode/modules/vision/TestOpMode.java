@@ -63,7 +63,6 @@ public class TestOpMode extends ModuleTest {
             public void onOpened() {
                 webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
-            @Override
             public void onError(int errorCode) {
             }
         });

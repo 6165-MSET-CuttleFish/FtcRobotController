@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
@@ -46,7 +47,7 @@ class CarouselRed : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(cycleDump().vec(), cycleDump().heading)
+                .splineTo(dumpPosition().vec(), dumpPosition().heading)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump

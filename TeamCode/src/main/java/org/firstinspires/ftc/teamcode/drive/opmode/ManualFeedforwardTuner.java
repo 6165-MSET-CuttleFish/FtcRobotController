@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
@@ -22,8 +23,11 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kABackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStaticBackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kVBackward;
 
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
@@ -51,6 +55,8 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
     private Robot robot;
 
+    private VoltageSensor voltageSensor;
+
     enum Mode {
         DRIVER_MODE,
         TUNING_MODE
@@ -75,6 +81,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         //drive = new SampleMecanumDrive(hardwareMap);
         robot = new Robot(this);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
         mode = Mode.TUNING_MODE;
 
         NanoClock clock = NanoClock.system();
@@ -112,16 +119,17 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     }
 
                     MotionState motionState = activeProfile.get(profileTime);
-                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
-
+                    final double voltageMultiplier =  12 / voltageSensor.getVoltage();
+                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier);
+                    if (targetPower < 0) targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier);
                     robot.setDrivePower(new Pose2d(targetPower, 0, 0));
                     robot.updatePoseEstimate();
 
                     Pose2d poseVelo = Objects.requireNonNull(robot.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
-                    double currentVelo = Math.hypot(poseVelo.getX(), poseVelo.getY());
+                    double currentVelo = poseVelo.getX();
 
                     // update telemetry
-                    telemetry.addData("targetVelocity", Math.abs(motionState.getV()));
+                    telemetry.addData("targetVelocity", motionState.getV());
                     telemetry.addData("measuredVelocity", currentVelo);
                     telemetry.addData("error", motionState.getV() - currentVelo);
                     break;

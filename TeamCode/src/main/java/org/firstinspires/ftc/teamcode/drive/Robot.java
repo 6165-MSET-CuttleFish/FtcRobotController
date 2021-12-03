@@ -5,8 +5,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
-import com.acmerobotics.roadrunner.drive.TankDrive;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
+
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
+import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -32,8 +34,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
-import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
@@ -48,7 +48,6 @@ import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
-import org.firstinspires.ftc.teamcode.util.field.Side;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedRamsete;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -71,25 +70,26 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCO
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kABackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStaticBackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.util.field.Details.side;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kVBackward;
+import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 /**
  * This class represents the robot and its drivetrain
  * @author Ayush Raman
  */
 @Config
-public class Robot extends TankDrive {
+public class Robot extends ImprovedTankDrive {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
 
-    final OpMode opMode;
     final HardwareMap hardwareMap;
-    final Telemetry telemetry;
 
     private final Module[] modules;
     public Intake intake;
@@ -101,11 +101,11 @@ public class Robot extends TankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
-    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(8,0,0.1);
-    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0.09,0,0);
+    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(6,0,0.001);
+    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0,3,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
-    public static double b = 0.035;
-    public static double zeta = 0.6;
+    public static double b = 0.01;
+    public static double zeta = 0.09;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -113,48 +113,6 @@ public class Robot extends TankDrive {
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
     private final TrajectorySequenceRunner trajectorySequenceRunner;
     private final FtcDashboard dashboard;
-
-    public static Pose2d flipSide(Pose2d pose2d) {
-        return new Pose2d(pose2d.getX(), -pose2d.getY(), -pose2d.getHeading());
-    }
-
-    public static Pose2d midPoint() {
-        Pose2d regular = new Pose2d(-55.0, -55.0, Math.toRadians(-210.0));
-        return alliance == Alliance.RED ? regular : flipSide(regular);
-    }
-
-    public static Pose2d startingPosition() {
-        Pose2d regular = new Pose2d(-36, -58, Math.toRadians(-90));
-        return alliance == Alliance.RED ? regular : flipSide(regular);
-    }
-
-    public static Pose2d cycleDump() {
-        Pose2d regular = new Pose2d(-28.0, -31.0, Math.toRadians(20.0));
-        return alliance == Alliance.RED ? regular : flipSide(regular);
-    }
-
-    public static Pose2d[] duckLocations() {
-        Pose2d[] values;
-        if (side == Side.CAROUSEL) {
-            values = new Pose2d[] {
-                    new Pose2d(-32.0, -50.0, Math.toRadians(0)),
-                    new Pose2d(-40.0, -50.0, Math.toRadians(0)),
-                    new Pose2d(-50.0, -50.0, Math.toRadians(0))
-            };
-        } else {
-            values = new Pose2d[] {
-                    new Pose2d(3.0, -50.0),
-                    new Pose2d(11.5, -50.0),
-                    new Pose2d(20.0, -50.0)
-            };
-        }
-        if (alliance == Alliance.BLUE) {
-            for (int i = 0; i < values.length; i++) {
-                values[i] = flipSide(values[i]);
-            }
-        }
-        return values;
-    }
 
     public Robot(OpMode opMode, Pose2d pose2d) {
         this(opMode, pose2d, OpModeType.NONE, Alliance.NONE);
@@ -173,20 +131,16 @@ public class Robot extends TankDrive {
     }
 
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
-        super(kV, kA, kStatic, TRACK_WIDTH);
+        super(kV, kA, kStatic, TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next(), kVBackward, kABackward, kStaticBackward);
         dashboard = FtcDashboard.getInstance();
         Details.opModeType = type;
         Details.robotPose = pose2d;
         Details.alliance = alliance;
-        this.opMode = opMode;
         hardwareMap = opMode.hardwareMap;
-        opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
-        telemetry = opMode.telemetry;
+        telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
-        Details.telemetry = telemetry;
-        TrajectoryFollower follower = new RamseteFollower(b, zeta,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
-        follower = new ImprovedRamsete();
+        TrajectoryFollower follower = new ImprovedRamsete();
+        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -206,7 +160,7 @@ public class Robot extends TankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
-                capstone = new Capstone(hardwareMap),
+               // capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -229,12 +183,14 @@ public class Robot extends TankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+//        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+//        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
+            setPoseEstimate(robotPose);
         }
-        setPoseEstimate(robotPose);
+        telemetry.addData("Init", "Complete");
+        telemetry.update();
     }
 
     public void autoInit() {
@@ -255,7 +211,6 @@ public class Robot extends TankDrive {
             public void onOpened() {
                 webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
-            @Override
             public void onError(int errorCode) {
             }
         });
@@ -360,16 +315,14 @@ public class Robot extends TankDrive {
         for (Module module : modules) {
             module.update();
         }
-        for (DcMotorEx motor : motors) {
-            current += motor.getCurrent(CurrentUnit.MILLIAMPS);
-        }
-        Details.packet.put("Total Motor Current", current);
-        if (current > 30000 && currentTimer.seconds() > 0.9) {
+        if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
+        Details.packet.put("Single Motor Current", current);
+        if (current > 5000 && currentTimer.seconds() > 0.9) {
             isRobotDisabled = true;
             cooldown.reset();
         } else {
             if (cooldown.seconds() > 1) isRobotDisabled = false;
-            if (current <= 3000) currentTimer.reset();
+            if (current <= 5000) currentTimer.reset();
         }
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());

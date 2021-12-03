@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util.tuning;
+package org.firstinspires.ftc.teamcode.util.controllers;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 
 public class VelocityPIDFController {
     private static final int ACCEL_SAMPLES = 3;
-    private static final double VELOCITY_EPSILON = 20 + 1e-6;
+    private static final double VELOCITY_EPSILON = 0.2;
 
     private PIDFController controller;
 

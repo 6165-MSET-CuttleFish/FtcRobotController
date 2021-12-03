@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.*
 import org.firstinspires.ftc.teamcode.util.toInches
 import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
@@ -23,11 +24,9 @@ import kotlin.math.sqrt
  * @param clock clock
  */
 class ImprovedRamsete @JvmOverloads constructor(
-    private val b: Double = 2.0,
-    private val zeta: Double = 0.7,
     admissibleError: Pose2d = Pose2d(0.5, 0.5, Math.toRadians(5.0)),
     timeout: Double = 0.5,
-    clock: NanoClock = NanoClock.system()
+    clock: NanoClock = NanoClock.system(),
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
@@ -40,18 +39,19 @@ class ImprovedRamsete @JvmOverloads constructor(
 
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val currentPose = currentPose.toMeters()
-        val currentRobotVel = currentRobotVel?.toMeters()
         val t = elapsedTime()
 
         val targetPose = trajectory[t].toMeters()
         val targetVel = trajectory.velocity(t).toMeters()
+        val targetAccel = trajectory.acceleration(t).toMeters()
 
-        val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose, targetVel)
+        val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose.toInches(), targetVel.toInches()).toMeters()
+        val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose.toInches(), targetVel.toInches(), targetAccel.toInches()).toMeters()
 
-        val targetV = targetRobotVel.x
-        val targetOmega = targetRobotVel.heading
+        val targetV = targetRobotVel.x + (currentRobotVel?.let { kLinear * (targetRobotVel.toInches().x - it.x) } ?: 0.0)
+        val targetOmega = targetRobotVel.heading + (currentRobotVel?.let { kHeading * (targetRobotVel.toInches().heading - it.heading) } ?: 0.0)
 
-        val error = Kinematics.calculateFieldPoseError(targetPose, currentPose)
+        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
         val k1 = 2 * zeta * sqrt(targetOmega * targetOmega + b * targetV * targetV)
         val k3 = k1
@@ -63,9 +63,8 @@ class ImprovedRamsete @JvmOverloads constructor(
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
-        lastError = Kinematics.calculateRobotPoseError(targetPose, currentPose).toInches()
+        lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
 
-        // TODO: is Ramsete acceleration FF worth?
-        return DriveSignal(Pose2d(v, 0.0, omega))
+        return DriveSignal(Pose2d(v, 0.0, omega).toInches(), targetRobotAccel.toInches())
     }
 }
