@@ -4,21 +4,19 @@ import com.noahbres.jotai.StateMachine;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
-public class Arm extends Module<Arm.State> {
+public class Slides extends Module<Slides.State> {
     public enum State {
-        TRANSIT_IN (0,0.75),
-        IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.75),
-        OUT(0.5,0.1),
-        CAP(0,0.5),
-        IDLE(0,0);
+        TRANSIT_IN (0,1),
+        IN(0.2,1),
+        TRANSIT_OUT(0.5, 0.5),
+        OUT(0.5,0.4),
+        HALF(0,0.5);
         final double dist;
         final double time;
         State(double dist,double time) {
@@ -26,14 +24,15 @@ public class Arm extends Module<Arm.State> {
             this.time = time;
         }
     }
-    Servo arm;
+    StateMachine<State> stateMachine;
+    Servo slideLeft;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Arm(HardwareMap hardwareMap) {
+    public Slides(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
     }
 
@@ -42,10 +41,10 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public void init() {
-        arm = hardwareMap.servo.get("capstoneArm");
+        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
     }
 
-    /**
+    /**w
      * This function updates all necessary controls in a loop
      */
     @Override
@@ -53,64 +52,67 @@ public class Arm extends Module<Arm.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.IN);
+                    setState(Slides.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.OUT);
+                    setState(Slides.State.OUT);
                 }
             case OUT:
                 out();
                 break;
-            case CAP:
-                cappos();
-                if (elapsedTime.seconds() > getState().time) {
-                    setState(State.IDLE);
-                }
+            case HALF:
+                halfcase();
                 break;
 
         }
     }
 
+    /**
+     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     */
     private void out() {
-        arm.setPosition(0.175);
+        placeset(0);
     }
+
+    private void halfcase(){placeset(0.05);}
     /**
      * Return platform to rest
      */
     private void in() {
-        arm.setPosition(0.95);
-    }
-    private void cappos() {
-        arm.setPosition(0.48);
+        placeset(0.2);
     }
 
-    public void ready(){
-        setState(Arm.State.TRANSIT_OUT);
+    public void pickUp() {
+        if (getState() != State.TRANSIT_OUT) setState(State.TRANSIT_OUT);
     }
-    public void hold(){
-        setState(Arm.State.TRANSIT_IN);
+
+    public void dropDown() {
+        if (getState() != State.TRANSIT_IN) setState(State.TRANSIT_IN);
     }
-    public void cap(){
-        setState(State.CAP);
+
+    public void half() {
+        if (getState() != State.HALF) setState(State.HALF);
     }
-    /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
-     */
+
     @Override
     public boolean isDoingWork() {
-        return getState() == Arm.State.OUT || getState() == Arm.State.TRANSIT_OUT;
+        if (slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
+            return true;
+        } else return false;
     }
-
     /**
      * @return Whether the module is currently in a hazardous state
      */
+    private void placeset(double pos){
+        slideLeft.setPosition(pos);
+    }
     @Override
     public boolean isHazardous() {
-        return false;
+        return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
     }
 
 }

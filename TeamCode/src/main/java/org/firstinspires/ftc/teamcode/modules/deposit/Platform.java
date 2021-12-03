@@ -101,7 +101,7 @@ public class Platform extends Module<Platform.State> {
             case AWAY:
                 return 0.57;
         }
-        return 0.58;
+        return 0.55;
     }
 
     /**
@@ -129,6 +129,10 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void openLatch() {
+        latch.setPosition(0.08);
+    }
+
+    private void closeLatch() {
         latch.setPosition(0.15);
     }
 

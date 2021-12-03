@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
+import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
