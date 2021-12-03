@@ -76,7 +76,7 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        arm.setPosition(0.19);
+        arm.setPosition(0.175);
     }
     /**
      * Return platform to rest
@@ -85,7 +85,7 @@ public class Arm extends Module<Arm.State> {
         arm.setPosition(0.95);
     }
     private void cappos() {
-        arm.setPosition(0.5);
+        arm.setPosition(0.48);
     }
 
     public void ready(){
