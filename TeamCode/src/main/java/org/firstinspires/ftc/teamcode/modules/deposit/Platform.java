@@ -129,10 +129,6 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void openLatch() {
-        latch.setPosition(0.08);
-    }
-
-    private void closeLatch() {
         latch.setPosition(0.15);
     }
 
