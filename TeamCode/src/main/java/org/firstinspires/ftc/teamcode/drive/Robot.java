@@ -5,6 +5,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
+
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
+import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
 import com.acmerobotics.roadrunner.followers.RamseteFollower;
@@ -104,8 +107,6 @@ public class Robot extends ImprovedTankDrive {
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(6,0,0.001);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0,3,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
-    public static double b = 0.01;
-    public static double zeta = 0.09;
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -160,7 +161,7 @@ public class Robot extends ImprovedTankDrive {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),
-               // capstone = new Capstone(hardwareMap),
+                capstone = new Capstone(hardwareMap),
         };
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
@@ -183,12 +184,13 @@ public class Robot extends ImprovedTankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-//        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-//        setLocalizer(new T265Localizer());
+        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+        setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
             autoInit();
-            setPoseEstimate(robotPose);
         }
+        setPoseEstimate(robotPose);
+        telemetry.clear();
         telemetry.addData("Init", "Complete");
         telemetry.update();
     }
@@ -335,7 +337,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     /**
-     *
      * @return Whether the robot's current state is potentially hazardous to operate in
      */
     public boolean isHazardous() {
@@ -357,7 +358,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     /**
-     *
      * @return Whether the robot is currently doing work
      */
     public boolean isDoingWork() {

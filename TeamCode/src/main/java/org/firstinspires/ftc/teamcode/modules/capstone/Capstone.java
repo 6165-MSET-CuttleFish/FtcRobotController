@@ -8,7 +8,7 @@ public class Capstone extends Module <Capstone.State> {
     Slides capstoneSlides;
     Arm capstoneArm;
     public enum State {
-        IDLE,
+        READY,
         PICKING_UP,
         HOLDING,
         CAPPING;
@@ -20,16 +20,13 @@ public class Capstone extends Module <Capstone.State> {
      * @param hardwareMap  instance of the hardware map provided by the OpMode
      */
     public Capstone(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.HOLDING);
     }
 
     public void init() {
-        capstoneSlides=new Slides(hardwareMap);
-        capstoneArm=new Arm(hardwareMap);
-        capstoneArm.init();
-        capstoneSlides.init();
-        nestedModules=new Module[]{capstoneArm,capstoneSlides};
-      //  capstoneArm.ready();
+        capstoneSlides = new Slides(hardwareMap);
+        capstoneArm = new Arm(hardwareMap);
+        nestedModules = new Module[]{capstoneArm, capstoneSlides};
     }
 
     @Override
@@ -37,7 +34,7 @@ public class Capstone extends Module <Capstone.State> {
         capstoneArm.update();
         capstoneSlides.update();
         switch (getState()) {
-            case IDLE:
+            case READY:
                 capstoneArm.ready();
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
@@ -58,10 +55,8 @@ public class Capstone extends Module <Capstone.State> {
                 }
                 break;
             case HOLDING:
-                //TODO: Implement
                 break;
             case CAPPING:
-                //TODO
                 switch (capstoneArm.getState()) {
                     case IN:
                         if (capstoneSlides.getState() == Slides.State.OUT) {
@@ -91,12 +86,11 @@ public class Capstone extends Module <Capstone.State> {
     public void cap(){
         setState(State.CAPPING);
     }
+    public void ready() {
+        setState(State.READY);
+    }
     public boolean isDoingWork() {
-        if (capstoneSlides.isDoingWork()||capstoneArm.isDoingWork()){
-            return true;
-        }
-        else
-            return false;
+        return capstoneSlides.isDoingWork() || capstoneArm.isDoingWork();
     }
 
     @Override

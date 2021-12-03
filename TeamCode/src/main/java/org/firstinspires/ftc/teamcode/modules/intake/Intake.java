@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
+import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 /**
  * Frontal mechanism for collecting freight
@@ -37,10 +39,11 @@ public class Intake extends Module<Intake.State> {
     @Override
     public void init() {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        outR = hardwareMap.get(Servo.class, "outR");
-        outL = hardwareMap.get(Servo.class, "outL");
-        flipR = hardwareMap.get(Servo.class, "flipR");
-        flipL = hardwareMap.get(Servo.class, "flipL");
+        outR = hardwareMap.servo.get("outR");
+        outL = hardwareMap.servo.get("outL");
+        outR.setDirection(Servo.Direction.REVERSE);
+        flipR = hardwareMap.servo.get("flipR");
+        flipL = hardwareMap.servo.get("flipL");
         blockSensor = hardwareMap.get(ColorRangeSensor.class, "block");
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
@@ -119,8 +122,8 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void dropIntake() {
-        flipR.setPosition(0.41);
-        flipL.setPosition(0.59);
+        flipR.setPosition(0.40);
+        flipL.setPosition(0.60);
     }
 
     private void raiseIntake() {
@@ -140,12 +143,13 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesOut() {
-        outL.setPosition(0.5);
-        outR.setPosition(0.5);
+        if (Details.opModeType == OpModeType.AUTO) return;
+        outL.setPosition(0.65);
+        outR.setPosition(0.65);
     }
 
     private void slidesIn() {
-        outL.setPosition(0);
-        outR.setPosition(1);
+        outL.setPosition(0.18);
+        outR.setPosition(0.18);
     }
 }

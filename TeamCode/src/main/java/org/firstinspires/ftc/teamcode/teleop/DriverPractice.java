@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
@@ -25,6 +26,7 @@ public class DriverPractice extends LinearOpMode {
     Intake intake;
     Deposit deposit;
     Carousel carousel;
+    Capstone capstone;
 
     GamepadEx primary;
     GamepadEx secondary;
@@ -41,6 +43,7 @@ public class DriverPractice extends LinearOpMode {
         intake = robot.intake;
         deposit = robot.deposit;
         carousel = robot.carousel;
+        capstone = robot.capstone;
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[]{
@@ -120,9 +123,9 @@ public class DriverPractice extends LinearOpMode {
 
     void setCarousel() {
         if(carouselButton.getState()) {
-           // carousel.on();
+            carousel.on();
         } else {
-           // carousel.off();
+            carousel.off();
         }
     }
 }

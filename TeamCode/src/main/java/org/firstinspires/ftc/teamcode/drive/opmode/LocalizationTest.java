@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -33,6 +35,9 @@ public class LocalizationTest extends LinearOpMode {
             );
 
             robot.update();
+            if (gamepad1.right_bumper) {
+                robot.setPoseEstimate(new Pose2d());
+            }
 //            telemetry.addData("x", poseEstimate.getX());
 //            telemetry.addData("y", poseEstimate.getY());
 //            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));

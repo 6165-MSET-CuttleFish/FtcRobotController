@@ -12,6 +12,7 @@ public class TestOpModeClaw extends ModuleTest {
     public void init() {
         capstone =new Capstone(hardwareMap);
         init(capstone);
+        capstone.ready();
     }
 
     @Override
