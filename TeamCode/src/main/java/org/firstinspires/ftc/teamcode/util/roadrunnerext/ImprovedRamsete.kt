@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.*
 import org.firstinspires.ftc.teamcode.util.toInches
 import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -48,7 +49,7 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose.toInches(), targetVel.toInches()).toMeters()
         val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose.toInches(), targetVel.toInches(), targetAccel.toInches()).toMeters()
 
-        val targetV = targetRobotVel.x + (currentRobotVel?.let { kLinear * (targetRobotVel.toInches().x - it.x) } ?: 0.0)
+        val targetV = targetRobotVel.x + (currentRobotVel?.let { kLinear * (targetRobotVel.toInches().x - hypot(it.x, it.y)) } ?: 0.0)
         val targetOmega = targetRobotVel.heading + (currentRobotVel?.let { kHeading * (targetRobotVel.toInches().heading - it.heading) } ?: 0.0)
 
         val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()

@@ -33,7 +33,7 @@ class BasicCarouselPath {
                             .capstonePickup(capstone)
                             .liftUp(deposit)
                             .waitWhile(capstone::isDoingWork) // capstone loaded
-                            .splineTo(cycleDump().vec(), cycleDump().heading)
+                            //.splineTo(cycleDump().vec(), cycleDump().heading)
                             .setReversed(false)
                             .dump(deposit)
                             .waitWhile(deposit::isDoingWork) // wait for platform to dump

@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @Autonomous
 public class WaitWhileTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        Robot robot = new Robot(this, OpModeType.AUTO);
 
         TrajectorySequence traj = robot.trajectorySequenceBuilder(Details.robotPose)
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> robot.intake.setPower(1))

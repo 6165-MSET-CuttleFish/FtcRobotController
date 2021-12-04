@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
-import com.acmerobotics.roadrunner.followers.RamseteFollower;
-import com.acmerobotics.roadrunner.followers.TankPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -34,7 +32,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
@@ -61,6 +58,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.COOLDOWN_TIME;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
@@ -319,13 +319,16 @@ public class Robot extends ImprovedTankDrive {
         }
         if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Single Motor Current", current);
-        if (current > 5000 && currentTimer.seconds() > 0.9) {
+        if (current > MAX_CURRENT && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             cooldown.reset();
         } else {
-            if (cooldown.seconds() > 1) isRobotDisabled = false;
-            if (current <= 5000) currentTimer.reset();
+            if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
+            if (current <= MAX_CURRENT) currentTimer.reset();
         }
+        assert getPoseVelocity() != null;
+        Details.packet.put("Velocity X", getPoseVelocity().getX());
+        Details.packet.put("Velocity Y", getPoseVelocity().getY());
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -413,7 +416,7 @@ public class Robot extends ImprovedTankDrive {
                 isRobotDisabled ? 0 : drivePower.getY(),
                 isRobotDisabled ? 0 : drivePower.getHeading() * 2
         );
-        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
+        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());

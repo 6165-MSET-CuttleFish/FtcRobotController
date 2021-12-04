@@ -24,6 +24,9 @@ public class DriveConstants {
      */
     public static final double TICKS_PER_REV = 378;
     public static final double MAX_RPM = 444.444444444;
+    public static double MAX_CURRENT = 4500;
+    public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
+    public static double COOLDOWN_TIME = 0.4;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.

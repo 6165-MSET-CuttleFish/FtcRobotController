@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.localizers.t265
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.Localizer
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265
+import org.firstinspires.ftc.teamcode.util.field.Details
 
 /**
  * A RoadRunner localizer using the Easy265 wrapper
@@ -34,13 +35,16 @@ class T265Localizer : Localizer {
     override val poseVelocity: Pose2d?
         get() {
             Easy265.update()
-            return Easy265.lastVelocity
+            return Pose2d(Easy265.velocity, 0.0, 0.0)
         }
 
     /**
      * Updates the T265 camera data, held
      * in the Easy265 wrapper static class.
      */
-    override fun update() = Easy265.update()
+    override fun update() {
+        Easy265.update()
+        Details.telemetry?.addData("Confidence", Easy265.lastCameraUpdate?.confidence)
+    }
 
 }

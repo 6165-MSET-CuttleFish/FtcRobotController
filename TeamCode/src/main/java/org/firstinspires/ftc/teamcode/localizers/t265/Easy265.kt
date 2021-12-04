@@ -23,7 +23,7 @@ import kotlin.math.cos
 @Suppress("UNUSED")
 object Easy265 {
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 0.0
+    private const val ODOMETRY_COVARIANCE = 0.2
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
         Translation2d(-7.24 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
@@ -44,6 +44,8 @@ object Easy265 {
         private set
 
     @JvmStatic val isStarted get() = ::camera.isInitialized && camera.isStarted
+
+    @JvmStatic var velocity: Double = 0.0
 
     /**
      * The camera data returned from the last update.
@@ -98,7 +100,8 @@ object Easy265 {
         this.imu = imu
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
-        pitchOffset = imu.angularOrientation.secondAngle.toDouble()
+        pitchOffset = imu.angularOrientation.thirdAngle.toDouble()
+        velocity = 0.0
         try {
             if(!Easy265::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
@@ -152,18 +155,21 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val leftVelo = encoderTicksToInches(leftEncoder.correctedVelocity)
-            val rightVelo = encoderTicksToInches(rightEncoder.correctedVelocity)
+            val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity)
+            val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity)
             val velo = (leftVelo + rightVelo) / 2
-            val pitch = imu.angularOrientation.secondAngle.toDouble() - pitchOffset
-            Details.telemetry?.addData("Confidence", lastCameraUpdate?.confidence)
+            val pitch = imu.angularOrientation.thirdAngle.toDouble() - pitchOffset
+            Details.packet.put("Left Velo", leftVelo)
+            Details.packet.put("Right Velo", rightVelo)
+            Details.packet.put("Velo", velo)
+            Details.packet.put("Pitch", Math.toDegrees(pitch))
+            velocity = velo * cos(pitch)
             camera.sendOdometry(velo * INCH_TO_METER * cos(pitch), 0.0)
         }
     }
 
     @JvmStatic fun stop() {
         camera.stop()
-        camera.free()
     }
 
 }

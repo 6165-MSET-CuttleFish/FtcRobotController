@@ -23,7 +23,8 @@ public class LocalizationTest extends LinearOpMode {
         Robot robot = new Robot(this);
 
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        telemetry.addData("Ready", "ready");
+        telemetry.update();
         waitForStart();
         while (!isStopRequested()) {
             robot.setWeightedDrivePower(
@@ -38,10 +39,6 @@ public class LocalizationTest extends LinearOpMode {
             if (gamepad1.right_bumper) {
                 robot.setPoseEstimate(new Pose2d());
             }
-//            telemetry.addData("x", poseEstimate.getX());
-//            telemetry.addData("y", poseEstimate.getY());
-//            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-            telemetry.update();
         }
     }
 }
