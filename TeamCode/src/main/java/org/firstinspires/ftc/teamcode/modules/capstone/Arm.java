@@ -17,7 +17,9 @@ public class Arm extends Module<Arm.State> {
         IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.75),
         OUT(0.5,0.1),
-        CAP(0,0.5),
+        PRECAP(0,0.5),
+        CAPOFFSET(0,0),
+        CAP(0,0.3),
         IDLE(0,0);
         final double dist;
         final double time;
@@ -65,6 +67,13 @@ public class Arm extends Module<Arm.State> {
             case OUT:
                 out();
                 break;
+            case PRECAP:
+                precappos();
+                if (elapsedTime.seconds() > getState().time) {
+                    setState(State.CAPOFFSET);
+                }
+            case CAPOFFSET:
+                break;
             case CAP:
                 cappos();
                 if (elapsedTime.seconds() > getState().time) {
@@ -84,8 +93,11 @@ public class Arm extends Module<Arm.State> {
     private void in() {
         arm.setPosition(0.95);
     }
+    private void precappos() {
+        arm.setPosition(0.58);
+    }
     private void cappos() {
-        arm.setPosition(0.48);
+        arm.setPosition(0.46);
     }
 
     public void ready(){
@@ -93,6 +105,9 @@ public class Arm extends Module<Arm.State> {
     }
     public void hold(){
         setState(Arm.State.TRANSIT_IN);
+    }
+    public void precap(){
+        setState(State.PRECAP);
     }
     public void cap(){
         setState(State.CAP);

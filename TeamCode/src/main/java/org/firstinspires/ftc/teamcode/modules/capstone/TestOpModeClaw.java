@@ -21,6 +21,9 @@ public class TestOpModeClaw extends ModuleTest {
         if(gamepad1.a){
            capstone.pickUp();
         }if(gamepad1.b){
+            capstone.precap();
+        }
+        if(gamepad1.x){
             capstone.cap();
         }
     }
