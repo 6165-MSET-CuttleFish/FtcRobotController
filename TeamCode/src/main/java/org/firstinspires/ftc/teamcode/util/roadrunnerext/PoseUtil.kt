@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.util
 
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.Coordinate
+
 fun Pose2d.toRRPose2d(): com.acmerobotics.roadrunner.geometry.Pose2d {
     return com.acmerobotics.roadrunner.geometry.Pose2d(this.x, this.y, this.heading)
 }
@@ -55,4 +58,12 @@ fun com.acmerobotics.roadrunner.geometry.Vector2d.flip(negative: Boolean): com.a
     if (negative)
         return com.acmerobotics.roadrunner.geometry.Vector2d(this.x, -this.y)
     return this
+}
+
+fun Vector2d.polarAdd (distance: Double, angle: Double) : Vector2d {
+    return Coordinate.toPoint(this).polarAdd(distance, angle).toVector()
+}
+
+fun com.acmerobotics.roadrunner.geometry.Pose2d.polarAdd (distance: Double) : Vector2d {
+    return Coordinate.toPoint(this).polarAdd(distance, this.heading).toVector()
 }
