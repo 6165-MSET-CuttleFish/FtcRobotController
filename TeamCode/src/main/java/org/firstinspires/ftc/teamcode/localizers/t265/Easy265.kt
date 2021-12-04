@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.localizers.t265
 
+import com.acmerobotics.roadrunner.kinematics.TankKinematics
+import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches
 import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.field.Details
@@ -45,7 +48,7 @@ object Easy265 {
 
     @JvmStatic val isStarted get() = ::camera.isInitialized && camera.isStarted
 
-    @JvmStatic var velocity: Double = 0.0
+    @JvmStatic var velocity = com.acmerobotics.roadrunner.geometry.Pose2d()
 
     /**
      * The camera data returned from the last update.
@@ -101,7 +104,7 @@ object Easy265 {
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
         pitchOffset = imu.angularOrientation.thirdAngle.toDouble()
-        velocity = 0.0
+        velocity = com.acmerobotics.roadrunner.geometry.Pose2d()
         try {
             if(!Easy265::camera.isInitialized) {
                 UsbUtilities.grantUsbPermissionIfNeeded(opMode.hardwareMap.appContext)
@@ -155,16 +158,12 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity)
-            val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity)
-            val velo = (leftVelo + rightVelo) / 2
             val pitch = imu.angularOrientation.thirdAngle.toDouble() - pitchOffset
-            Details.packet.put("Left Velo", leftVelo)
-            Details.packet.put("Right Velo", rightVelo)
-            Details.packet.put("Velo", velo)
+            val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity) * cos(pitch)
+            val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity) * cos(pitch)
+            velocity = TankKinematics.wheelToRobotVelocities(mutableListOf(leftVelo, rightVelo), DriveConstants.TRACK_WIDTH)
+            camera.sendOdometry(velocity.x, 0.0)
             Details.packet.put("Pitch", Math.toDegrees(pitch))
-            velocity = velo * cos(pitch)
-            camera.sendOdometry(velo * INCH_TO_METER * cos(pitch), 0.0)
         }
     }
 

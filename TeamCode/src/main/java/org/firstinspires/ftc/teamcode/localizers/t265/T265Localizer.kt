@@ -35,7 +35,7 @@ class T265Localizer : Localizer {
     override val poseVelocity: Pose2d?
         get() {
             Easy265.update()
-            return Pose2d(Easy265.velocity, 0.0, 0.0)
+            return Easy265.velocity
         }
 
     /**
