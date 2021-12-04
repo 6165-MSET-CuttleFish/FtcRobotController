@@ -38,6 +38,7 @@ public class Carousel extends Module<Carousel.State> {
         duckyR = hardwareMap.crservo.get("duckyR");
         duckyL = hardwareMap.crservo.get("duckyL");
         duckyL.setDirection(DcMotorSimple.Direction.REVERSE);
+        duckyR.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void on() {

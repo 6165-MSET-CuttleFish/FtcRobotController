@@ -11,6 +11,7 @@ public class Capstone extends Module <Capstone.State> {
         READY,
         PICKING_UP,
         HOLDING,
+        PRECAP,
         CAPPING;
     }
 
@@ -56,11 +57,11 @@ public class Capstone extends Module <Capstone.State> {
                 break;
             case HOLDING:
                 break;
-            case CAPPING:
+            case PRECAP:
                 switch (capstoneArm.getState()) {
                     case IN:
                         if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.cap();
+                            capstoneArm.precap();
                         }
                         capstoneSlides.pickUp();
                     case TRANSIT_OUT:
@@ -68,12 +69,21 @@ public class Capstone extends Module <Capstone.State> {
                     case OUT:
                         capstoneSlides.half();
                         if (capstoneSlides.getState() == Slides.State.HALF) {
-                            setState(State.HOLDING);
+                            setState(State.CAPPING);
                         }
                         break;
                 }
                 break;
+            case CAPPING:
+                switch (capstoneArm.getState()) {
+                    case CAPOFFSET:
+                        capstoneArm.cap();
+                        setState(State.HOLDING);
+                        break;
+                }
+                break;
         }
+
 
     }
 
@@ -83,6 +93,7 @@ public class Capstone extends Module <Capstone.State> {
     public void pickUp(){
         setState(State.PICKING_UP);
     }
+    public void precap(){setState(State.PRECAP);}
     public void cap(){
         setState(State.CAPPING);
     }
