@@ -46,6 +46,8 @@ public class Detector extends OpenCvPipeline {
     public static int sHigh = 110;
     public static int vHigh = 255;
 
+    public static int visionThreshold = 70;
+
     @Override
     public Mat processFrame(Mat input) {
         Mat mat = new Mat();
@@ -88,8 +90,8 @@ public class Detector extends OpenCvPipeline {
         pos_2.release();
         //pos_3.release();
 
-        if(pos_1_percent > 70) location = Location.LEFT;
-        else if(pos_2_percent > 70) location = Location.MIDDLE;
+        if(pos_1_percent > visionThreshold) location = Location.LEFT;
+        else if(pos_2_percent > visionThreshold) location = Location.MIDDLE;
         else location = Location.RIGHT;
 
 
