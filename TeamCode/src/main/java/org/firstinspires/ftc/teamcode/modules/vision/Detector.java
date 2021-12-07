@@ -25,18 +25,17 @@ public class Detector extends OpenCvPipeline {
     private Location location = Location.MIDDLE;
     // find and set the three regions of interest
     public static  Rect POS_1 = new Rect(
-            new Point(90, 130),
-            new Point(140, 210));
+            new Point(0, 80),
+            new Point(90, 210));
     public static  Rect POS_2 = new Rect(
-            new Point(160, 130),
-            new Point(210, 210));
-    public static  Rect POS_3 = new Rect(
-            new Point(230, 130),
-            new Point(280, 210));
-    public static  Rect test = new Rect(
-            new Point(10, 10),
-            new Point(50, 50));
-    static double PERCENT_COLOR_THRESH = 0;
+            new Point(180, 80),
+            new Point(270, 210));
+//    public static  Rect POS_3 = new Rect(
+//            new Point(230, 130),
+//            new Point(280, 210));
+//    public static  Rect test = new Rect(
+//            new Point(10, 10),
+//            new Point(50, 50));
 
     public static int hLow = 50;
     public static int sLow = 50;
@@ -46,7 +45,7 @@ public class Detector extends OpenCvPipeline {
     public static int sHigh = 110;
     public static int vHigh = 255;
 
-    public static int visionThreshold = 70;
+    public static int visionThreshold = 10;
 
     @Override
     public Mat processFrame(Mat input) {
@@ -101,7 +100,9 @@ public class Detector extends OpenCvPipeline {
 //        else if (maxVal == pos_2_val) location = Location.MIDDLE;
 //        else location = Location.LEFT;
 
-        return input;
+        telemetry.addData("location", getLocation());
+
+        return mat;
     }
 
     public Location getLocation() {
