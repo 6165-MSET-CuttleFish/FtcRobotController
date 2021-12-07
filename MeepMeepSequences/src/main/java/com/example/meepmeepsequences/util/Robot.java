@@ -3,7 +3,7 @@ package com.example.meepmeepsequences.util;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 public class Robot {
-    public static int windowSize = 600;
+    public static int windowSize = 1000;
     public static Alliance alliance = Alliance.BLUE;
     public static Side side = Side.CAROUSEL;
 
@@ -27,25 +27,34 @@ public class Robot {
     }
 
     public static Pose2d[] duckLocations() {
-        Pose2d[] values;
-        if (side == Side.CAROUSEL) {
-            values = new Pose2d[] {
-                    new Pose2d(-32.0, -50.0, Math.toRadians(0)),
-                    new Pose2d(-40.0, -50.0, Math.toRadians(0)),
-                    new Pose2d(-50.0, -50.0, Math.toRadians(0))
-            };
+        if (alliance == Alliance.RED) {
+            if (side == Side.CAROUSEL) {
+                return new Pose2d[]{
+                        new Pose2d(-32.0, -50.0, Math.toRadians(0)),
+                        new Pose2d(-40.0, -50.0, Math.toRadians(0)),
+                        new Pose2d(-50.0, -50.0, Math.toRadians(0))
+                };
+            } else {
+                return new Pose2d[]{
+                        new Pose2d(3.0, -50.0),
+                        new Pose2d(11.5, -50.0),
+                        new Pose2d(20.0, -50.0)
+                };
+            }
         } else {
-            values = new Pose2d[] {
-                    new Pose2d(3.0, -50.0),
-                    new Pose2d(11.5, -50.0),
-                    new Pose2d(20.0, -50.0)
-            };
-        }
-        if (alliance == Alliance.BLUE) {
-            for (int i = 0; i < values.length; i++) {
-                values[i] = flipSide(values[i]);
+            if (side == Side.CAROUSEL) {
+                return new Pose2d[]{
+                        flipSide(new Pose2d(-32.0, -50.0, Math.toRadians(0))),
+                        flipSide(new Pose2d(-40.0, -50.0, Math.toRadians(0))),
+                        flipSide(new Pose2d(-50.0, -50.0, Math.toRadians(0)))
+                };
+            } else {
+                return new Pose2d[]{
+                        new Pose2d(3.0, -50.0),
+                        new Pose2d(11.5, -50.0),
+                        new Pose2d(20.0, -50.0)
+                };
             }
         }
-        return values;
     }
 }
