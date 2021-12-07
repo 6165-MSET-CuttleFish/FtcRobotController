@@ -49,6 +49,9 @@ public class Platform extends Module<Platform.State> {
         latch = hardwareMap.servo.get("depositLatch");
         lock = hardwareMap.servo.get("lock");
         setState(State.IDLE);
+        in();
+        closeLatch();
+        unlock();
     }
 
     /**

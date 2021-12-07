@@ -59,12 +59,12 @@ public class DriveConstants {
      * empirically tuned.
      */
     public static double kV = 0.0127; //1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.0032;
-    public static double kStatic = 0;
+    public static double kA = 0.0029;
+    public static double kStatic = 0.015;
 
-    public static double kVBackward = 0.013;
+    public static double kVBackward = 0.0129;
     public static double kABackward = kA;
-    public static double kStaticBackward = 0.0;
+    public static double kStaticBackward = kStatic;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -94,8 +94,8 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 60;
-    public static double MAX_ACCEL = 60;
+    public static double MAX_VEL = 50;
+    public static double MAX_ACCEL = 50;
     public static double MAX_ANG_VEL = Math.toRadians(274.5043079608481);
     public static double MAX_ANG_ACCEL = Math.toRadians(274.5043079608481);
 
