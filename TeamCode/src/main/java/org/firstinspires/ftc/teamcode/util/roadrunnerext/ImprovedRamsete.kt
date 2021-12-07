@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConsts.*
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConstants.*
 import org.firstinspires.ftc.teamcode.util.toInches
 import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
