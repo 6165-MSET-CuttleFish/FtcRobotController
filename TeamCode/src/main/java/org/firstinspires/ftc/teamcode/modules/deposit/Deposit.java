@@ -33,7 +33,7 @@ public class Deposit extends Module<Deposit.State> {
             switch (balance) {
                 case BALANCED: return dist;
                 case AWAY: return dist + 2;
-                case TOWARD: return Range.clip(dist - 1, -1, 12);
+                case TOWARD: return dist - 1;
             }
             return dist;
         }
@@ -121,7 +121,7 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Details.packet.put("Target Height", getState().dist);
+        Details.packet.put("Target Height", getState().getDist());
         Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
     }
 

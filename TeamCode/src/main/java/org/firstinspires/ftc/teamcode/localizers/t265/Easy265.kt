@@ -26,7 +26,7 @@ import kotlin.math.cos
 @Suppress("UNUSED")
 object Easy265 {
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 0.2
+    private const val ODOMETRY_COVARIANCE = 0.01
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
         Translation2d(-7.24 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
@@ -66,13 +66,13 @@ object Easy265 {
     @JvmStatic var lastPose
         //set and get are in inches
         set(value) {
-            while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
-                update()
-                Details.telemetry?.update()
-            }
+//            while (lastCameraUpdate?.confidence == T265Camera.PoseConfidence.Failed) {
+//                update()
+//                Details.telemetry?.update()
+//            }
             if(value != null && isStarted && !poseHasBeenSet) {
                 poseHasBeenSet = true
-                camera.setPose(value.toFTCLibPose2d().toMeters())
+                camera.setPose(value.flipHeading().toFTCLibPose2d().toMeters())
             }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()
@@ -103,7 +103,7 @@ object Easy265 {
         this.imu = imu
         leftEncoder = Encoder(leftMotor)
         rightEncoder = Encoder(rightMotor)
-        pitchOffset = imu.angularOrientation.thirdAngle.toDouble()
+        pitchOffset = imu.angularOrientation.secondAngle.toDouble()
         velocity = com.acmerobotics.roadrunner.geometry.Pose2d()
         try {
             if(!Easy265::camera.isInitialized) {
@@ -158,12 +158,15 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val pitch = imu.angularOrientation.thirdAngle.toDouble() - pitchOffset
+            val pitch = imu.angularOrientation.secondAngle.toDouble() - pitchOffset
             val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity) * cos(pitch)
             val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity) * cos(pitch)
             velocity = TankKinematics.wheelToRobotVelocities(mutableListOf(leftVelo, rightVelo), DriveConstants.TRACK_WIDTH)
             camera.sendOdometry(velocity.x, 0.0)
             Details.packet.put("Pitch", Math.toDegrees(pitch))
+            Details.packet.put("RightVelo", rightVelo)
+            Details.packet.put("LeftVelo", leftVelo)
+            if (rightVelo != 0.0) Details.packet.put("Left/Right", leftVelo / rightVelo)
         }
     }
 

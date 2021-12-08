@@ -23,8 +23,8 @@ public class Intake extends Module<Intake.State> {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
         OUT(0),
-        TRANSIT_IN(0.7),
-        TRANSFER(0.45),
+        TRANSIT_IN(0.35),
+        TRANSFER(0.7),
         IN(0);
         final double time;
         State(double time){
@@ -133,7 +133,7 @@ public class Intake extends Module<Intake.State> {
 
     private void deploy() {
         Platform.isLoaded = false;
-        slidesOut();
+        // slidesOut();
         dropIntake();
     }
 
@@ -149,7 +149,7 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesIn() {
-        outL.setPosition(0.18);
-        outR.setPosition(0.18);
+        outL.setPosition(0.19);
+        outR.setPosition(0.19);
     }
 }

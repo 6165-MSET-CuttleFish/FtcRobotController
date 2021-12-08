@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
@@ -73,6 +74,10 @@ public class DriverPractice extends LinearOpMode {
             setIntake();
             setDeposit();
             setCarousel();
+            Details.packet.addLine(intake.getState() + "");
+            Details.packet.addLine(defaultDepositState + "");
+            telemetry.addData("Intake State", intake.getState());
+            telemetry.addData("Default Height", defaultDepositState);
             if (tippedAway.isDown() && tippedToward.isDown()) {
                 balance = Balance.BALANCED;
             } else if (tippedAway.isDown()) {

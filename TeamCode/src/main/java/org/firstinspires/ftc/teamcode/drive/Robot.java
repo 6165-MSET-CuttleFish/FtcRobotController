@@ -135,8 +135,9 @@ public class Robot extends ImprovedTankDrive {
         super(kV, kA, kStatic, TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next(), kVBackward, kABackward, kStaticBackward);
         dashboard = FtcDashboard.getInstance();
         Details.opModeType = type;
-        Details.robotPose = pose2d;
         Details.alliance = alliance;
+        robotPose = pose2d;
+        if (opModeType == OpModeType.AUTO) robotPose = FrequentPositions.startingPosition();
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
@@ -187,7 +188,7 @@ public class Robot extends ImprovedTankDrive {
         Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
         setLocalizer(new T265Localizer());
         if (opModeType == OpModeType.AUTO) {
-            autoInit();
+            // autoInit();
         }
         setPoseEstimate(robotPose);
         telemetry.clear();
