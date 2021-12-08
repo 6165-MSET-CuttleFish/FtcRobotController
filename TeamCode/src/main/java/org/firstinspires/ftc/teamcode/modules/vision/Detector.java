@@ -47,6 +47,8 @@ public class Detector extends OpenCvPipeline {
 
     public static int visionThreshold = 10;
 
+    public static boolean returnBlack = true;
+
     @Override
     public Mat processFrame(Mat input) {
         Mat mat = new Mat();
@@ -102,7 +104,7 @@ public class Detector extends OpenCvPipeline {
 
         telemetry.addData("location", getLocation());
 
-        return mat;
+        return returnBlack ? mat : input;
     }
 
     public Location getLocation() {

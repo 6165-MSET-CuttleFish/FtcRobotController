@@ -24,7 +24,7 @@ public class DriveConstants {
      */
     public static final double TICKS_PER_REV = 378;
     public static final double MAX_RPM = 444.444444444;
-    public static double MAX_CURRENT = 4500;
+    public static double MAX_CURRENT = 4200;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
 
@@ -94,8 +94,8 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 50;
-    public static double MAX_ACCEL = 50;
+    public static double MAX_VEL = 55;
+    public static double MAX_ACCEL = 55;
     public static double MAX_ANG_VEL = Math.toRadians(274.5043079608481);
     public static double MAX_ANG_ACCEL = Math.toRadians(274.5043079608481);
 

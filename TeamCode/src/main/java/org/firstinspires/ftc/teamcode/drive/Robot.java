@@ -91,6 +91,7 @@ public class Robot extends ImprovedTankDrive {
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
+    private final double pitchOffset;
 
     final HardwareMap hardwareMap;
 
@@ -185,11 +186,14 @@ public class Robot extends ImprovedTankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+        if (opModeType != OpModeType.TELE) {
+            Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+            setLocalizer(new T265Localizer());
+        }
         if (opModeType == OpModeType.AUTO) {
             // autoInit();
         }
+        pitchOffset = imu.getAngularOrientation().secondAngle;
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -320,6 +324,7 @@ public class Robot extends ImprovedTankDrive {
         }
         if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Single Motor Current", current);
+        Details.packet.put("Motor Limit", MAX_CURRENT);
         if (current > MAX_CURRENT && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             cooldown.reset();
@@ -327,9 +332,6 @@ public class Robot extends ImprovedTankDrive {
             if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
             if (current <= MAX_CURRENT) currentTimer.reset();
         }
-        assert getPoseVelocity() != null;
-        Details.packet.put("Velocity X", getPoseVelocity().getX());
-        Details.packet.put("Velocity Y", getPoseVelocity().getY());
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -440,7 +442,8 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        return Arrays.asList(leftSum, rightSum);
+        double pitch = getPitch();
+        return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
     public List<Double> getWheelVelocities() {
@@ -451,7 +454,8 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        return Arrays.asList(leftSum, rightSum);
+        double pitch = getPitch();
+        return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
     @Override
@@ -478,5 +482,9 @@ public class Robot extends ImprovedTankDrive {
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
+    }
+
+    public double getPitch() {
+        return imu.getAngularOrientation().secondAngle - pitchOffset;
     }
 }

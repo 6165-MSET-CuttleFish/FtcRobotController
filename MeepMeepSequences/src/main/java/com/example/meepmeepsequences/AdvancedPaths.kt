@@ -106,7 +106,10 @@ class AdvancedPaths {
                             intake.setPower(1.0)
                         }
                         .splineTo(
-                            Vector2d(39.0, -50.0).plus(
+                           Vector2d(24.0, -40.0).flip(blue), 0.0
+                        )
+                        .splineTo(
+                            Vector2d(48.0, -50.0).plus(
                                 Vector2d(
                                     5 * Math.random(),
                                     5 * Math.random()
@@ -115,6 +118,9 @@ class AdvancedPaths {
                         )
                         .setReversed(true)
                         .intakeOff(intake)
+                        .splineTo(
+                            Vector2d(24.0, -40.0).flip(blue), Math.PI
+                        )
                         .splineTo(cycleDumpPosition().vec(), cycleDumpPosition().heading + Math.PI.flip(blue))
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition

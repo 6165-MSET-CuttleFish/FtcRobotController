@@ -25,8 +25,8 @@ import kotlin.math.sqrt
  * @param clock clock
  */
 class ImprovedRamsete @JvmOverloads constructor(
-    admissibleError: Pose2d = Pose2d(5.0, 5.0, Math.toRadians(5.0)),
-    timeout: Double = 0.5,
+    admissibleError: Pose2d = Pose2d(2.0, 2.0, Math.toRadians(5.0)),
+    timeout: Double =  0.5,
     clock: NanoClock = NanoClock.system(),
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()

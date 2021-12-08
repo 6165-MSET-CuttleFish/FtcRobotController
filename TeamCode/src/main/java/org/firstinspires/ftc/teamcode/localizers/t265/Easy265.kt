@@ -13,8 +13,10 @@ import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.kV
 import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.field.Details
+import kotlin.math.abs
 import kotlin.math.cos
 
 /**
@@ -26,7 +28,7 @@ import kotlin.math.cos
 @Suppress("UNUSED")
 object Easy265 {
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 0.01
+    private const val ODOMETRY_COVARIANCE = 1.0
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
         Translation2d(-7.24 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
@@ -37,6 +39,9 @@ object Easy265 {
     private lateinit var rightEncoder: Encoder
     private lateinit var imu: BNO055IMU
     private var pitchOffset: Double = 0.0
+    private val kV = DriveConstants.kV
+    private val kVBackward = DriveConstants.kVBackward
+    private var isChangedFF = false
 
 
     /**
@@ -162,11 +167,20 @@ object Easy265 {
             val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity) * cos(pitch)
             val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity) * cos(pitch)
             velocity = TankKinematics.wheelToRobotVelocities(mutableListOf(leftVelo, rightVelo), DriveConstants.TRACK_WIDTH)
-            camera.sendOdometry(velocity.x, 0.0)
+            // camera.sendOdometry(velocity.x, 0.0)
             Details.packet.put("Pitch", Math.toDegrees(pitch))
             Details.packet.put("RightVelo", rightVelo)
             Details.packet.put("LeftVelo", leftVelo)
             if (rightVelo != 0.0) Details.packet.put("Left/Right", leftVelo / rightVelo)
+            if (abs(Math.toDegrees(pitch)) > 5 && !isChangedFF) {
+                isChangedFF = true
+                DriveConstants.kV *= 2
+                DriveConstants.kVBackward *= 2
+            } else {
+                isChangedFF = false
+                DriveConstants.kV = kV
+                DriveConstants.kVBackward = kVBackward
+            }
         }
     }
 

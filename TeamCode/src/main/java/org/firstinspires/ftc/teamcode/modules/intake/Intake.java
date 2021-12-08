@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.intake;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
 
@@ -14,8 +15,10 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType;
  *
  * @author Matthew Song
  */
+@Config
 public class Intake extends Module<Intake.State> {
     private DcMotorEx intake;
+    public static double distanceLimit = 10;
     private Servo outL, outR, flipL, flipR;
     private ColorRangeSensor blockSensor;
     private double power;
@@ -23,8 +26,8 @@ public class Intake extends Module<Intake.State> {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
         OUT(0),
-        TRANSIT_IN(0.35),
-        TRANSFER(0.7),
+        TRANSIT_IN(0.5),
+        TRANSFER(1.2),
         IN(0);
         final double time;
         State(double time){
@@ -83,6 +86,7 @@ public class Intake extends Module<Intake.State> {
     @Override
     public void update() {
         double power = this.power;
+        double distanceSensor = blockSensor.getDistance(DistanceUnit.CM);
         switch(getState()){
             case PREP_OUT:
                 dropIntake();
@@ -99,7 +103,7 @@ public class Intake extends Module<Intake.State> {
                 break;
             case TRANSIT_IN:
                 if(elapsedTime.seconds() > getState().time) {
-                    if (blockSensor.getDistance(DistanceUnit.CM) < 10) {
+                    if (distanceSensor < distanceLimit) {
                         setState(State.TRANSFER);
                     } else {
                         setState(State.IN);
@@ -112,12 +116,13 @@ public class Intake extends Module<Intake.State> {
             case TRANSFER:
                 power = -1;
                 Platform.isLoaded = true;
-                if (elapsedTime.seconds() > getState().time) {
+                if (distanceSensor > distanceLimit || elapsedTime.seconds() > getState().time) {
                     setState(State.IN);
                     this.power = power = 0;
                 }
                 break;
         }
+        Details.packet.put("Distance Sensor", distanceSensor);
         intake.setPower(power);
     }
 
