@@ -7,7 +7,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
-import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
+
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -31,7 +32,6 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.packet;
-import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 
 @Config
@@ -52,7 +52,7 @@ public class TrajectorySequenceRunner {
 
     public static int POSE_HISTORY_LIMIT = 100;
 
-    private final TrajectoryFollower follower;
+    private final ImprovedTrajectoryFollower follower;
 
     private final PIDFController turnController;
 
@@ -73,7 +73,7 @@ public class TrajectorySequenceRunner {
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
     private final PIDCoefficients headingPIDCoefficients;
 
-    public TrajectorySequenceRunner(TrajectoryFollower follower, PIDCoefficients headingPIDCoefficients) {
+    public TrajectorySequenceRunner(ImprovedTrajectoryFollower follower, PIDCoefficients headingPIDCoefficients) {
         this.follower = follower;
         this.headingPIDCoefficients = headingPIDCoefficients;
 

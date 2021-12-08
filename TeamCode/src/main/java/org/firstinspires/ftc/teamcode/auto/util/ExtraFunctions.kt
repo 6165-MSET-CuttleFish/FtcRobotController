@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.auto.util
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
+import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
-import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TrajectorySegment
@@ -14,7 +16,8 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
 
 fun TrajectorySequenceBuilder.liftUp(deposit: Deposit): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
-        deposit.setState(Deposit.State.LEVEL3)
+        Platform.isLoaded = true
+        deposit.state = Deposit.State.LEVEL3
     }
 }
 
@@ -29,6 +32,26 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
         intake.setPower(0.0)
     }
 }
+
+fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    kV *= 5
+}.setConstraints(
+        Robot.getVelocityConstraint(
+            20.0,
+            MAX_ANG_VEL,
+            TRACK_WIDTH
+        ), Robot.getAccelerationConstraint(20.0)
+    )
+
+fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    kV /= 5
+}.setConstraints(
+        Robot.getVelocityConstraint(
+            MAX_VEL,
+            MAX_ANG_VEL,
+            TRACK_WIDTH
+        ), Robot.getAccelerationConstraint(MAX_ACCEL)
+    )
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)

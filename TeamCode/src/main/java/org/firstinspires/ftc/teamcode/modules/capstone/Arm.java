@@ -117,7 +117,7 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == Arm.State.OUT || getState() == Arm.State.TRANSIT_OUT;
+        return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
     }
 
     /**

@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 
 public class Capstone extends Module <Capstone.State> {
-    Slides capstoneSlides;
-    Arm capstoneArm;
+    public Slides capstoneSlides;
+    public Arm capstoneArm;
     public enum State {
         READY,
         PICKING_UP,
@@ -47,9 +47,9 @@ public class Capstone extends Module <Capstone.State> {
 
                         break;
                     case TRANSIT_IN:
+                        capstoneSlides.dropDown();
                         break;
                     case IN:
-                        capstoneSlides.dropDown();
                         if (capstoneSlides.getState() == Slides.State.IN) {
                             setState(State.HOLDING);
                         }

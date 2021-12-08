@@ -24,7 +24,6 @@ public class Slides extends Module<Slides.State> {
             this.time = time;
         }
     }
-    StateMachine<State> stateMachine;
     Servo slideLeft;
 
     /**
@@ -78,7 +77,9 @@ public class Slides extends Module<Slides.State> {
         placeset(0);
     }
 
-    private void halfcase(){placeset(0.05);}
+    private void halfcase() {
+        placeset(0.05);
+    }
     /**
      * Return platform to rest
      */
@@ -100,9 +101,7 @@ public class Slides extends Module<Slides.State> {
 
     @Override
     public boolean isDoingWork() {
-        if (slideLeft.getPosition()!= getState().dist&&elapsedTime.time()>getState().time){
-            return true;
-        } else return false;
+        return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
     }
     /**
      * @return Whether the module is currently in a hazardous state

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -12,13 +13,17 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
  * @author Martin
  */
+@Config
 public class Platform extends Module<Platform.State> {
+    public static double outPosition = 0.65;
+    public static double inPosition = 0.32;
+    public static boolean isLoaded;
     public enum State {
-        TRANSIT_IN (0.3),
+        TRANSIT_IN (0.4),
         IDLE(0.5),
         TRANSIT_OUT(0.08),
         OUT(0),
-        DUMPING(0.38);
+        DUMPING(0.5);
         final double time;
         State(double time) {
             this.time = time;
@@ -26,7 +31,6 @@ public class Platform extends Module<Platform.State> {
     }
     Servo dumpLeft, dumpRight, latch, lock;
     private final Intake intake;
-    public static boolean isLoaded;
 
 
     /**
@@ -51,7 +55,6 @@ public class Platform extends Module<Platform.State> {
         setState(State.IDLE);
         in();
         closeLatch();
-        unlock();
     }
 
     /**
@@ -100,11 +103,11 @@ public class Platform extends Module<Platform.State> {
         switch (balance) {
             case BALANCED:
             case TOWARD:
-                return 0.58;
+                return outPosition;
             case AWAY:
-                return 0.57;
+                return outPosition - 0.04;
         }
-        return 0.55;
+        return outPosition;
     }
 
     /**
@@ -120,7 +123,7 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void in() {
-        double position = 0.29;
+        double position = inPosition;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(1 - position);
     }
@@ -144,7 +147,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void unlock() {
-        lock.setPosition(0.36);
+        lock.setPosition(0.5);
     }
 
     /**

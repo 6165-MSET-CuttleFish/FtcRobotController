@@ -18,6 +18,11 @@ class Deposit : Module() {
     }
     fun dump() = platform.dump()
 }
+class Detector {
+    enum class Location {
+        LEFT, MIDDLE, RIGHT
+    }
+}
 
 class Platform : Module() {
     fun dump() {

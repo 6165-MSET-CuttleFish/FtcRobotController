@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 /*
@@ -24,9 +25,12 @@ public class DriveConstants {
      */
     public static final double TICKS_PER_REV = 378;
     public static final double MAX_RPM = 444.444444444;
-    public static double MAX_CURRENT = 4500;
+    public static double MAX_CURRENT = 4200;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(7));
+    public static double admissibleDistance = 3;
+    public static double admissibleTimeout = 0.5;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -37,6 +41,7 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = false;
+    public static boolean USE_COVARIANCE = true;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
             getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
@@ -94,8 +99,8 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 50;
-    public static double MAX_ACCEL = 50;
+    public static double MAX_VEL = 55;
+    public static double MAX_ACCEL = 55;
     public static double MAX_ANG_VEL = Math.toRadians(274.5043079608481);
     public static double MAX_ANG_ACCEL = Math.toRadians(274.5043079608481);
 

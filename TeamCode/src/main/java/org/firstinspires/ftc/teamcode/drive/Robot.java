@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
-import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -61,6 +61,9 @@ import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.COOLDOWN_TIME;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
+import static org.firstinspires.ftc.teamcode.util.field.Details.location;
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
@@ -72,12 +75,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kABackward;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStaticBackward;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kVBackward;
 import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 /**
@@ -91,6 +88,7 @@ public class Robot extends ImprovedTankDrive {
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
+    private final double pitchOffset;
 
     final HardwareMap hardwareMap;
 
@@ -132,7 +130,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
-        super(kV, kA, kStatic, TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next(), kVBackward, kABackward, kStaticBackward);
+        super(TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next());
         dashboard = FtcDashboard.getInstance();
         Details.opModeType = type;
         Details.alliance = alliance;
@@ -141,7 +139,7 @@ public class Robot extends ImprovedTankDrive {
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
-        TrajectoryFollower follower = new ImprovedRamsete();
+        ImprovedTrajectoryFollower follower = new ImprovedRamsete();
         // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
@@ -185,11 +183,14 @@ public class Robot extends ImprovedTankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
-        setLocalizer(new T265Localizer());
+        if (opModeType != OpModeType.TELE) {
+            Easy265.initWithoutStop(opMode, this);
+            setLocalizer(new T265Localizer());
+        }
         if (opModeType == OpModeType.AUTO) {
             // autoInit();
         }
+        pitchOffset = -imu.getAngularOrientation().secondAngle;
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -227,6 +228,10 @@ public class Robot extends ImprovedTankDrive {
     public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
+    }
+
+    public void scan() {
+        location = detector.getLocation();
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -320,6 +325,13 @@ public class Robot extends ImprovedTankDrive {
         }
         if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Single Motor Current", current);
+        Details.packet.put("Motor Limit", MAX_CURRENT);
+        Details.packet.put("Pitch", Math.toDegrees(getPitch()));
+        Details.packet.addLine("Arm State: " + capstone.capstoneArm.getState());
+        Details.packet.addLine("Slides State: " + capstone.capstoneSlides.getState());
+        if (admissibleDistance != admissibleError.getX()) {
+            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, admissibleError.getHeading());
+        }
         if (current > MAX_CURRENT && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             cooldown.reset();
@@ -327,9 +339,6 @@ public class Robot extends ImprovedTankDrive {
             if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
             if (current <= MAX_CURRENT) currentTimer.reset();
         }
-        assert getPoseVelocity() != null;
-        Details.packet.put("Velocity X", getPoseVelocity().getX());
-        Details.packet.put("Velocity Y", getPoseVelocity().getY());
         current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -440,7 +449,8 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        return Arrays.asList(leftSum, rightSum);
+        double pitch = getPitch();
+        return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
     public List<Double> getWheelVelocities() {
@@ -451,13 +461,14 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        return Arrays.asList(leftSum, rightSum);
+        double pitch = getPitch();
+        return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
+            leftMotor.setPower(v * 1.03092783505);
         }
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);
@@ -478,5 +489,9 @@ public class Robot extends ImprovedTankDrive {
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
+    }
+
+    public double getPitch() {
+        return -imu.getAngularOrientation().secondAngle - pitchOffset;
     }
 }

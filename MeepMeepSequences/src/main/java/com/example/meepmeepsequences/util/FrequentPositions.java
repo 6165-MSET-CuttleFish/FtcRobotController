@@ -1,13 +1,10 @@
-package org.firstinspires.ftc.teamcode.drive;
+package com.example.meepmeepsequences.util;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.util.field.Alliance;
-import org.firstinspires.ftc.teamcode.util.field.Side;
-
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.location;
-import static org.firstinspires.ftc.teamcode.util.field.Details.side;
+import static com.example.meepmeepsequences.util.Details.alliance;
+import static com.example.meepmeepsequences.util.Details.location;
+import static com.example.meepmeepsequences.util.Details.side;
 
 public class FrequentPositions {
     public static Pose2d flipSide(Pose2d pose2d) {
@@ -49,7 +46,7 @@ public class FrequentPositions {
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(8.2, -48.0, Math.toRadians(40)),
+                        new Pose2d(8.2, -50.0, Math.toRadians(40)),
                         new Pose2d(8.2, -50.0, Math.toRadians(10)),
                         new Pose2d(9, -47.0, Math.toRadians(-20))
                 };
@@ -63,9 +60,9 @@ public class FrequentPositions {
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(3.0, 50.0),
-                        new Pose2d(11.5, 50.0),
-                        new Pose2d(20.0, 50.0)
+                        new Pose2d(8.2, 50.0, Math.toRadians(70)),
+                        new Pose2d(8.2, 50.0, Math.toRadians(30)),
+                        new Pose2d(9, 47.0, Math.toRadians(70))
                 };
             }
         }
