@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this, new Pose2d(12, -58, Math.toRadians(-90)));
+        Robot robot = new Robot(this, new Pose2d(0, 0, Math.toRadians(0)));
 
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Ready", "ready");

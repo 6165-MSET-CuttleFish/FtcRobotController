@@ -61,6 +61,9 @@ import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.COOLDOWN_TIME;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
+import static org.firstinspires.ftc.teamcode.util.field.Details.location;
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
 import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
@@ -137,7 +140,7 @@ public class Robot extends ImprovedTankDrive {
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
         ImprovedTrajectoryFollower follower = new ImprovedRamsete();
-//         follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -187,7 +190,7 @@ public class Robot extends ImprovedTankDrive {
         if (opModeType == OpModeType.AUTO) {
             // autoInit();
         }
-        pitchOffset = imu.getAngularOrientation().secondAngle;
+        pitchOffset = -imu.getAngularOrientation().secondAngle;
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -225,6 +228,10 @@ public class Robot extends ImprovedTankDrive {
     public void turnOffVision() {
         webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
+    }
+
+    public void scan() {
+        location = detector.getLocation();
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -319,6 +326,12 @@ public class Robot extends ImprovedTankDrive {
         if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
         Details.packet.put("Single Motor Current", current);
         Details.packet.put("Motor Limit", MAX_CURRENT);
+        Details.packet.put("Pitch", Math.toDegrees(getPitch()));
+        Details.packet.addLine("Arm State: " + capstone.capstoneArm.getState());
+        Details.packet.addLine("Slides State: " + capstone.capstoneSlides.getState());
+        if (admissibleDistance != admissibleError.getX()) {
+            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, admissibleError.getHeading());
+        }
         if (current > MAX_CURRENT && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             cooldown.reset();
@@ -479,6 +492,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public double getPitch() {
-        return imu.getAngularOrientation().secondAngle - pitchOffset;
+        return -imu.getAngularOrientation().secondAngle - pitchOffset;
     }
 }

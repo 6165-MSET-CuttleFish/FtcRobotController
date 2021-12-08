@@ -1,27 +1,16 @@
 package org.firstinspires.ftc.teamcode.localizers.t265
 
-import com.acmerobotics.roadrunner.drive.Drive
-import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
-import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
 import com.intel.realsense.librealsense.UsbUtilities
-import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
-import org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches
-import org.firstinspires.ftc.teamcode.drive.DriveConstants.kV
-import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.util.*
-import org.firstinspires.ftc.teamcode.util.field.Details
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive
-import kotlin.math.abs
-import kotlin.math.cos
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.*
 
 /**
  * Static accessibility class which allows for easy
@@ -32,10 +21,10 @@ import kotlin.math.cos
 @Suppress("UNUSED")
 object Easy265 {
     private const val TAG = "Easy265"
-    private const val ODOMETRY_COVARIANCE = 1.0
+    private const val ODOMETRY_COVARIANCE = 0.95
     private const val INCH_TO_METER = 0.0254
     private val defaultTransform2d = Transform2d(
-        Translation2d(-7.24 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
+        Translation2d(-7.71 * INCH_TO_METER, 0.36 * INCH_TO_METER), Rotation2d(
             Math.toRadians(180.0)
         )
     )
@@ -154,7 +143,8 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            velocity = TankKinematics.wheelToRobotVelocities(drive.getWheelVelocities() ?: listOf(0.0, 0.0), DriveConstants.TRACK_WIDTH)
+            velocity = TankKinematics.wheelToRobotVelocities(drive.getWheelVelocities() ?: listOf(0.0, 0.0), TRACK_WIDTH)
+            if (USE_COVARIANCE) camera.sendOdometry(velocity.x * INCH_TO_METER, velocity.y * INCH_TO_METER)
         }
     }
 

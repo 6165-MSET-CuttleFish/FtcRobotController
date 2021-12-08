@@ -28,7 +28,8 @@ public class DriveConstants {
     public static double MAX_CURRENT = 4200;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(0.5));
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(7));
+    public static double admissibleDistance = 3;
     public static double admissibleTimeout = 0.5;
 
     /*
@@ -40,6 +41,7 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = false;
+    public static boolean USE_COVARIANCE = true;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
             getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 

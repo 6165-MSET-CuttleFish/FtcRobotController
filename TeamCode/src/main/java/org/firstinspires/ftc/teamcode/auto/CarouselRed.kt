@@ -7,9 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
 import org.firstinspires.ftc.teamcode.drive.Robot
-import org.firstinspires.ftc.teamcode.drive.Robot.*
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
-import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
@@ -17,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.flip
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous

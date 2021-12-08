@@ -49,7 +49,7 @@ public class FrequentPositions {
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(8.2, -50.0, Math.toRadians(40)),
+                        new Pose2d(8.2, -48.0, Math.toRadians(40)),
                         new Pose2d(8.2, -50.0, Math.toRadians(10)),
                         new Pose2d(9, -47.0, Math.toRadians(-20))
                 };

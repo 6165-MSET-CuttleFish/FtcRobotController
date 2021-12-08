@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TrajectorySegment
@@ -15,7 +16,8 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
 
 fun TrajectorySequenceBuilder.liftUp(deposit: Deposit): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
-        deposit.setState(Deposit.State.LEVEL3)
+        Platform.isLoaded = true
+        deposit.state = Deposit.State.LEVEL3
     }
 }
 
@@ -32,7 +34,7 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
 }
 
 fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
-    kV *= 2
+    kV *= 5
 }.setConstraints(
         Robot.getVelocityConstraint(
             20.0,
@@ -42,7 +44,7 @@ fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder = UNST
     )
 
 fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
-    kV /= 2
+    kV /= 5
 }.setConstraints(
         Robot.getVelocityConstraint(
             MAX_VEL,

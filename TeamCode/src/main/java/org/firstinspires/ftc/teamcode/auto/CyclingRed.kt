@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.flip
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
@@ -69,7 +69,7 @@ class CyclingRed : LinearOpMode() {
                             5 * Math.random(),
                             5 * Math.random()
                         )
-                    ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
+                    ).flip(blue), Math.toRadians(-35.0 + 5 * Math.random()).flip(blue)
                 )
                 .setReversed(true)
                 .intakeOff(intake)

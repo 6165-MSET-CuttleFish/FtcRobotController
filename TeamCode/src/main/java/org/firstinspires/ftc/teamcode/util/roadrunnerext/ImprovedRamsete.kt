@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.util.roadrunnerext
 
 import com.acmerobotics.roadrunner.drive.DriveSignal
-import com.acmerobotics.roadrunner.followers.TrajectoryFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.RamseteConstants.*
-import org.firstinspires.ftc.teamcode.util.toInches
-import org.firstinspires.ftc.teamcode.util.toMeters
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
@@ -41,7 +38,6 @@ class ImprovedRamsete @JvmOverloads constructor(
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val currentPose = currentPose.toMeters()
         val t = elapsedTime()
-        admissibleError = Pose2d()
         val targetPose = trajectory[t].toMeters()
         val targetVel = trajectory.velocity(t).toMeters()
         val targetAccel = trajectory.acceleration(t).toMeters()
