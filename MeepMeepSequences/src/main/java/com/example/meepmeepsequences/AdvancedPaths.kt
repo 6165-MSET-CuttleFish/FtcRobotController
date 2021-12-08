@@ -3,7 +3,10 @@ package com.example.meepmeepsequences
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
-import com.example.meepmeepsequences.util.Robot.*
+import com.example.meepmeepsequences.util.Details.alliance
+import com.example.meepmeepsequences.util.Details.side
+import com.example.meepmeepsequences.util.Details.windowSize
+import com.example.meepmeepsequences.util.FrequentPositions.*
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
@@ -16,24 +19,24 @@ class AdvancedPaths {
     fun carouselPath(blue: Boolean): MeepMeep {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
-        return MeepMeep(Robot.windowSize)
+        return MeepMeep(windowSize)
             .setBackground(MeepMeep.Background.FIELD_FREIGHT_FRENZY) // Set field image
             .setTheme(ColorSchemeRedDark()) // Set theme
             .setBackgroundAlpha(1f)
             .configure() // configure robot
             .followTrajectorySequence { robot ->
                 val trajectoryBuilder =
-                    robot.trajectorySequenceBuilder(Robot.startingPosition())
+                    robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
                         .capstoneReady(capstone)
                         .splineTo(
-                            Robot.duckLocations()[0].vec(),
-                            Math.toRadians(90.0).flip(blue) + Robot.duckLocations()[0].heading
+                            duckLocations()[0].vec(),
+                            Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
                         )
                         .capstonePickup(capstone)
                         .liftUp(deposit)
                         .waitWhile(capstone::isDoingWork) // capstone loaded
-                        .splineTo(Robot.dumpPosition().vec(), Robot.dumpPosition().heading)
+                        .splineTo(dumpPosition().vec(), dumpPosition().heading)
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -90,8 +93,8 @@ class AdvancedPaths {
                         .setReversed(true)
                         .capstoneReady(capstone)
                         .splineTo(
-                            duckLocations()[0].vec(),
-                            Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
+                            duckLocation().vec(),
+                            Math.toRadians(90.0).flip(blue) + duckLocation().heading
                         )
                         .capstonePickup(capstone)
                         .liftUp(deposit)
@@ -100,16 +103,21 @@ class AdvancedPaths {
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                for (i in 1..6)
+                for (i in 1..5)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                             intake.setPower(1.0)
                         }
                         .splineTo(
-                           Vector2d(24.0, -40.0).flip(blue), 0.0
+                            Vector2d(20.0, -40.0).flip(blue), 0.0
                         )
+                        .decreaseGains()
                         .splineTo(
-                            Vector2d(48.0, -50.0).plus(
+                            Vector2d(24.0, -40.0).flip(blue), 0.0
+                        )
+                        .defaultGains()
+                        .splineTo(
+                            Vector2d(52.0, -50.0).plus(
                                 Vector2d(
                                     5 * Math.random(),
                                     5 * Math.random()
@@ -119,13 +127,18 @@ class AdvancedPaths {
                         .setReversed(true)
                         .intakeOff(intake)
                         .splineTo(
+                            Vector2d(26.0, -40.0).flip(blue), Math.PI
+                        )
+                        .decreaseGains()
+                        .splineTo(
                             Vector2d(24.0, -40.0).flip(blue), Math.PI
                         )
+                        .defaultGains()
                         .splineTo(cycleDumpPosition().vec(), cycleDumpPosition().heading + Math.PI.flip(blue))
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
-                trajectoryBuilder
+               trajectoryBuilder
                     .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
                     .build()
             }

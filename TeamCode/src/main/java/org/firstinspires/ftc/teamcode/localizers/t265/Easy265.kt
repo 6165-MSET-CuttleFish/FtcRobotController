@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.localizers.t265
 
+import com.acmerobotics.roadrunner.drive.Drive
+import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
@@ -14,8 +16,10 @@ import com.spartronics4915.lib.T265Camera
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.kV
+import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.field.Details
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive
 import kotlin.math.abs
 import kotlin.math.cos
 
@@ -35,13 +39,7 @@ object Easy265 {
             Math.toRadians(180.0)
         )
     )
-    private lateinit var leftEncoder: Encoder
-    private lateinit var rightEncoder: Encoder
-    private lateinit var imu: BNO055IMU
-    private var pitchOffset: Double = 0.0
-    private val kV = DriveConstants.kV
-    private val kVBackward = DriveConstants.kVBackward
-    private var isChangedFF = false
+    private lateinit var drive: ImprovedTankDrive
 
 
     /**
@@ -101,14 +99,9 @@ object Easy265 {
         opMode: OpMode,
         cameraToRobot: Transform2d = defaultTransform2d,
         attempts: Int = 6,
-        leftMotor: DcMotorEx,
-        rightMotor: DcMotorEx,
-        imu: BNO055IMU
+        drive: ImprovedTankDrive
     ) {
-        this.imu = imu
-        leftEncoder = Encoder(leftMotor)
-        rightEncoder = Encoder(rightMotor)
-        pitchOffset = imu.angularOrientation.secondAngle.toDouble()
+        this.drive = drive
         velocity = com.acmerobotics.roadrunner.geometry.Pose2d()
         try {
             if(!Easy265::camera.isInitialized) {
@@ -128,7 +121,7 @@ object Easy265 {
                 throw RuntimeException("Unable to start T265Camera after various attempts", e)
             } else {
                 RobotLog.w(TAG, "Unable to start T265Camera, retrying...", e)
-                init(opMode, cameraToRobot, attempts - 1, leftMotor, rightMotor, imu)
+                init(opMode, cameraToRobot, attempts - 1, drive)
             }
         }
     }
@@ -144,10 +137,8 @@ object Easy265 {
     @JvmStatic @JvmOverloads fun initWithoutStop(
         opMode: OpMode,
         cameraToRobot: Transform2d = defaultTransform2d,
-        leftMotor: DcMotorEx,
-        rightMotor: DcMotorEx,
-        imu: BNO055IMU,
-    ) = init(opMode, cameraToRobot, Int.MAX_VALUE, leftMotor, rightMotor, imu)
+        drive: ImprovedTankDrive
+    ) = init(opMode, cameraToRobot, Int.MAX_VALUE, drive)
 
     /**
      * Pulls the last data from the camera and stores it the
@@ -163,24 +154,7 @@ object Easy265 {
                 return
             }
             lastCameraUpdate = camera.lastReceivedCameraUpdate
-            val pitch = imu.angularOrientation.secondAngle.toDouble() - pitchOffset
-            val leftVelo = encoderTicksToInches(leftEncoder.rawVelocity) * cos(pitch)
-            val rightVelo = encoderTicksToInches(rightEncoder.rawVelocity) * cos(pitch)
-            velocity = TankKinematics.wheelToRobotVelocities(mutableListOf(leftVelo, rightVelo), DriveConstants.TRACK_WIDTH)
-            // camera.sendOdometry(velocity.x, 0.0)
-            Details.packet.put("Pitch", Math.toDegrees(pitch))
-            Details.packet.put("RightVelo", rightVelo)
-            Details.packet.put("LeftVelo", leftVelo)
-            if (rightVelo != 0.0) Details.packet.put("Left/Right", leftVelo / rightVelo)
-            if (abs(Math.toDegrees(pitch)) > 5 && !isChangedFF) {
-                isChangedFF = true
-                DriveConstants.kV *= 2
-                DriveConstants.kVBackward *= 2
-            } else {
-                isChangedFF = false
-                DriveConstants.kV = kV
-                DriveConstants.kVBackward = kVBackward
-            }
+            velocity = TankKinematics.wheelToRobotVelocities(drive.getWheelVelocities() ?: listOf(0.0, 0.0), DriveConstants.TRACK_WIDTH)
         }
     }
 

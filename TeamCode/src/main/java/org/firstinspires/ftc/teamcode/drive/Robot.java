@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
-import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -72,12 +72,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kABackward;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStaticBackward;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kVBackward;
 import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 
 /**
@@ -133,7 +127,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
-        super(kV, kA, kStatic, TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next(), kVBackward, kABackward, kStaticBackward);
+        super(TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next());
         dashboard = FtcDashboard.getInstance();
         Details.opModeType = type;
         Details.alliance = alliance;
@@ -142,8 +136,8 @@ public class Robot extends ImprovedTankDrive {
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
-        TrajectoryFollower follower = new ImprovedRamsete();
-        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        ImprovedTrajectoryFollower follower = new ImprovedRamsete();
+//         follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -187,7 +181,7 @@ public class Robot extends ImprovedTankDrive {
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType != OpModeType.TELE) {
-            Easy265.initWithoutStop(opMode, leftMid, rightRear, imu);
+            Easy265.initWithoutStop(opMode, this);
             setLocalizer(new T265Localizer());
         }
         if (opModeType == OpModeType.AUTO) {
@@ -461,7 +455,7 @@ public class Robot extends ImprovedTankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
+            leftMotor.setPower(v * 1.03092783505);
         }
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);

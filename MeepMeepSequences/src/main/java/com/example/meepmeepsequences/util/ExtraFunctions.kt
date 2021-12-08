@@ -2,8 +2,13 @@ package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.profile.AccelerationConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
+import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
+import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
@@ -67,6 +72,26 @@ fun MeepMeep.configure(): MeepMeep {
         .setBotDimensions(17.2, 17.192913)
         .setConstraints(60.0, 60.0, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
 }
+
+fun TrajectorySequenceBuilder.decreaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    println("Gains Decreased")
+}.setConstraints(
+        getVelocityConstraint(
+            20.0,
+            Math.toRadians(274.0),
+            15.0
+        ), getAccelerationConstraint(30.0) ?: ProfileAccelerationConstraint(20.0)
+    )
+
+fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+        println("Gains Default")
+    }.setConstraints(
+        getVelocityConstraint(
+            60.0,
+            Math.toRadians(274.0),
+            15.0
+        ), getAccelerationConstraint(60.0) ?: ProfileAccelerationConstraint(60.0)
+    )
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder

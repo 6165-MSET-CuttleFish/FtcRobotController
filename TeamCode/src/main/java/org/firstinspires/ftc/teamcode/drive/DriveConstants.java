@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 /*
@@ -27,6 +28,8 @@ public class DriveConstants {
     public static double MAX_CURRENT = 4200;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(0.5));
+    public static double admissibleTimeout = 0.5;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.

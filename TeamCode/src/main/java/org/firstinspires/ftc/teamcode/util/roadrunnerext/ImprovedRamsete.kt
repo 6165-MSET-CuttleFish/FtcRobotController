@@ -28,7 +28,7 @@ class ImprovedRamsete @JvmOverloads constructor(
     admissibleError: Pose2d = Pose2d(2.0, 2.0, Math.toRadians(5.0)),
     timeout: Double =  0.5,
     clock: NanoClock = NanoClock.system(),
-) : TrajectoryFollower(admissibleError, timeout, clock) {
+) : ImprovedTrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
     private fun sinc(x: Double) =
@@ -41,7 +41,7 @@ class ImprovedRamsete @JvmOverloads constructor(
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val currentPose = currentPose.toMeters()
         val t = elapsedTime()
-
+        admissibleError = Pose2d()
         val targetPose = trajectory[t].toMeters()
         val targetVel = trajectory.velocity(t).toMeters()
         val targetAccel = trajectory.acceleration(t).toMeters()

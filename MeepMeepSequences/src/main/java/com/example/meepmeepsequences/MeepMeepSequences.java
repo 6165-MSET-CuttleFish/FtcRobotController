@@ -1,7 +1,11 @@
 package com.example.meepmeepsequences;
 
+import com.example.meepmeepsequences.util.Details;
+import com.example.meepmeepsequences.util.Detector;
+
 public class MeepMeepSequences {
     public static void main(String[] args) {
-        new AdvancedPaths().cyclingPath(false).start();
+        Details.location = Detector.Location.RIGHT;
+        new AdvancedPaths().cyclingPath(true).start();
     }
 }

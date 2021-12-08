@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.VoltageSensor
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
@@ -18,14 +19,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  */
 abstract class ImprovedTankDrive @JvmOverloads constructor(
-    private val kV: Double,
-    private val kA: Double,
-    private val kStatic: Double,
     private val trackWidth: Double,
     private val voltageSensor: VoltageSensor,
-    private val kVBackward: Double = kV,
-    private val kABackward: Double = kA,
-    private val kStaticBackward: Double = kStatic,
 ) : Drive() {
 
     /**
@@ -98,7 +93,7 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
 
     override fun setDrivePower(drivePower: Pose2d) {
         val powers = TankKinematics.robotToWheelVelocities(drivePower, 1.0)
-        setMotorPowers(powers[0], powers[1] * 0.97)
+        setMotorPowers(powers[0], powers[1])
     }
 
     /**

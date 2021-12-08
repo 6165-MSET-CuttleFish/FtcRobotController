@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Side;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.location;
 import static org.firstinspires.ftc.teamcode.util.field.Details.side;
 
 public class FrequentPositions {
@@ -28,6 +29,16 @@ public class FrequentPositions {
         return alliance == Alliance.RED ? regular : flipSide(regular);
     }
 
+    public static Pose2d duckLocation() {
+        Pose2d[] arr = duckLocations();
+        switch (location) {
+            case LEFT: return arr[0];
+            case RIGHT: return arr[2];
+            case MIDDLE: return arr[1];
+        }
+        return arr[0];
+    }
+
     public static Pose2d[] duckLocations() {
         if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
@@ -38,9 +49,9 @@ public class FrequentPositions {
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(3.0, -50.0),
-                        new Pose2d(11.5, -50.0),
-                        new Pose2d(20.0, -50.0)
+                        new Pose2d(8.2, -50.0, Math.toRadians(40)),
+                        new Pose2d(8.2, -50.0, Math.toRadians(10)),
+                        new Pose2d(9, -47.0, Math.toRadians(-20))
                 };
             }
         } else {

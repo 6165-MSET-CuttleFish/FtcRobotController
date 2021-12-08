@@ -10,7 +10,9 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
@@ -38,8 +40,8 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(true)
                 .capstoneReady(capstone)
                 .splineTo(
-                    duckLocations()[0].vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
+                    duckLocation().vec(),
+                    Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
                 .capstonePickup(capstone)
                 .liftUp(deposit)
@@ -48,7 +50,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        for (i in 1..6)
+        for (i in 1..5)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                     intake.setPower(1.0)
@@ -86,6 +88,7 @@ class CyclingRed : LinearOpMode() {
         val trajectorySequence = trajectoryBuilder
             .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
             .build()
+        location = Detector.Location.LEFT
         waitForStart()
         robot.followTrajectorySequence(trajectorySequence)
     }

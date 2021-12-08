@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.auto.util
 
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
-import org.firstinspires.ftc.teamcode.modules.capstone.Slides
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
@@ -32,35 +31,25 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
     }
 }
 
-fun TrajectorySequenceBuilder.increaseGains() : TrajectorySequenceBuilder {
-    return setConstraints(
-        Robot.getVelocityConstraint(
-            80.0,
-            DriveConstants.MAX_ANG_VEL,
-            DriveConstants.TRACK_WIDTH
-        ), Robot.getAccelerationConstraint(80.0)
-    )
-}
-
-fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder {
-    return setConstraints(
+fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    kV *= 2
+}.setConstraints(
         Robot.getVelocityConstraint(
             20.0,
-            DriveConstants.MAX_ANG_VEL,
-            DriveConstants.TRACK_WIDTH
+            MAX_ANG_VEL,
+            TRACK_WIDTH
         ), Robot.getAccelerationConstraint(20.0)
     )
-}
 
-fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder {
-    return setConstraints(
+fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    kV /= 2
+}.setConstraints(
         Robot.getVelocityConstraint(
-            DriveConstants.MAX_VEL,
-            DriveConstants.MAX_ANG_VEL,
-            DriveConstants.TRACK_WIDTH
-        ), Robot.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+            MAX_VEL,
+            MAX_ANG_VEL,
+            TRACK_WIDTH
+        ), Robot.getAccelerationConstraint(MAX_ACCEL)
     )
-}
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
