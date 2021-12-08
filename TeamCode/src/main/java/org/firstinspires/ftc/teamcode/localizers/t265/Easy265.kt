@@ -72,7 +72,7 @@ object Easy265 {
 //            }
             if(value != null && isStarted && !poseHasBeenSet) {
                 poseHasBeenSet = true
-                camera.setPose(value.toFTCLibPose2d().toMeters())
+                camera.setPose(value.flipHeading().toFTCLibPose2d().toMeters())
             }
         }
         get() = lastCameraUpdate?.pose?.toRRPose2d()?.toInches()

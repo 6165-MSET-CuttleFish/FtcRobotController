@@ -23,7 +23,7 @@ public class Intake extends Module<Intake.State> {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
         OUT(0),
-        TRANSIT_IN(0.5),
+        TRANSIT_IN(0.35),
         TRANSFER(0.7),
         IN(0);
         final double time;

@@ -14,6 +14,10 @@ fun com.acmerobotics.roadrunner.geometry.Pose2d.toFTCLibPose2d(): Pose2d {
     return Pose2d(this.x, this.y, Rotation2d(this.heading))
 }
 
+fun com.acmerobotics.roadrunner.geometry.Pose2d.flipHeading(): com.acmerobotics.roadrunner.geometry.Pose2d {
+    return com.acmerobotics.roadrunner.geometry.Pose2d(this.x, this.y, -this.heading)
+}
+
 fun ChassisSpeeds.toRRPoseVelo(): com.acmerobotics.roadrunner.geometry.Pose2d {
     return com.acmerobotics.roadrunner.geometry.Pose2d(
         this.vxMetersPerSecond,
