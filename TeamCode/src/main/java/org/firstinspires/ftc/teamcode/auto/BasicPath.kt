@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.flip
+import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
