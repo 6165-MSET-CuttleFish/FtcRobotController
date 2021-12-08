@@ -33,7 +33,7 @@ class BasicCarouselPath {
                             .capstonePickup(capstone)
                             .liftUp(deposit)
                             .waitWhile(capstone::isDoingWork) // capstone loaded
-                            //.splineTo(cycleDump().vec(), cycleDump().heading)
+                            .splineTo(Vector2d(-26.0, -36.0).flip(blue), Math.toRadians(40.0).flip(blue))
                             .setReversed(false)
                             .dump(deposit)
                             .waitWhile(deposit::isDoingWork) // wait for platform to dump
@@ -42,7 +42,7 @@ class BasicCarouselPath {
                             .waitSeconds(1.5)
                             .carouselOff(carousel)// drop the ducky
                             .setReversed(true)
-                            .splineTo(Vector2d(-60.0, -36.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                            .splineTo(Vector2d(-60.0, -36.0).flip(blue), Math.toRadians(90.0).flip(blue))
                     trajectoryBuilder
 
                         .build()

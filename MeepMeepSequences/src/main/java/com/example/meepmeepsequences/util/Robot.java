@@ -3,7 +3,7 @@ package com.example.meepmeepsequences.util;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 public class Robot {
-    public static int windowSize = 1000;
+    public static int windowSize = 500;
     public static Alliance alliance = Alliance.BLUE;
     public static Side side = Side.CAROUSEL;
 
