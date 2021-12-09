@@ -12,7 +12,7 @@ public class Robot {
     }
 
     public static Pose2d startingPosition() {
-        Pose2d regular = side == Side.CYCLING ? new Pose2d(12, -58, Math.toRadians(-90)) : new Pose2d(-36, -58, Math.toRadians(-90));
+        Pose2d regular = side == Side.CYCLING ? new Pose2d(12, -58, Math.toRadians(-90)) : new Pose2d(-36, -63, Math.toRadians(-90));
         return alliance == Alliance.RED ? regular : flipSide(regular);
     }
 

@@ -144,7 +144,6 @@ public class EncoderBased extends LinearOpMode {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 48 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,  -48,  -48, 5.0);
 
 
         telemetry.addData("Path", "Complete");
