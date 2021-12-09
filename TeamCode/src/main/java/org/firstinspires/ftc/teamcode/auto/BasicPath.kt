@@ -47,18 +47,18 @@ class BasicPath : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-30.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
+                .splineTo(Vector2d(-26.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
-                .splineTo(Vector2d(-50.0, -50.0).flip(blue), Math.toRadians(215.0).flip(blue))
-                .forward(6.0)
+                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
+                .splineTo(Vector2d(-60.0, -54.0).flip(blue), Math.toRadians(215.0).flip(blue))
                 .waitSeconds(1.5)
                 .carouselOff(carousel)// drop the ducky
-                .back(6.0)
+                .resetConstraints()
                 .setReversed(true)
-                .splineTo(Vector2d(-63.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
                 .build()
 
