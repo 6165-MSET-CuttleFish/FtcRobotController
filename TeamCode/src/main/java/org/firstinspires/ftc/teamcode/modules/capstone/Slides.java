@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 public class Slides extends Module<Slides.State> {
     public enum State {
-        TRANSIT_IN (0,1),
+        TRANSIT_IN (0,0.5),
         IN(0.2,1),
-        TRANSIT_OUT(0.5, 0.5),
+        TRANSIT_OUT(0.5, 1),
         OUT(0.5,0.4),
         HALF(0,0.5);
         final double dist;

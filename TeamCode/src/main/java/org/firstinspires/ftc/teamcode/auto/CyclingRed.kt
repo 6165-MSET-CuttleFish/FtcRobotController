@@ -35,6 +35,8 @@ class CyclingRed : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
+        location = Detector.Location.MIDDLE
+        robot.autoInit()
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
@@ -50,7 +52,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        for (i in 1..5)
+        for (i in 1..1)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                     intake.setPower(1.0)
