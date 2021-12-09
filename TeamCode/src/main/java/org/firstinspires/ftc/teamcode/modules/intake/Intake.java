@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 @Config
 public class Intake extends Module<Intake.State> {
     private DcMotorEx intake;
-    public static double distanceLimit = 10;
+    public static double distanceLimit = 12;
     private Servo outL, outR, flipL, flipR;
     private ColorRangeSensor blockSensor;
     private double power;
@@ -27,7 +27,7 @@ public class Intake extends Module<Intake.State> {
         TRANSIT_OUT(0.3),
         OUT(0),
         TRANSIT_IN(0.5),
-        TRANSFER(1.2),
+        TRANSFER(1.5),
         IN(0);
         final double time;
         State(double time){

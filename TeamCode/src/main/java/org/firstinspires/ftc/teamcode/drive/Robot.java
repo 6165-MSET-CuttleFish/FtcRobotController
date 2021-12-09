@@ -496,6 +496,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public double getPitch() {
-        return 0;
+        return -imu.getAngularOrientation().secondAngle - pitchOffset;
     }
 }

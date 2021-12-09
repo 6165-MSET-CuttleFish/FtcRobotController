@@ -44,15 +44,14 @@ public class Capstone extends Module <Capstone.State> {
                             capstoneArm.hold();
                         }
                         capstoneSlides.pickUp();
-
                         break;
                     case TRANSIT_IN:
-                        capstoneSlides.dropDown();
                         break;
                     case IN:
                         if (capstoneSlides.getState() == Slides.State.IN) {
                             setState(State.HOLDING);
                         }
+                        capstoneSlides.dropDown();
                 }
                 break;
             case HOLDING:
