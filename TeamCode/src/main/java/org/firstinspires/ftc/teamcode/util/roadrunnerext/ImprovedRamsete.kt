@@ -40,13 +40,13 @@ class ImprovedRamsete @JvmOverloads constructor(
         val t = elapsedTime()
         val targetPose = trajectory[t].toMeters()
         val targetVel = trajectory.velocity(t).toMeters()
-        val targetAccel = trajectory.acceleration(t).toMeters()
+        val targetAccel = if(t > trajectory.duration()) Pose2d() else trajectory.acceleration(t).toMeters()
 
         val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose.toInches(), targetVel.toInches()).toMeters()
         val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose.toInches(), targetVel.toInches(), targetAccel.toInches()).toMeters()
 
-        val targetV = targetRobotVel.x + (currentRobotVel?.let { kLinear * (targetRobotVel.toInches().x - hypot(it.x, it.y)) } ?: 0.0)
-        val targetOmega = targetRobotVel.heading + (currentRobotVel?.let { kHeading * (targetRobotVel.toInches().heading - it.heading) } ?: 0.0)
+        val targetV = targetRobotVel.x
+        val targetOmega = targetRobotVel.heading
 
         val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
@@ -60,8 +60,12 @@ class ImprovedRamsete @JvmOverloads constructor(
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
+        val outV = v + (currentRobotVel?.toMeters()?.let { kLinear * (v - it.x) } ?: 0.0)
+
+        val outOmega = omega + (currentRobotVel?.toMeters()?.let { kHeading * (omega - it.heading) } ?: 0.0)
+
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
 
-        return DriveSignal(Pose2d(v, 0.0, omega).toInches(), targetRobotAccel.toInches())
+        return DriveSignal(Pose2d(outV, 0.0, outOmega).toInches(), targetRobotAccel.toInches())
     }
 }

@@ -25,11 +25,12 @@ public class DriveConstants {
      */
     public static final double TICKS_PER_REV = 378;
     public static final double MAX_RPM = 444.444444444;
-    public static double MAX_CURRENT = 4200;
+    public static double MAX_CURRENT = 4100;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(7));
-    public static double admissibleDistance = 3;
+    public static double admissibleDistance = admissibleError.getX();
+    public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
 
     /*
@@ -63,11 +64,11 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.0127; //1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.0029;
-    public static double kStatic = 0.015;
+    public static double kV = 0.011; //1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.003;
+    public static double kStatic = 0.09;
 
-    public static double kVBackward = 0.0129;
+    public static double kVBackward = kV;
     public static double kABackward = kA;
     public static double kStaticBackward = kStatic;
 

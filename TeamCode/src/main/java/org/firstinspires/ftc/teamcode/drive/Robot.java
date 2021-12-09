@@ -63,6 +63,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleHeading;
 import static org.firstinspires.ftc.teamcode.util.field.Details.location;
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
@@ -169,6 +170,7 @@ public class Robot extends ImprovedTankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
+            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -184,8 +186,8 @@ public class Robot extends ImprovedTankDrive {
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         if (opModeType != OpModeType.TELE) {
-            Easy265.initWithoutStop(opMode, this);
-            setLocalizer(new T265Localizer());
+//            Easy265.initWithoutStop(opMode, this);
+//            setLocalizer(new T265Localizer());
         }
         if (opModeType == OpModeType.AUTO) {
             // autoInit();
@@ -310,10 +312,10 @@ public class Robot extends ImprovedTankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    double current;
     boolean isRobotDisabled;
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime cooldown = new ElapsedTime();
+    ElapsedTime loopTime = new ElapsedTime();
 
     public void update() {
         updatePoseEstimate();
@@ -323,23 +325,25 @@ public class Robot extends ImprovedTankDrive {
         for (Module module : modules) {
             module.update();
         }
-        if (motors.size() > 0) current = motors.get(0).getCurrent(CurrentUnit.MILLIAMPS);
-        Details.packet.put("Single Motor Current", current);
-        Details.packet.put("Motor Limit", MAX_CURRENT);
         Details.packet.put("Pitch", Math.toDegrees(getPitch()));
         Details.packet.addLine("Arm State: " + capstone.capstoneArm.getState());
         Details.packet.addLine("Slides State: " + capstone.capstoneSlides.getState());
-        if (admissibleDistance != admissibleError.getX()) {
-            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, admissibleError.getHeading());
+        Details.packet.put("Loop Time", loopTime.milliseconds());
+        loopTime.reset();
+        if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
+            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        if (current > MAX_CURRENT && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
+        boolean anyMotorIsOverCurrent = false;
+        for (DcMotorEx motor : motors) {
+            if (motor.isOverCurrent()) anyMotorIsOverCurrent = true;
+        }
+        if (anyMotorIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             cooldown.reset();
         } else {
             if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
-            if (current <= MAX_CURRENT) currentTimer.reset();
+            if (!anyMotorIsOverCurrent) currentTimer.reset();
         }
-        current = 0;
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
     }
@@ -492,6 +496,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public double getPitch() {
-        return -imu.getAngularOrientation().secondAngle - pitchOffset;
+        return 0;
     }
 }
