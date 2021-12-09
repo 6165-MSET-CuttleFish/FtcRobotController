@@ -152,7 +152,7 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesIn() {
-        outL.setPosition(0.19);
-        outR.setPosition(0.19);
+//        outL.setPosition(0.19);
+//        outR.setPosition(0.19);
     }
 }

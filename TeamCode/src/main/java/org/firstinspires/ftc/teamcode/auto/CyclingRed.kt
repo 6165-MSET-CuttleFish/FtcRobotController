@@ -4,8 +4,10 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.drive.Robot.getVelocityConstraint
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
@@ -35,16 +37,17 @@ class CyclingRed : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        location = Detector.Location.MIDDLE
         robot.autoInit()
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .capstoneReady(capstone)
+                .setVelConstraint(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .splineTo(
                     duckLocation().vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
+                .resetConstraints()
                 .capstonePickup(capstone)
                 .liftUp(deposit)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
@@ -90,7 +93,6 @@ class CyclingRed : LinearOpMode() {
         val trajectorySequence = trajectoryBuilder
             .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
             .build()
-        location = Detector.Location.LEFT
         waitForStart()
         robot.followTrajectorySequence(trajectorySequence)
     }

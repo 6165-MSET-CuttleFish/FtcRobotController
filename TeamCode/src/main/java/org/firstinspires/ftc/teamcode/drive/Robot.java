@@ -90,6 +90,7 @@ public class Robot extends ImprovedTankDrive {
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
     private final double pitchOffset;
+    public static double div;
 
     final HardwareMap hardwareMap;
 
@@ -440,7 +441,7 @@ public class Robot extends ImprovedTankDrive {
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-        setDrivePower(vel);
+        setDrivePower(vel.div(div));
     }
 
     @NonNull
