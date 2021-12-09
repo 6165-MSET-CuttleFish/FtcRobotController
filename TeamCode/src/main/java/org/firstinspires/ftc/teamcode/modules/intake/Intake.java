@@ -86,7 +86,6 @@ public class Intake extends Module<Intake.State> {
     @Override
     public void update() {
         double power = this.power;
-        double distanceSensor = blockSensor.getDistance(DistanceUnit.CM);
         switch(getState()){
             case PREP_OUT:
                 dropIntake();
@@ -103,7 +102,7 @@ public class Intake extends Module<Intake.State> {
                 break;
             case TRANSIT_IN:
                 if(elapsedTime.seconds() > getState().time) {
-                    if (distanceSensor < distanceLimit) {
+                    if (blockSensor.getDistance(DistanceUnit.CM) < distanceLimit) {
                         setState(State.TRANSFER);
                     } else {
                         setState(State.IN);
@@ -116,13 +115,12 @@ public class Intake extends Module<Intake.State> {
             case TRANSFER:
                 power = -1;
                 Platform.isLoaded = true;
-                if (distanceSensor > distanceLimit || elapsedTime.seconds() > getState().time) {
+                if (blockSensor.getDistance(DistanceUnit.CM) > distanceLimit || elapsedTime.seconds() > getState().time) {
                     setState(State.IN);
                     this.power = power = 0;
                 }
                 break;
         }
-        Details.packet.put("Distance Sensor", distanceSensor);
         intake.setPower(power);
     }
 

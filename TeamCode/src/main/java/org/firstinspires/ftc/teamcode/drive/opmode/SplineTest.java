@@ -21,19 +21,20 @@ public class SplineTest extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+        while (opModeIsActive()) {
+            Trajectory traj = robot.trajectoryBuilder(new Pose2d())
+                    .splineTo(new Vector2d(30, 30), Math.toRadians(0))
+                    .build();
 
-        Trajectory traj = robot.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), Math.toRadians(0))
-                .build();
+            robot.followTrajectory(traj);
 
-        robot.followTrajectory(traj);
+            sleep(2000);
 
-        sleep(2000);
-
-        robot.followTrajectory(
-                robot.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0, 0), Math.toRadians(180))
-                        .build()
-        );
+            robot.followTrajectory(
+                    robot.trajectoryBuilder(traj.end(), true)
+                            .splineTo(new Vector2d(0, 0), Math.toRadians(180))
+                            .build()
+            );
+        }
     }
 }

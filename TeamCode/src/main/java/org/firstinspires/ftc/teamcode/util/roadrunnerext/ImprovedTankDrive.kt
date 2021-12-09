@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.VoltageSensor
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 
 /**
@@ -80,12 +81,19 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         }
     }
 
+    private var voltage = 12.0
+    private val voltageTimer = ElapsedTime()
     override var localizer: Localizer = TankLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
+        if (voltageTimer.seconds() > 0.5) {
+            voltage = voltageSensor.voltage
+            voltageTimer.reset()
+        }
         val velocities = TankKinematics.robotToWheelVelocities(driveSignal.vel, trackWidth)
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
-        val voltageMultiplier = 12 / voltageSensor.voltage
+
+        val voltageMultiplier = 12 / voltage
         var powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier)
         if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier)
         setMotorPowers(powers[0], powers[1])
