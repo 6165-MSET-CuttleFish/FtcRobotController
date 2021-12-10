@@ -58,14 +58,18 @@ fun com.acmerobotics.roadrunner.geometry.Pose2d.flip(negative: Boolean): com.acm
     return this
 }
 
-fun com.acmerobotics.roadrunner.geometry.Vector2d.flip(negative: Boolean): com.acmerobotics.roadrunner.geometry.Vector2d {
+fun Vector2d.flip(negative: Boolean): Vector2d {
     if (negative)
-        return com.acmerobotics.roadrunner.geometry.Vector2d(this.x, -this.y)
+        return Vector2d(this.x, -this.y)
     return this
 }
 
 fun Vector2d.polarAdd (distance: Double, angle: Double) : Vector2d {
     return Coordinate.toPoint(this).polarAdd(distance, angle).toVector()
+}
+
+fun Vector2d.toPose (angle: Double) : com.acmerobotics.roadrunner.geometry.Pose2d {
+    return com.acmerobotics.roadrunner.geometry.Pose2d(this, angle)
 }
 
 fun com.acmerobotics.roadrunner.geometry.Pose2d.polarAdd (distance: Double) : Vector2d {
