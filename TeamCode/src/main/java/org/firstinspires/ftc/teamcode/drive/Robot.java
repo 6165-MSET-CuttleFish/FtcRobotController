@@ -6,8 +6,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
 import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
@@ -497,16 +495,5 @@ public class Robot extends ImprovedTankDrive {
 
     public double getPitch() {
         return -imu.getAngularOrientation().secondAngle - pitchOffset;
-    }
-
-    @NonNull
-    public Velocity getVelocity() {
-        return imu.getVelocity();
-    }
-
-    @NonNull
-    @Override
-    public Position getPosition() {
-        return imu.getPosition();
     }
 }
