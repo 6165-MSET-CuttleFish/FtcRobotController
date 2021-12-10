@@ -326,9 +326,6 @@ public class Robot extends ImprovedTankDrive {
         for (Module module : modules) {
             module.update();
         }
-        Details.packet.put("Pitch", Math.toDegrees(getPitch()));
-        Details.packet.addLine("Arm State: " + capstone.capstoneArm.getState());
-        Details.packet.addLine("Slides State: " + capstone.capstoneSlides.getState());
         Details.packet.put("Loop Time", loopTime.milliseconds());
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
