@@ -23,13 +23,13 @@ import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
-class CyclingRed : LinearOpMode() {
+class CyclingBlue : LinearOpMode() {
     lateinit var robot: Robot
     lateinit var deposit: Deposit
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
-    private val blue = false
+    private val blue = true
 
     @Throws(InterruptedException::class)
     override fun runOpMode() {
