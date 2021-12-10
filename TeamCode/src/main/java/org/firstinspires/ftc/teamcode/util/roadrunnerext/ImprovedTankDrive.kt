@@ -3,13 +3,20 @@ package org.firstinspires.ftc.teamcode.util.roadrunnerext
 import com.acmerobotics.roadrunner.drive.Drive
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.Position
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
+import org.firstinspires.ftc.teamcode.util.field.Details
+import kotlin.math.abs
+import kotlin.math.cos
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
@@ -47,11 +54,40 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             private set
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
+        private val timer = ElapsedTime()
+        private var _lastGyroPose = Pose2d()
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
-            if (lastWheelPositions.isNotEmpty()) {
+            val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
+            val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
+            Details.packet.put("Gyro Velocity X", extVelo.xVeloc)
+            Details.packet.put("Gyro Velocity Y", extVelo.yVeloc)
+            Details.packet.put("Gyro Velocity Z", extVelo.zVeloc)
+            Details.packet.put("Gyro Position X", extPos.x)
+            Details.packet.put("Gyro Position Y", extPos.y)
+            Details.packet.put("Gyro Position Z", extPos.z)
+            if (abs(cos(drive.getPitch())) > 5) {
+                if (integrateUsingPosition) {
+                    // POSITION METHOD
+                    val x = extPos.x
+                    val y = extPos.y
+                    val oldPose = _lastGyroPose.vec().polarAdd(6.0, lastExtHeading + Math.PI / 2)
+                        .toPose(lastExtHeading)
+                    val newPose =
+                        Vector2d(x, y).polarAdd(6.0, extHeading + Math.PI / 2).toPose(extHeading)
+                    val deltaPose = newPose.minus(oldPose)
+                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
+                } else {
+                    // VELOCITY METHOD
+                    val dt = timer.seconds()
+                    val dx = extVelo.xVeloc * dt
+                    val dy = extVelo.yVeloc * dt
+                    val robotPoseDelta = Pose2d(dx, dy, extHeading - lastExtHeading)
+                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
+                }
+            } else if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
@@ -78,6 +114,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
 
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
+            _lastGyroPose = Pose2d(extPos.x, extPos.y, extHeading)
+            timer.reset()
         }
     }
 
@@ -120,4 +158,10 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
      * [setMotorPowers].
      */
     open fun getWheelVelocities(): List<Double>? = null
+
+    abstract fun getVelocity(): Velocity
+
+    abstract fun getPitch(): Double
+
+    abstract fun getPosition(): Position
 }
