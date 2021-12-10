@@ -31,7 +31,7 @@ class CarouselBlue : LinearOpMode() {
     lateinit var carousel: Carousel
     @Throws(InterruptedException::class)
     override fun runOpMode() {
-        robot = Robot(this, OpModeType.AUTO, Alliance.RED)
+        robot = Robot(this, OpModeType.AUTO, Alliance.BLUE)
         intake = robot.intake
         capstone = robot.capstone
         deposit = robot.deposit

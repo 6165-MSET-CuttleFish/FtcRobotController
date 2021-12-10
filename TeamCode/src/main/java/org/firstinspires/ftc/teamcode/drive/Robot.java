@@ -229,7 +229,8 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void turnOffVision() {
-        webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
+        dashboard.stopCameraStream();
+        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
     }
 

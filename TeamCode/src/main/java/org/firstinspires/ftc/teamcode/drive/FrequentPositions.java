@@ -21,7 +21,7 @@ public class FrequentPositions {
     }
 
     public static Pose2d dumpPosition() {
-        Pose2d regular = side == Side.CYCLING ? new Pose2d(6.0, -32.0, Math.toRadians(-30.0)) : new Pose2d(-28.0, -31.0, Math.toRadians(20.0));
+        Pose2d regular = side == Side.CYCLING ? new Pose2d(5.0, -30.0, Math.toRadians(-15.0)) : new Pose2d(-28.0, -31.0, Math.toRadians(20.0));
         return alliance == Alliance.RED ? regular : flipSide(regular);
     }
 
@@ -74,9 +74,9 @@ public class FrequentPositions {
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(1, 44.0, Math.toRadians(0)),
-                        new Pose2d(6.6, 44.0, Math.toRadians(0)),
-                        new Pose2d(9, 44.0, Math.toRadians(-25))
+                        new Pose2d(9, 44.0, Math.toRadians(0)),
+                        new Pose2d(8.8, 50, Math.toRadians(20)),
+                        new Pose2d(1, 44.0, Math.toRadians(-25))
                 };
             }
         }

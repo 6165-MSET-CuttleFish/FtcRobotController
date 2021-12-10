@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 public class Deposit extends Module<Deposit.State> {
     public enum State {
         LEVEL3(12.8), //tilted 11
-        LEVEL2(4), //tilted 7
+        LEVEL2(5), //tilted 7
         IDLE(0);
         final private double dist;
         State(double dist) {
@@ -102,7 +102,7 @@ public class Deposit extends Module<Deposit.State> {
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-            if (elapsedTime.seconds() > 0.8 && elapsedTime.seconds() < 1.5) { // anti-stall code
+            if (elapsedTime.seconds() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = 0;
