@@ -34,7 +34,7 @@ class BasicCarouselPath {
                                 Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
                             )
                             .capstonePickup(capstone)
-                            .liftUp(deposit)
+                            .liftUp(deposit, Deposit.State.LEVEL2)
                             .waitWhile(capstone::isDoingWork) // capstone loaded
                             .splineTo(Vector2d(-30.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
                             .setReversed(false)

@@ -54,6 +54,7 @@ class CyclingBlue : LinearOpMode() {
             Detector.Location.MIDDLE -> middleSequence
             Detector.Location.RIGHT -> rightSequence
         }
+        robot.turnOffVision()
         robot.followTrajectorySequence(sequence)
     }
     fun leftAuto() : TrajectorySequence {
@@ -68,8 +69,8 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
+                .liftUp(deposit, Robot.getLevel(Detector.Location.LEFT))
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)
                 .dump(deposit)
@@ -125,7 +126,7 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
+                .liftUp(deposit, Robot.getLevel(Detector.Location.MIDDLE))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)
@@ -182,7 +183,7 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
+                .liftUp(deposit, Robot.getLevel(Detector.Location.RIGHT))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)
