@@ -68,9 +68,9 @@ public class FrequentPositions {
         } else {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        flipSide(new Pose2d(-32.0, 44.0, Math.toRadians(0))),
-                        flipSide(new Pose2d(-40.0, 44.0, Math.toRadians(0))),
-                        flipSide(new Pose2d(-50.0, 44.0, Math.toRadians(0)))
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0))),
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0))),
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0)))
                 };
             } else {
                 return new Pose2d[]{

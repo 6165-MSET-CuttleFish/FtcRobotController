@@ -40,29 +40,29 @@ public class FrequentPositions {
         if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        new Pose2d(-32.0, -50.0, Math.toRadians(0)),
-                        new Pose2d(-40.0, -50.0, Math.toRadians(0)),
-                        new Pose2d(-50.0, -50.0, Math.toRadians(0))
+                        new Pose2d(-32.0, -44.0, Math.toRadians(8)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(15)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(30))
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(8.2, -50.0, Math.toRadians(40)),
-                        new Pose2d(8.2, -50.0, Math.toRadians(10)),
-                        new Pose2d(9, -47.0, Math.toRadians(-20))
+                        new Pose2d(1, -44.0, Math.toRadians(0)),
+                        new Pose2d(6.6, -44.0, Math.toRadians(0)),
+                        new Pose2d(9, -44.0, Math.toRadians(-25))
                 };
             }
         } else {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        flipSide(new Pose2d(-32.0, 50.0, Math.toRadians(0))),
-                        flipSide(new Pose2d(-40.0, 50.0, Math.toRadians(0))),
-                        flipSide(new Pose2d(-50.0, 50.0, Math.toRadians(0)))
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0))),
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0))),
+                        (new Pose2d(-32.0, 44.0, Math.toRadians(0)))
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(8.2, 50.0, Math.toRadians(70)),
-                        new Pose2d(8.2, 50.0, Math.toRadians(30)),
-                        new Pose2d(9, 47.0, Math.toRadians(70))
+                        new Pose2d(3.0, 44.0),
+                        new Pose2d(11.5, 44.0),
+                        new Pose2d(20.0, 44.0)
                 };
             }
         }
