@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
@@ -40,29 +41,40 @@ class BasicPath : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .capstoneReady(capstone)
+                .setVelConstraint(getVelocityConstraint(30.0, Math.PI,15.0))
                 .splineTo(
-                    duckLocations()[0].vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
+                    duckLocations()[2].vec(),
+                    Math.toRadians(90.0).flip(blue) + duckLocations()[2].heading
                 )
+                .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
+                .liftUp(deposit)
                 .splineTo(Vector2d(-26.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
-                .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
-                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
-                .splineTo(Vector2d(-60.0, -54.0).flip(blue), Math.toRadians(215.0).flip(blue))
-                .waitSeconds(1.5)
-                .carouselOff(carousel)// drop the ducky
-                .resetConstraints()
-                .setReversed(true)
-                .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
-        val trajectorySequence = trajectoryBuilder
-                .build()
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    admissibleError = Pose2d(3.0, 3.0, Math.toRadians(20.0))
+                }
+                    .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
+                    // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
+                    // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
+                    .UNSTABLE_addDisplacementMarkerOffset(0.0, carousel::on)
+                    .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(1.0) {
+                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
+                }
+                    .waitSeconds(1.5)
+                    .forward(1.0)
+                    .carouselOff(carousel)// drop the ducky
+                    .resetConstraints()
+                    .setReversed(true)
+                    .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                    val trajectorySequence = trajectoryBuilder
+                        .build()
 
-        waitForStart()
-        robot.followTrajectorySequence(trajectorySequence)
+                    waitForStart()
+                    robot.followTrajectorySequence(trajectorySequence)
     }
 }

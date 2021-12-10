@@ -43,9 +43,9 @@ public class FrequentPositions {
         if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        new Pose2d(-32.0, -44.0, Math.toRadians(0)),
-                        new Pose2d(-40.0, -44.0, Math.toRadians(0)),
-                        new Pose2d(-50.0, -44.0, Math.toRadians(-25))
+                        new Pose2d(-32.0, -44.0, Math.toRadians(8)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(15)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(30))
                 };
             } else {
                 return new Pose2d[]{
