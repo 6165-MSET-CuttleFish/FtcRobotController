@@ -85,7 +85,7 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        arm.setPosition(0.16); // 0.175
+        arm.setPosition(0.18); // 0.175
     }
     /**
      * Return platform to rest
@@ -101,10 +101,10 @@ public class Arm extends Module<Arm.State> {
     }
 
     public void ready(){
-        setState(Arm.State.TRANSIT_OUT);
+        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
     }
     public void hold(){
-        setState(Arm.State.TRANSIT_IN);
+        if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
     public void precap(){
         setState(State.PRECAP);

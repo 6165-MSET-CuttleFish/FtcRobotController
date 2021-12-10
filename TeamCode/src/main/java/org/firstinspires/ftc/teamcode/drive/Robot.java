@@ -103,7 +103,7 @@ public class Robot extends ImprovedTankDrive {
 
     public static PIDCoefficients AXIAL_PID = new PIDCoefficients(6,0,0.001);
     public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0,3,0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -155,7 +155,7 @@ public class Robot extends ImprovedTankDrive {
         DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
-        modules = new Module[]{
+        modules = new Module[] {
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
                 carousel = new Carousel(hardwareMap),

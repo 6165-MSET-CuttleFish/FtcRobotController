@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
+import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
 import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 
 /**
@@ -42,7 +44,8 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     public void on() {
-        double power = opModeType == OpModeType.AUTO ? 0.8 : 1;
+        double power = opModeType == OpModeType.AUTO ? 0.7 : 1;
+        if (alliance == Alliance.BLUE) power = -power;
         duckyR.setPower(power);
         duckyL.setPower(power);
         setState(State.ON);

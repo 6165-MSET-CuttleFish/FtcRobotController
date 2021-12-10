@@ -36,33 +36,43 @@ public class FrequentPositions {
         return arr[0];
     }
 
+    public static Pose2d duckLocation(Detector.Location location) {
+        Pose2d[] arr = duckLocations();
+        switch (location) {
+            case LEFT: return arr[0];
+            case RIGHT: return arr[2];
+            case MIDDLE: return arr[1];
+        }
+        return arr[0];
+    }
+
     public static Pose2d[] duckLocations() {
         if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        new Pose2d(-32.0, -50.0, Math.toRadians(0)),
-                        new Pose2d(-40.0, -50.0, Math.toRadians(0)),
-                        new Pose2d(-48.0, -50.0, Math.toRadians(0))
+                        new Pose2d(-32.0, -44.0, Math.toRadians(8)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(15)),
+                        new Pose2d(-32.0, -44.0, Math.toRadians(30))
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(8.2, -50.0, Math.toRadians(40)),
-                        new Pose2d(8.2, -50.0, Math.toRadians(10)),
-                        new Pose2d(9, -47.0, Math.toRadians(-20))
+                        new Pose2d(1, -44.0, Math.toRadians(0)),
+                        new Pose2d(6.6, -44.0, Math.toRadians(0)),
+                        new Pose2d(9, -44.0, Math.toRadians(-25))
                 };
             }
         } else {
             if (side == Side.CAROUSEL) {
                 return new Pose2d[]{
-                        (new Pose2d(-42.0, 44.0, Math.toRadians(0))),
                         (new Pose2d(-32.0, 44.0, Math.toRadians(0))),
-                        (new Pose2d(-20.0, 44.0, Math.toRadians(0)))
+                        (new Pose2d(-40.0, 44.0, Math.toRadians(0))),
+                        (new Pose2d(-50.0, 44.0, Math.toRadians(0)))
                 };
             } else {
                 return new Pose2d[]{
-                        new Pose2d(3.0, 44.0),
-                        new Pose2d(11.5, 44.0),
-                        new Pose2d(20.0, 44.0)
+                        new Pose2d(9, 44.0, Math.toRadians(0)),
+                        new Pose2d(8.2, 49.0, Math.toRadians(20)),
+                        new Pose2d(1, 44.0, Math.toRadians(-25))
                 };
             }
         }

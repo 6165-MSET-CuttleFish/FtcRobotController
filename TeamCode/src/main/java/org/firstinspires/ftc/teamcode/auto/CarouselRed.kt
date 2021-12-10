@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocations
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
@@ -17,6 +19,7 @@ import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
@@ -39,22 +42,29 @@ class CarouselRed : LinearOpMode() {
         carousel = robot.carousel
         val blue = false
         side = Side.CAROUSEL
-
+        robot.autoInit()
+        while (!opModeIsActive() && !isStopRequested) {
+            robot.scan()
+            telemetry.addData("Location", location)
+            telemetry.update()
+        }
         waitForStart()
+        robot.scan()
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .capstoneReady(capstone)
-                .setVelConstraint(getVelocityConstraint(30.0, Math.PI,15.0))
-                .splineTo(
-                    duckLocations()[2].vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocations()[2].heading
-                )
+                .back(8.0)
+                .turn(Math.toRadians(90.0).flip(blue))
+                .splineTo(Vector2d(-54.0, -23.0).flip(blue), Math.toRadians(-270.0).flip(blue))
+                .setConstraints(getVelocityConstraint(20.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(20.0))
+                .turn(Math.toRadians(-90.0).flip(blue))
+                .back(19.0)
                 .resetConstraints()
                 .capstonePickup(capstone)
+                .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .liftUp(deposit, Robot.getLevel(Detector.Location.LEFT))
-                .splineTo(Vector2d(-26.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
+                .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(40.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
@@ -74,7 +84,7 @@ class CarouselRed : LinearOpMode() {
                 .carouselOff(carousel)// drop the ducky
                 .resetConstraints()
                 .setReversed(true)
-                .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(-61.0, -33.0).flip(blue), Math.toRadians(180.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
             .build()
         robot.followTrajectorySequence(trajectorySequence)

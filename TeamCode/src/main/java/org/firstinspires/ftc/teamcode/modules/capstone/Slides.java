@@ -86,11 +86,11 @@ public class Slides extends Module<Slides.State> {
     }
 
     public void pickUp() {
-        if (getState() != State.TRANSIT_OUT) setState(State.TRANSIT_OUT);
+        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
     }
 
     public void dropDown() {
-        if (getState() != State.TRANSIT_IN) setState(State.TRANSIT_IN);
+        if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
 
     public void half() {
