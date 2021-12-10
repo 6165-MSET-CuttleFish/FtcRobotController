@@ -5,9 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
-
-import org.firstinspires.ftc.teamcode.localizers.t265.Easy265;
-import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTankDrive;
 
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTrajectoryFollower;
@@ -90,7 +87,7 @@ public class Robot extends ImprovedTankDrive {
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
     private final double pitchOffset;
-    public static double div;
+    public static double div = 1;
 
     final HardwareMap hardwareMap;
 
@@ -229,12 +226,22 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void turnOffVision() {
-        webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
+        dashboard.stopCameraStream();
+        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
     }
 
     public void scan() {
         location = detector.getLocation();
+    }
+
+    public static Deposit.State getLevel(Detector.Location location) {
+        switch (location) {
+            case LEFT: return Deposit.State.IDLE;
+            case MIDDLE: return Deposit.State.LEVEL2;
+            case RIGHT: return Deposit.State.LEVEL3;
+        }
+        return Deposit.State.LEVEL3;
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

@@ -68,6 +68,6 @@ fun Vector2d.polarAdd (distance: Double, angle: Double) : Vector2d {
     return Coordinate.toPoint(this).polarAdd(distance, angle).toVector()
 }
 
-fun com.acmerobotics.roadrunner.geometry.Pose2d.polarAdd (distance: Double) : Vector2d {
-    return Coordinate.toPoint(this).polarAdd(distance, this.heading).toVector()
+fun com.acmerobotics.roadrunner.geometry.Pose2d.polarAdd (distance: Double) : com.acmerobotics.roadrunner.geometry.Pose2d {
+    return Coordinate.toPoint(this).polarAdd(distance, this.heading).toPose2d(this.heading)
 }

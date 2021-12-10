@@ -85,13 +85,13 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        arm.setPosition(0.175);
+        arm.setPosition(0.16); // 0.175
     }
     /**
      * Return platform to rest
      */
     private void in() {
-        arm.setPosition(0.99);
+         arm.setPosition(1);
     }
     private void precappos() {
         arm.setPosition(0.58);

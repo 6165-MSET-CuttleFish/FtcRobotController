@@ -12,8 +12,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -21,9 +23,10 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
+    public static boolean allowLift;
     public enum State {
         LEVEL3(12.8), //tilted 11
-        LEVEL2(4), //tilted 7
+        LEVEL2(5), //tilted 7
         IDLE(0);
         final private double dist;
         State(double dist) {
@@ -95,14 +98,15 @@ public class Deposit extends Module<Deposit.State> {
     public void update() {
         platform.update(); // update subsystems
         pidController.setTargetPosition(getState().getDist());
-        if (platform.isDoingWork()) {
+        if ((opModeType != OpModeType.TELE && platform.isDoingWork()) || (opModeType == OpModeType.TELE && allowLift)) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-            if (elapsedTime.seconds() > 0.8 && elapsedTime.seconds() < 1.5) { // anti-stall code
+            allowLift = false;
+            if (elapsedTime.seconds() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = 0;

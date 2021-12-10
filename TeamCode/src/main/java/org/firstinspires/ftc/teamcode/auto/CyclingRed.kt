@@ -5,7 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.getVelocityConstraint
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
@@ -54,6 +57,7 @@ class CyclingRed : LinearOpMode() {
             Detector.Location.MIDDLE -> middleSequence
             Detector.Location.RIGHT -> rightSequence
         }
+        robot.turnOffVision()
         robot.followTrajectorySequence(sequence)
     }
     fun leftAuto() : TrajectorySequence {
@@ -68,7 +72,7 @@ class CyclingRed : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
+                .liftUp(deposit, Robot.getLevel(Detector.Location.LEFT))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)
@@ -125,7 +129,7 @@ class CyclingRed : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
+                .liftUp(deposit, Robot.getLevel(Detector.Location.MIDDLE))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)
@@ -182,7 +186,7 @@ class CyclingRed : LinearOpMode() {
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
-                .liftUp(deposit)
+                .liftUp(deposit, Robot.getLevel(Detector.Location.RIGHT))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                 .setReversed(false)

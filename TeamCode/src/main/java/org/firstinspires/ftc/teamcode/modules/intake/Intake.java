@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 @Config
 public class Intake extends Module<Intake.State> {
     private DcMotorEx intake;
-    public static double distanceLimit = 12;
+    public static double distanceLimit = 18;
     private Servo outL, outR, flipL, flipR;
     private ColorRangeSensor blockSensor;
     private double power;
@@ -125,13 +125,16 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void dropIntake() {
-        flipR.setPosition(0.40);
-        flipL.setPosition(0.60);
+        flipR.setPosition(loweredPosition);
+        flipL.setPosition(1 - loweredPosition);
     }
 
+    public static double raisedPosition = 0.88;
+    public static double loweredPosition = 0.4;
+
     private void raiseIntake() {
-        flipR.setPosition(0.89);
-        flipL.setPosition(0.11);
+        flipR.setPosition(raisedPosition);
+        flipL.setPosition(1 - raisedPosition);
     }
 
     private void deploy() {

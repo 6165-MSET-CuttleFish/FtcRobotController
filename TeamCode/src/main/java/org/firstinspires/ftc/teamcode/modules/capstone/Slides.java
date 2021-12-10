@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.noahbres.jotai.StateMachine;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
+@Config
 public class Slides extends Module<Slides.State> {
     public enum State {
         TRANSIT_IN (0,0.5),
@@ -70,9 +71,6 @@ public class Slides extends Module<Slides.State> {
         }
     }
 
-    /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
-     */
     private void out() {
         placeset(0);
     }
@@ -80,11 +78,11 @@ public class Slides extends Module<Slides.State> {
     private void halfcase() {
         placeset(0.05);
     }
-    /**
-     * Return platform to rest
-     */
+
+    public static double inPos = 0.25;
+
     private void in() {
-        placeset(0.2);
+        placeset(inPos);
     }
 
     public void pickUp() {

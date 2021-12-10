@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.vision;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -11,6 +12,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
 import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
@@ -26,9 +28,16 @@ public class Detector extends OpenCvPipeline {
     // find and set the three regions of interest
     public static  Rect POS_1 = new Rect(
             new Point(0, 80),
-            new Point(90, 210));
+            new Point(90, 210)); // x = 50
     public static  Rect POS_2 = new Rect(
             new Point(180, 80),
+            new Point(270, 210)); // x = 220
+
+    public static Rect POS_1_BLUE = new Rect(
+            new Point(50, 80),
+            new Point(90, 210));
+    public static  Rect POS_2_BLUE = new Rect(
+            new Point(220, 80),
             new Point(270, 210));
 //    public static  Rect POS_3 = new Rect(
 //            new Point(230, 130),
@@ -59,21 +68,21 @@ public class Detector extends OpenCvPipeline {
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 
-        Mat pos_1 = mat.submat(POS_1);
-        Mat pos_2 = mat.submat(POS_2);
+        Mat pos_1 = mat.submat(alliance == Alliance.BLUE ? POS_1_BLUE : POS_1);
+        Mat pos_2 = mat.submat(alliance == Alliance.BLUE ? POS_2_BLUE : POS_2);
         //Mat pos_3 = mat.submat(POS_3);
 
-        rectangle(mat, POS_1, new Scalar(255, 255, 255));
-        rectangle(mat, POS_2, new Scalar(255, 255, 255));
+        rectangle(mat, alliance == Alliance.BLUE ? POS_1_BLUE : POS_1, new Scalar(255, 255, 255));
+        rectangle(mat, alliance == Alliance.BLUE ? POS_2_BLUE : POS_2, new Scalar(255, 255, 255));
         //rectangle(mat, POS_3, new Scalar(255, 255, 255));
 
-        rectangle(input, POS_1, new Scalar(255, 255, 255));
-        rectangle(input, POS_2, new Scalar(255, 255, 255));
+        rectangle(input, alliance == Alliance.BLUE ? POS_1_BLUE : POS_1, new Scalar(255, 255, 255));
+        rectangle(input, alliance == Alliance.BLUE ? POS_2_BLUE : POS_2, new Scalar(255, 255, 255));
         //rectangle(input, POS_3, new Scalar(255, 255, 255));
 
         //percent of pixels that are in range within area
-        double pos_1_val = Core.sumElems(pos_1).val[0] / POS_1.area() / 255;
-        double pos_2_val = Core.sumElems(pos_2).val[0] / POS_2.area() / 255;
+        double pos_1_val = Core.sumElems(pos_1).val[0] / (alliance == Alliance.BLUE ? POS_1_BLUE.area() : POS_1.area()) / 255;
+        double pos_2_val = Core.sumElems(pos_2).val[0] / (alliance == Alliance.BLUE ? POS_2_BLUE.area() : POS_2.area()) / 255;
         //double pos_3_val = Core.sumElems(pos_3).val[0] / POS_3.area() / 255;
 
         double pos_1_percent = Math.round(pos_1_val*100);
@@ -90,10 +99,15 @@ public class Detector extends OpenCvPipeline {
         pos_1.release();
         pos_2.release();
         //pos_3.release();
-
-        if(pos_1_percent > visionThreshold) location = Location.LEFT;
-        else if(pos_2_percent > visionThreshold) location = Location.MIDDLE;
-        else location = Location.RIGHT;
+        if (alliance == Alliance.RED) {
+            if (pos_1_percent > visionThreshold) location = Location.LEFT;
+            else if (pos_2_percent > visionThreshold) location = Location.MIDDLE;
+            else location = Location.RIGHT;
+        } else {
+            if (pos_1_percent > visionThreshold) location = Location.MIDDLE;
+            else if (pos_2_percent > visionThreshold) location = Location.RIGHT;
+            else location = Location.LEFT;
+        }
 
 
 //        double maxVal = Math.max(Math.max(pos_1_val, pos_2_val), pos_3_val);
@@ -102,7 +116,7 @@ public class Detector extends OpenCvPipeline {
 //        else if (maxVal == pos_2_val) location = Location.MIDDLE;
 //        else location = Location.LEFT;
 
-        telemetry.addData("location", getLocation());
+        // telemetry.addData("location", getLocation());
 
         return returnBlack ? mat : input;
     }

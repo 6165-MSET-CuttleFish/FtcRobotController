@@ -14,10 +14,10 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
     return addTrajectory(segment.trajectory)
 }
 
-fun TrajectorySequenceBuilder.liftUp(deposit: Deposit): TrajectorySequenceBuilder {
-    return UNSTABLE_addTemporalMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder {
+    return UNSTABLE_addDisplacementMarkerOffset(0.01) {
         Platform.isLoaded = true
-        deposit.state = Deposit.State.LEVEL3
+        deposit.state = level
     }
 }
 

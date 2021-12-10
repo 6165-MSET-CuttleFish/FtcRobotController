@@ -16,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 @Config
 public class Platform extends Module<Platform.State> {
     public static double outPosition = 0.65;
-    public static double inPosition = 0.32;
+    public static double inPosition = 0.36;
     public static boolean isLoaded;
     public enum State {
         TRANSIT_IN (0.4),
@@ -72,6 +72,7 @@ public class Platform extends Module<Platform.State> {
                 closeLatch();
                 unlock();
                 in();
+                Deposit.allowLift = false;
                 if(!intake.isDoingWork() && isLoaded)
                     setState(State.TRANSIT_OUT);
                 break;
@@ -147,7 +148,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void unlock() {
-        lock.setPosition(0.5);
+        lock.setPosition(0.6);
     }
 
     /**

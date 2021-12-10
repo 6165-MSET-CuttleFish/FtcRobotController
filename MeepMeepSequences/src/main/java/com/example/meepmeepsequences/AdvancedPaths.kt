@@ -10,6 +10,7 @@ import com.example.meepmeepsequences.util.FrequentPositions.*
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
+import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 
 class AdvancedPaths {
     val capstone = Capstone()
@@ -34,7 +35,7 @@ class AdvancedPaths {
                             Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
                         )
                         .capstonePickup(capstone)
-                        .liftUp(deposit)
+                        .liftUp(deposit, Deposit.State.LEVEL3)
                         .waitWhile(capstone::isDoingWork) // capstone loaded
                         .splineTo(dumpPosition().vec(), dumpPosition().heading)
                         .setReversed(false)
@@ -92,18 +93,20 @@ class AdvancedPaths {
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
                         .capstoneReady(capstone)
+                        .setVelConstraint(getVelocityConstraint(30.0, 30.0, 15.0))
                         .splineTo(
-                            duckLocation().vec(),
+                            duckLocation(Detector.Location.RIGHT).vec(),
                             Math.toRadians(90.0).flip(blue) + duckLocation().heading
                         )
+                        .resetConstraints()
                         .capstonePickup(capstone)
-                        .liftUp(deposit)
+                        .liftUp(deposit, Robot.getLevel(Detector.Location.RIGHT))
                         .waitWhile(capstone::isDoingWork) // capstone loaded
                         .splineTo(dumpPosition().vec(), Math.PI.flip(blue) + dumpPosition().heading)
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                for (i in 1..5)
+                for (i in 1..1)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                             intake.setPower(1.0)
@@ -122,7 +125,7 @@ class AdvancedPaths {
                                     5 * Math.random(),
                                     5 * Math.random()
                                 )
-                            ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
+                            ).flip(blue), Math.toRadians(-35.0 + 5 * Math.random()).flip(blue)
                         )
                         .setReversed(true)
                         .intakeOff(intake)
@@ -138,7 +141,7 @@ class AdvancedPaths {
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
-               trajectoryBuilder
+                trajectoryBuilder
                     .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
                     .build()
             }
