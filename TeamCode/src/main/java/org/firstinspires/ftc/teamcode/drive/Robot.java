@@ -90,6 +90,7 @@ public class Robot extends ImprovedTankDrive {
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
     private final double pitchOffset;
+    public static double div;
 
     final HardwareMap hardwareMap;
 
@@ -325,9 +326,6 @@ public class Robot extends ImprovedTankDrive {
         for (Module module : modules) {
             module.update();
         }
-        Details.packet.put("Pitch", Math.toDegrees(getPitch()));
-        Details.packet.addLine("Arm State: " + capstone.capstoneArm.getState());
-        Details.packet.addLine("Slides State: " + capstone.capstoneSlides.getState());
         Details.packet.put("Loop Time", loopTime.milliseconds());
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
@@ -440,7 +438,7 @@ public class Robot extends ImprovedTankDrive {
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-        setDrivePower(vel);
+        setDrivePower(vel.div(div));
     }
 
     @NonNull

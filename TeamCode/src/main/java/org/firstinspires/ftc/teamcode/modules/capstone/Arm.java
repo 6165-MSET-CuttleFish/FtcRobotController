@@ -91,7 +91,7 @@ public class Arm extends Module<Arm.State> {
      * Return platform to rest
      */
     private void in() {
-        arm.setPosition(0.95);
+        arm.setPosition(0.99);
     }
     private void precappos() {
         arm.setPosition(0.58);
