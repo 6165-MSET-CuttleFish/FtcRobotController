@@ -77,7 +77,6 @@ class CarouselRed : LinearOpMode() {
                 .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
             .build()
-        robot.turnOffVision()
         robot.followTrajectorySequence(trajectorySequence)
     }
 }

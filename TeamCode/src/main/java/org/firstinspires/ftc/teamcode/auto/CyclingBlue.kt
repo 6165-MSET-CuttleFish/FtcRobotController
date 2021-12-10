@@ -111,8 +111,8 @@ class CyclingBlue : LinearOpMode() {
                 .waitSeconds(0.5)
                 .setVelConstraint(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .splineTo(
-                    duckLocation(Detector.Location.LEFT).vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocation(Detector.Location.MIDDLE).heading
+                    duckLocation().vec(),
+                    Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)
@@ -131,8 +131,8 @@ class CyclingBlue : LinearOpMode() {
                 .capstoneReady(capstone)
                 .setVelConstraint(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .splineTo(
-                    duckLocation(Detector.Location.MIDDLE).vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocation(Detector.Location.MIDDLE).heading
+                    duckLocation().vec(),
+                    Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
                 .waitSeconds(0.7)
                 .resetConstraints()
@@ -152,8 +152,8 @@ class CyclingBlue : LinearOpMode() {
                 .capstoneReady(capstone)
                 .setVelConstraint(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .splineTo(
-                    duckLocation(Detector.Location.RIGHT).vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocation(Detector.Location.MIDDLE).heading
+                    duckLocation().vec(),
+                    Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
                 .resetConstraints()
                 .capstonePickup(capstone)

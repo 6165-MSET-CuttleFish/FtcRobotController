@@ -105,11 +105,8 @@ public class Deposit extends Module<Deposit.State> {
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-<<<<<<< HEAD
             allowLift = false;
-=======
             power = -1;
->>>>>>> parent of b6adfc1 (Merge branch 'master' into BasicAuton)
             if (elapsedTime.seconds() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

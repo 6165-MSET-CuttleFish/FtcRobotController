@@ -54,7 +54,7 @@ class CarouselBlue : LinearOpMode() {
                 .capstonePickup(capstone)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .liftUp(deposit, Robot.getLevel(Detector.Location.LEFT))
-                .splineTo(Vector2d(-26.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
+                .splineTo(Vector2d(-26.0, 34.0).flip(blue), Math.toRadians(30.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
@@ -65,7 +65,7 @@ class CarouselBlue : LinearOpMode() {
                 // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
                 // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
                 .UNSTABLE_addDisplacementMarkerOffset(0.0, carousel::on)
-                .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
+                .splineTo(Vector2d(-58.0, 53.0).flip(blue), Math.toRadians(203.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(1.0) {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
                 }
@@ -74,10 +74,10 @@ class CarouselBlue : LinearOpMode() {
                 .carouselOff(carousel)// drop the ducky
                 .resetConstraints()
                 .setReversed(true)
-                .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(-61.0, 35.0).flip(blue), Math.toRadians(180.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
             .build()
-        robot.turnOffVision()
+       // robot.turnOffVision()
         robot.followTrajectorySequence(trajectorySequence)
     }
 }
