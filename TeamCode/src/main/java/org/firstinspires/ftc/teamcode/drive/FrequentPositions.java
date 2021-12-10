@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.modules.vision.Detector;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Side;
 
@@ -31,16 +30,6 @@ public class FrequentPositions {
     }
 
     public static Pose2d duckLocation() {
-        Pose2d[] arr = duckLocations();
-        switch (location) {
-            case LEFT: return arr[0];
-            case RIGHT: return arr[2];
-            case MIDDLE: return arr[1];
-        }
-        return arr[0];
-    }
-
-    public static Pose2d duckLocation(Detector.Location location) {
         Pose2d[] arr = duckLocations();
         switch (location) {
             case LEFT: return arr[0];

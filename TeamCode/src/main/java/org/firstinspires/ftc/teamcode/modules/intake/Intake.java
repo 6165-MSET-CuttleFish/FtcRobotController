@@ -133,8 +133,13 @@ public class Intake extends Module<Intake.State> {
     public static double loweredPosition = 0.4;
 
     private void raiseIntake() {
+<<<<<<< HEAD
         flipR.setPosition(raisedPosition);
         flipL.setPosition(1 - raisedPosition);
+=======
+        flipR.setPosition(0.87);
+        flipL.setPosition(0.13);
+>>>>>>> parent of b6adfc1 (Merge branch 'master' into BasicAuton)
     }
 
     private void deploy() {
