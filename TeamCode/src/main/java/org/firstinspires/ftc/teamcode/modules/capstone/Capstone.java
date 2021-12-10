@@ -37,6 +37,7 @@ public class Capstone extends Module <Capstone.State> {
         switch (getState()) {
             case READY:
                 capstoneArm.ready();
+                break;
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
@@ -55,6 +56,8 @@ public class Capstone extends Module <Capstone.State> {
                 }
                 break;
             case HOLDING:
+                capstoneSlides.dropDown();
+                capstoneArm.hold();
                 break;
             case PRECAP:
                 switch (capstoneArm.getState()) {
@@ -98,6 +101,9 @@ public class Capstone extends Module <Capstone.State> {
     }
     public void ready() {
         setState(State.READY);
+    }
+    public void hold() {
+        setState(State.HOLDING);
     }
     public boolean isDoingWork() {
         return capstoneSlides.isDoingWork() || capstoneArm.isDoingWork();

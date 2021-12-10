@@ -33,7 +33,8 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton, tippedToward, tippedAway;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton, tippedToward, tippedAway,
+            capstoneReady, capstoneDrop, capstoneIn;
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -47,7 +48,10 @@ public class DriverPractice extends LinearOpMode {
         capstone = robot.capstone;
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
-        keyReaders = new KeyReader[]{
+        keyReaders = new KeyReader[] {
+                capstoneReady = new ButtonReader(secondary, GamepadKeys.Button.B),
+                capstoneDrop = new ButtonReader(secondary, GamepadKeys.Button.A),
+                capstoneIn = new ButtonReader(secondary, GamepadKeys.Button.X),
                 intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
@@ -89,6 +93,16 @@ public class DriverPractice extends LinearOpMode {
             if (liftButton.isDown()) {
                 Deposit.allowLift = true;
             }
+        }
+    }
+
+    void setCapstone() {
+        if (capstoneReady.wasJustPressed()) {
+            robot.capstone.precap();
+        } else if (capstoneDrop.wasJustPressed()) {
+            robot.capstone.cap();
+        } else if (capstoneIn.wasJustPressed()) {
+            robot.capstone.hold();
         }
     }
 

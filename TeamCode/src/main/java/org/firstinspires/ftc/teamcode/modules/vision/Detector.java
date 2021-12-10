@@ -89,11 +89,11 @@ public class Detector extends OpenCvPipeline {
         double pos_2_percent = Math.round(pos_2_val*100);
 
         assert telemetry != null;
-        telemetry.addData("Position 1 raw", (int) Core.sumElems(pos_1).val[0]);
-        telemetry.addData("Position 2 raw", (int) Core.sumElems(pos_2).val[0]);
+//        telemetry.addData("Position 1 raw", (int) Core.sumElems(pos_1).val[0]);
+//        telemetry.addData("Position 2 raw", (int) Core.sumElems(pos_2).val[0]);
         //telemetry.addData("Position 3 raw", (int) Core.sumElems(pos_3).val[0]);
-        telemetry.addData("Position 1 percent", Math.round(pos_1_val*100));
-        telemetry.addData("Position 2 percent", Math.round(pos_2_val*100));
+//        telemetry.addData("Position 1 percent", Math.round(pos_1_val*100));
+//        telemetry.addData("Position 2 percent", Math.round(pos_2_val*100));
         //telemetry.addData("Position 3 percent", Math.round(pos_3_val*100));
 
         pos_1.release();

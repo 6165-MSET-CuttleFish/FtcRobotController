@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.field.Balance;
+import org.firstinspires.ftc.teamcode.util.field.Details;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 
@@ -15,8 +17,12 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition = 0.65;
-    public static double inPosition = 0.36;
+    public static double outPosition = 0.76;
+    public static double tipDiff = 0.015;
+    public static double inPosition = 0.45;
+    public static double lockPosition = 0.32;
+    public static double sum = 1.03;
+    public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
     public enum State {
         TRANSIT_IN (0.4),
@@ -25,6 +31,11 @@ public class Platform extends Module<Platform.State> {
         OUT(0),
         DUMPING(0.5);
         final double time;
+        public double getTime() {
+            double time = this.time;
+            if (balance == Balance.AWAY) time += timeDiffBalance;
+            return time;
+        }
         State(double time) {
             this.time = time;
         }
@@ -88,7 +99,7 @@ public class Platform extends Module<Platform.State> {
                 lock();
                 out();
                 openLatch();
-                if (isLoaded ? elapsedTime.seconds() > getState().time : elapsedTime.seconds() > getState().time + 0.8) {
+                if (isLoaded ? elapsedTime.seconds() > getState().getTime(): elapsedTime.seconds() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
@@ -106,7 +117,7 @@ public class Platform extends Module<Platform.State> {
             case TOWARD:
                 return outPosition;
             case AWAY:
-                return outPosition - 0.04;
+                return outPosition - tipDiff;
         }
         return outPosition;
     }
@@ -117,7 +128,7 @@ public class Platform extends Module<Platform.State> {
     private void out() {
         double position = outPosition();
         dumpLeft.setPosition(position);
-        dumpRight.setPosition(1 - position);
+        dumpRight.setPosition(sum - position);
     }
 
     /**
@@ -126,7 +137,7 @@ public class Platform extends Module<Platform.State> {
     private void in() {
         double position = inPosition;
         dumpLeft.setPosition(position);
-        dumpRight.setPosition(1 - position);
+        dumpRight.setPosition(sum - position);
     }
     /**
      * Dumps the loaded element onto hub
@@ -148,7 +159,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void unlock() {
-        lock.setPosition(0.6);
+        lock.setPosition(lockPosition);
     }
 
     /**
