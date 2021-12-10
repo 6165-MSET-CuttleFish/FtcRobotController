@@ -72,6 +72,7 @@ public class Platform extends Module<Platform.State> {
                 closeLatch();
                 unlock();
                 in();
+                Deposit.allowLift = false;
                 if(!intake.isDoingWork() && isLoaded)
                     setState(State.TRANSIT_OUT);
                 break;
@@ -147,7 +148,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void unlock() {
-        lock.setPosition(0.5);
+        lock.setPosition(0.6);
     }
 
     /**

@@ -32,7 +32,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
-    TriggerReader intakeButton, ninjaMode;
+    TriggerReader intakeButton, ninjaMode, liftButton;
     ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton, tippedToward, tippedAway;
     ToggleButtonReader carouselButton;
 
@@ -53,6 +53,7 @@ public class DriverPractice extends LinearOpMode {
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
+                liftButton = new TriggerReader(secondary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
@@ -84,6 +85,9 @@ public class DriverPractice extends LinearOpMode {
                 balance = Balance.AWAY;
             } else if (tippedToward.isDown()) {
                 balance = Balance.TOWARD;
+            }
+            if (liftButton.isDown()) {
+                Deposit.allowLift = true;
             }
         }
     }

@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.getVelocityConstraint
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
@@ -45,11 +48,11 @@ class CyclingBlue : LinearOpMode() {
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
         val rightSequence = rightAuto()
-        while (!opModeIsActive()) {
-            robot.scan()
-            telemetry.addData("Position", location)
-            telemetry.update()
-        }
+//        while (!opModeIsActive()) {
+//            robot.scan()
+//            telemetry.addData("Position", location)
+//            telemetry.update()
+//        }
         waitForStart()
         robot.scan()
         val sequence = when (location) {
@@ -67,15 +70,15 @@ class CyclingBlue : LinearOpMode() {
                     intake.setPower(1.0)
                 }
                 .splineTo(
-                    Vector2d(20.0, -37.0).flip(blue), 0.0
+                    Vector2d(20.0, -34.0).flip(blue), 0.0
                 )
                 .decreaseGains()
                 .splineTo(
-                    Vector2d(24.0, -37.0).flip(blue), 0.0
+                    Vector2d(24.0, -34.0).flip(blue), 0.0
                 )
                 .defaultGains()
                 .splineTo(
-                    Vector2d(56.0, -44.0).plus(
+                    Vector2d(56.0, -40.0).plus(
                         Vector2d(
                             5 * Math.random(),
                             5 * Math.random()
@@ -85,11 +88,11 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(true)
                 .intakeOff(intake)
                 .splineTo(
-                    Vector2d(26.0, -37.0).flip(blue), Math.PI
+                    Vector2d(26.0, -34.0).flip(blue), Math.PI
                 )
                 .decreaseGains()
                 .splineTo(
-                    Vector2d(24.0, -37.0).flip(blue), Math.PI
+                    Vector2d(24.0, -34.0).flip(blue), Math.PI
                 )
                 .defaultGains()
                 .splineTo(cycleDumpPosition().vec(), cycleDumpPosition().heading + Math.PI.flip(blue))
@@ -105,6 +108,7 @@ class CyclingBlue : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .capstoneReady(capstone)
+                .waitSeconds(0.5)
                 .setVelConstraint(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .splineTo(
                     duckLocation(Detector.Location.LEFT).vec(),
@@ -130,6 +134,7 @@ class CyclingBlue : LinearOpMode() {
                     duckLocation(Detector.Location.MIDDLE).vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation(Detector.Location.MIDDLE).heading
                 )
+                .waitSeconds(0.7)
                 .resetConstraints()
                 .capstonePickup(capstone)
                 .liftUp(deposit, Robot.getLevel(Detector.Location.MIDDLE))

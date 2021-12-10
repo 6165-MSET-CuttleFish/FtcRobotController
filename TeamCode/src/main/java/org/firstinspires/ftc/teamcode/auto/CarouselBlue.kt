@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.*
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocations
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
