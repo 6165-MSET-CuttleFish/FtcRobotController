@@ -36,16 +36,18 @@ class BasicCarouselPath {
                             .capstonePickup(capstone)
                             .liftUp(deposit)
                             .waitWhile(capstone::isDoingWork) // capstone loaded
-                            //.splineTo(cycleDump().vec(), cycleDump().heading)
+                            .splineTo(Vector2d(-30.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
                             .setReversed(false)
                             .dump(deposit)
                             .waitWhile(deposit::isDoingWork) // wait for platform to dump
                             .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
-                            .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
+                            .splineTo(Vector2d(-50.0, -50.0).flip(blue), Math.toRadians(215.0).flip(blue))
+                            .forward(6.0)
                             .waitSeconds(1.5)
                             .carouselOff(carousel)// drop the ducky
+                            .back(6.0)
                             .setReversed(true)
-                            .splineTo(Vector2d(-60.0, -36.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                            .splineTo(Vector2d(-63.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
                     trajectoryBuilder
 
                         .build()
