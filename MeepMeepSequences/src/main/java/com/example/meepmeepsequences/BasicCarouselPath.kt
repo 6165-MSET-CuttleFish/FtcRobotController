@@ -29,14 +29,15 @@ class BasicCarouselPath {
                         robot.trajectorySequenceBuilder(startingPosition())
                             .setReversed(true)
                             .capstoneReady(capstone)
-                            .splineTo(
-                                duckLocations()[0].vec(),
-                                Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
-                            )
+                            .back(5.0)
+                            .turn(Math.toRadians(90.0).flip(blue))
+                            .splineTo(Vector2d(-58.0, -30.0).flip(blue), Math.toRadians(-270.0).flip(blue))
+                            .turn(Math.toRadians(-90.0).flip(blue))
+                            .back(19.0)
                             .capstonePickup(capstone)
                             .liftUp(deposit, Deposit.State.LEVEL2)
                             .waitWhile(capstone::isDoingWork) // capstone loaded
-                            .splineTo(Vector2d(-30.0, -34.0).flip(blue), Math.toRadians(30.0).flip(blue))
+                            .splineTo(Vector2d(-27.0, -33.0).flip(blue), Math.toRadians(30.0).flip(blue))
                             .setReversed(false)
                             .dump(deposit)
                             .waitWhile(deposit::isDoingWork) // wait for platform to dump
