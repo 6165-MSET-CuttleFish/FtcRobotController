@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
-import com.noahbres.jotai.StateMachine;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
+@Config
 public class Arm extends Module<Arm.State> {
     public enum State {
-        TRANSIT_IN (0,1),
+        TRANSIT_IN (0,1.4),
         IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.75),
         OUT(0.5,0.1),
@@ -70,14 +69,14 @@ public class Arm extends Module<Arm.State> {
             case PRECAP:
                 precappos();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.CAPOFFSET);
+                    // setState(State.CAPOFFSET);
                 }
             case CAPOFFSET:
                 break;
             case CAP:
                 cappos();
                 if (elapsedTime.seconds() > getState().time) {
-                    setState(State.IDLE);
+                    // setState(State.IDLE);
                 }
                 break;
 
@@ -85,7 +84,7 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        arm.setPosition(0.18); // 0.175
+        arm.setPosition(0.16);
     }
     /**
      * Return platform to rest
@@ -94,10 +93,12 @@ public class Arm extends Module<Arm.State> {
          arm.setPosition(1);
     }
     private void precappos() {
-        arm.setPosition(0.58);
+        arm.setPosition(preCap);
     }
+    public static double preCap = 0.55;
+    public static double capPos = 0.4;
     private void cappos() {
-        arm.setPosition(0.46);
+        arm.setPosition(capPos);
     }
 
     public void ready(){

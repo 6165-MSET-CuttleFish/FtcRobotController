@@ -17,7 +17,7 @@ public class Slides extends Module<Slides.State> {
         IN(0.2,1),
         TRANSIT_OUT(0.5, 1),
         OUT(0.5,0.4),
-        HALF(0,0.5);
+        HALF(0,0.2);
         final double dist;
         final double time;
         State(double dist,double time) {

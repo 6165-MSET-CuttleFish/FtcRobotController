@@ -8,8 +8,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -126,7 +128,7 @@ public class Platform extends Module<Platform.State> {
      * Extends the platform out
      */
     private void out() {
-        double position = outPosition();
+        double position = (Deposit.allowLift || opModeType != OpModeType.TELE) ? outPosition() : 0.5;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }

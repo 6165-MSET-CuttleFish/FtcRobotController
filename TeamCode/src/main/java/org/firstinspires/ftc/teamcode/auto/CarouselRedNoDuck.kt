@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
-class CarouselBlue : LinearOpMode() {
+class CarouselRedNoDuck : LinearOpMode() {
     lateinit var robot: Robot
     lateinit var deposit: Deposit
     lateinit var intake: Intake
@@ -35,12 +35,12 @@ class CarouselBlue : LinearOpMode() {
     lateinit var carousel: Carousel
     @Throws(InterruptedException::class)
     override fun runOpMode() {
-        robot = Robot(this, OpModeType.AUTO, Alliance.BLUE)
+        robot = Robot(this, OpModeType.AUTO, Alliance.RED)
         intake = robot.intake
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        val blue = true
+        val blue = false
         side = Side.CAROUSEL
         robot.autoInit()
         while (!opModeIsActive() && !isStopRequested) {
@@ -53,33 +53,22 @@ class CarouselBlue : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .back(8.0)
-                .setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
-                .turn(Math.toRadians(90.0).flip(blue))
-                .splineTo(Vector2d(-56.5, -36.0).flip(blue), Math.toRadians(-270.0).flip(blue))
-                .setConstraints(getVelocityConstraint(20.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(20.0))
-                .turn(Math.toRadians(-90.0).flip(blue))
-                .capstoneReady(capstone)
-                .waitWhile { capstone.isDoingWork }
-                .back(19.0)
-                .resetConstraints()
-                .capstonePickup(capstone)
+                .setConstraints(getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(30.0))
                 .liftUp(deposit, getLevel(location))
-                .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(40.0).flip(blue))
+                .splineTo(Vector2d(-11.0, -42.0).flip(blue), Math.toRadians(90.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
-                .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
-                }
+                            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                                admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
+                            }
                 .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
                 // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
                 // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
                 .UNSTABLE_addTemporalMarkerOffset(0.1, carousel::on)
-                .UNSTABLE_addTemporalMarkerOffset(1.0) {
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
-                }
+                            .UNSTABLE_addTemporalMarkerOffset(1.0) {
+                                admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
+                            }
                 .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
                 .waitSeconds(3.0)
                 .carouselOff(carousel)// drop the ducky

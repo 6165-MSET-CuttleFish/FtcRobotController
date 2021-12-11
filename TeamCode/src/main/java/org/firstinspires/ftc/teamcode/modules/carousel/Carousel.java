@@ -43,6 +43,11 @@ public class Carousel extends Module<Carousel.State> {
         duckyR.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    public void setPower(double power) {
+        duckyR.setPower(power);
+        duckyL.setPower(power);
+    }
+
     public void on() {
         double power = opModeType == OpModeType.AUTO ? 0.7 : 1;
         if (alliance == Alliance.BLUE) power = -power;

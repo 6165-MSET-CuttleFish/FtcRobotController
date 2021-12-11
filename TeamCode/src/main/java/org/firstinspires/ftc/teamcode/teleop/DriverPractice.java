@@ -33,7 +33,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, outtakeButton, tippedToward, tippedAway,
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway,
             capstoneReady, capstoneDrop, capstoneIn;
     ToggleButtonReader carouselButton;
 
@@ -49,11 +49,10 @@ public class DriverPractice extends LinearOpMode {
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[] {
-                capstoneReady = new ButtonReader(secondary, GamepadKeys.Button.B),
-                capstoneDrop = new ButtonReader(secondary, GamepadKeys.Button.A),
-                capstoneIn = new ButtonReader(secondary, GamepadKeys.Button.X),
+                capstoneReady = new ButtonReader(primary, GamepadKeys.Button.B),
+                capstoneDrop = new ButtonReader(primary, GamepadKeys.Button.A),
+                capstoneIn = new ButtonReader(primary, GamepadKeys.Button.X),
                 intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
-                outtakeButton = new ButtonReader(primary, GamepadKeys.Button.X),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
@@ -93,14 +92,17 @@ public class DriverPractice extends LinearOpMode {
             if (liftButton.isDown()) {
                 Deposit.allowLift = true;
             }
+            setCapstone();
         }
     }
 
     void setCapstone() {
-        if (capstoneReady.wasJustPressed()) {
-            robot.capstone.precap();
-        } else if (capstoneDrop.wasJustPressed()) {
-            robot.capstone.cap();
+        if (capstoneDrop.wasJustPressed()) {
+            if (robot.capstone.getState() == Capstone.State.PRECAP) {
+                robot.capstone.cap();
+            } else {
+                robot.capstone.precap();
+            }
         } else if (capstoneIn.wasJustPressed()) {
             robot.capstone.hold();
         }
@@ -109,8 +111,6 @@ public class DriverPractice extends LinearOpMode {
     void setIntake() {
         if (intakeButton.isDown()) {
             intake.setPower(1);
-        } else if (outtakeButton.isDown()) {
-            intake.setPower(-1);
         } else {
             intake.setPower(0);
         }
@@ -140,15 +140,17 @@ public class DriverPractice extends LinearOpMode {
         }
 
         if (dumpButton.wasJustPressed()) {
+            Deposit.allowLift = true;
             deposit.dump();
         }
     }
 
     void setCarousel() {
-        if(carouselButton.getState()) {
-            carousel.on();
-        } else {
-            carousel.off();
-        }
+        carousel.setPower(gamepad2.right_stick_y);
+//        if(carouselButton.getState()) {
+//            carousel.on();
+//        } else {
+//            carousel.off();
+//        }
     }
 }
