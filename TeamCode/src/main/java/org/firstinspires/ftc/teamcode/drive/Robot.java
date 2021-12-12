@@ -102,8 +102,6 @@ public class Robot extends ImprovedTankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
 
-    public static PIDCoefficients AXIAL_PID = new PIDCoefficients(6,0,0.001);
-    public static PIDCoefficients CROSS_TRACK_PID = new PIDCoefficients(0,3,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
     public static double VX_WEIGHT = 1;

@@ -47,11 +47,11 @@ class CyclingBlue : LinearOpMode() {
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
         val rightSequence = rightAuto()
-//        while (!opModeIsActive()) {
-//            robot.scan()
-//            telemetry.addData("Position", location)
-//            telemetry.update()
-//        }
+        while (!opModeIsActive()) {
+            robot.scan()
+            telemetry.addData("Position", location)
+            telemetry.update()
+        }
         waitForStart()
         robot.scan()
         val sequence = when (location) {
