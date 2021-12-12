@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto
+package org.firstinspires.ftc.teamcode.auto.basic
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
-class CarouselRed : LinearOpMode() {
+class CarouselBlue : LinearOpMode() {
     lateinit var robot: Robot
     lateinit var deposit: Deposit
     lateinit var intake: Intake
@@ -32,12 +32,12 @@ class CarouselRed : LinearOpMode() {
     lateinit var carousel: Carousel
     @Throws(InterruptedException::class)
     override fun runOpMode() {
-        robot = Robot(this, OpModeType.AUTO, Alliance.RED)
+        robot = Robot(this, OpModeType.AUTO, Alliance.BLUE)
         intake = robot.intake
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        val blue = false
+        val blue = true
         side = Side.CAROUSEL
         robot.autoInit()
         while (!opModeIsActive() && !isStopRequested) {
@@ -53,10 +53,9 @@ class CarouselRed : LinearOpMode() {
                 .back(8.0)
                 .setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
                 .turn(Math.toRadians(90.0).flip(blue))
-                .splineTo(Vector2d(-55.0, -24.8).flip(blue), Math.toRadians(-270.0).flip(blue))
-                .setConstraints(getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(10.0))
+                .splineTo(Vector2d(-56.5, -36.0).flip(blue), Math.toRadians(-270.0).flip(blue))
+                .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
-                .forward(3.0)
                 .capstoneReady(capstone)
                 .waitWhile { capstone.isDoingWork }
                 .back(20.0)
@@ -64,21 +63,20 @@ class CarouselRed : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-27.9, -25.0).flip(blue), Math.toRadians(30.0).flip(blue))
+                .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(40.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
                 }
-                .setVelConstraint(getVelocityConstraint(15.0, Math.PI,15.0))
+                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
                 // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
                 // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
                 .UNSTABLE_addTemporalMarkerOffset(1.0) {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
                 }
                 .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
                 .waitSeconds(3.0)
                 .carouselOff(carousel)// drop the ducky
