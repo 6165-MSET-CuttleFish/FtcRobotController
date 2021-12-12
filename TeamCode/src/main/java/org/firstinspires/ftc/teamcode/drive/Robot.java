@@ -89,7 +89,6 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
-    public static boolean isDoingDucks = false;
 
     final HardwareMap hardwareMap;
 
@@ -350,8 +349,7 @@ public class Robot extends ImprovedTankDrive {
             if (!anyMotorIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
-        if (signal != null && !isDoingDucks) setDriveSignal(signal);
-        if (isDoingDucks) setMotorPowers(0.1, 0.1);
+        if (signal != null) setDriveSignal(signal);
     }
 
     public void waitForIdle() {
@@ -427,7 +425,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * 2) : new Pose2d();
+        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * 1.4) : new Pose2d();
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())

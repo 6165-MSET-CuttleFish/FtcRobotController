@@ -6,10 +6,6 @@ import com.example.meepmeepsequences.util.Details.location
 import com.example.meepmeepsequences.util.Details.side
 
 object FrequentPositions {
-    private fun flipSide(pose2d: Pose2d): Pose2d {
-        return Pose2d(pose2d.x, -pose2d.y, -pose2d.heading)
-    }
-
     @JvmStatic
     fun startingPosition(): Pose2d {
         val regular = if (side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(
@@ -17,7 +13,7 @@ object FrequentPositions {
             -58.0,
             Math.toRadians(-90.0)
         )
-        return if (alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun dumpPosition(): Pose2d {
@@ -27,13 +23,13 @@ object FrequentPositions {
                 -31.0,
                 Math.toRadians(20.0)
             )
-        return if (alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun cycleDumpPosition(): Pose2d {
         val regular =
             if (side == Side.CYCLING) Pose2d(6.0, -32.0, Math.toRadians(-30.0)) else Pose2d()
-        return if (alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun duckLocation(): Pose2d {

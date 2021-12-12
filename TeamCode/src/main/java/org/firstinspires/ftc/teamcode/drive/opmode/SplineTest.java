@@ -28,7 +28,7 @@ public class SplineTest extends LinearOpMode {
 
             robot.followTrajectory(traj);
 
-            sleep(2000);
+            sleep(500);
 
             robot.followTrajectory(
                     robot.trajectoryBuilder(traj.end(), true)
