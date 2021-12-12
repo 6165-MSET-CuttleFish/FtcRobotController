@@ -57,8 +57,9 @@ class CarouselRed : LinearOpMode() {
                 .setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
                 .turn(Math.toRadians(90.0).flip(blue))
                 .splineTo(Vector2d(-55.0, -24.8).flip(blue), Math.toRadians(-270.0).flip(blue))
-                .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
+                .setConstraints(getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(10.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
+                .forward(3.0)
                 .capstoneReady(capstone)
                 .waitWhile { capstone.isDoingWork }
                 .back(20.0)
@@ -66,14 +67,14 @@ class CarouselRed : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(50.0).flip(blue))
+                .splineTo(Vector2d(-25.0, -25.0).flip(blue), Math.toRadians(25.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
                 }
-                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
+                .setVelConstraint(getVelocityConstraint(15.0, Math.PI,15.0))
                 // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
                 // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
                 .UNSTABLE_addTemporalMarkerOffset(1.0) {

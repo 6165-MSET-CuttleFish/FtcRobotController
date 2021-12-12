@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
+import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.util.roadrunnerext.ImprovedTrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionState;
@@ -200,6 +201,9 @@ public class TrajectorySequenceRunner {
 
                 targetPose = currentSegment.getStartPose();
                 driveSignal = new DriveSignal();
+//                if (Robot.isDoingDucks) {
+//                    driveSignal = new DriveSignal(new Pose2d(4, 0.0, 0.0));
+//                }
 
                 if (deltaTime >= currentSegment.getDuration().invoke()) {
                     currentSegmentIndex++;

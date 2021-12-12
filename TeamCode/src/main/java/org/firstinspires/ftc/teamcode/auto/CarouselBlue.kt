@@ -57,11 +57,11 @@ class CarouselBlue : LinearOpMode() {
                 .setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
                 .turn(Math.toRadians(90.0).flip(blue))
                 .splineTo(Vector2d(-56.5, -36.0).flip(blue), Math.toRadians(-270.0).flip(blue))
-                .setConstraints(getVelocityConstraint(20.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(20.0))
+                .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
                 .capstoneReady(capstone)
                 .waitWhile { capstone.isDoingWork }
-                .back(19.0)
+                .back(20.0)
                 .resetConstraints()
                 .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
@@ -76,16 +76,16 @@ class CarouselBlue : LinearOpMode() {
                 .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
                 // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
                 // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
-                .UNSTABLE_addTemporalMarkerOffset(0.1, carousel::on)
                 .UNSTABLE_addTemporalMarkerOffset(1.0) {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
                 }
                 .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
                 .waitSeconds(3.0)
                 .carouselOff(carousel)// drop the ducky
                 .resetConstraints()
                 .setReversed(true)
-                .splineTo(Vector2d(-61.0, -35.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(-61.0, -34.0).flip(blue), Math.toRadians(180.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
             .build()
         robot.turnOffVision()
