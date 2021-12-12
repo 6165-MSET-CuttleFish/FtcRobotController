@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.trajectorysequenceimproved
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
@@ -13,6 +14,7 @@ import com.acmerobotics.roadrunner.util.Angle.norm
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import java.util.*
+import kotlin.math.min
 
 class TrajectorySequenceBuilder(
     startPose: Pose2d,
@@ -572,7 +574,14 @@ class TrajectorySequenceBuilder(
 
     fun waitSeconds(seconds: Double): TrajectorySequenceBuilder {
         pushPath()
-        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList()))
+        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList(), DriveSignal()))
+        currentDuration += seconds
+        return this
+    }
+
+    fun waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder {
+        pushPath()
+        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList(), driveSignal))
         currentDuration += seconds
         return this
     }
@@ -722,7 +731,7 @@ class TrajectorySequenceBuilder(
             var currentTime = 0.0
             for (i in sequenceSegments.indices) {
                 val seg = sequenceSegments[i]
-                val markerTime = Math.min(time, totalSequenceDuration)
+                val markerTime = min(time, totalSequenceDuration)
                 if (seg != null) {
                     if (currentTime + seg.duration() >= markerTime) {
                         segment = seg
@@ -740,7 +749,7 @@ class TrajectorySequenceBuilder(
                 newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
                 newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
                 val thisSegment = segment
-                newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers)
+                newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers, DriveSignal())
             } else if (segment is TurnSegment) {
                 val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
                 newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)

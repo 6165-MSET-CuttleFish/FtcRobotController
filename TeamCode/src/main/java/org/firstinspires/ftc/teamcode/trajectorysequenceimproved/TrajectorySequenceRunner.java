@@ -199,11 +199,7 @@ public class TrajectorySequenceRunner {
                 lastPoseError = new Pose2d();
 
                 targetPose = currentSegment.getStartPose();
-                driveSignal = new DriveSignal();
-//                if (Robot.isDoingDucks) {
-//                    driveSignal = new DriveSignal(new Pose2d(4, 0.0, 0.0));
-//                }
-
+                driveSignal = ((WaitSegment) currentSegment).getDriveSignal();
                 if (deltaTime >= currentSegment.getDuration().invoke()) {
                     currentSegmentIndex++;
                 }
