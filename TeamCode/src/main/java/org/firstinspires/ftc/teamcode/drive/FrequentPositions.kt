@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.Details.alliance
 import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 
 object FrequentPositions {
     fun flipSide(pose2d: Pose2d): Pose2d {

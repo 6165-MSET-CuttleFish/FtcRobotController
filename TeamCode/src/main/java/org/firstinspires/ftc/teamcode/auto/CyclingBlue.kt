@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
@@ -24,7 +23,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous

@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import com.acmerobotics.roadrunner.util.Angle.norm
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import java.util.*
 
 class TrajectorySequenceBuilder(

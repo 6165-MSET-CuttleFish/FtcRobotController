@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.field.Details.location
 import org.firstinspires.ftc.teamcode.util.field.Details.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous

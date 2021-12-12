@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.util.roadrunnerext
+package org.firstinspires.ftc.teamcode.roadrunnerext
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds
-import org.firstinspires.ftc.teamcode.util.roadrunnerext.Coordinate
 
 fun Pose2d.toRRPose2d(): com.acmerobotics.roadrunner.geometry.Pose2d {
     return com.acmerobotics.roadrunner.geometry.Pose2d(this.x, this.y, this.heading)
