@@ -67,7 +67,7 @@ class CarouselRed : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-25.0, -25.0).flip(blue), Math.toRadians(25.0).flip(blue))
+                .splineTo(Vector2d(-27.9, -25.0).flip(blue), Math.toRadians(30.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dump
@@ -81,6 +81,7 @@ class CarouselRed : LinearOpMode() {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
                 }
                 .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
                 .waitSeconds(3.0)
                 .carouselOff(carousel)// drop the ducky
