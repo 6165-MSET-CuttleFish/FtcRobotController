@@ -6,9 +6,7 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Details;
@@ -27,6 +25,7 @@ public class Deposit extends Module<Deposit.State> {
     public enum State {
         LEVEL3(12.8), //tilted 11
         LEVEL2(5), //tilted 7
+        LEVEL1(0),
         IDLE(0);
         final private double dist;
         State(double dist) {
@@ -67,7 +66,7 @@ public class Deposit extends Module<Deposit.State> {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake);
-        nestedModules = new Module[]{platform};
+        setNestedModules(platform);
     }
 
     /**
@@ -95,10 +94,9 @@ public class Deposit extends Module<Deposit.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
-        platform.update(); // update subsystems
+    public void internalUpdate() {
         pidController.setTargetPosition(getState().getDist());
-        if ((opModeType != OpModeType.TELE && platform.isDoingWork()) || (opModeType == OpModeType.TELE && allowLift)) {
+        if ((opModeType != OpModeType.TELE && platform.isDoingInternalWork()) || (opModeType == OpModeType.TELE && allowLift)) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
@@ -139,14 +137,14 @@ public class Deposit extends Module<Deposit.State> {
     }
     
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
       
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    public boolean isDoingWork() {
-        return platform.isDoingWork();
+    public boolean isDoingInternalWork() {
+        return platform.isDoingInternalWork();
     }
 }

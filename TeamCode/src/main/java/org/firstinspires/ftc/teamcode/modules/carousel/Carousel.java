@@ -25,7 +25,6 @@ public class Carousel extends Module<Carousel.State> {
 
     /**
      * Constructor which calls the 'init' function
-     *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Carousel(HardwareMap hardwareMap) {
@@ -49,7 +48,7 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     public void on() {
-        double power = opModeType == OpModeType.AUTO ? 0.7 : 1;
+        double power = opModeType == OpModeType.AUTO ? 0.75 : 1;
         if (alliance == Alliance.BLUE) power = -power;
         duckyR.setPower(power);
         duckyL.setPower(power);
@@ -66,14 +65,14 @@ public class Carousel extends Module<Carousel.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    public void internalUpdate() {
     }
 
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return false;
     }
 
@@ -81,7 +80,7 @@ public class Carousel extends Module<Carousel.State> {
      * @return Whether the module is currently in a hazardous state
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 }

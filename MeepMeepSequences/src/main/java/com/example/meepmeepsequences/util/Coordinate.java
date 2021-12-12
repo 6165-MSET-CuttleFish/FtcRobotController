@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunnerext;
+package com.example.meepmeepsequences.util;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -59,12 +59,12 @@ public class Coordinate {
     public double angleTo(Coordinate desired) {
         double x = desired.getX() - getX();
         double y = desired.getY() - getY();
-        double angle = Math.atan2(y, x);
-        if(angle > Math.PI){
-            angle -= 2 * Math.PI;
+        double angle = Math.toDegrees(Math.atan2(y, x));
+        if(angle > 180){
+            angle -= 360;
         }
-        else if(angle < -Math.PI){
-            angle += Math.PI;
+        else if(angle < -180){
+            angle += 360;
         }
         return angle;
     }
@@ -75,7 +75,9 @@ public class Coordinate {
     public static double yCovered(double angle, double distance) {
         return Math.sin(angle) * distance;
     }
-
+    public static Coordinate toPoint(Coordinate pt){
+        return new Coordinate(pt.x, pt.y);
+    }
     public Vector2d toVector(){
         return new Vector2d(x, y);
     }

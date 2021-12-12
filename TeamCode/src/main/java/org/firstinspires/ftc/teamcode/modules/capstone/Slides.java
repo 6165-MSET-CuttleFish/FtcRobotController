@@ -25,6 +25,7 @@ public class Slides extends Module<Slides.State> {
             this.time = time;
         }
     }
+
     Servo slideLeft;
 
     /**
@@ -48,7 +49,7 @@ public class Slides extends Module<Slides.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -72,17 +73,17 @@ public class Slides extends Module<Slides.State> {
     }
 
     private void out() {
-        placeset(0);
+        slideLeft.setPosition(0);
     }
 
     private void halfcase() {
-        placeset(0.05);
+        slideLeft.setPosition(0.05);
     }
 
     public static double inPos = 0.25;
 
     private void in() {
-        placeset(inPos);
+        slideLeft.setPosition(inPos);
     }
 
     public void pickUp() {
@@ -98,17 +99,14 @@ public class Slides extends Module<Slides.State> {
     }
 
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
     }
     /**
      * @return Whether the module is currently in a hazardous state
      */
-    private void placeset(double pos){
-        slideLeft.setPosition(pos);
-    }
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
     }
 

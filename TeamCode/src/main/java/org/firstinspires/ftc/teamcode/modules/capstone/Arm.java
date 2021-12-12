@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 @Config
 public class Arm extends Module<Arm.State> {
-    public enum State {
+    protected enum State {
         TRANSIT_IN (0,1.4),
         IN(0.2,0.5),
         TRANSIT_OUT(0.5, 0.75),
@@ -50,7 +50,7 @@ public class Arm extends Module<Arm.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
                 if (elapsedTime.seconds() > getState().time) {
@@ -117,7 +117,7 @@ public class Arm extends Module<Arm.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
     }
 
@@ -125,7 +125,7 @@ public class Arm extends Module<Arm.State> {
      * @return Whether the module is currently in a hazardous state
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 

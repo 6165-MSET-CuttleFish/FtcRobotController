@@ -163,10 +163,6 @@ public class TrajectorySequenceRunner {
             } else if (currentSegment instanceof FutureSegment) {
                 TrajectorySequenceRunner runner = new TrajectorySequenceRunner(follower, headingPIDCoefficients);
                 runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
-//                if (isNewTransition) {
-//                    assert runner.currentTrajectorySequence != null;
-//                    offset += runner.currentTrajectorySequence.duration();
-//                }
                 if (!runner.follower.isFollowing()) {
                     currentSegmentIndex++;
                 }

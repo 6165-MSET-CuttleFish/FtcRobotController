@@ -20,11 +20,8 @@ import kotlin.math.cos
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
- *
- * @param kV velocity feedforward
- * @param kA acceleration feedforward
- * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
+ * @param voltageSensor voltage sensor from hardware map
  */
 abstract class ImprovedTankDrive @JvmOverloads constructor(
     private val trackWidth: Double,
@@ -73,11 +70,16 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
                     // POSITION METHOD
                     val x = extPos.x
                     val y = extPos.y
-                    val oldPose = _lastGyroPose.vec().polarAdd(6.0, lastExtHeading + Math.PI / 2)
-                        .toPose(lastExtHeading)
+                    val oldPose =
+                        _lastGyroPose.vec().polarAdd(gyroXOffset, lastExtHeading + Math.PI / 2)
+                            .polarAdd(
+                                gyroYOffset, lastExtHeading
+                            ).toPose(lastExtHeading)
                     val newPose =
-                        Vector2d(x, y).polarAdd(6.0, extHeading + Math.PI / 2).toPose(extHeading)
-                    val deltaPose = newPose.minus(oldPose)
+                        Vector2d(x, y).polarAdd(gyroXOffset, extHeading + Math.PI / 2).polarAdd(
+                            gyroYOffset, extHeading
+                        ).toPose(extHeading)
+                    val deltaPose = newPose - oldPose
                     _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
                 } else {
                     // VELOCITY METHOD
@@ -91,7 +93,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
-                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
+                val robotPoseDelta =
+                    TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading) {
                     Angle.normDelta(extHeading - lastExtHeading)
                 } else {
@@ -106,7 +109,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             val wheelVelocities = drive.getWheelVelocities()
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
-                poseVelocity = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
+                poseVelocity =
+                    TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {
                     poseVelocity = Pose2d(poseVelocity!!.vec(), extHeadingVel)
                 }
@@ -132,8 +136,20 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
         val voltageMultiplier = 12 / voltage
-        var powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier)
-        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier)
+        var powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kV * voltageMultiplier,
+            kA * voltageMultiplier,
+            kStatic * voltageMultiplier
+        )
+        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kVBackward * voltageMultiplier,
+            kABackward * voltageMultiplier,
+            kStaticBackward * voltageMultiplier
+        )
         setMotorPowers(powers[0], powers[1])
     }
 

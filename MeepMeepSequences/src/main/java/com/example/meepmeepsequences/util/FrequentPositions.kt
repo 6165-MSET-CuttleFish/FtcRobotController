@@ -1,14 +1,9 @@
-package org.firstinspires.ftc.teamcode.drive
+package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.teamcode.modules.vision.Detector
-import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Details
-import org.firstinspires.ftc.teamcode.util.field.Details.side
-import org.firstinspires.ftc.teamcode.util.field.Details.alliance
-import org.firstinspires.ftc.teamcode.util.field.Details.location
-import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import com.example.meepmeepsequences.util.Details.alliance
+import com.example.meepmeepsequences.util.Details.location
+import com.example.meepmeepsequences.util.Details.side
 
 object FrequentPositions {
     private fun flipSide(pose2d: Pose2d): Pose2d {
@@ -27,7 +22,7 @@ object FrequentPositions {
 
     fun dumpPosition(): Pose2d {
         val regular =
-            if (Details.side == Side.CYCLING) Pose2d(5.0, -30.0, Math.toRadians(-15.0)) else Pose2d(
+            if (side == Side.CYCLING) Pose2d(5.0, -30.0, Math.toRadians(-15.0)) else Pose2d(
                 -28.0,
                 -31.0,
                 Math.toRadians(20.0)
@@ -43,22 +38,20 @@ object FrequentPositions {
 
     fun duckLocation(): Pose2d {
         val arr = duckLocations()
-        when (location) {
-            Detector.Location.LEFT -> return arr[0]
-            Detector.Location.RIGHT -> return arr[2]
-            Detector.Location.MIDDLE -> return arr[1]
+        return when (location) {
+            Detector.Location.LEFT -> arr[0]
+            Detector.Location.RIGHT -> arr[2]
+            Detector.Location.MIDDLE -> arr[1]
         }
-        return arr[0]
     }
 
-    fun duckLocation(location: Detector.Location?): Pose2d {
+    fun duckLocation(location: Detector.Location): Pose2d {
         val arr = duckLocations()
-        when (location) {
-            Detector.Location.LEFT -> return arr[0]
-            Detector.Location.RIGHT -> return arr[2]
-            Detector.Location.MIDDLE -> return arr[1]
+        return when (location) {
+            Detector.Location.LEFT -> arr[0]
+            Detector.Location.RIGHT -> arr[2]
+            Detector.Location.MIDDLE -> arr[1]
         }
-        return arr[0]
     }
 
     fun duckLocations(): Array<Pose2d> {

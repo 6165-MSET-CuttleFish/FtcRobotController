@@ -6,7 +6,11 @@ import com.example.meepmeepsequences.util.*
 import com.example.meepmeepsequences.util.Details.alliance
 import com.example.meepmeepsequences.util.Details.side
 import com.example.meepmeepsequences.util.Details.windowSize
-import com.example.meepmeepsequences.util.FrequentPositions.*
+import com.example.meepmeepsequences.util.FrequentPositions.cycleDumpPosition
+import com.example.meepmeepsequences.util.FrequentPositions.duckLocation
+import com.example.meepmeepsequences.util.FrequentPositions.duckLocations
+import com.example.meepmeepsequences.util.FrequentPositions.dumpPosition
+import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark

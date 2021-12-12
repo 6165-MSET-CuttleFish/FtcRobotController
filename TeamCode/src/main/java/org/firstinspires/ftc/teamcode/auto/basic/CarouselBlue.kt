@@ -57,7 +57,7 @@ class CarouselBlue : LinearOpMode() {
                 .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
                 .capstoneReady(capstone)
-                .waitWhile { capstone.isDoingWork }
+                .waitWhile(capstone::isDoingWork)
                 .back(20.0)
                 .resetConstraints()
                 .capstonePickup(capstone)

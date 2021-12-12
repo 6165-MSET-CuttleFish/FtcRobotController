@@ -3,17 +3,17 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Details;
-import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
 
 @TeleOp
-public class DepositTest extends ModuleTest {
+public class DepositTest extends OpMode {
     Intake intake;
     Deposit deposit;
     GamepadEx primary;
@@ -25,7 +25,6 @@ public class DepositTest extends ModuleTest {
         primary = new GamepadEx(gamepad1);
         tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER);
         tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER);
-        init(intake, deposit);
     }
 
 
@@ -36,7 +35,7 @@ public class DepositTest extends ModuleTest {
         telemetry.addData("balance", balance);
         telemetry.addData("LB", tippedAway.getState());
         telemetry.addData("RB", tippedToward.getState());
-        update();
+        telemetry.update();
         tippedToward.readValue();
         tippedAway.readValue();
         intake.setPower(gamepad1.right_trigger);

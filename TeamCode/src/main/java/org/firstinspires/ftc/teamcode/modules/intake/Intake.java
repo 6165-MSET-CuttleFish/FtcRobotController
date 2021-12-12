@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
-import org.firstinspires.ftc.teamcode.util.field.Details;
-import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 /**
  * Frontal mechanism for collecting freight
@@ -17,11 +15,9 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType;
  */
 @Config
 public class Intake extends Module<Intake.State> {
-    private DcMotorEx intake;
-    public static double distanceLimit = 18;
-    private Servo outL, outR, flipL, flipR;
-    private ColorRangeSensor blockSensor;
-    private double power;
+    public static double raisedPosition = 0.88;
+    public static double loweredPosition = 0.4;
+
     public enum State {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
@@ -34,6 +30,12 @@ public class Intake extends Module<Intake.State> {
             this.time = time;
         }
     }
+
+    private DcMotorEx intake;
+    public static double distanceLimit = 18;
+    private Servo outL, outR, flipL, flipR;
+    private ColorRangeSensor blockSensor;
+    private double power;
 
     public Intake(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
@@ -56,11 +58,11 @@ public class Intake extends Module<Intake.State> {
 
     public void setPower(double power) {
         if ((this.power > 0 && power <= 0) || (this.power < 0 && power >= 0) || (this.power == 0 && power != 0)) {
-            if (power != 0 && !isDoingWork()) {
+            if (power != 0 && !isDoingInternalWork()) {
                 if (getState() == State.IN) setState(State.PREP_OUT);
                 else setState(State.PREP_OUT);
             }
-            else if (isDoingWork()) {
+            else if (isDoingInternalWork()) {
                 setState(State.TRANSIT_IN);
             }
         }
@@ -71,7 +73,7 @@ public class Intake extends Module<Intake.State> {
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
 
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() != State.IN && getState() != State.TRANSIT_IN;
     }
 
@@ -79,12 +81,12 @@ public class Intake extends Module<Intake.State> {
      * @return Whether the module is currently in a hazardous state
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 
     @Override
-    public void update() {
+    public void internalUpdate() {
         double power = this.power;
         switch(getState()){
             case PREP_OUT:
@@ -129,9 +131,6 @@ public class Intake extends Module<Intake.State> {
         flipL.setPosition(1 - loweredPosition);
     }
 
-    public static double raisedPosition = 0.88;
-    public static double loweredPosition = 0.4;
-
     private void raiseIntake() {
         flipR.setPosition(raisedPosition);
         flipL.setPosition(1 - raisedPosition);
@@ -149,9 +148,8 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesOut() {
-        if (Details.opModeType == OpModeType.AUTO) return;
-        outL.setPosition(0.65);
-        outR.setPosition(0.65);
+//        outL.setPosition(0.65);
+//        outR.setPosition(0.65);
     }
 
     private void slidesIn() {

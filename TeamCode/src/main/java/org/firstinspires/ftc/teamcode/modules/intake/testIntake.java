@@ -13,7 +13,7 @@ public class testIntake extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-            intake.update();
+            intake.internalUpdate();
             if(gamepad1.a){
                 intake.setPower(1);
             }

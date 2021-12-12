@@ -363,18 +363,9 @@ public class Robot extends ImprovedTankDrive {
      * @return Whether the robot's current state is potentially hazardous to operate in
      */
     public boolean isHazardous() {
-        return false;
-    }
-
-    public boolean isDoingWorkHelper(Module... modules) {
         for (Module module : modules) {
-            if (module.isDoingWork()) {
+            if (module.isHazardous()) {
                 return true;
-            }
-            if (module.nestedModules.length != 0) {
-                if (isDoingWorkHelper(module.nestedModules)) {
-                    return true;
-                }
             }
         }
         return false;
@@ -384,7 +375,12 @@ public class Robot extends ImprovedTankDrive {
      * @return Whether the robot is currently doing work
      */
     public boolean isDoingWork() {
-        return isDoingWorkHelper(modules);
+        for (Module module : modules) {
+            if (module.isDoingWork()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -392,7 +388,7 @@ public class Robot extends ImprovedTankDrive {
      */
     public void waitForActionsCompleted() {
         update();
-        while (isHazardous() && !Thread.currentThread().isInterrupted()) {
+        while (isDoingWork() && !Thread.currentThread().isInterrupted()) {
             update();
         }
     }
@@ -431,11 +427,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = new Pose2d(
-                isRobotDisabled ? 0 : drivePower.getX(),
-                isRobotDisabled ? 0 : drivePower.getY(),
-                isRobotDisabled ? 0 : drivePower.getHeading() * 2
-        );
+        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * 2) : new Pose2d();
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())

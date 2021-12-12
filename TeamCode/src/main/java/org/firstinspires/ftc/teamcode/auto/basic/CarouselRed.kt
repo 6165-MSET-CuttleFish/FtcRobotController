@@ -58,7 +58,7 @@ class CarouselRed : LinearOpMode() {
                 .turn(Math.toRadians(-90.0).flip(blue))
                 .forward(3.0)
                 .capstoneReady(capstone)
-                .waitWhile { capstone.isDoingWork }
+                .waitWhile(capstone::isDoingWork)
                 .back(20.0)
                 .resetConstraints()
                 .capstonePickup(capstone)

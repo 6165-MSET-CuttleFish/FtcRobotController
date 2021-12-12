@@ -15,7 +15,7 @@ public class CarouselTest extends LinearOpMode {
         carousel = new Carousel(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-            carousel.update();
+            carousel.internalUpdate();
             if (gamepad1.a) {
                 carousel.on();
             }
