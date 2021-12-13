@@ -58,6 +58,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
+            val rawHeading = drive.rawExternalHeading
+            val headingOffset =  extHeading - rawHeading
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
             Context.packet.put("Gyro Velocity X", extVelo.xVeloc)
             Context.packet.put("Gyro Velocity Y", extVelo.yVeloc)
@@ -65,7 +67,7 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             Context.packet.put("Gyro Position X", extPos.x)
             Context.packet.put("Gyro Position Y", extPos.y)
             Context.packet.put("Gyro Position Z", extPos.z)
-            if (abs(cos(drive.getPitch())) > 5) {
+            if (abs(cos(drive.getPitch())) > 5 || extPos.z > 2) {
                 if (integrateUsingPosition) {
                     // POSITION METHOD
                     val x = extPos.x
@@ -79,7 +81,7 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
                         Vector2d(x, y).polarAdd(gyroXOffset, extHeading + Math.PI / 2).polarAdd(
                             gyroYOffset, extHeading
                         ).toPose(extHeading) // current position
-                    val deltaPose = newPose - oldPose // delta
+                    val deltaPose = (newPose - oldPose).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
                     _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
                 } else {
                     // VELOCITY METHOD

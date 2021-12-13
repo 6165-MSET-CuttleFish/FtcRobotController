@@ -148,10 +148,12 @@ public class Robot extends ImprovedTankDrive {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
+        DcMotorEx
+                leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml"); // enc
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
+        DcMotorEx
+                rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[] {
@@ -313,7 +315,7 @@ public class Robot extends ImprovedTankDrive {
 
     boolean isRobotDisabled;
     ElapsedTime currentTimer = new ElapsedTime();
-    ElapsedTime cooldown = new ElapsedTime();
+    ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
 
     public void update() {
@@ -335,9 +337,9 @@ public class Robot extends ImprovedTankDrive {
         }
         if (anyMotorIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
-            cooldown.reset();
+            coolDown.reset();
         } else {
-            if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
+            if (coolDown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
             if (!anyMotorIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());

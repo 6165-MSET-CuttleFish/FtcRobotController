@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto.basic
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -79,8 +80,7 @@ class CarouselRed : LinearOpMode() {
                 }
                 .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
-                .waitSeconds(3.0)
+                .waitSeconds(3.0, DriveSignal(Pose2d(5.0)))
                 .carouselOff(carousel)// drop the ducky
                 .resetConstraints()
                 .setReversed(true)
