@@ -67,7 +67,7 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             Context.packet.put("Gyro Position X", extPos.x)
             Context.packet.put("Gyro Position Y", extPos.y)
             Context.packet.put("Gyro Position Z", extPos.z)
-            if (abs(cos(drive.getPitch())) > 5 || extPos.z > 2) {
+            if (abs(drive.getPitch()) > 5) {
                 if (integrateUsingPosition) {
                     // POSITION METHOD
                     val x = extPos.x

@@ -52,14 +52,14 @@ public class Slides extends Module<Slides.State> {
     public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(Slides.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(Slides.State.OUT);
                 }
             case OUT:

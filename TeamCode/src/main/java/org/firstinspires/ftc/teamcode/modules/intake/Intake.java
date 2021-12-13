@@ -3,14 +3,16 @@ package org.firstinspires.ftc.teamcode.modules.intake;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 /**
  * Frontal mechanism for collecting freight
- *
  * @author Matthew Song
  */
 @Config
@@ -36,6 +38,8 @@ public class Intake extends Module<Intake.State> {
     private Servo outL, outR, flipL, flipR;
     private ColorRangeSensor blockSensor;
     private double power;
+    private final ElapsedTime extendedTimer = new ElapsedTime();
+    private double extendedDuration, retractedDuration;
 
     public Intake(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
@@ -59,11 +63,11 @@ public class Intake extends Module<Intake.State> {
     public void setPower(double power) {
         if ((this.power > 0 && power <= 0) || (this.power < 0 && power >= 0) || (this.power == 0 && power != 0)) {
             if (power != 0 && !isDoingInternalWork()) {
-                if (getState() == State.IN) setState(State.PREP_OUT);
-                else setState(State.PREP_OUT);
-            }
-            else if (isDoingInternalWork()) {
+                setState(State.PREP_OUT);
+                extendedTimer.reset();
+            } else if (isDoingInternalWork()) {
                 setState(State.TRANSIT_IN);
+                extendedDuration = extendedTimer.seconds();
             }
         }
         this.power = power;
@@ -91,39 +95,45 @@ public class Intake extends Module<Intake.State> {
         switch(getState()){
             case PREP_OUT:
                 dropIntake();
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.TRANSIT_OUT);
                 }
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
-                deploy();
+                if (getState() != State.PREP_OUT) deploy();
+                extendedDuration = Range.clip(extendedDuration + extendedTimer.seconds(), 0, State.TRANSIT_IN.time);
+                extendedTimer.reset();
                 break;
             case TRANSIT_IN:
-                if(elapsedTime.seconds() > getState().time) {
-                    if (blockSensor.getDistance(DistanceUnit.CM) < distanceLimit) {
-                        setState(State.TRANSFER);
-                    } else {
-                        setState(State.IN);
-                    }
+                if(timeSpentInState() > extendedDuration) {
+                    setState(getDistance() < distanceLimit ? State.TRANSFER : State.IN);
                 }
                 power = 0.8;
             case IN:
                 retract();
+                extendedDuration = Range.clip(extendedDuration - extendedTimer.seconds(), 0, State.TRANSIT_IN.time);
+                extendedTimer.reset();
                 break;
             case TRANSFER:
                 power = -1;
                 Platform.isLoaded = true;
-                if (blockSensor.getDistance(DistanceUnit.CM) > distanceLimit || elapsedTime.seconds() > getState().time) {
+                if (getDistance() > distanceLimit || timeSpentInState() > getState().time) {
                     setState(State.IN);
                     this.power = power = 0;
                 }
                 break;
         }
         intake.setPower(power);
+        assert Context.telemetry != null;
+        Context.telemetry.addData("Extended Duration", extendedDuration);
+    }
+
+    private double getDistance() {
+        return blockSensor.getDistance(DistanceUnit.CM);
     }
 
     private void dropIntake() {
@@ -148,8 +158,8 @@ public class Intake extends Module<Intake.State> {
     }
 
     private void slidesOut() {
-//        outL.setPosition(0.65);
-//        outR.setPosition(0.65);
+        outL.setPosition(0.65);
+        outR.setPosition(0.65);
     }
 
     private void slidesIn() {

@@ -77,7 +77,7 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 isLoaded = false;
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.IDLE);
                 }
             case IDLE:
@@ -89,7 +89,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -100,7 +100,7 @@ public class Platform extends Module<Platform.State> {
                 lock();
                 out();
                 openLatch();
-                if (isLoaded ? elapsedTime.seconds() > getState().getTime(): elapsedTime.seconds() > getState().getTime()+ 0.8) {
+                if (isLoaded ? timeSpentInState() > getState().getTime(): timeSpentInState() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;

@@ -16,10 +16,10 @@ public abstract class Module<T> {
      * Instance of the hardwareMap passed to the constructor
      */
     public HardwareMap hardwareMap;
-    public Module[] nestedModules = {};
+    private Module[] nestedModules = {};
     private T state;
     private T previousState;
-    public ElapsedTime elapsedTime = new ElapsedTime();
+    private ElapsedTime elapsedTime = new ElapsedTime();
 
     /**
      * Constructor which calls the 'init' function
@@ -36,6 +36,10 @@ public abstract class Module<T> {
      * This function initializes all necessary hardware modules
      */
     public abstract void init();
+
+    public double timeSpentInState() {
+        return elapsedTime.seconds();
+    }
 
     /**
      * This function updates all necessary controls in a loop.
