@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -47,8 +47,8 @@ public abstract class Module<T> {
             module.update();
         }
         internalUpdate();
-        assert Details.telemetry != null;
-        Details.telemetry.addData(getClass().getSimpleName() + " State", getState());
+        assert Context.telemetry != null;
+        Context.telemetry.addData(getClass().getSimpleName() + " State", getState());
     }
 
     /**

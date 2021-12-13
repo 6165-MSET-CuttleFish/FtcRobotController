@@ -42,7 +42,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySeque
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
@@ -62,10 +62,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OV
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleHeading;
-import static org.firstinspires.ftc.teamcode.util.field.Details.location;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.location;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -74,7 +74,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
+import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
 
 /**
  * This class represents the robot and its drivetrain
@@ -89,6 +89,7 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
+    public static double headingSpeed = 1.4;
 
     final HardwareMap hardwareMap;
 
@@ -116,11 +117,11 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public Robot(OpMode opMode, OpModeType type, Alliance alliance) {
-        this(opMode, Details.robotPose, type, alliance);
+        this(opMode, Context.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode, OpModeType type) {
-        this(opMode, Details.robotPose, type, alliance);
+        this(opMode, Context.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode) {
@@ -130,15 +131,14 @@ public class Robot extends ImprovedTankDrive {
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
         super(TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next());
         dashboard = FtcDashboard.getInstance();
-        Details.opModeType = type;
-        Details.alliance = alliance;
+        Context.opModeType = type;
+        Context.alliance = alliance;
         robotPose = pose2d;
         if (opModeType == OpModeType.AUTO) robotPose = FrequentPositions.startingPosition();
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
         ImprovedTrajectoryFollower follower = new ImprovedRamsete();
-        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -182,13 +182,6 @@ public class Robot extends ImprovedTankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        if (opModeType != OpModeType.TELE) {
-//            Easy265.initWithoutStop(opMode, this);
-//            setLocalizer(new T265Localizer());
-        }
-        if (opModeType == OpModeType.AUTO) {
-            // autoInit();
-        }
         pitchOffset = -imu.getAngularOrientation().secondAngle;
         setPoseEstimate(robotPose);
         telemetry.clear();
@@ -226,7 +219,6 @@ public class Robot extends ImprovedTankDrive {
 
     public void turnOffVision() {
         dashboard.stopCameraStream();
-        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
     }
 
@@ -256,7 +248,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
-        return new TrajectoryBuilder(Details.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
+        return new TrajectoryBuilder(Context.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
@@ -327,12 +319,12 @@ public class Robot extends ImprovedTankDrive {
     public void update() {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
-            Details.robotPose = getPoseEstimate();
+            Context.robotPose = getPoseEstimate();
         }
         for (Module module : modules) {
             module.update();
         }
-        Details.packet.put("Loop Time", loopTime.milliseconds());
+        Context.packet.put("Loop Time", loopTime.milliseconds());
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
@@ -425,7 +417,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * 1.4) : new Pose2d();
+        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed) : new Pose2d();
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())

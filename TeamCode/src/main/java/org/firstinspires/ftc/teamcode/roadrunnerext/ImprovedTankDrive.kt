@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
-import org.firstinspires.ftc.teamcode.util.field.Details
+import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.math.abs
 import kotlin.math.cos
 
@@ -59,27 +59,27 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
-            Details.packet.put("Gyro Velocity X", extVelo.xVeloc)
-            Details.packet.put("Gyro Velocity Y", extVelo.yVeloc)
-            Details.packet.put("Gyro Velocity Z", extVelo.zVeloc)
-            Details.packet.put("Gyro Position X", extPos.x)
-            Details.packet.put("Gyro Position Y", extPos.y)
-            Details.packet.put("Gyro Position Z", extPos.z)
+            Context.packet.put("Gyro Velocity X", extVelo.xVeloc)
+            Context.packet.put("Gyro Velocity Y", extVelo.yVeloc)
+            Context.packet.put("Gyro Velocity Z", extVelo.zVeloc)
+            Context.packet.put("Gyro Position X", extPos.x)
+            Context.packet.put("Gyro Position Y", extPos.y)
+            Context.packet.put("Gyro Position Z", extPos.z)
             if (abs(cos(drive.getPitch())) > 5) {
                 if (integrateUsingPosition) {
                     // POSITION METHOD
                     val x = extPos.x
                     val y = extPos.y
                     val oldPose =
-                        _lastGyroPose.vec().polarAdd(gyroXOffset, lastExtHeading + Math.PI / 2)
-                            .polarAdd(
+                        _lastGyroPose.vec().polarAdd(gyroXOffset, lastExtHeading + Math.PI / 2) // polar add the horizontal offset
+                            .polarAdd( // polar add the vertical offset
                                 gyroYOffset, lastExtHeading
                             ).toPose(lastExtHeading)
                     val newPose =
                         Vector2d(x, y).polarAdd(gyroXOffset, extHeading + Math.PI / 2).polarAdd(
                             gyroYOffset, extHeading
-                        ).toPose(extHeading)
-                    val deltaPose = newPose - oldPose
+                        ).toPose(extHeading) // current position
+                    val deltaPose = newPose - oldPose // delta
                     _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
                 } else {
                     // VELOCITY METHOD

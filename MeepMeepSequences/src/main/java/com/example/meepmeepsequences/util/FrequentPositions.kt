@@ -1,9 +1,9 @@
 package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.example.meepmeepsequences.util.Details.alliance
-import com.example.meepmeepsequences.util.Details.location
-import com.example.meepmeepsequences.util.Details.side
+import com.example.meepmeepsequences.util.Context.alliance
+import com.example.meepmeepsequences.util.Context.location
+import com.example.meepmeepsequences.util.Context.side
 
 object FrequentPositions {
     @JvmStatic

@@ -9,11 +9,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -124,8 +124,8 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Details.packet.put("Target Height", getState().getDist());
-        Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+        Context.packet.put("Target Height", getState().getDist());
+        Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
     }
 
     /**

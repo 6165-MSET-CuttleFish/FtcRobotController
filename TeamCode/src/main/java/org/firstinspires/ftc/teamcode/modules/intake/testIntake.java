@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @TeleOp(group = "intake")
 public class testIntake extends LinearOpMode {
@@ -21,7 +21,7 @@ public class testIntake extends LinearOpMode {
                 intake.setPower(-1);
             }
             else intake.setPower(0);
-            Details.packet = new TelemetryPacket();
+            Context.packet = new TelemetryPacket();
         }
     }
 }

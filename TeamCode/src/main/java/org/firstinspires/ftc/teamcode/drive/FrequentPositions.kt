@@ -4,10 +4,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Details
-import org.firstinspires.ftc.teamcode.util.field.Details.side
-import org.firstinspires.ftc.teamcode.util.field.Details.alliance
-import org.firstinspires.ftc.teamcode.util.field.Details.location
+import org.firstinspires.ftc.teamcode.util.field.Context.side
+import org.firstinspires.ftc.teamcode.util.field.Context.alliance
+import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 

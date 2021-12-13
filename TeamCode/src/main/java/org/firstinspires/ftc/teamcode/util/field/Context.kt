@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 
 @Config
-object Details {
+object Context {
     @JvmField
     var robotPose = Pose2d()
     @JvmField

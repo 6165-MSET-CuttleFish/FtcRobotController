@@ -1,13 +1,11 @@
 package com.example.meepmeepsequences
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
-import com.example.meepmeepsequences.util.Details.alliance
-import com.example.meepmeepsequences.util.Details.location
-import com.example.meepmeepsequences.util.Details.side
-import com.example.meepmeepsequences.util.Details.windowSize
-import com.example.meepmeepsequences.util.FrequentPositions.duckLocations
+import com.example.meepmeepsequences.util.Context.alliance
+import com.example.meepmeepsequences.util.Context.location
+import com.example.meepmeepsequences.util.Context.side
+import com.example.meepmeepsequences.util.Context.windowSize
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.Robot.getLevel
 import com.noahbres.meepmeep.MeepMeep

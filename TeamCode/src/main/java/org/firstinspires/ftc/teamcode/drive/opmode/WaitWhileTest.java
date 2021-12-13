@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @Autonomous
@@ -16,7 +16,7 @@ public class WaitWhileTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this, OpModeType.AUTO);
 
-        TrajectorySequence traj = robot.trajectorySequenceBuilder(Details.robotPose)
+        TrajectorySequence traj = robot.trajectorySequenceBuilder(Context.robotPose)
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> robot.intake.setPower(1))
                 .splineTo(new Vector2d(30, 30), 0)
                 .setReversed(true)

@@ -2,7 +2,7 @@ package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 
-object Details {
+object Context {
     @JvmField
     var robotPose = Pose2d()
     @JvmField

@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos

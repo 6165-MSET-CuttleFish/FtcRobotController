@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism at the back of the robot to deposit freight

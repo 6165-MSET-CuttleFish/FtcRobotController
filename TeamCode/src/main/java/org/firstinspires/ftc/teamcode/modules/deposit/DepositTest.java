@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 @TeleOp
 public class DepositTest extends OpMode {
@@ -30,7 +30,7 @@ public class DepositTest extends OpMode {
 
     @Override
     public void loop() {
-        assert Details.telemetry != null;
+        assert Context.telemetry != null;
         telemetry.addData("isLoaded", Platform.isLoaded);
         telemetry.addData("balance", balance);
         telemetry.addData("LB", tippedAway.getState());
