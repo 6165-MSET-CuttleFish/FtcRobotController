@@ -52,7 +52,7 @@ public class Coordinate {
     public double distanceTo(Coordinate B) {
         return Math.sqrt(Math.pow(B.getX() - getX(), 2) + Math.pow(B.getY() - getY(), 2));
     }
-    public Coordinate polarAdd(double angle, double distance){
+    public Coordinate polarAdd(double distance, double angle){
         add(xCovered(angle, distance), yCovered(angle, distance));
         return this;
     }

@@ -80,7 +80,7 @@ fun MeepMeep.configure(): MeepMeep {
         .setDriveTrainType(DriveTrainType.TANK)
         .setDarkMode(true)
         .setBotDimensions(17.2, 17.192913)
-        .setConstraints(60.0, 60.0, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
+        .setConstraints(70.0, 70.0, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
 }
 
 fun TrajectorySequenceBuilder.decreaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
@@ -95,13 +95,7 @@ fun TrajectorySequenceBuilder.decreaseGains() = UNSTABLE_addTemporalMarkerOffset
 
 fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
         println("Gains Default")
-    }.setConstraints(
-        getVelocityConstraint(
-            60.0,
-            Math.toRadians(274.0),
-            15.0
-        ), getAccelerationConstraint(60.0) ?: ProfileAccelerationConstraint(60.0)
-    )
+    }.resetConstraints()
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
