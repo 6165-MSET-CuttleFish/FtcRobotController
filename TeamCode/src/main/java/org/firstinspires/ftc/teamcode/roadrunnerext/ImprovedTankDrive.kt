@@ -14,17 +14,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
-import org.firstinspires.ftc.teamcode.util.field.Details
+import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.math.abs
 import kotlin.math.cos
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
- *
- * @param kV velocity feedforward
- * @param kA acceleration feedforward
- * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
+ * @param voltageSensor voltage sensor from hardware map
  */
 abstract class ImprovedTankDrive @JvmOverloads constructor(
     private val trackWidth: Double,
@@ -61,23 +58,30 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
+            val rawHeading = drive.rawExternalHeading
+            val headingOffset =  extHeading - rawHeading
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
-            Details.packet.put("Gyro Velocity X", extVelo.xVeloc)
-            Details.packet.put("Gyro Velocity Y", extVelo.yVeloc)
-            Details.packet.put("Gyro Velocity Z", extVelo.zVeloc)
-            Details.packet.put("Gyro Position X", extPos.x)
-            Details.packet.put("Gyro Position Y", extPos.y)
-            Details.packet.put("Gyro Position Z", extPos.z)
-            if (abs(cos(drive.getPitch())) > 5) {
+            Context.packet.put("Gyro Velocity X", extVelo.xVeloc)
+            Context.packet.put("Gyro Velocity Y", extVelo.yVeloc)
+            Context.packet.put("Gyro Velocity Z", extVelo.zVeloc)
+            Context.packet.put("Gyro Position X", extPos.x)
+            Context.packet.put("Gyro Position Y", extPos.y)
+            Context.packet.put("Gyro Position Z", extPos.z)
+            if (abs(drive.getPitch()) > 5) {
                 if (integrateUsingPosition) {
                     // POSITION METHOD
                     val x = extPos.x
                     val y = extPos.y
-                    val oldPose = _lastGyroPose.vec().polarAdd(6.0, lastExtHeading + Math.PI / 2)
-                        .toPose(lastExtHeading)
+                    val oldPose =
+                        _lastGyroPose.vec().polarAdd(gyroXOffset, lastExtHeading + Math.PI / 2) // polar add the horizontal offset
+                            .polarAdd( // polar add the vertical offset
+                                gyroYOffset, lastExtHeading
+                            ).toPose(lastExtHeading)
                     val newPose =
-                        Vector2d(x, y).polarAdd(6.0, extHeading + Math.PI / 2).toPose(extHeading)
-                    val deltaPose = newPose.minus(oldPose)
+                        Vector2d(x, y).polarAdd(gyroXOffset, extHeading + Math.PI / 2).polarAdd(
+                            gyroYOffset, extHeading
+                        ).toPose(extHeading) // current position
+                    val deltaPose = (newPose - oldPose).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
                     _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
                 } else {
                     // VELOCITY METHOD
@@ -91,7 +95,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
-                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
+                val robotPoseDelta =
+                    TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading) {
                     Angle.normDelta(extHeading - lastExtHeading)
                 } else {
@@ -106,7 +111,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
             val wheelVelocities = drive.getWheelVelocities()
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
-                poseVelocity = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
+                poseVelocity =
+                    TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {
                     poseVelocity = Pose2d(poseVelocity!!.vec(), extHeadingVel)
                 }
@@ -132,8 +138,20 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
         val voltageMultiplier = 12 / voltage
-        var powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier)
-        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier)
+        var powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kV * voltageMultiplier,
+            kA * voltageMultiplier,
+            kStatic * voltageMultiplier
+        )
+        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kVBackward * voltageMultiplier,
+            kABackward * voltageMultiplier,
+            kStaticBackward * voltageMultiplier
+        )
         setMotorPowers(powers[0], powers[1])
     }
 

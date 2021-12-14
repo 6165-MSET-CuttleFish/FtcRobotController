@@ -574,7 +574,7 @@ class TrajectorySequenceBuilder(
 
     fun waitSeconds(seconds: Double): TrajectorySequenceBuilder {
         pushPath()
-        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList(), DriveSignal()))
+        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList()))
         currentDuration += seconds
         return this
     }

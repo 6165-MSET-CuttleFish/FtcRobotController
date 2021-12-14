@@ -31,7 +31,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.packet;
+import static org.firstinspires.ftc.teamcode.util.field.Context.packet;
 
 
 @Config
@@ -163,10 +163,6 @@ public class TrajectorySequenceRunner {
             } else if (currentSegment instanceof FutureSegment) {
                 TrajectorySequenceRunner runner = new TrajectorySequenceRunner(follower, headingPIDCoefficients);
                 runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
-//                if (isNewTransition) {
-//                    assert runner.currentTrajectorySequence != null;
-//                    offset += runner.currentTrajectorySequence.duration();
-//                }
                 if (!runner.follower.isFollowing()) {
                     currentSegmentIndex++;
                 }

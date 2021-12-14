@@ -5,9 +5,11 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.toPose
 
 @Config
-object Details {
+object Context {
     @JvmField
     var robotPose = Pose2d()
     @JvmField
@@ -23,7 +25,11 @@ object Details {
     @JvmField
     var telemetry: Telemetry? = null
     val futurePose: Pose2d
-        get() = robotPose.plus(poseVelocity)
+        get() = robotPose
+            .polarAdd(poseVelocity.x)
+            .vec()
+            .polarAdd(poseVelocity.y, robotPose.heading + Math.PI)
+            .toPose(robotPose.heading)
     @JvmField
     var balance = Balance.BALANCED
     @JvmField

@@ -128,7 +128,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     Pose2d poseVelo = Objects.requireNonNull(robot.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
                     double currentVelo = poseVelo.getX();
 
-                    // update telemetry
+                    // internalUpdate telemetry
                     telemetry.addData("targetVelocity", motionState.getV());
                     telemetry.addData("measuredVelocity", currentVelo);
                     telemetry.addData("error", motionState.getV() - currentVelo);

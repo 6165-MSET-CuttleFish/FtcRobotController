@@ -7,11 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.Details;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -74,11 +73,11 @@ public class Platform extends Module<Platform.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    protected void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
                 isLoaded = false;
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.IDLE);
                 }
             case IDLE:
@@ -86,11 +85,11 @@ public class Platform extends Module<Platform.State> {
                 unlock();
                 in();
                 Deposit.allowLift = false;
-                if(!intake.isDoingWork() && isLoaded)
+                if(!intake.isDoingInternalWork() && isLoaded)
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (timeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -101,12 +100,12 @@ public class Platform extends Module<Platform.State> {
                 lock();
                 out();
                 openLatch();
-                if (isLoaded ? elapsedTime.seconds() > getState().getTime(): elapsedTime.seconds() > getState().getTime()+ 0.8) {
+                if (isLoaded ? timeSpentInState() > getState().getTime(): timeSpentInState() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
         }
-        if (intake.isDoingWork())
+        if (intake.isDoingInternalWork())
             setState(State.IDLE);
     }
 
@@ -168,7 +167,7 @@ public class Platform extends Module<Platform.State> {
      * @return Whether the elapsed time passes set time before module reaches position
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
   
@@ -176,7 +175,7 @@ public class Platform extends Module<Platform.State> {
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN;
     }
 }

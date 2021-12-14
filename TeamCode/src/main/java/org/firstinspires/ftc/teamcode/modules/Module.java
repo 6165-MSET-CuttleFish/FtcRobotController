@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.util.field.Context;
+
 /**
  * This abstract class represents any module or subcomponent of the robot
  * NOTE: Do NOT use "sleeps" or any blocking clauses in any functions
@@ -14,9 +16,10 @@ public abstract class Module<T> {
      * Instance of the hardwareMap passed to the constructor
      */
     public HardwareMap hardwareMap;
-    public Module[] nestedModules = {};
+    private Module[] nestedModules = {};
     private T state;
-    public ElapsedTime elapsedTime = new ElapsedTime();
+    private T previousState;
+    private ElapsedTime elapsedTime = new ElapsedTime();
 
     /**
      * Constructor which calls the 'init' function
@@ -24,6 +27,7 @@ public abstract class Module<T> {
      */
     public Module(HardwareMap hardwareMap, T initialState) {
         this.state = initialState;
+        this.previousState = initialState;
         this.hardwareMap = hardwareMap;
         init();
     }
@@ -33,10 +37,50 @@ public abstract class Module<T> {
      */
     public abstract void init();
 
+    public double timeSpentInState() {
+        return elapsedTime.seconds();
+    }
+
     /**
-     * This function updates all necessary controls in a loop
+     * This function updates all necessary controls in a loop.
+     * Prints the state of the module.
+     * Updates all nested modules.
      */
-    public abstract void update();
+    public void update() {
+        for (Module module : nestedModules) {
+            module.update();
+        }
+        internalUpdate();
+        assert Context.telemetry != null;
+        Context.telemetry.addData(getClass().getSimpleName() + " State", getState());
+    }
+
+    /**
+     * @return Whether the module or its nested modules are currently hazardous
+     */
+    public boolean isHazardous() {
+        boolean isHazardous = isModuleInternalHazardous();
+        for (Module module : nestedModules) {
+            if (module.isHazardous()) {
+                isHazardous = true;
+            }
+        }
+        return isHazardous;
+    }
+
+    /**
+     * @return Whether the module or its nested modules are currently doing work
+     */
+    public boolean isDoingWork() {
+        boolean isDoingWork = isDoingInternalWork();
+        for (Module module : nestedModules) {
+            if (module.isDoingWork()) {
+                isDoingWork = true;
+            }
+        }
+        return isDoingWork;
+    }
+
 
     /**
      * @return The state of the module
@@ -46,23 +90,50 @@ public abstract class Module<T> {
     }
 
     /**
+     * @return The previous state of the module
+     */
+    public T getPreviousState() {
+        return previousState;
+    }
+
+    /**
      * Set a new state for the module
      * @param state New state of the module
      */
     protected void setState(T state) {
-        if (this.state != state) elapsedTime.reset();
+        if (this.state == state) return;
+        elapsedTime.reset();
+        previousState = this.state;
         this.state = state;
     }
 
     /**
-     *
-     * @return Whether the module is currently doing work for which the robot must remain stationary for
+     * Add any nested modules to be updated
      */
-    public abstract boolean isDoingWork();
+    public void setNestedModules(Module... modules) {
+        nestedModules = modules;
+    }
 
     /**
-     *
+     * @return nested modules
+     */
+    public Module[] getNestedModules() {
+        return nestedModules;
+    }
+
+    /**
+     * This function updates all necessary controls in a loop
+     * Note: Do NOT update any nested modules in this method, this will be taken care of automatically
+     */
+    protected abstract void internalUpdate();
+
+    /**
+     * @return Whether the module is currently doing work for which the robot must remain stationary
+     */
+    protected abstract boolean isDoingInternalWork();
+
+    /**
      * @return Whether the module is currently in a hazardous state
      */
-    public abstract boolean isHazardous();
+    protected abstract boolean isModuleInternalHazardous();
 }

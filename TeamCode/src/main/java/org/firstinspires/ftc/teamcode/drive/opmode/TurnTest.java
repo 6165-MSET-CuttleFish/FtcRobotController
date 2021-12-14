@@ -22,6 +22,8 @@ public class TurnTest extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        robot.turn(Math.toRadians(ANGLE));
+        while (opModeIsActive()) {
+            robot.turn(Math.toRadians(ANGLE));
+        }
     }
 }

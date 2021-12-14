@@ -1,5 +1,6 @@
 package com.example.meepmeepsequences.util
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.profile.AccelerationConstraint
@@ -14,6 +15,10 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBui
 
 fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
     return this.waitSeconds(0.5)
+}
+
+fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder {
+    return this.waitSeconds(seconds)
 }
 
 /**
@@ -95,29 +100,4 @@ fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
-}
-
-fun Double.flip(negative: Boolean): Double {
-    if (negative)
-        return -this
-    return this
-}
-
-fun Pose2d.flip(negative: Boolean): Pose2d {
-    if (negative)
-        return Pose2d(this.x, -this.y, -this.heading)
-    return this
-}
-
-fun Double.random(): Double {
-    var multiplier = 1
-    val rand = Math.random()
-    if (rand < 0.5) multiplier = -1
-    return Math.random() * multiplier * this
-}
-
-fun Vector2d.flip(negative: Boolean): Vector2d {
-    if (negative)
-        return Vector2d(this.x, -this.y)
-    return this
 }

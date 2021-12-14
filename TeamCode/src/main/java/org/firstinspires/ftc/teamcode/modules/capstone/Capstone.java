@@ -27,13 +27,11 @@ public class Capstone extends Module <Capstone.State> {
     public void init() {
         capstoneSlides = new Slides(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
-        nestedModules = new Module[]{capstoneArm, capstoneSlides};
+        setNestedModules(capstoneArm, capstoneSlides);
     }
 
     @Override
-    public void update() {
-        capstoneArm.update();
-        capstoneSlides.update();
+    protected void internalUpdate() {
         switch (getState()) {
             case READY:
                 capstoneArm.ready();
@@ -107,12 +105,12 @@ public class Capstone extends Module <Capstone.State> {
     public void hold() {
         setState(State.HOLDING);
     }
-    public boolean isDoingWork() {
-        return capstoneSlides.isDoingWork() || capstoneArm.isDoingWork();
+    public boolean isDoingInternalWork() {
+        return capstoneSlides.isDoingInternalWork() || capstoneArm.isDoingInternalWork();
     }
 
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 }

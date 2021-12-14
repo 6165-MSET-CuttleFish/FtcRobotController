@@ -1,14 +1,9 @@
-package org.firstinspires.ftc.teamcode.drive
+package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.teamcode.modules.vision.Detector
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
-import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Context.side
-import org.firstinspires.ftc.teamcode.util.field.Context.alliance
-import org.firstinspires.ftc.teamcode.util.field.Context.location
-import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import com.example.meepmeepsequences.util.Context.alliance
+import com.example.meepmeepsequences.util.Context.location
+import com.example.meepmeepsequences.util.Context.side
 
 object FrequentPositions {
     @JvmStatic
@@ -38,7 +33,7 @@ object FrequentPositions {
     }
 
     fun duckLocation(): Pose2d {
-        val arr = duckLocations
+        val arr = duckLocations()
         return when (location) {
             Detector.Location.LEFT -> arr[0]
             Detector.Location.RIGHT -> arr[2]
@@ -47,7 +42,7 @@ object FrequentPositions {
     }
 
     fun duckLocation(location: Detector.Location): Pose2d {
-        val arr = duckLocations
+        val arr = duckLocations()
         return when (location) {
             Detector.Location.LEFT -> arr[0]
             Detector.Location.RIGHT -> arr[2]
@@ -55,8 +50,7 @@ object FrequentPositions {
         }
     }
 
-    private val duckLocations: Array<Pose2d>
-    get() {
+    fun duckLocations(): Array<Pose2d> {
         return if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
                 arrayOf(

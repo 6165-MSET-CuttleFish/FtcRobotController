@@ -6,16 +6,14 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -67,7 +65,7 @@ public class Deposit extends Module<Deposit.State> {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake);
-        nestedModules = new Module[]{platform};
+        setNestedModules(platform);
     }
 
     /**
@@ -95,10 +93,9 @@ public class Deposit extends Module<Deposit.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
-        platform.update(); // update subsystems
+    public void internalUpdate() {
         pidController.setTargetPosition(getState().getDist());
-        if ((opModeType != OpModeType.TELE && platform.isDoingWork()) || (opModeType == OpModeType.TELE && allowLift)) {
+        if ((opModeType != OpModeType.TELE && platform.isDoingInternalWork()) || (opModeType == OpModeType.TELE && allowLift)) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
@@ -106,11 +103,11 @@ public class Deposit extends Module<Deposit.State> {
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
             allowLift = false;
-            if (elapsedTime.seconds() > 0.8) { // anti-stall code
+            if (timeSpentInState() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = 0;
-            } else if (elapsedTime.seconds() < 0.8) {
+            } else if (timeSpentInState() < 0.8) {
                 power = -1;
             }
         }
@@ -126,8 +123,8 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Details.packet.put("Target Height", getState().getDist());
-        Details.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+        Context.packet.put("Target Height", getState().getDist());
+        Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
     }
 
     /**
@@ -139,14 +136,14 @@ public class Deposit extends Module<Deposit.State> {
     }
     
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
       
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    public boolean isDoingWork() {
-        return platform.isDoingWork();
+    public boolean isDoingInternalWork() {
+        return platform.isDoingInternalWork();
     }
 }
