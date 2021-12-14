@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules
+import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.util.field.Context
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T>(hardwareMap: HardwareMap, private var state: T) {
+abstract class Module<T : StateBuilder>(hardwareMap: HardwareMap, private var _state: T) {
 
     /**
      * Instance of the hardwareMap passed to the constructor
@@ -23,7 +24,32 @@ abstract class Module<T>(hardwareMap: HardwareMap, private var state: T) {
      */
     var previousState: T
         private set
+    open var state: T
+        /**
+         * @return The state of the module
+         */
+        get() = _state
+        /**
+         * Set a new state for the module
+         * @param value New state of the module
+         */
+        protected set(value) {
+            if (state === value) return
+            elapsedTime.reset()
+            previousState = this.state
+            _state = state
+        }
     private val elapsedTime = ElapsedTime()
+
+
+    /**
+     * Constructor which calls the 'init' function
+     */
+    init {
+        previousState = state
+        this.hardwareMap = hardwareMap
+        init()
+    }
 
     /**
      * This function initializes all necessary hardware modules
@@ -43,8 +69,7 @@ abstract class Module<T>(hardwareMap: HardwareMap, private var state: T) {
             module.update()
         }
         internalUpdate()
-        assert(Context.telemetry != null)
-        Context.telemetry!!.addData(javaClass.simpleName + " State", getState())
+        Context.telemetry?.addData(javaClass.simpleName + " State", state)
     }
 
     /**
@@ -76,24 +101,6 @@ abstract class Module<T>(hardwareMap: HardwareMap, private var state: T) {
         }
 
     /**
-     * @return The state of the module
-     */
-    fun getState(): T {
-        return state
-    }
-
-    /**
-     * Set a new state for the module
-     * @param state New state of the module
-     */
-    protected open fun setState(state: T) {
-        if (this.state === state) return
-        elapsedTime.reset()
-        previousState = this.state
-        this.state = state
-    }
-
-    /**
      * Add any nested modules to be updated
      */
     fun setNestedModules(vararg modules: Module<*>) {
@@ -122,13 +129,4 @@ abstract class Module<T>(hardwareMap: HardwareMap, private var state: T) {
      * @return Whether the module is currently in a hazardous state
      */
     protected abstract fun isModuleInternalHazardous(): Boolean
-
-    /**
-     * Constructor which calls the 'init' function
-     */
-    init {
-        previousState = state
-        this.hardwareMap = hardwareMap
-        init()
-    }
 }

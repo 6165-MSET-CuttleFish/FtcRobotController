@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.util.field.Alliance
@@ -11,6 +12,10 @@ import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 
 object FrequentPositions {
+    @JvmStatic
+    val allianceHub: Vector2d
+        get() = Vector2d(-11.0, -24.0).flip(alliance == Alliance.BLUE)
+
     @JvmStatic
     fun startingPosition(): Pose2d {
         val regular = if (side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(

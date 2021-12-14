@@ -8,9 +8,12 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
@@ -22,7 +25,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static boolean allowLift;
-    public enum State {
+    public enum State implements StateBuilder {
         LEVEL3(12.8), //tilted 11
         LEVEL2(5), //tilted 7
         IDLE(0);
@@ -37,6 +40,22 @@ public class Deposit extends Module<Deposit.State> {
                 case TOWARD: return dist - 1;
             }
             return dist;
+        }
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
         }
     }
     DcMotorEx slides;

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //http://192.168.43.1:8080/dash
 @TeleOp
 @Disabled
-public class ModuleTestOpMode extends ModuleTest {
+public class SampleModuleOpMode extends ModuleTest {
     Module module;
     @Override
     public void initialize() {

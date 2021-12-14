@@ -5,9 +5,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
@@ -25,13 +28,14 @@ public class Platform extends Module<Platform.State> {
     public static double sum = 1.03;
     public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
-    public enum State {
+    public enum State implements StateBuilder {
         TRANSIT_IN (0.4),
         IDLE(0.5),
         TRANSIT_OUT(0.08),
         OUT(0),
         DUMPING(0.5);
         final double time;
+        @Override
         public double getTime() {
             double time = this.time;
             if (balance == Balance.AWAY) time += timeDiffBalance;
@@ -39,6 +43,17 @@ public class Platform extends Module<Platform.State> {
         }
         State(double time) {
             this.time = time;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
         }
     }
     Servo dumpLeft, dumpRight, latch, lock;

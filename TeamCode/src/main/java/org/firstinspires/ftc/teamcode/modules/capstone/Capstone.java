@@ -3,16 +3,35 @@ package org.firstinspires.ftc.teamcode.modules.capstone;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+
+import androidx.annotation.Nullable;
 
 public class Capstone extends Module <Capstone.State> {
     public Slides capstoneSlides;
     public Arm capstoneArm;
-    public enum State {
+    public enum State implements StateBuilder {
         READY,
         PICKING_UP,
         HOLDING,
         PRECAP,
         CAPPING;
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
+        }
     }
 
     /**
@@ -63,7 +82,7 @@ public class Capstone extends Module <Capstone.State> {
                 switch (capstoneArm.getState()) {
                     case IN:
                         if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.precap();
+                            capstoneArm.preCap();
                         }
                         capstoneSlides.pickUp();
                     case TRANSIT_OUT:
@@ -75,7 +94,7 @@ public class Capstone extends Module <Capstone.State> {
                         }
                         break;
                     case CAP:
-                        capstoneArm.precap();
+                        capstoneArm.preCap();
                         break;
                 }
                 break;
@@ -93,7 +112,7 @@ public class Capstone extends Module <Capstone.State> {
     public void pickUp(){
         setState(State.PICKING_UP);
     }
-    public void precap() {
+    public void preCap() {
         setState(State.PRECAP);
     }
     public void cap() {
@@ -106,7 +125,7 @@ public class Capstone extends Module <Capstone.State> {
         setState(State.HOLDING);
     }
     public boolean isDoingInternalWork() {
-        return capstoneSlides.isDoingInternalWork() || capstoneArm.isDoingInternalWork();
+        return false;
     }
 
     @Override

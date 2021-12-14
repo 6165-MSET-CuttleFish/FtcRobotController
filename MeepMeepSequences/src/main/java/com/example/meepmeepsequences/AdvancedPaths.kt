@@ -9,7 +9,6 @@ import com.example.meepmeepsequences.util.Context.windowSize
 import com.example.meepmeepsequences.util.FrequentPositions.allianceHub
 import com.example.meepmeepsequences.util.FrequentPositions.cycleDumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.duckLocation
-import com.example.meepmeepsequences.util.FrequentPositions.duckLocations
 import com.example.meepmeepsequences.util.FrequentPositions.dumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.noahbres.meepmeep.MeepMeep
@@ -36,8 +35,8 @@ class AdvancedPaths {
                         .setReversed(true)
                         .capstoneReady(capstone)
                         .splineTo(
-                            duckLocations()[0].vec(),
-                            Math.toRadians(90.0).flip(blue) + duckLocations()[0].heading
+                            duckLocation().vec(),
+                            Math.toRadians(90.0).flip(blue) + duckLocation().heading
                         )
                         .capstonePickup(capstone)
                         .liftUp(deposit, Deposit.State.LEVEL3)
@@ -56,31 +55,31 @@ class AdvancedPaths {
                         .setReversed(false)
                         .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
                         .splineTo(Vector2d(10.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
-                for (i in 1..3)
+                for (i in 1..4)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                             intake.setPower(1.0)
                         }
-                        .splineTo(Vector2d(20.0, -40.0), 0.0)
+                        .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
+                        .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
                         .splineTo(
-                            Vector2d(39.0, -50.0).plus(
+                            Vector2d(50.0, -45.0).plus(
                                 Vector2d(
                                     5 * Math.random(),
-                                    5 * Math.random()
                                 )
-                            ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
+                            ).flip(blue), Math.toRadians(-50.0 - 10 * Math.random()).flip(blue)
                         )
                         .setReversed(true)
                         .intakeOff(intake)
-                        .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
-                        .splineTo(Vector2d(9.0, -20.0).flip(blue), allianceHub)
+                        .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
+                        .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
+                        .splineTo(allianceHub.polarAdd(18.0, Math.toRadians(-30.0).flip(blue)), allianceHub)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
-                        .turn(Math.toRadians(-90.0).flip(blue))
                 trajectoryBuilder
-                    .splineTo(Vector2d(20.0, -40.0), 0.0)
-                    .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
+                    .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
+                    .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
                     .build()
             }
     }

@@ -4,8 +4,11 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
@@ -16,9 +19,26 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
-    public enum State {
+    public enum State implements StateBuilder {
         ON,
         IDLE,
+        ;
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
+        }
     }
 
     CRServo duckyR, duckyL;

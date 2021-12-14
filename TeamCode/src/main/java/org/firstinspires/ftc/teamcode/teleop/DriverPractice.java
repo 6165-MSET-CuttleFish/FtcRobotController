@@ -101,7 +101,7 @@ public class DriverPractice extends LinearOpMode {
             if (robot.capstone.getState() == Capstone.State.PRECAP) {
                 robot.capstone.cap();
             } else {
-                robot.capstone.precap();
+                robot.capstone.preCap();
             }
         } else if (capstoneIn.wasJustPressed()) {
             robot.capstone.hold();

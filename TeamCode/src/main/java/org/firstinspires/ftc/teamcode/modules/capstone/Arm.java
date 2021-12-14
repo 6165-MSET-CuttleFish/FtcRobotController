@@ -4,6 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+
+import androidx.annotation.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
@@ -11,20 +14,34 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 @Config
 public class Arm extends Module<Arm.State> {
-    protected enum State {
-        TRANSIT_IN (0,1.4),
-        IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.75),
-        OUT(0.5,0.1),
-        PRECAP(0,0.5),
-        CAPOFFSET(0,0),
-        CAP(0,0.3),
-        IDLE(0,0);
-        final double dist;
+    protected enum State implements StateBuilder {
+        TRANSIT_IN (1.4),
+        IN(0.5),
+        TRANSIT_OUT(0.75),
+        OUT(0.1),
+        PRECAP(0.5),
+        CAPOFFSET(0),
+        CAP(0.3),
+        IDLE(0);
         final double time;
-        State(double dist,double time) {
-            this.dist = dist;
+        State(double time) {
             this.time = time;
+        }
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
         }
     }
     Servo arm;
@@ -67,14 +84,14 @@ public class Arm extends Module<Arm.State> {
                 out();
                 break;
             case PRECAP:
-                precappos();
+                preCapPos();
                 if (timeSpentInState() > getState().time) {
                     // setState(State.CAPOFFSET);
                 }
             case CAPOFFSET:
                 break;
             case CAP:
-                cappos();
+                capPos();
                 if (timeSpentInState() > getState().time) {
                     // setState(State.IDLE);
                 }
@@ -92,12 +109,12 @@ public class Arm extends Module<Arm.State> {
     private void in() {
          arm.setPosition(1);
     }
-    private void precappos() {
+    private void preCapPos() {
         arm.setPosition(preCap);
     }
     public static double preCap = 0.55;
     public static double capPos = 0.4;
-    private void cappos() {
+    private void capPos() {
         arm.setPosition(capPos);
     }
 
@@ -107,7 +124,7 @@ public class Arm extends Module<Arm.State> {
     public void hold(){
         if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
-    public void precap(){
+    public void preCap(){
         setState(State.PRECAP);
     }
     public void cap(){

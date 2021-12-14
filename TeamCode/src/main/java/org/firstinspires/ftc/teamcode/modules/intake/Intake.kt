@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
+import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @author Matthew Song
  */
 @Config
-class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, State.IN) {
+class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN) {
     companion object {
         @JvmStatic
         var raisedPosition = 0.88
@@ -25,11 +26,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
         @JvmStatic
         var distanceLimit = 18.0
     }
-    enum class State(val time: Double) {
+    enum class State(override val time: Double, override val isTransitionState: Boolean = false, override val nextState: State? = null) : StateBuilder {
         PREP_OUT(0.3),
-        TRANSIT_OUT(0.3),
+        TRANSIT_OUT(0.3,true),
         OUT(0.0),
-        TRANSIT_IN(0.5),
+        TRANSIT_IN(0.5,true),
         TRANSFER(1.5),
         IN(0.0);
     }
@@ -55,10 +56,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
     fun setPower(power: Double) {
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
             if (power != 0.0 && !isDoingInternalWork()) {
-                setState(State.PREP_OUT)
+                state = State.PREP_OUT
                 extendedTimer.reset()
             } else if (isDoingInternalWork()) {
-                setState(State.TRANSIT_IN)
+                state = State.TRANSIT_IN
                 extendedDuration = extendedTimer.seconds()
             }
         }
@@ -69,7 +70,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     public override fun isDoingInternalWork(): Boolean {
-        return getState()!! != State.IN && getState()!! != State.TRANSIT_IN
+        return state != State.IN && state != State.TRANSIT_IN
     }
 
     /**
@@ -81,18 +82,18 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
 
     public override fun internalUpdate() {
         var power = power
-        when (getState()!!) {
+        when (state) {
             State.PREP_OUT -> {
                 dropIntake()
-                if (timeSpentInState() > getState()!!.time) {
-                    setState(State.TRANSIT_OUT)
+                if (timeSpentInState() > state.time) {
+                    state = State.TRANSIT_OUT
                 }
             }
             State.TRANSIT_OUT -> {
-                if (timeSpentInState() > getState()!!.time) {
-                    setState(State.OUT)
+                if (timeSpentInState() > state.time) {
+                    state = State.OUT
                 }
-                if (getState()!! != State.PREP_OUT) deploy()
+                if (state != State.PREP_OUT) deploy()
                 extendedDuration = Range.clip(
                     extendedDuration + extendedTimer.seconds(),
                     0.0,
@@ -101,7 +102,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
                 extendedTimer.reset()
             }
             State.OUT -> {
-                if (getState()!! != State.PREP_OUT) deploy()
+                if (state != State.PREP_OUT) deploy()
                 extendedDuration = Range.clip(
                     extendedDuration + extendedTimer.seconds(),
                     0.0,
@@ -111,7 +112,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
             }
             State.TRANSIT_IN -> {
                 if (timeSpentInState() > extendedDuration) {
-                    setState(if (distance < distanceLimit) State.TRANSFER else State.IN)
+                    state = if (distance < distanceLimit) State.TRANSFER else State.IN
                 }
                 power = 0.8
                 retract()
@@ -134,15 +135,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State?>(hardwareMap, Stat
             State.TRANSFER -> {
                 power = -1.0
                 Platform.isLoaded = true
-                if (distance > distanceLimit || timeSpentInState() > getState()!!.time) {
-                    setState(State.IN)
+                if (distance > distanceLimit || timeSpentInState() > state.time) {
+                    state = State.IN
                     power = 0.0
                     this.power = power
                 }
             }
         }
-        intake!!.power = power
-        assert(Context.telemetry != null)
+        intake.power = power
         Context.packet.put("Extended Duration", extendedDuration)
         val intakePose = Context.robotPose.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, intakePose.polarAdd(extendedDuration * 6.0));

@@ -102,6 +102,7 @@ public class Robot extends ImprovedTankDrive {
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
+    private final List<LynxModule> allHubs;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -141,8 +142,8 @@ public class Robot extends ImprovedTankDrive {
         ImprovedTrajectoryFollower follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        for (LynxModule module : allHubs = hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -319,6 +320,9 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime loopTime = new ElapsedTime();
 
     public void update() {
+        for (LynxModule module : allHubs) {
+            module.clearBulkCache();
+        }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
             Context.robotPose = getPoseEstimate();

@@ -43,16 +43,16 @@ public class Coordinate {
         addX(x);
         addY(y);
     }
-    public Pose2d toPose2d(double angle){
+    public Pose2d toPose2d(double angle) {
         return new Pose2d(x, y, angle);
     }
-    public static Pose2d toPose(Vector2d vector2d, double angle){
+    public static Pose2d toPose(Vector2d vector2d, double angle) {
         return new Pose2d(vector2d.getX(), vector2d.getY(), angle);
     }
     public double distanceTo(Coordinate B) {
         return Math.sqrt(Math.pow(B.getX() - getX(), 2) + Math.pow(B.getY() - getY(), 2));
     }
-    public Coordinate polarAdd(double distance, double angle){
+    public Coordinate polarAdd(double distance, double angle) {
         add(xCovered(angle, distance), yCovered(angle, distance));
         return this;
     }
@@ -75,10 +75,10 @@ public class Coordinate {
     public static double yCovered(double angle, double distance) {
         return Math.sin(angle) * distance;
     }
-    public static Coordinate toPoint(Coordinate pt){
+    public static Coordinate toPoint(Coordinate pt) {
         return new Coordinate(pt.x, pt.y);
     }
-    public Vector2d toVector(){
+    public Vector2d toVector() {
         return new Vector2d(x, y);
     }
     public static Coordinate toPoint(Pose2d pt){
@@ -87,13 +87,13 @@ public class Coordinate {
     public static Coordinate toPoint(Vector2d pt){
         return new Coordinate(pt.getX(), pt.getY());
     }
-    public static Vector2d pointLineIntersection(Pose2d pose2d, double x){
+    public static Vector2d pointLineIntersection(Pose2d pose2d, double x) {
         double m = Math.tan(pose2d.getHeading());
         double b = pose2d.getY() - m*pose2d.getX();
         double intersectionY = m*x + b;
         return new Vector2d(x, intersectionY);
     }
-    public static double distanceToLine(Pose2d pose2d, double x){
+    public static double distanceToLine(Pose2d pose2d, double x) {
         return pose2d.vec().distTo(pointLineIntersection(pose2d, x));
     }
 }

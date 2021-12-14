@@ -38,7 +38,7 @@ object FrequentPositions {
     }
 
     fun duckLocation(): Pose2d {
-        val arr = duckLocations()
+        val arr = duckLocations
         return when (location) {
             Detector.Location.LEFT -> arr[0]
             Detector.Location.RIGHT -> arr[2]
@@ -47,7 +47,7 @@ object FrequentPositions {
     }
 
     fun duckLocation(location: Detector.Location): Pose2d {
-        val arr = duckLocations()
+        val arr = duckLocations
         return when (location) {
             Detector.Location.LEFT -> arr[0]
             Detector.Location.RIGHT -> arr[2]
@@ -55,79 +55,80 @@ object FrequentPositions {
         }
     }
 
-    fun duckLocations(): Array<Pose2d> {
-        return if (alliance == Alliance.RED) {
-            if (side == Side.CAROUSEL) {
-                arrayOf(
-                    Pose2d(
-                        -32.0,
-                        -44.0,
-                        Math.toRadians(8.0)
-                    ),
-                    Pose2d(
-                        -32.0,
-                        -44.0,
-                        Math.toRadians(15.0)
-                    ),
-                    Pose2d(
-                        -32.0,
-                        -44.0,
-                        Math.toRadians(30.0)
+    private val duckLocations: Array<Pose2d>
+        get() {
+            return if (alliance == Alliance.RED) {
+                if (side == Side.CAROUSEL) {
+                    arrayOf(
+                        Pose2d(
+                            -32.0,
+                            -44.0,
+                            Math.toRadians(8.0)
+                        ),
+                        Pose2d(
+                            -32.0,
+                            -44.0,
+                            Math.toRadians(15.0)
+                        ),
+                        Pose2d(
+                            -32.0,
+                            -44.0,
+                            Math.toRadians(30.0)
+                        )
                     )
-                )
+                } else {
+                    arrayOf(
+                        Pose2d(
+                            1.0,
+                            -44.0,
+                            Math.toRadians(0.0)
+                        ),
+                        Pose2d(
+                            6.6,
+                            -44.0,
+                            Math.toRadians(0.0)
+                        ),
+                        Pose2d(
+                            9.0,
+                            -44.0,
+                            Math.toRadians(-25.0)
+                        )
+                    )
+                }
             } else {
-                arrayOf(
-                    Pose2d(
-                        1.0,
-                        -44.0,
-                        Math.toRadians(0.0)
-                    ),
-                    Pose2d(
-                        6.6,
-                        -44.0,
-                        Math.toRadians(0.0)
-                    ),
-                    Pose2d(
-                        9.0,
-                        -44.0,
-                        Math.toRadians(-25.0)
+                if (side == Side.CAROUSEL) {
+                    arrayOf(
+                        Pose2d(
+                            -32.0,
+                            44.0,
+                            Math.toRadians(0.0)
+                        ),
+                        Pose2d(
+                            -40.0,
+                            44.0,
+                            Math.toRadians(0.0)
+                        ),
+                        Pose2d(
+                            -50.0,
+                            44.0,
+                            Math.toRadians(0.0)
+                        )
                     )
-                )
-            }
-        } else {
-            if (side == Side.CAROUSEL) {
-                arrayOf(
-                    Pose2d(
-                        -32.0,
-                        44.0,
-                        Math.toRadians(0.0)
-                    ),
-                    Pose2d(
-                        -40.0,
-                        44.0,
-                        Math.toRadians(0.0)
-                    ),
-                    Pose2d(
-                        -50.0,
-                        44.0,
-                        Math.toRadians(0.0)
+                } else {
+                    arrayOf(
+                        Pose2d(9.9, 44.0, Math.toRadians(0.0)),
+                        Pose2d(
+                            9.1,
+                            46.0,
+                            Math.toRadians(25.0)
+                        ).polarAdd(1.0),
+                        Pose2d(
+                            1.0,
+                            44.0,
+                            Math.toRadians(-25.0)
+                        )
                     )
-                )
-            } else {
-                arrayOf(
-                    Pose2d(9.9, 44.0, Math.toRadians(0.0)),
-                    Pose2d(
-                        9.1,
-                        46.0,
-                        Math.toRadians(25.0)
-                    ).polarAdd(1.0),
-                    Pose2d(
-                        1.0,
-                        44.0,
-                        Math.toRadians(-25.0)
-                    )
-                )
+                }
             }
         }
-    }
 }
