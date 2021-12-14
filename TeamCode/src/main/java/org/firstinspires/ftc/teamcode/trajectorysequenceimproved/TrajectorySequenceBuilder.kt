@@ -14,6 +14,9 @@ import com.acmerobotics.roadrunner.util.Angle.norm
 import org.firstinspires.ftc.teamcode.roadrunnerext.angleTo
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import java.util.*
 import kotlin.math.min
 
@@ -287,6 +290,11 @@ class TrajectorySequenceBuilder(
                 )
             }
         })
+    }
+
+    fun splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
+        val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
+        return this.splineTo(endPose ?: reference, endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center))
     }
 
     fun splineTo(endPosition: Vector2d, endTangent: Vector2d) = splineTo(endPosition, endPosition.angleTo(endTangent))

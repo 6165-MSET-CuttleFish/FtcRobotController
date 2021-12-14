@@ -3,9 +3,10 @@ package com.example.meepmeepsequences.util
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.profile.AccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
+import com.example.meepmeepsequences.util.geometry.Circle
+import com.example.meepmeepsequences.util.geometry.Coordinate
+import com.example.meepmeepsequences.util.geometry.Line
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
@@ -21,9 +22,11 @@ fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSig
     return this.waitSeconds(seconds)
 }
 
-fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d) : TrajectorySequenceBuilder {
-    println(Math.toDegrees(endPosition.angleTo(endTangent)))
-    return this.splineTo(endPosition, endPosition.angleTo(endTangent))
+fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d) = this.splineTo(endPosition, endPosition.angleTo(endTangent))
+
+fun TrajectorySequenceBuilder.splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
+    val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
+    return this.splineTo(endPose ?: reference, endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center))
 }
 
 /**

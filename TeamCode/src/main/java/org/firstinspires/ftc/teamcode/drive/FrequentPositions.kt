@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
@@ -13,8 +14,13 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 
 object FrequentPositions {
     @JvmStatic
-    val allianceHub: Vector2d
-        get() = Vector2d(-11.0, -24.0).flip(alliance == Alliance.BLUE)
+    val allianceHub: Circle
+        get() = Circle(
+            Vector2d(
+                -11.0,
+                -24.0
+            ).flip(alliance == Alliance.BLUE), 19.0
+        )
 
     @JvmStatic
     fun startingPosition(): Pose2d {

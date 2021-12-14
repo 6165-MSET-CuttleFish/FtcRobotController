@@ -11,6 +11,7 @@ import com.example.meepmeepsequences.util.FrequentPositions.cycleDumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.duckLocation
 import com.example.meepmeepsequences.util.FrequentPositions.dumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
+import com.example.meepmeepsequences.util.geometry.Line
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
@@ -41,7 +42,7 @@ class AdvancedPaths {
                         .capstonePickup(capstone)
                         .liftUp(deposit, Deposit.State.LEVEL3)
                         .waitWhile(capstone::isDoingWork) // capstone loaded
-                        .splineTo(dumpPosition().vec(), dumpPosition().heading)
+                        .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -67,13 +68,13 @@ class AdvancedPaths {
                                 Vector2d(
                                     5 * Math.random(),
                                 )
-                            ).flip(blue), Math.toRadians(-50.0 - 10 * Math.random()).flip(blue)
+                            ).flip(blue), Math.toRadians(-30.0 - 10 * Math.random()).flip(blue)
                         )
                         .setReversed(true)
                         .intakeOff(intake)
                         .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
                         .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
-                        .splineTo(allianceHub.polarAdd(18.0, Math.toRadians(-30.0).flip(blue)), allianceHub)
+                        .splineToCircle(allianceHub, Line.yAxis(-33.0), Vector2d(12.0, -24.0).flip(blue))
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)

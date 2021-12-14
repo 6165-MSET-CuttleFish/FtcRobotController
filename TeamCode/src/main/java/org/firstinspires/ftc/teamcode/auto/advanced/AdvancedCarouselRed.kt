@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
@@ -18,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import kotlin.Throws
 
 class AdvancedCarouselRed : LinearOpMode() {
@@ -58,7 +61,7 @@ class AdvancedCarouselRed : LinearOpMode() {
                 .capstonePickup(capstone)
                 .liftUp(deposit, Deposit.State.LEVEL3)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(dumpPosition().vec(), dumpPosition().heading)
+                .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -72,31 +75,31 @@ class AdvancedCarouselRed : LinearOpMode() {
                 .setReversed(false)
                 .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
                 .splineTo(Vector2d(10.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
-        for (i in 1..3)
+        for (i in 1..4)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                     intake.setPower(1.0)
                 }
-                .splineTo(Vector2d(20.0, -40.0), 0.0)
+                .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
+                .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
                 .splineTo(
-                    Vector2d(39.0, -50.0).plus(
+                    Vector2d(50.0, -45.0).plus(
                         Vector2d(
                             5 * Math.random(),
-                            5 * Math.random()
                         )
-                    ).flip(blue), Math.toRadians(-35.0 + 10 * Math.random()).flip(blue)
+                    ).flip(blue), Math.toRadians(-30.0 - 10 * Math.random()).flip(blue)
                 )
                 .setReversed(true)
                 .intakeOff(intake)
-                .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
-                .splineTo(Vector2d(9.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
+                .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
+                .splineToCircle(allianceHub, Line.yAxis(-33.0), Vector2d(12.0, -24.0).flip(blue))
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
-                .turn(Math.toRadians(-90.0).flip(blue))
         val sequence = trajectoryBuilder
-            .splineTo(Vector2d(20.0, -40.0), 0.0)
-            .splineTo(Vector2d(45.0, -45.0).flip(blue), Math.toRadians(-35.0).flip(blue))
+            .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
+            .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
             .build()
         robot.followTrajectorySequence(sequence)
     }

@@ -5,11 +5,17 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
+import com.example.meepmeepsequences.util.geometry.Circle
 
 object FrequentPositions {
     @JvmStatic
-    val allianceHub: Vector2d
-        get() = Vector2d(-11.0, -24.0).flip(alliance == Alliance.BLUE)
+    val allianceHub: Circle
+        get() = Circle(
+            Vector2d(
+                -11.0,
+                -24.0
+            ).flip(alliance == Alliance.BLUE), 19.0
+        )
 
     @JvmStatic
     fun startingPosition(): Pose2d {

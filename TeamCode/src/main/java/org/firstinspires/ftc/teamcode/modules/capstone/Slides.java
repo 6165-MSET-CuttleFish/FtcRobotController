@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
@@ -12,7 +14,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 @Config
 public class Slides extends Module<Slides.State> {
-    public enum State {
+    public enum State implements StateBuilder {
         TRANSIT_IN (0.5),
         IN(1),
         TRANSIT_OUT(1),
@@ -21,6 +23,22 @@ public class Slides extends Module<Slides.State> {
         final double time;
         State(double time) {
             this.time = time;
+        }
+
+        @Override
+        public double getTime() {
+            return time;
+        }
+
+        @Override
+        public boolean isTransitionState() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public StateBuilder getNextState() {
+            return null;
         }
     }
 
