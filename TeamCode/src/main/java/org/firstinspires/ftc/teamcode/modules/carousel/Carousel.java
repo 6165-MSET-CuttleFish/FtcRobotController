@@ -65,7 +65,7 @@ public class Carousel extends Module<Carousel.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void internalUpdate() {
+    protected void internalUpdate() {
     }
 
     /**

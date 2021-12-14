@@ -26,7 +26,7 @@ public class Slides extends Module<Slides.State> {
         }
     }
 
-    Servo slideLeft;
+    Servo slide;
 
     /**
      * Constructor which calls the 'init' function
@@ -42,7 +42,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void init() {
-        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
+        slide = hardwareMap.servo.get("capstoneLowerLift");
     }
 
     /**w
@@ -66,24 +66,24 @@ public class Slides extends Module<Slides.State> {
                 out();
                 break;
             case HALF:
-                halfcase();
+                halfCase();
                 break;
 
         }
     }
 
     private void out() {
-        slideLeft.setPosition(0);
+        slide.setPosition(0);
     }
 
-    private void halfcase() {
-        slideLeft.setPosition(0.05);
+    private void halfCase() {
+        slide.setPosition(0.05);
     }
 
     public static double inPos = 0.25;
 
     private void in() {
-        slideLeft.setPosition(inPos);
+        slide.setPosition(inPos);
     }
 
     public void pickUp() {

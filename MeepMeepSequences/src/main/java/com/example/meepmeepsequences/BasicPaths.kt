@@ -13,7 +13,7 @@ import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 
-class BasicCarouselPath {
+class BasicPaths {
     val capstone = Capstone()
     val deposit = Deposit()
     val intake = Intake()

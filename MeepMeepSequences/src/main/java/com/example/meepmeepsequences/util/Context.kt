@@ -17,5 +17,5 @@ object Context {
     var location = Detector.Location.LEFT
 
     @JvmField
-    var windowSize = 600
+    var windowSize = 1000
 }

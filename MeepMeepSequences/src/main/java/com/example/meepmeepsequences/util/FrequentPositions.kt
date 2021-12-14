@@ -1,11 +1,16 @@
 package com.example.meepmeepsequences.util
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
 
 object FrequentPositions {
+    @JvmStatic
+    val allianceHub: Vector2d
+        get() = Vector2d(-11.0, -24.0).flip(alliance == Alliance.BLUE)
+
     @JvmStatic
     fun startingPosition(): Pose2d {
         val regular = if (side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(

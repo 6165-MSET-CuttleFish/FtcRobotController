@@ -54,21 +54,19 @@ abstract class ImprovedTankDrive constructor(
         private val timer = ElapsedTime()
         private var _lastGyroPose = Pose2d()
 
+        private val isOverPoles: Boolean
+            get() = abs(Math.toDegrees(drive.getPitch())) > 5 && integrateUsingPosition
+
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
-            val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
             val rawHeading = drive.rawExternalHeading
             val headingOffset =  extHeading - rawHeading
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
-            Context.packet.put("Gyro Velocity X", extVelo.xVeloc)
-            Context.packet.put("Gyro Velocity Y", extVelo.yVeloc)
-            Context.packet.put("Gyro Velocity Z", extVelo.zVeloc)
             Context.packet.put("Gyro Position X", extPos.x)
             Context.packet.put("Gyro Position Y", extPos.y)
             Context.packet.put("Gyro Position Z", extPos.z)
-            if (abs(drive.getPitch()) > 5) {
-                if (integrateUsingPosition) {
+            if (isOverPoles) {
                     // POSITION METHOD
                     val x = extPos.x
                     val y = extPos.y
@@ -83,14 +81,6 @@ abstract class ImprovedTankDrive constructor(
                         ).toPose(extHeading) // current position
                     val deltaPose = (newPose - oldPose).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
                     _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
-                } else {
-                    // VELOCITY METHOD
-                    val dt = timer.seconds()
-                    val dx = extVelo.xVeloc * dt
-                    val dy = extVelo.yVeloc * dt
-                    val robotPoseDelta = Pose2d(dx, dy, extHeading - lastExtHeading)
-                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
-                }
             } else if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)

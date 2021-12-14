@@ -6,6 +6,7 @@ import com.example.meepmeepsequences.util.*
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.side
 import com.example.meepmeepsequences.util.Context.windowSize
+import com.example.meepmeepsequences.util.FrequentPositions.allianceHub
 import com.example.meepmeepsequences.util.FrequentPositions.cycleDumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.duckLocation
 import com.example.meepmeepsequences.util.FrequentPositions.duckLocations
@@ -72,7 +73,7 @@ class AdvancedPaths {
                         .setReversed(true)
                         .intakeOff(intake)
                         .splineTo(Vector2d(20.0, -40.0), Math.toRadians(180.0).flip(blue))
-                        .splineTo(Vector2d(9.0, -23.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                        .splineTo(Vector2d(9.0, -20.0).flip(blue), allianceHub)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)

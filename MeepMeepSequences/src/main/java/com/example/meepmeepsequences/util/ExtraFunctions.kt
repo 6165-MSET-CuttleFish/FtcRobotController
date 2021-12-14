@@ -21,6 +21,11 @@ fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSig
     return this.waitSeconds(seconds)
 }
 
+fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d) : TrajectorySequenceBuilder {
+    println(Math.toDegrees(endPosition.angleTo(endTangent)))
+    return this.splineTo(endPosition, endPosition.angleTo(endTangent))
+}
+
 /**
  * create a trajectory that will be fulfilled in the future
  */

@@ -64,7 +64,7 @@ public class Coordinate {
             angle -= 2 * Math.PI;
         }
         else if(angle < -Math.PI){
-            angle += Math.PI;
+            angle += 2 * Math.PI;
         }
         return angle;
     }

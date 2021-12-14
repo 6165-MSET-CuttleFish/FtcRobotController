@@ -59,12 +59,12 @@ public class Coordinate {
     public double angleTo(Coordinate desired) {
         double x = desired.getX() - getX();
         double y = desired.getY() - getY();
-        double angle = Math.toDegrees(Math.atan2(y, x));
-        if(angle > 180){
-            angle -= 360;
+        double angle = Math.atan2(y, x);
+        if(angle > Math.PI){
+            angle -= 2 * Math.PI;
         }
-        else if(angle < -180){
-            angle += 360;
+        else if(angle < -Math.PI){
+            angle += 2 * Math.PI;
         }
         return angle;
     }

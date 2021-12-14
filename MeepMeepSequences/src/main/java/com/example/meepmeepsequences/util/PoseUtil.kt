@@ -34,3 +34,6 @@ fun Pose2d.polarAdd (distance: Double) : Pose2d {
 fun Vector2d.toPose (angle: Double) : Pose2d {
     return Pose2d(this, angle)
 }
+fun Vector2d.angleTo (vector2d: Vector2d): Double {
+    return Coordinate.toPoint(this).angleTo(Coordinate.toPoint(vector2d))
+}
