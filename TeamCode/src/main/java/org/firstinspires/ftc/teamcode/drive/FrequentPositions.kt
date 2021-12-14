@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
+import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Details
 import org.firstinspires.ftc.teamcode.util.field.Details.side
@@ -11,18 +12,14 @@ import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 
 object FrequentPositions {
-    fun flipSide(pose2d: Pose2d): Pose2d {
-        return Pose2d(pose2d.x, -pose2d.y, -pose2d.heading)
-    }
-
     @JvmStatic
     fun startingPosition(): Pose2d {
-        val regular = if (Details.side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(
+        val regular = if (side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(
             -36.0,
             -58.0,
             Math.toRadians(-90.0)
         )
-        return if (Details.alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun dumpPosition(): Pose2d {
@@ -32,36 +29,35 @@ object FrequentPositions {
                 -31.0,
                 Math.toRadians(20.0)
             )
-        return if (Details.alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun cycleDumpPosition(): Pose2d {
         val regular =
             if (side == Side.CYCLING) Pose2d(6.0, -32.0, Math.toRadians(-30.0)) else Pose2d()
-        return if (Details.alliance == Alliance.RED) regular else flipSide(regular)
+        return regular.flip(alliance == Alliance.BLUE)
     }
 
     fun duckLocation(): Pose2d {
-        val arr = duckLocations()
-        when (location) {
-            Detector.Location.LEFT -> return arr[0]
-            Detector.Location.RIGHT -> return arr[2]
-            Detector.Location.MIDDLE -> return arr[1]
+        val arr = duckLocations
+        return when (location) {
+            Detector.Location.LEFT -> arr[0]
+            Detector.Location.RIGHT -> arr[2]
+            Detector.Location.MIDDLE -> arr[1]
         }
-        return arr[0]
     }
 
-    fun duckLocation(location: Detector.Location?): Pose2d {
-        val arr = duckLocations()
-        when (location) {
-            Detector.Location.LEFT -> return arr[0]
-            Detector.Location.RIGHT -> return arr[2]
-            Detector.Location.MIDDLE -> return arr[1]
+    fun duckLocation(location: Detector.Location): Pose2d {
+        val arr = duckLocations
+        return when (location) {
+            Detector.Location.LEFT -> arr[0]
+            Detector.Location.RIGHT -> arr[2]
+            Detector.Location.MIDDLE -> arr[1]
         }
-        return arr[0]
     }
 
-    fun duckLocations(): Array<Pose2d> {
+    private val duckLocations: Array<Pose2d>
+    get() {
         return if (alliance == Alliance.RED) {
             if (side == Side.CAROUSEL) {
                 arrayOf(

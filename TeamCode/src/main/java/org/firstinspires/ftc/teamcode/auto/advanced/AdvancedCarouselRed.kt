@@ -26,12 +26,12 @@ class AdvancedCarouselRed : LinearOpMode() {
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
-    private val blue = true
+    private val blue = false
 
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         side = Side.CYCLING
-        robot = Robot(this, startingPosition(), OpModeType.AUTO, Alliance.BLUE)
+        robot = Robot(this, startingPosition(), OpModeType.AUTO, Alliance.RED)
         intake = robot.intake
         capstone = robot.capstone
         deposit = robot.deposit

@@ -89,7 +89,6 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
-    public static boolean isDoingDucks = false;
 
     final HardwareMap hardwareMap;
 
@@ -350,8 +349,7 @@ public class Robot extends ImprovedTankDrive {
             if (!anyMotorIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
-        if (signal != null && !isDoingDucks) setDriveSignal(signal);
-        if (isDoingDucks) setMotorPowers(0.1, 0.1);
+        if (signal != null) setDriveSignal(signal);
     }
 
     public void waitForIdle() {
