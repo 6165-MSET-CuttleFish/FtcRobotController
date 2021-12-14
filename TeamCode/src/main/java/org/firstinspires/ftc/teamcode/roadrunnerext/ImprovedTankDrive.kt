@@ -23,7 +23,7 @@ import kotlin.math.cos
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param voltageSensor voltage sensor from hardware map
  */
-abstract class ImprovedTankDrive @JvmOverloads constructor(
+abstract class ImprovedTankDrive constructor(
     private val trackWidth: Double,
     private val voltageSensor: VoltageSensor,
 ) : Drive() {
