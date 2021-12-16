@@ -41,21 +41,9 @@ public class Deposit extends Module<Deposit.State> {
             }
             return dist;
         }
-
         @Override
         public double getTime() {
             return 0;
-        }
-
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
         }
     }
     DcMotorEx slides;

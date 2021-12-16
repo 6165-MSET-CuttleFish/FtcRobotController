@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone

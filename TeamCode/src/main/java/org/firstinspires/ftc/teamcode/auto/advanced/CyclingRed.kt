@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
@@ -86,7 +86,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(20.0, -40.0).flip(blue), 0.0
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), 0.0
                 )
@@ -104,7 +104,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(26.0, -40.0).flip(blue), Math.PI
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), Math.PI
                 )
@@ -143,7 +143,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(20.0, -40.0).flip(blue), 0.0
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), 0.0
                 )
@@ -161,7 +161,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(26.0, -40.0).flip(blue), Math.PI
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), Math.PI
                 )
@@ -200,7 +200,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(20.0, -40.0).flip(blue), 0.0
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), 0.0
                 )
@@ -218,7 +218,7 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(
                     Vector2d(26.0, -40.0).flip(blue), Math.PI
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -40.0).flip(blue), Math.PI
                 )

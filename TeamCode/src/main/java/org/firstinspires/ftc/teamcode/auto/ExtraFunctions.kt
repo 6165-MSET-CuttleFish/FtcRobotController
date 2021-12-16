@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.util
+package org.firstinspires.ftc.teamcode.auto
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.drive.Robot
@@ -33,25 +33,19 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
     }
 }
 
-fun TrajectorySequenceBuilder.decreaseGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.increaseGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
     kV *= 5
 }.setConstraints(
         Robot.getVelocityConstraint(
-            20.0,
+            40.0,
             MAX_ANG_VEL,
             TRACK_WIDTH
-        ), Robot.getAccelerationConstraint(20.0)
+        ), Robot.getAccelerationConstraint(40.0)
     )
 
 fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder = UNSTABLE_addTemporalMarkerOffset(0.0) {
     kV /= 5
-}.setConstraints(
-        Robot.getVelocityConstraint(
-            MAX_VEL,
-            MAX_ANG_VEL,
-            TRACK_WIDTH
-        ), Robot.getAccelerationConstraint(MAX_ACCEL)
-    )
+}.resetConstraints()
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)

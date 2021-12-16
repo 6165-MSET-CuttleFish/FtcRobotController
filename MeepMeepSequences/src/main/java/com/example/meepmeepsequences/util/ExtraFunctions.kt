@@ -17,6 +17,10 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBui
 fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
     return this.waitSeconds(0.5)
 }
+fun TrajectorySequenceBuilder.splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
+    val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
+    return this.splineTo(vector2d, endTangent)
+}
 
 fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder {
     return this.waitSeconds(seconds)
@@ -83,17 +87,17 @@ fun MeepMeep.configure(): MeepMeep {
         .setDriveTrainType(DriveTrainType.TANK)
         .setDarkMode(true)
         .setBotDimensions(17.2, 17.192913)
-        .setConstraints(70.0, 70.0, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
+        .setConstraints(70.0, 60.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 15.0)
 }
 
-fun TrajectorySequenceBuilder.decreaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
-    println("Gains Decreased")
+fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    println("Gains Increased")
 }.setConstraints(
         getVelocityConstraint(
-            20.0,
+            50.0,
             Math.toRadians(274.0),
             15.0
-        ), getAccelerationConstraint(30.0) ?: ProfileAccelerationConstraint(20.0)
+        ), getAccelerationConstraint(50.0) ?: ProfileAccelerationConstraint(50.0)
     )
 
 fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {

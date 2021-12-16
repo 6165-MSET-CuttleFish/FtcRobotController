@@ -21,17 +21,6 @@ public class Capstone extends Module <Capstone.State> {
         public double getTime() {
             return 0;
         }
-
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
-        }
     }
 
     /**

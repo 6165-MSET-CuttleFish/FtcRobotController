@@ -38,8 +38,8 @@ public class DriveConstants {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     public static boolean integrateUsingPosition = true;
-    public static double gyroXOffset = 6;
-    public static double gyroYOffset = -2;
+    public static double gyroHorizontalOffset = 6;
+    public static double gyroVerticalOffset = -2;
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization

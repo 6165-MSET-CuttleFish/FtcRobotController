@@ -6,6 +6,6 @@ import com.example.meepmeepsequences.util.Detector;
 public class MeepMeepSequences {
     public static void main(String[] args) {
         Context.location = Detector.Location.RIGHT;
-        new AdvancedPaths().carouselPath(false).start();
+        new AdvancedPaths().cyclingPath(false).start();
     }
 }

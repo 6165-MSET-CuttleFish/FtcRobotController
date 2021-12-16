@@ -32,17 +32,6 @@ public class Arm extends Module<Arm.State> {
         public double getTime() {
             return 0;
         }
-
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
-        }
     }
     Servo arm;
 

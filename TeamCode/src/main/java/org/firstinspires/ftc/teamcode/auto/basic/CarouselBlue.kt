@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError

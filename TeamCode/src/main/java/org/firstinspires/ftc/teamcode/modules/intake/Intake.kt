@@ -26,11 +26,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmStatic
         var distanceLimit = 18.0
     }
-    enum class State(override val time: Double, override val isTransitionState: Boolean = false, override val nextState: State? = null) : StateBuilder {
+    enum class State(override val time: Double) : StateBuilder {
         PREP_OUT(0.3),
-        TRANSIT_OUT(0.3,true),
+        TRANSIT_OUT(0.3),
         OUT(0.0),
-        TRANSIT_IN(0.5,true),
+        TRANSIT_IN(0.5),
         TRANSFER(1.5),
         IN(0.0);
     }

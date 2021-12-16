@@ -45,11 +45,6 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
 
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
         @Nullable
         @Override
         public StateBuilder getNextState() {

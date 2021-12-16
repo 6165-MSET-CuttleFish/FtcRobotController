@@ -29,17 +29,6 @@ public class Slides extends Module<Slides.State> {
         public double getTime() {
             return time;
         }
-
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
-        }
     }
 
     Servo slide;

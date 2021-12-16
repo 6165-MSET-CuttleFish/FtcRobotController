@@ -21,23 +21,11 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Carousel extends Module<Carousel.State> {
     public enum State implements StateBuilder {
         ON,
-        IDLE,
-        ;
+        IDLE;
 
         @Override
         public double getTime() {
             return 0;
-        }
-
-        @Override
-        public boolean isTransitionState() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
         }
     }
 
