@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
+import org.firstinspires.ftc.teamcode.util.controllers.KalmanFilter
 import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.math.abs
-import kotlin.math.cos
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
@@ -42,6 +42,8 @@ abstract class ImprovedTankDrive constructor(
         override var poseEstimate: Pose2d
             get() = _poseEstimate
             set(value) {
+                xFilter.setState(value.x)
+                yFilter.setState(value.y)
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
                 if (useExternalHeading) drive.externalHeading = value.heading
@@ -53,7 +55,8 @@ abstract class ImprovedTankDrive constructor(
         private var lastExtHeading = Double.NaN
         private val timer = ElapsedTime()
         private var _lastGyroPose = Pose2d()
-
+        private val xFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
+        private val yFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
         private val isOverPoles: Boolean
             get() = abs(Math.toDegrees(drive.getPitch())) > 5 && integrateUsingPosition
 
@@ -63,25 +66,12 @@ abstract class ImprovedTankDrive constructor(
             val rawHeading = drive.rawExternalHeading
             val headingOffset =  extHeading - rawHeading
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
+            var odoPoseEst = _poseEstimate
+            var imuPoseEst = _poseEstimate
             Context.packet.put("Gyro Position X", extPos.x)
             Context.packet.put("Gyro Position Y", extPos.y)
             Context.packet.put("Gyro Position Z", extPos.z)
-            if (isOverPoles) {
-                    // POSITION METHOD
-                    val x = extPos.x
-                    val y = extPos.y
-                    val oldPose =
-                        _lastGyroPose.vec().polarAdd(gyroXOffset, lastExtHeading + Math.PI / 2) // polar add the horizontal offset
-                            .polarAdd( // polar add the vertical offset
-                                gyroYOffset, lastExtHeading
-                            ).toPose(lastExtHeading)
-                    val newPose =
-                        Vector2d(x, y).polarAdd(gyroXOffset, extHeading + Math.PI / 2).polarAdd(
-                            gyroYOffset, extHeading
-                        ).toPose(extHeading) // current position
-                    val deltaPose = (newPose - oldPose).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
-                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
-            } else if (lastWheelPositions.isNotEmpty()) {
+            if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
@@ -92,10 +82,29 @@ abstract class ImprovedTankDrive constructor(
                 } else {
                     robotPoseDelta.heading
                 }
-                _poseEstimate = Kinematics.relativeOdometryUpdate(
-                    _poseEstimate,
+                odoPoseEst = Kinematics.relativeOdometryUpdate(
+                    odoPoseEst,
                     Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
                 )
+            }
+            _poseEstimate = odoPoseEst
+            if (isOverPoles) {
+                val x = extPos.x
+                val y = extPos.y
+                val oldPose =
+                    _lastGyroPose
+                        .vec()
+                        .polarAdd(gyroHorizontalOffset, lastExtHeading + Math.PI / 2) // polar add the horizontal offset
+                        .polarAdd(gyroVerticalOffset, lastExtHeading)
+                        .toPose(lastExtHeading)
+                val newPose =
+                    Vector2d(x, y)
+                        .polarAdd(gyroHorizontalOffset, extHeading + Math.PI / 2)
+                        .polarAdd(gyroVerticalOffset, extHeading)
+                        .toPose(extHeading) // current position
+                val deltaPose = (newPose - oldPose).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
+                imuPoseEst = Kinematics.relativeOdometryUpdate(imuPoseEst, deltaPose)
+                _poseEstimate = Pose2d(xFilter.update(imuPoseEst.x, odoPoseEst.x), yFilter.update(imuPoseEst.y, imuPoseEst.y), imuPoseEst.heading)
             }
 
             val wheelVelocities = drive.getWheelVelocities()
