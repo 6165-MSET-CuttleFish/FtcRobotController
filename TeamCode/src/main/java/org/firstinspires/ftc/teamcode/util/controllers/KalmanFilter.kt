@@ -11,6 +11,7 @@ class KalmanFilter @JvmOverloads constructor(
 ){
     fun setState(state: Double) {
         this.x = state
+        this.x_previous = x
     }
     fun update(u: Double, z: Double): Double {
         x = x_previous + u

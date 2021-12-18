@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.intake
 
 import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @author Matthew Song
  */
 @Config
-class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN) {
+class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmStatic
         var raisedPosition = 0.88
@@ -85,12 +86,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         when (state) {
             State.PREP_OUT -> {
                 dropIntake()
-                if (timeSpentInState() > state.time) {
+                if (timeSpentInState > state.time) {
                     state = State.TRANSIT_OUT
                 }
             }
             State.TRANSIT_OUT -> {
-                if (timeSpentInState() > state.time) {
+                if (timeSpentInState > state.time) {
                     state = State.OUT
                 }
                 if (state != State.PREP_OUT) deploy()
@@ -111,7 +112,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             }
             State.TRANSIT_IN -> {
-                if (timeSpentInState() > extendedDuration) {
+                if (timeSpentInState > extendedDuration) {
                     state = if (distance < distanceLimit) State.TRANSFER else State.IN
                 }
                 power = 0.8
@@ -135,17 +136,18 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 Platform.isLoaded = true
-                if (distance > distanceLimit || timeSpentInState() > state.time) {
+                if (distance > distanceLimit || timeSpentInState > state.time) {
                     state = State.IN
                     power = 0.0
                     this.power = power
                 }
             }
         }
+        poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
         intake.power = power
         Context.packet.put("Extended Duration", extendedDuration)
         val intakePose = Context.robotPose.polarAdd(7.7)
-        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, intakePose.polarAdd(extendedDuration * 6.0));
+        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
     }
 
     private val distance: Double

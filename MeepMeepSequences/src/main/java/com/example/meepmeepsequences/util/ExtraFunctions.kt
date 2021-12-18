@@ -17,6 +17,7 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBui
 fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
     return this.waitSeconds(0.5)
 }
+
 fun TrajectorySequenceBuilder.splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
     val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
     return this.splineTo(vector2d, endTangent)

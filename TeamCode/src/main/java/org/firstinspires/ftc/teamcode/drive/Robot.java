@@ -5,6 +5,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -20,6 +23,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -103,6 +107,7 @@ public class Robot extends ImprovedTankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
+    private  Rev2mDistanceSensor frontDistance, leftDistance, rightDistance;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -145,6 +150,9 @@ public class Robot extends ImprovedTankDrive {
         for (LynxModule module : allHubs = hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
+//        frontDistance = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
+//        leftDistance = hardwareMap.get(Rev2mDistanceSensor.class, "leftDistance");
+//        rightDistance = hardwareMap.get(Rev2mDistanceSensor.class, "rightDistance");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
@@ -318,6 +326,19 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
+    public static double frontDistanceSensorOffset = 8;
+    public static double horizontalDistanceSensorOffset = 8;
+
+    public void correctPosition() {
+        double frontDist = frontDistance.getDistance(DistanceUnit.INCH);
+        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance(DistanceUnit.INCH) : rightDistance.getDistance(DistanceUnit.INCH);
+        double rightWallX = 70.5;
+        double bottomWallY = alliance == Alliance.BLUE ? 70.5 : -70.5;
+        double heading = getPoseEstimate().getHeading();
+        double x = rightWallX - frontDist * Math.cos(heading) - frontDistanceSensorOffset;
+        double y =  bottomWallY - horizontalDist * Math.cos(heading) - horizontalDistanceSensorOffset;
+        setPoseEstimate(new Pose2d(x, y, heading));
+    }
 
     public void update() {
         for (LynxModule module : allHubs) {

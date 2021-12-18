@@ -110,11 +110,11 @@ public class Deposit extends Module<Deposit.State> {
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
             allowLift = false;
-            if (timeSpentInState() > 0.8) { // anti-stall code
+            if (getTimeSpentInState() > 0.8) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = 0;
-            } else if (timeSpentInState() < 0.8) {
+            } else if (getTimeSpentInState() < 0.8) {
                 power = -1;
             }
         }

@@ -66,11 +66,15 @@ abstract class ImprovedTankDrive constructor(
             val rawHeading = drive.rawExternalHeading
             val headingOffset =  extHeading - rawHeading
             val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
+            val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
             var odoPoseEst = _poseEstimate
             var imuPoseEst = _poseEstimate
             Context.packet.put("Gyro Position X", extPos.x)
             Context.packet.put("Gyro Position Y", extPos.y)
             Context.packet.put("Gyro Position Z", extPos.z)
+            Context.packet.put("Gyro Velocity X", extVelo.xVeloc)
+            Context.packet.put("Gyro Velocity Y", extVelo.yVeloc)
+            Context.packet.put("Gyro Velocity Z", extVelo.zVeloc)
             if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)

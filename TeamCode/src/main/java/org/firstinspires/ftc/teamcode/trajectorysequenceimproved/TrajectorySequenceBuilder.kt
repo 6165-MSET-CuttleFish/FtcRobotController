@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import java.util.*
 import kotlin.math.min
 
@@ -290,6 +291,11 @@ class TrajectorySequenceBuilder(
                 )
             }
         })
+    }
+
+    fun splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
+        val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
+        return this.splineTo(vector2d, endTangent)
     }
 
     fun splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {

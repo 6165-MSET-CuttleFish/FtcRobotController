@@ -59,14 +59,14 @@ public class Arm extends Module<Arm.State> {
     public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -74,14 +74,14 @@ public class Arm extends Module<Arm.State> {
                 break;
             case PRECAP:
                 preCapPos();
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     // setState(State.CAPOFFSET);
                 }
             case CAPOFFSET:
                 break;
             case CAP:
                 capPos();
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     // setState(State.IDLE);
                 }
                 break;

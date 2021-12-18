@@ -44,12 +44,6 @@ public class Platform extends Module<Platform.State> {
         State(double time) {
             this.time = time;
         }
-
-        @Nullable
-        @Override
-        public StateBuilder getNextState() {
-            return null;
-        }
     }
     Servo dumpLeft, dumpRight, latch, lock;
     private final Intake intake;
@@ -87,7 +81,7 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 isLoaded = false;
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.IDLE);
                 }
             case IDLE:
@@ -99,7 +93,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if (timeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -110,12 +104,12 @@ public class Platform extends Module<Platform.State> {
                 lock();
                 out();
                 openLatch();
-                if (isLoaded ? timeSpentInState() > getState().getTime(): timeSpentInState() > getState().getTime()+ 0.8) {
+                if (isLoaded ? getTimeSpentInState() > getState().getTime(): getTimeSpentInState() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
                 break;
         }
-        if (intake.isDoingInternalWork())
+        if (intake.isDoingWork())
             setState(State.IDLE);
     }
 

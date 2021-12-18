@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.modules
-import com.qualcomm.hardware.lynx.LynxModule
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
+import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -10,14 +12,15 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T : StateBuilder>(hardwareMap: HardwareMap, private var _state: T) {
-
+abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: HardwareMap, private var _state: T, var poseOffset: Pose2d = Pose2d()) {
     /**
      * Instance of the hardwareMap passed to the constructor
      */
     @JvmField
     var hardwareMap: HardwareMap
     private var nestedModules = arrayOf<Module<*>>()
+    val modulePoseEstimate: Pose2d
+        get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
 
     /**
      * @return The previous state of the module
@@ -36,7 +39,7 @@ abstract class Module<T : StateBuilder>(hardwareMap: HardwareMap, private var _s
         protected set(value) {
             if (state === value) return
             elapsedTime.reset()
-            previousState = this.state
+            previousState = state
             _state = state
         }
     private val elapsedTime = ElapsedTime()
@@ -46,7 +49,7 @@ abstract class Module<T : StateBuilder>(hardwareMap: HardwareMap, private var _s
      * Constructor which calls the 'init' function
      */
     init {
-        previousState = state
+        previousState = _state
         this.hardwareMap = hardwareMap
         init()
     }
@@ -55,9 +58,12 @@ abstract class Module<T : StateBuilder>(hardwareMap: HardwareMap, private var _s
      * This function initializes all necessary hardware modules
      */
     abstract fun init()
-    fun timeSpentInState(): Double {
-        return elapsedTime.seconds()
-    }
+
+    /**
+     * The time spent in the current state in seconds
+     */
+    protected val timeSpentInState
+        get() = elapsedTime.seconds()
 
     /**
      * This function updates all necessary controls in a loop.
