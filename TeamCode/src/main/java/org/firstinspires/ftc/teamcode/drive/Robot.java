@@ -194,6 +194,7 @@ public class Robot extends ImprovedTankDrive {
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         pitchOffset = -imu.getAngularOrientation().secondAngle;
+        // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -444,7 +445,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = isRobotDisabled ? new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed) : new Pose2d();
+        Pose2d vel = isRobotDisabled ? new Pose2d() : new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())

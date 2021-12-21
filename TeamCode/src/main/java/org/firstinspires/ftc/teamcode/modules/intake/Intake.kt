@@ -36,17 +36,22 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         IN(0.0);
     }
 
-    private val intake = hardwareMap.get(DcMotorEx::class.java, "intake")
+    private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
     private val outL = hardwareMap.servo["outL"]
-    private val outR = hardwareMap.servo["outR"]
-    private val flipL = hardwareMap.servo["flipL"]
-    private val flipR = hardwareMap.servo["flipR"]
+    private var outR = hardwareMap.servo["outR"]
+    private var flipL = hardwareMap.servo["flipL"]
+    private var flipR = hardwareMap.servo["flipR"]
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private val extendedTimer = ElapsedTime()
     private var extendedDuration = 0.0
 
     override fun init() {
+        outR = hardwareMap.servo["outR"]
+        intake = hardwareMap.get(DcMotorEx::class.java, "intake")
+        outR = hardwareMap.servo["outR"]
+        flipL = hardwareMap.servo["flipL"]
+        flipR = hardwareMap.servo["flipR"]
         outR.direction = Servo.Direction.REVERSE
         intake.mode = DcMotor.RunMode.RUN_USING_ENCODER
         intake.direction = DcMotorSimple.Direction.REVERSE
