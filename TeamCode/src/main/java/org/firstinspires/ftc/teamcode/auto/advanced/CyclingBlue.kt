@@ -43,7 +43,7 @@ class CyclingBlue : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        robot.autoInit()
+        robot.visionInit()
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
         val rightSequence = rightAuto()

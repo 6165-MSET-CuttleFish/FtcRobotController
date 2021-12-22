@@ -40,7 +40,7 @@ class CarouselRed : LinearOpMode() {
         carousel = robot.carousel
         val blue = false
         side = Side.CAROUSEL
-        robot.autoInit()
+        robot.visionInit()
         while (!opModeIsActive() && !isStopRequested) {
             robot.scan()
             telemetry.addData("Location", location)

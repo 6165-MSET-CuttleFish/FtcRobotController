@@ -200,7 +200,7 @@ public class Robot extends ImprovedTankDrive {
         telemetry.update();
     }
 
-    public void autoInit() {
+    public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
