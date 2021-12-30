@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
@@ -25,9 +26,10 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static boolean allowLift;
+    public static boolean farDeposit;
     public enum State implements StateBuilder {
-        LEVEL3(12.8), //tilted 11
-        LEVEL2(5), //tilted 7
+        LEVEL3(12.8),
+        LEVEL2(5),
         IDLE(0);
         final private double dist;
         State(double dist) {
@@ -88,7 +90,7 @@ public class Deposit extends Module<Deposit.State> {
     private State defaultState = State.LEVEL3;
 
     @Override
-    public void setState(State state) {
+    public void setState(@NonNull State state) {
         defaultState = state;
     }
 
