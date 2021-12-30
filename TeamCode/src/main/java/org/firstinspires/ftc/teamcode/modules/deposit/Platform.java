@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import androidx.annotation.Nullable;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
@@ -21,10 +19,11 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition = 0.76;
+    public static double outPosition = 0.8;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.45;
-    public static double lockPosition = 0.32;
+    public static double inPosition = 0.1;
+    public static double lockPosition = 0.49;
+    public static double unlockPosition = 0.7;
     public static double sum = 1.03;
     public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
@@ -68,9 +67,8 @@ public class Platform extends Module<Platform.State> {
         dumpRight = hardwareMap.servo.get("depositDumpR");
         latch = hardwareMap.servo.get("depositLatch");
         lock = hardwareMap.servo.get("lock");
-        setState(State.IDLE);
-        in();
-        closeLatch();
+        flipIn();
+        tiltIn();
     }
 
     /**
@@ -85,9 +83,9 @@ public class Platform extends Module<Platform.State> {
                     setState(State.IDLE);
                 }
             case IDLE:
-                closeLatch();
+                tiltOut();
                 unlock();
-                in();
+                flipIn();
                 Deposit.allowLift = false;
                 if(!intake.isDoingInternalWork() && isLoaded)
                     setState(State.TRANSIT_OUT);
@@ -98,12 +96,12 @@ public class Platform extends Module<Platform.State> {
                 }
             case OUT:
                 if (getState() == State.OUT) lock();
-                out();
+                flipOut();
                 break;
             case DUMPING:
                 lock();
-                out();
-                openLatch();
+                flipOut();
+                tiltIn();
                 if (isLoaded ? getTimeSpentInState() > getState().getTime(): getTimeSpentInState() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
@@ -130,7 +128,7 @@ public class Platform extends Module<Platform.State> {
     /**
      * Extends the platform out
      */
-    private void out() {
+    private void flipOut() {
         double position = (Deposit.allowLift || opModeType != OpModeType.TELE) ? outPosition() : 0.5;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
@@ -139,7 +137,7 @@ public class Platform extends Module<Platform.State> {
     /**
      * Return platform to rest
      */
-    private void in() {
+    private void flipIn() {
         double position = inPosition;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
@@ -151,20 +149,22 @@ public class Platform extends Module<Platform.State> {
         setState(State.DUMPING);
     }
 
-    private void openLatch() {
-        latch.setPosition(0.15);
+    private void tiltIn() {
+        latch.setPosition(0.95);
+        // tilt platform in
     }
 
-    private void closeLatch() {
-        latch.setPosition(0.07);
+    private void tiltOut() {
+        latch.setPosition(0.2);
+        // tilt platform out
     }
 
     private void lock() {
-        lock.setPosition(0);
+        lock.setPosition(lockPosition);
     }
 
     private void unlock() {
-        lock.setPosition(lockPosition);
+        lock.setPosition(unlockPosition);
     }
 
     /**

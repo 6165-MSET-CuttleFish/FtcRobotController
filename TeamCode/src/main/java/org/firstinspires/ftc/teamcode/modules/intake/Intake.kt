@@ -21,25 +21,29 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmStatic
-        var raisedPosition = 0.88
+        var raisedPosition = 0.19
         @JvmStatic
-        var loweredPosition = 0.4
+        var loweredPosition = 0.84
         @JvmStatic
         var distanceLimit = 18.0
+        @JvmStatic
+        var outPosition = 0.65
+        @JvmStatic
+        var inPosition = 0.19
     }
     enum class State(override val time: Double) : StateBuilder {
         PREP_OUT(0.3),
         TRANSIT_OUT(0.3),
         OUT(0.0),
-        TRANSIT_IN(0.5),
-        TRANSFER(1.5),
+        TRANSIT_IN(0.8),
+        TRANSFER(0.7),
         IN(0.0);
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
-    private val outL = hardwareMap.servo["outL"]
+    private var outL = hardwareMap.servo["outL"]
     private var outR = hardwareMap.servo["outR"]
-    private var flipL = hardwareMap.servo["flipL"]
+    private var outA = hardwareMap.servo["outA"]
     private var flipR = hardwareMap.servo["flipR"]
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
@@ -47,15 +51,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var extendedDuration = 0.0
 
     override fun init() {
-        outR = hardwareMap.servo["outR"]
         intake = hardwareMap.get(DcMotorEx::class.java, "intake")
-        outR = hardwareMap.servo["outR"]
-        flipL = hardwareMap.servo["flipL"]
-        flipR = hardwareMap.servo["flipR"]
-        outR.direction = Servo.Direction.REVERSE
         intake.mode = DcMotor.RunMode.RUN_USING_ENCODER
         intake.direction = DcMotorSimple.Direction.REVERSE
-        // slidesIn()
+        outL = hardwareMap.servo["outL"]
+        outR = hardwareMap.servo["outR"]
+        outA = hardwareMap.servo["outA"]
+        flipR = hardwareMap.servo["flipR"]
+        slidesIn()
         raiseIntake()
     }
 
@@ -66,7 +69,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             } else if (isDoingInternalWork()) {
                 state = State.TRANSIT_IN
-                extendedDuration = extendedTimer.seconds()
+                // extendedDuration = extendedTimer.seconds()
             }
         }
         this.power = power
@@ -117,8 +120,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             }
             State.TRANSIT_IN -> {
-                if (timeSpentInState > extendedDuration) {
-                    state = if (distance < distanceLimit) State.TRANSFER else State.IN
+                if (timeSpentInState > state.time) {
+                    state = if (0 < distanceLimit) State.TRANSFER else State.IN
                 }
                 power = 0.8
                 retract()
@@ -151,6 +154,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
         intake.power = power
         Context.packet.put("Extended Duration", extendedDuration)
+        Context.telemetry?.addData("Extended Duration", extendedDuration)
         val intakePose = Context.robotPose.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
     }
@@ -160,32 +164,32 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private fun dropIntake() {
         flipR.position = loweredPosition
-        flipL.position = 1 - loweredPosition
     }
 
     private fun raiseIntake() {
         flipR.position = raisedPosition
-        flipL.position = 1 - raisedPosition
     }
 
     private fun deploy() {
         Platform.isLoaded = false
-        // slidesOut();
+        slidesOut();
         dropIntake()
     }
 
     private fun retract() {
-        // slidesIn()
+        slidesIn()
         raiseIntake()
     }
 
     private fun slidesOut() {
-        outL.position = 0.65
-        outR.position = 0.65
+        outL.position = outPosition
+        outR.position = outPosition
+        outA.position = outPosition
     }
 
     private fun slidesIn() {
-        outL.position = 0.19
-        outR.position = 0.19
+        outL.position = inPosition
+        outR.position = inPosition
+        outA.position = inPosition
     }
 }

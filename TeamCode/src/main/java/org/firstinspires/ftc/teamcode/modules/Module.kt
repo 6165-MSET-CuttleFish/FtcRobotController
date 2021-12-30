@@ -40,7 +40,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: H
             if (state === value) return
             elapsedTime.reset()
             previousState = state
-            _state = state
+            _state = value
         }
     private val elapsedTime = ElapsedTime()
 

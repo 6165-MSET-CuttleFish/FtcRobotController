@@ -5,14 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 @TeleOp
-public class PairedServoTuner extends LinearOpMode {
-    public static String servo1;
-    public static String servo2;
-    public static double sum = 1;
+public class SeriesServoTuner extends LinearOpMode {
+    public static String servoNames;
     public static double position;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -20,16 +17,13 @@ public class PairedServoTuner extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             try {
-                Servo
-                        s1 = hardwareMap.servo.get(servo1),
-                        s2 = hardwareMap.servo.get(servo2);
-                s1.setPosition(position);
-                s2.setPosition(sum - position);
-            } catch (Exception e) {
-                telemetry.addData(servo1, "not valid");
-                telemetry.addData(servo2, "not valid");
+                String[] names = servoNames.split(",");
+                for (String name : names) {
+                    hardwareMap.servo.get(name.trim()).setPosition(position);
+                }
+            } catch(Exception ignored) {
+
             }
-            telemetry.update();
         }
     }
 }
