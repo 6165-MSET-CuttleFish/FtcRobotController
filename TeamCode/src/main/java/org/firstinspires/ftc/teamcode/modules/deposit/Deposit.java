@@ -30,6 +30,7 @@ public class Deposit extends Module<Deposit.State> {
     public enum State implements StateBuilder {
         LEVEL3(12.8),
         LEVEL2(5),
+        LEVEL1(0),
         IDLE(0);
         final private double dist;
         State(double dist) {
@@ -73,7 +74,7 @@ public class Deposit extends Module<Deposit.State> {
     public Deposit(HardwareMap hardwareMap, Intake intake) {
         super(hardwareMap, State.IDLE);
         pidController.setOutputBounds(-1, 1);
-        platform = new Platform(hardwareMap, intake);
+        platform = new Platform(hardwareMap, intake, this);
         setNestedModules(platform);
     }
 

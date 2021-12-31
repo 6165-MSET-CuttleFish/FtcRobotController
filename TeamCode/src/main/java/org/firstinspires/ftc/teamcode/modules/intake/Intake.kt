@@ -69,7 +69,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             } else if (isDoingInternalWork()) {
                 state = State.TRANSIT_IN
-                // extendedDuration = extendedTimer.seconds()
             }
         }
         this.power = power
@@ -120,7 +119,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             }
             State.TRANSIT_IN -> {
-                if (timeSpentInState > state.time) {
+                if (extendedDuration <= 0) {
                     state = if (0 < distanceLimit) State.TRANSFER else State.IN
                 }
                 power = 0.8

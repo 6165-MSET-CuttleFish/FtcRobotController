@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.intake;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
-import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @TeleOp(group = "intake")
 public class testIntake extends ModuleTest {
