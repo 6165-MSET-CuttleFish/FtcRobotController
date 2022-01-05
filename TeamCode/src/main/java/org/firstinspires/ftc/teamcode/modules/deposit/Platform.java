@@ -42,7 +42,7 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo dumpLeft, dumpRight, latch, lock;
+    Servo dumpLeft, latch;
     private final Intake intake;
 
 
@@ -62,9 +62,7 @@ public class Platform extends Module<Platform.State> {
     @Override
     public void init() {
         dumpLeft = hardwareMap.servo.get("depositDumpL");
-        dumpRight = hardwareMap.servo.get("depositDumpR");
         latch = hardwareMap.servo.get("depositLatch");
-        lock = hardwareMap.servo.get("lock");
         setState(State.IDLE);
         in();
         closeLatch();
@@ -83,7 +81,6 @@ public class Platform extends Module<Platform.State> {
                 }
             case IDLE:
                 closeLatch();
-                unlock();
                 in();
                 Deposit.allowLift = false;
                 if(!intake.isDoingWork() && isLoaded)
@@ -94,11 +91,9 @@ public class Platform extends Module<Platform.State> {
                     setState(State.OUT);
                 }
             case OUT:
-                if (getState() == State.OUT) lock();
                 out();
                 break;
             case DUMPING:
-                lock();
                 out();
                 openLatch();
                 if (isLoaded ? elapsedTime.seconds() > getState().getTime(): elapsedTime.seconds() > getState().getTime()+ 0.8) {
@@ -130,7 +125,6 @@ public class Platform extends Module<Platform.State> {
     private void out() {
         double position = (Deposit.allowLift || opModeType != OpModeType.TELE) ? outPosition() : 0.5;
         dumpLeft.setPosition(position);
-        dumpRight.setPosition(sum - position);
     }
 
     /**
@@ -139,7 +133,6 @@ public class Platform extends Module<Platform.State> {
     private void in() {
         double position = inPosition;
         dumpLeft.setPosition(position);
-        dumpRight.setPosition(sum - position);
     }
     /**
      * Dumps the loaded element onto hub
@@ -154,14 +147,6 @@ public class Platform extends Module<Platform.State> {
 
     private void closeLatch() {
         latch.setPosition(0.07);
-    }
-
-    private void lock() {
-        lock.setPosition(0);
-    }
-
-    private void unlock() {
-        lock.setPosition(lockPosition);
     }
 
     /**
