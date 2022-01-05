@@ -8,9 +8,11 @@ import com.example.meepmeepsequences.util.geometry.Circle
 import com.example.meepmeepsequences.util.geometry.Coordinate
 import com.example.meepmeepsequences.util.geometry.Line
 import com.noahbres.meepmeep.MeepMeep
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
@@ -83,12 +85,17 @@ fun TrajectorySequenceBuilder.carouselOff(carousel: Carousel): TrajectorySequenc
     return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::off)
 }
 
-fun MeepMeep.configure(): MeepMeep {
+fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
-        .setDarkMode(true)
-        .setBotDimensions(17.2, 17.192913)
+        .setDimensions(17.2, 17.192913)
         .setConstraints(70.0, 60.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 15.0)
+}
+
+fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {
+    return this
+        .addEntity(botEntityBuilder(true, this))
+        .addEntity(botEntityBuilder(false, this))
 }
 
 fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {

@@ -20,7 +20,9 @@ import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
 class AdvancedPaths {
@@ -29,13 +31,11 @@ class AdvancedPaths {
     val deposit = Deposit()
     val intake = Intake()
     val carousel = Carousel()
-    fun carouselPath(blue: Boolean): MeepMeep {
+    fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
-        return MeepMeep(windowSize)
-            .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
-            .setTheme(colorSchemeVariable()) // Set theme
-            .setBackgroundAlpha(1f)
+        return DefaultBotBuilder(meepMeep)
+            .setColorScheme(colorSchemeVariable()) // Set theme
             .configure() // configure robot
             .followTrajectorySequence { robot ->
                 val trajectoryBuilder =
@@ -95,13 +95,11 @@ class AdvancedPaths {
             }
     }
 
-    fun cyclingPath(blue: Boolean): MeepMeep {
-        side = Side.CYCLING
+    fun cyclingPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
+        side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
-        return MeepMeep(windowSize)
-            .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
-            .setTheme(colorSchemeVariable()) // Set theme
-            .setBackgroundAlpha(1f)
+        return DefaultBotBuilder(meepMeep)
+            .setColorScheme(colorSchemeVariable()) // Set theme
             .configure() // configure robot
             .followTrajectorySequence { robot ->
                 val trajectoryBuilder =
