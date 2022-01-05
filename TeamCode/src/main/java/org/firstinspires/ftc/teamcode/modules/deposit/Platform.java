@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
- * @author Martin
+ * @author Sreyash
  */
 @Config
 public class Platform extends Module<Platform.State> {
