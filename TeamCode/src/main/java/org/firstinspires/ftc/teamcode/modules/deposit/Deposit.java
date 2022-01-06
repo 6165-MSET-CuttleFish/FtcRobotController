@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -27,12 +28,15 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Deposit extends Module<Deposit.State> {
     public static boolean allowLift;
     public static boolean farDeposit;
+    public static double LEVEL3 = 12.8;
+    public static double LEVEL2 = 5;
+    public static double LEVEL1 = 0;
     public enum State implements StateBuilder {
-        LEVEL3(12.8),
+        LEVEL3(12),
         LEVEL2(5),
         LEVEL1(0),
         IDLE(0);
-        final private double dist;
+        private double dist;
         State(double dist) {
             this.dist = dist;
         }
@@ -44,6 +48,9 @@ public class Deposit extends Module<Deposit.State> {
             }
             return dist;
         }
+        public void setDist(double dist) {
+            this.dist = dist;
+        }
         @Override
         public double getTime() {
             return 0;
@@ -52,7 +59,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0.01);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(3,0,0.001);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -84,6 +91,7 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void init() {
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
+        slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -135,6 +143,15 @@ public class Deposit extends Module<Deposit.State> {
         }
         Context.packet.put("Target Height", getState().getDist());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+    }
+
+    private double accordingDistance() {
+        switch (getState()) {
+            case LEVEL3: return LEVEL3;
+            case LEVEL2: return LEVEL2;
+            case LEVEL1: return LEVEL1;
+        }
+        return LEVEL3;
     }
 
     /**

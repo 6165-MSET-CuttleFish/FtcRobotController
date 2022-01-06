@@ -20,16 +20,16 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 @Config
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
-        @JvmStatic
+        @JvmField
         var raisedPosition = 0.19
-        @JvmStatic
+        @JvmField
         var loweredPosition = 0.84
-        @JvmStatic
+        @JvmField
         var distanceLimit = 18.0
-        @JvmStatic
-        var outPosition = 0.65
-        @JvmStatic
-        var inPosition = 0.19
+        @JvmField
+        var outPosition = 0.33
+        @JvmField
+        var inPosition = 0.06
     }
     enum class State(override val time: Double) : StateBuilder {
         PREP_OUT(0.3),
@@ -181,9 +181,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun slidesOut() {
-        outL.position = outPosition
-        outR.position = outPosition
-        outA.position = outPosition
+//        outL.position = outPosition
+//        outR.position = outPosition
+//        outA.position = outPosition
     }
 
     private fun slidesIn() {

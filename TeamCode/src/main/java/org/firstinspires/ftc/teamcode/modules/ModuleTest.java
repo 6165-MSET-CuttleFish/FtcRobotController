@@ -44,7 +44,7 @@ public abstract class ModuleTest extends OpMode {
         }
         update();
         assert Context.telemetry != null;
-        Context.telemetry.update();
+        //Context.telemetry.update();
         dashboard.sendTelemetryPacket(Context.packet);
         Context.packet = new TelemetryPacket();
     }

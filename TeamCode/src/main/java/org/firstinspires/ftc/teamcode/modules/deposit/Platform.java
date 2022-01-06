@@ -221,6 +221,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN;
+        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN || getState() == State.HOLDING;
     }
 }
