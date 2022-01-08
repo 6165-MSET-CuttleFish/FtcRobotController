@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.capstone;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.modules.Module;
 
 /**
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  * @author Sreyash Das Sarma
  */
 @Config
-public class Arm extends Module<Arm.State> {
+public class Claw extends Module<Claw.State> {
     public enum State {
         TRANSIT_IN (0,1.4),
         IN(0.2,0.5),
@@ -27,14 +28,14 @@ public class Arm extends Module<Arm.State> {
             this.time = time;
         }
     }
-    Servo arm,claw;
+    Servo arm;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Arm(HardwareMap hardwareMap) {
+    public Claw(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
     }
 
@@ -85,14 +86,12 @@ public class Arm extends Module<Arm.State> {
 
     private void out() {
         arm.setPosition(0.16);
-        claw.setPosition(0.5);
     }
     /**
      * Return platform to rest
      */
     private void in() {
-        claw.setPosition(0.15);
-        arm.setPosition(1);
+         arm.setPosition(1);
     }
     private void precappos() {
         arm.setPosition(preCap);
@@ -101,7 +100,6 @@ public class Arm extends Module<Arm.State> {
     public static double capPos = 0.4;
     private void cappos() {
         arm.setPosition(capPos);
-        claw.setPosition(0.5);
     }
 
     public void ready(){
@@ -121,7 +119,7 @@ public class Arm extends Module<Arm.State> {
      */
     @Override
     public boolean isDoingWork() {
-        return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
+        return getState() == State.TRANSIT_IN || getState() == Claw.State.TRANSIT_OUT;
     }
 
     /**

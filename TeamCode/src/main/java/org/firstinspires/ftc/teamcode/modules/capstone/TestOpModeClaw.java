@@ -1,30 +1,31 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImpl;
 
 import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 @TeleOp
 public class TestOpModeClaw extends ModuleTest {
-    Capstone capstone;
+    Servo claw;
+    boolean open=true;
 
     @Override
     public void init() {
-        capstone =new Capstone(hardwareMap);
-        init(capstone);
-        capstone.ready();
+        claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     @Override
     public void loop() {
-        update();
-        if(gamepad1.a){
-           capstone.pickUp();
-        }if(gamepad1.b){
-            capstone.precap();
-        }
-        if(gamepad1.x){
-            capstone.cap();
+        telemetry.addData("Claw: ",open);
+        telemetry.update();
+        if(gamepad2.b){
+            claw.setPosition(0.5);
+            open=true;
+        }else if (gamepad1.a){
+            claw.setPosition(0.15);
+            open=false;
         }
     }
 }
