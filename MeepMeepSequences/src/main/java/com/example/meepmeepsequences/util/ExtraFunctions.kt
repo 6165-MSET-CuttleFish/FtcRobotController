@@ -1,19 +1,39 @@
 package com.example.meepmeepsequences.util
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.profile.AccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
+import com.example.meepmeepsequences.util.geometry.Circle
+import com.example.meepmeepsequences.util.geometry.Coordinate
+import com.example.meepmeepsequences.util.geometry.Line
 import com.noahbres.meepmeep.MeepMeep
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
 fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
     return this.waitSeconds(0.5)
+}
+
+fun TrajectorySequenceBuilder.splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
+    val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
+    return this.splineTo(vector2d, endTangent)
+}
+
+fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder {
+    return this.waitSeconds(seconds)
+}
+
+fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d) = this.splineTo(endPosition, endPosition.angleTo(endTangent))
+
+fun TrajectorySequenceBuilder.splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
+    val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
+    return this.splineTo(endPose ?: reference, endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center))
 }
 
 /**
@@ -65,59 +85,33 @@ fun TrajectorySequenceBuilder.carouselOff(carousel: Carousel): TrajectorySequenc
     return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::off)
 }
 
-fun MeepMeep.configure(): MeepMeep {
+fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
-        .setDarkMode(true)
-        .setBotDimensions(17.2, 17.192913)
-        .setConstraints(60.0, 60.0, Math.toRadians(274.5043079608481), Math.toRadians(274.5043079608481), 15.0)
+        .setDimensions(17.2, 17.192913)
+        .setConstraints(70.0, 60.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 15.0)
 }
 
-fun TrajectorySequenceBuilder.decreaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
-    println("Gains Decreased")
+fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {
+    return this
+        .addEntity(botEntityBuilder(true, this))
+        .addEntity(botEntityBuilder(false, this))
+}
+
+fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+    println("Gains Increased")
 }.setConstraints(
         getVelocityConstraint(
-            20.0,
+            50.0,
             Math.toRadians(274.0),
             15.0
-        ), getAccelerationConstraint(30.0) ?: ProfileAccelerationConstraint(20.0)
+        ), getAccelerationConstraint(50.0) ?: ProfileAccelerationConstraint(50.0)
     )
 
 fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
         println("Gains Default")
-    }.setConstraints(
-        getVelocityConstraint(
-            60.0,
-            Math.toRadians(274.0),
-            15.0
-        ), getAccelerationConstraint(60.0) ?: ProfileAccelerationConstraint(60.0)
-    )
+    }.resetConstraints()
 
 interface FutureCallback {
     fun buildFutureSequence(builder: TrajectorySequenceBuilder): TrajectorySequenceBuilder
-}
-
-fun Double.flip(negative: Boolean): Double {
-    if (negative)
-        return -this
-    return this
-}
-
-fun Pose2d.flip(negative: Boolean): Pose2d {
-    if (negative)
-        return Pose2d(this.x, -this.y, -this.heading)
-    return this
-}
-
-fun Double.random(): Double {
-    var multiplier = 1
-    val rand = Math.random()
-    if (rand < 0.5) multiplier = -1
-    return Math.random() * multiplier * this
-}
-
-fun Vector2d.flip(negative: Boolean): Vector2d {
-    if (negative)
-        return Vector2d(this.x, -this.y)
-    return this
 }

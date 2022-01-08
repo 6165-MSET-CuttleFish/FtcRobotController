@@ -4,11 +4,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
+import androidx.annotation.Nullable;
+
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism at the back of the robot to deposit freight
@@ -16,16 +19,20 @@ import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
-    public enum State {
+    public enum State implements StateBuilder {
         ON,
-        IDLE,
+        IDLE;
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
     }
 
     CRServo duckyR, duckyL;
 
     /**
      * Constructor which calls the 'init' function
-     *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Carousel(HardwareMap hardwareMap) {
@@ -49,7 +56,7 @@ public class Carousel extends Module<Carousel.State> {
     }
 
     public void on() {
-        double power = opModeType == OpModeType.AUTO ? 0.7 : 1;
+        double power = opModeType == OpModeType.AUTO ? 0.75 : 1;
         if (alliance == Alliance.BLUE) power = -power;
         duckyR.setPower(power);
         duckyL.setPower(power);
@@ -66,14 +73,14 @@ public class Carousel extends Module<Carousel.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    protected void internalUpdate() {
     }
 
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return false;
     }
 
@@ -81,7 +88,7 @@ public class Carousel extends Module<Carousel.State> {
      * @return Whether the module is currently in a hazardous state
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 }

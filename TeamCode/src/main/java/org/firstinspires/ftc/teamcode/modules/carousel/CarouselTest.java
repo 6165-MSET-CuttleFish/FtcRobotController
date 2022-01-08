@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @TeleOp
 public class CarouselTest extends LinearOpMode {
@@ -22,7 +22,7 @@ public class CarouselTest extends LinearOpMode {
             if (gamepad1.b) {
                 carousel.off();
             }
-            Details.packet = new TelemetryPacket();
+            Context.packet = new TelemetryPacket();
         }
     }
 }

@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
 
 //http://192.168.43.1:8080/dash
 @TeleOp
 @Disabled
-public class ModuleTestOpMode extends ModuleTest {
+public class SampleModuleOpMode extends ModuleTest {
     Module module;
     @Override
-    public void init() {
+    public void initialize() {
         module = new Module(hardwareMap, null) {
             @Override
             public void init() {
@@ -19,25 +18,25 @@ public class ModuleTestOpMode extends ModuleTest {
             }
 
             @Override
-            public void update() {
+            public void internalUpdate() {
 
             }
 
             @Override
-            public boolean isDoingWork() {
+            public boolean isDoingInternalWork() {
                 return false;
             }
 
             @Override
-            public boolean isHazardous() {
+            public boolean isModuleInternalHazardous() {
                 return false;
             }
         };
-        init(module);
+        setModules(module);
     }
 
     @Override
-    public void loop() {
-        update();
+    public void update() {
+        module.isHazardous();
     }
 }

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules.vision;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -12,8 +11,8 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
-import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
 //

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Details.location
-import org.firstinspires.ftc.teamcode.util.field.Details.side
+import org.firstinspires.ftc.teamcode.util.field.Context.location
+import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
@@ -36,7 +36,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        robot.autoInit()
+        robot.visionInit()
 //        val leftSequence = leftAuto()
 //        val middleSequence = middleAuto()
 //        val rightSequence = rightAuto()

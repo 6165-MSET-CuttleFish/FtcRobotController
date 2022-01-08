@@ -3,16 +3,24 @@ package org.firstinspires.ftc.teamcode.modules.capstone;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+
+import androidx.annotation.Nullable;
 
 public class Capstone extends Module <Capstone.State> {
     public Slides capstoneSlides;
     public Arm capstoneArm;
-    public enum State {
+    public enum State implements StateBuilder {
         READY,
         PICKING_UP,
         HOLDING,
         PRECAP,
         CAPPING;
+
+        @Override
+        public double getTime() {
+            return 0;
+        }
     }
 
     /**
@@ -27,13 +35,11 @@ public class Capstone extends Module <Capstone.State> {
     public void init() {
         capstoneSlides = new Slides(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
-        nestedModules = new Module[]{capstoneArm, capstoneSlides};
+        setNestedModules(capstoneArm, capstoneSlides);
     }
 
     @Override
-    public void update() {
-        capstoneArm.update();
-        capstoneSlides.update();
+    protected void internalUpdate() {
         switch (getState()) {
             case READY:
                 capstoneArm.ready();
@@ -65,7 +71,7 @@ public class Capstone extends Module <Capstone.State> {
                 switch (capstoneArm.getState()) {
                     case IN:
                         if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.precap();
+                            capstoneArm.preCap();
                         }
                         capstoneSlides.pickUp();
                     case TRANSIT_OUT:
@@ -77,7 +83,7 @@ public class Capstone extends Module <Capstone.State> {
                         }
                         break;
                     case CAP:
-                        capstoneArm.precap();
+                        capstoneArm.preCap();
                         break;
                 }
                 break;
@@ -95,7 +101,7 @@ public class Capstone extends Module <Capstone.State> {
     public void pickUp(){
         setState(State.PICKING_UP);
     }
-    public void precap() {
+    public void preCap() {
         setState(State.PRECAP);
     }
     public void cap() {
@@ -107,12 +113,12 @@ public class Capstone extends Module <Capstone.State> {
     public void hold() {
         setState(State.HOLDING);
     }
-    public boolean isDoingWork() {
-        return capstoneSlides.isDoingWork() || capstoneArm.isDoingWork();
+    public boolean isDoingInternalWork() {
+        return false;
     }
 
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 }

@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
@@ -12,20 +14,24 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 @Config
 public class Slides extends Module<Slides.State> {
-    public enum State {
-        TRANSIT_IN (0,0.5),
-        IN(0.2,1),
-        TRANSIT_OUT(0.5, 1),
-        OUT(0.5,0.4),
-        HALF(0,0.2);
-        final double dist;
+    public enum State implements StateBuilder {
+        TRANSIT_IN (0.5),
+        IN(1),
+        TRANSIT_OUT(1),
+        OUT(0.4),
+        HALF(0.2);
         final double time;
-        State(double dist,double time) {
-            this.dist = dist;
+        State(double time) {
             this.time = time;
         }
+
+        @Override
+        public double getTime() {
+            return time;
+        }
     }
-    Servo slideLeft;
+
+    Servo slide;
 
     /**
      * Constructor which calls the 'init' function
@@ -41,48 +47,48 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void init() {
-        slideLeft = hardwareMap.servo.get("capstoneLowerLift");
+        slide = hardwareMap.servo.get("capstoneLowerLift");
     }
 
     /**w
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (elapsedTime.seconds() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(Slides.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(Slides.State.OUT);
                 }
             case OUT:
                 out();
                 break;
             case HALF:
-                halfcase();
+                halfCase();
                 break;
 
         }
     }
 
     private void out() {
-        placeset(0);
+        slide.setPosition(0);
     }
 
-    private void halfcase() {
-        placeset(0.05);
+    private void halfCase() {
+        slide.setPosition(0.05);
     }
 
     public static double inPos = 0.25;
 
     private void in() {
-        placeset(inPos);
+        slide.setPosition(inPos);
     }
 
     public void pickUp() {
@@ -98,17 +104,14 @@ public class Slides extends Module<Slides.State> {
     }
 
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
     }
     /**
      * @return Whether the module is currently in a hazardous state
      */
-    private void placeset(double pos){
-        slideLeft.setPosition(pos);
-    }
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
     }
 

@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -20,6 +22,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -42,7 +45,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySeque
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
@@ -62,10 +65,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OV
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleHeading;
-import static org.firstinspires.ftc.teamcode.util.field.Details.location;
-import static org.firstinspires.ftc.teamcode.util.field.Details.opModeType;
-import static org.firstinspires.ftc.teamcode.util.field.Details.robotPose;
-import static org.firstinspires.ftc.teamcode.util.field.Details.alliance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.location;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -74,7 +77,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.util.field.Details.telemetry;
+import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
 
 /**
  * This class represents the robot and its drivetrain
@@ -89,7 +92,7 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
-    public static boolean isDoingDucks = false;
+    public static double headingSpeed = 1.4;
 
     final HardwareMap hardwareMap;
 
@@ -102,6 +105,8 @@ public class Robot extends ImprovedTankDrive {
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
+    private final List<LynxModule> allHubs;
+    private  Rev2mDistanceSensor frontDistance, leftDistance, rightDistance;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -117,11 +122,11 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public Robot(OpMode opMode, OpModeType type, Alliance alliance) {
-        this(opMode, Details.robotPose, type, alliance);
+        this(opMode, Context.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode, OpModeType type) {
-        this(opMode, Details.robotPose, type, alliance);
+        this(opMode, Context.robotPose, type, alliance);
     }
 
     public Robot(OpMode opMode) {
@@ -131,28 +136,33 @@ public class Robot extends ImprovedTankDrive {
     public Robot(OpMode opMode, Pose2d pose2d, OpModeType type, Alliance alliance) {
         super(TRACK_WIDTH, opMode.hardwareMap.voltageSensor.iterator().next());
         dashboard = FtcDashboard.getInstance();
-        Details.opModeType = type;
-        Details.alliance = alliance;
+        Context.opModeType = type;
+        Context.alliance = alliance;
         robotPose = pose2d;
         if (opModeType == OpModeType.AUTO) robotPose = FrequentPositions.startingPosition();
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry = new MultipleTelemetry(opMode.telemetry, dashboard.getTelemetry());
         dashboard.setTelemetryTransmissionInterval(25);
         ImprovedTrajectoryFollower follower = new ImprovedRamsete();
-        // follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
+//        frontDistance = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
+//        leftDistance = hardwareMap.get(Rev2mDistanceSensor.class, "leftDistance");
+//        rightDistance = hardwareMap.get(Rev2mDistanceSensor.class, "rightDistance");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
+        DcMotorEx
+                leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
                 leftMid = hardwareMap.get(DcMotorEx.class, "ml"); // enc
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
+        DcMotorEx
+                rightRear = hardwareMap.get(DcMotorEx.class, "br"), // enc
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[] {
@@ -161,6 +171,9 @@ public class Robot extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 capstone = new Capstone(hardwareMap),
         };
+        for (Module module : modules) {
+            module.init();
+        }
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
         rightMotors = Arrays.asList(rightFront, rightRear, rightMid);
@@ -183,21 +196,15 @@ public class Robot extends ImprovedTankDrive {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
-        if (opModeType != OpModeType.TELE) {
-//            Easy265.initWithoutStop(opMode, this);
-//            setLocalizer(new T265Localizer());
-        }
-        if (opModeType == OpModeType.AUTO) {
-            // autoInit();
-        }
         pitchOffset = -imu.getAngularOrientation().secondAngle;
+        // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
         telemetry.update();
     }
 
-    public void autoInit() {
+    public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -227,7 +234,6 @@ public class Robot extends ImprovedTankDrive {
 
     public void turnOffVision() {
         dashboard.stopCameraStream();
-        // webcam.closeCameraDeviceAsync(() -> webcam.stopStreaming());
         webcam.closeCameraDevice();
     }
 
@@ -257,7 +263,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public TrajectoryBuilder trajectoryBuilder() {
-        return new TrajectoryBuilder(Details.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
+        return new TrajectoryBuilder(Context.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
@@ -322,18 +328,34 @@ public class Robot extends ImprovedTankDrive {
 
     boolean isRobotDisabled;
     ElapsedTime currentTimer = new ElapsedTime();
-    ElapsedTime cooldown = new ElapsedTime();
+    ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
+    public static double frontDistanceSensorOffset = 8;
+    public static double horizontalDistanceSensorOffset = 8;
+
+    public void correctPosition() {
+        double frontDist = frontDistance.getDistance(DistanceUnit.INCH);
+        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance(DistanceUnit.INCH) : rightDistance.getDistance(DistanceUnit.INCH);
+        double rightWallX = 70.5;
+        double bottomWallY = alliance == Alliance.BLUE ? 70.5 : -70.5;
+        double heading = getPoseEstimate().getHeading();
+        double x = rightWallX - frontDist * Math.cos(heading) - frontDistanceSensorOffset;
+        double y =  bottomWallY - horizontalDist * Math.cos(heading) - horizontalDistanceSensorOffset;
+        setPoseEstimate(new Pose2d(x, y, heading));
+    }
 
     public void update() {
+        for (LynxModule module : allHubs) {
+            module.clearBulkCache();
+        }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
-            Details.robotPose = getPoseEstimate();
+            Context.robotPose = getPoseEstimate();
         }
         for (Module module : modules) {
             module.update();
         }
-        Details.packet.put("Loop Time", loopTime.milliseconds());
+        Context.packet.put("Loop Time", loopTime.milliseconds());
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
@@ -344,14 +366,13 @@ public class Robot extends ImprovedTankDrive {
         }
         if (anyMotorIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
-            cooldown.reset();
+            coolDown.reset();
         } else {
-            if (cooldown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
+            if (coolDown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
             if (!anyMotorIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
-        if (signal != null && !isDoingDucks) setDriveSignal(signal);
-        if (isDoingDucks) setMotorPowers(0.1, 0.1);
+        if (signal != null) setDriveSignal(signal);
     }
 
     public void waitForIdle() {
@@ -363,18 +384,9 @@ public class Robot extends ImprovedTankDrive {
      * @return Whether the robot's current state is potentially hazardous to operate in
      */
     public boolean isHazardous() {
-        return false;
-    }
-
-    public boolean isDoingWorkHelper(Module... modules) {
         for (Module module : modules) {
-            if (module.isDoingWork()) {
+            if (module.isHazardous()) {
                 return true;
-            }
-            if (module.nestedModules.length != 0) {
-                if (isDoingWorkHelper(module.nestedModules)) {
-                    return true;
-                }
             }
         }
         return false;
@@ -384,7 +396,12 @@ public class Robot extends ImprovedTankDrive {
      * @return Whether the robot is currently doing work
      */
     public boolean isDoingWork() {
-        return isDoingWorkHelper(modules);
+        for (Module module : modules) {
+            if (module.isDoingWork()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -392,7 +409,7 @@ public class Robot extends ImprovedTankDrive {
      */
     public void waitForActionsCompleted() {
         update();
-        while (isHazardous() && !Thread.currentThread().isInterrupted()) {
+        while (isDoingWork() && !Thread.currentThread().isInterrupted()) {
             update();
         }
     }
@@ -431,11 +448,7 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = new Pose2d(
-                isRobotDisabled ? 0 : drivePower.getX(),
-                isRobotDisabled ? 0 : drivePower.getY(),
-                isRobotDisabled ? 0 : drivePower.getHeading() * 2
-        );
+        Pose2d vel = isRobotDisabled ? new Pose2d() : new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
@@ -501,11 +514,41 @@ public class Robot extends ImprovedTankDrive {
         return imu.getAngularOrientation().firstAngle;
     }
 
+    @Override
+    public Double getExternalHeadingVelocity() {
+        // TODO: This must be changed to match your configuration
+        //                           | Z axis
+        //                           |
+        //     (Motor Port Side)     |   / X axis
+        //                       ____|__/____
+        //          Y axis     / *   | /    /|   (IO Side)
+        //          _________ /______|/    //      I2C
+        //                   /___________ //     Digital
+        //                  |____________|/      Analog
+        //
+        //                 (Servo Port Side)
+        //
+        // The positive x axis points toward the USB port(s)
+        //
+        // Adjust the axis rotation rate as necessary
+        // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
+        // flat on a surface
+
+        // To work around an SDK bug, use -zRotationRate in place of xRotationRate
+        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
+        // expected). This bug does NOT affect orientation.
+        //
+        // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
+        return (double) -imu.getAngularVelocity().xRotationRate;
+    }
+
+    @Override
     public double getPitch() {
         return -imu.getAngularOrientation().secondAngle - pitchOffset;
     }
 
     @NonNull
+    @Override
     public Velocity getVelocity() {
         return imu.getVelocity();
     }

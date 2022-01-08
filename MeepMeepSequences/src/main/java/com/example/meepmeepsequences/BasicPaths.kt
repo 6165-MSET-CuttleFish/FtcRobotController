@@ -1,33 +1,31 @@
 package com.example.meepmeepsequences
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
-import com.example.meepmeepsequences.util.Details.alliance
-import com.example.meepmeepsequences.util.Details.location
-import com.example.meepmeepsequences.util.Details.side
-import com.example.meepmeepsequences.util.Details.windowSize
-import com.example.meepmeepsequences.util.FrequentPositions.duckLocations
+import com.example.meepmeepsequences.util.Context.alliance
+import com.example.meepmeepsequences.util.Context.location
+import com.example.meepmeepsequences.util.Context.side
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.Robot.getLevel
 import com.noahbres.meepmeep.MeepMeep
-import com.noahbres.meepmeep.MeepMeep.Background
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 
-class BasicCarouselPath {
+class BasicPaths {
+    fun colorSchemeVariable() = if (alliance == Alliance.BLUE) ColorSchemeBlueDark() else ColorSchemeRedDark()
     val capstone = Capstone()
     val deposit = Deposit()
     val intake = Intake()
     val carousel = Carousel()
-    fun carouselPath(blue: Boolean): MeepMeep {
+    fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
-        return MeepMeep(windowSize)
-                .setBackground(Background.FIELD_FREIGHT_FRENZY) // Set field image
-                .setTheme(ColorSchemeRedDark()) // Set theme
-                .setBackgroundAlpha(1f)
-                .configure() // configure robot
+        return DefaultBotBuilder(meepMeep)
+            .setColorScheme(colorSchemeVariable()) // Set theme
+            .configure() // configure robot
                 .followTrajectorySequence { robot ->
                     val trajectoryBuilder =
                         robot.trajectorySequenceBuilder(startingPosition())

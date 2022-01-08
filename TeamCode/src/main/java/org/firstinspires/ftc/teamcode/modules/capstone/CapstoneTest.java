@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 
-import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
+import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
 public class TestOpModeClaw extends ModuleTest {

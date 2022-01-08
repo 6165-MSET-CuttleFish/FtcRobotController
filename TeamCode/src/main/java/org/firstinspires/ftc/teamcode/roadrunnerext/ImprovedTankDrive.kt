@@ -14,19 +14,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
-import org.firstinspires.ftc.teamcode.util.field.Details
+import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer
+import org.firstinspires.ftc.teamcode.util.controllers.KalmanFilter
+import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.math.abs
-import kotlin.math.cos
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
- *
- * @param kV velocity feedforward
- * @param kA acceleration feedforward
- * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
+ * @param voltageSensor voltage sensor from hardware map
  */
-abstract class ImprovedTankDrive @JvmOverloads constructor(
+abstract class ImprovedTankDrive constructor(
     private val trackWidth: Double,
     private val voltageSensor: VoltageSensor,
 ) : Drive() {
@@ -45,6 +43,8 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         override var poseEstimate: Pose2d
             get() = _poseEstimate
             set(value) {
+                xFilter.setState(value.x)
+                yFilter.setState(value.y)
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
                 if (useExternalHeading) drive.externalHeading = value.heading
@@ -55,58 +55,52 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
         private val timer = ElapsedTime()
-        private var _lastGyroPose = Pose2d()
+        private val xFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
+        private val yFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
+        private val t265Localizer = T265Localizer(1.0)
+        private val isOverPoles: Boolean
+            get() = abs(Math.toDegrees(drive.getPitch())) > 5 && integrateUsingPosition
+
+        private fun odoPoseDelta(wheelPositions: List<Double>, extHeading: Double) : Pose2d {
+            if (lastWheelPositions.isEmpty() || wheelPositions.isEmpty()) return Pose2d()
+            val wheelDeltas = wheelPositions
+                .zip(lastWheelPositions)
+                .map { it.first - it.second }
+            val robotPoseDelta =
+                TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
+            val finalHeadingDelta = if (useExternalHeading) {
+                Angle.normDelta(extHeading - lastExtHeading)
+            } else {
+                robotPoseDelta.heading
+            }
+            return robotPoseDelta.vec().toPose(finalHeadingDelta)
+        }
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
-            val extVelo = drive.getVelocity().toUnit(DistanceUnit.INCH)
-            val extPos = drive.getPosition().toUnit(DistanceUnit.INCH)
-            Details.packet.put("Gyro Velocity X", extVelo.xVeloc)
-            Details.packet.put("Gyro Velocity Y", extVelo.yVeloc)
-            Details.packet.put("Gyro Velocity Z", extVelo.zVeloc)
-            Details.packet.put("Gyro Position X", extPos.x)
-            Details.packet.put("Gyro Position Y", extPos.y)
-            Details.packet.put("Gyro Position Z", extPos.z)
-            if (abs(cos(drive.getPitch())) > 5) {
-                if (integrateUsingPosition) {
-                    // POSITION METHOD
-                    val x = extPos.x
-                    val y = extPos.y
-                    val oldPose = _lastGyroPose.vec().polarAdd(6.0, lastExtHeading + Math.PI / 2)
-                        .toPose(lastExtHeading)
-                    val newPose =
-                        Vector2d(x, y).polarAdd(6.0, extHeading + Math.PI / 2).toPose(extHeading)
-                    val deltaPose = newPose.minus(oldPose)
-                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, deltaPose)
-                } else {
-                    // VELOCITY METHOD
-                    val dt = timer.seconds()
-                    val dx = extVelo.xVeloc * dt
-                    val dy = extVelo.yVeloc * dt
-                    val robotPoseDelta = Pose2d(dx, dy, extHeading - lastExtHeading)
-                    _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
-                }
-            } else if (lastWheelPositions.isNotEmpty()) {
-                val wheelDeltas = wheelPositions
-                    .zip(lastWheelPositions)
-                    .map { it.first - it.second }
-                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
-                val finalHeadingDelta = if (useExternalHeading) {
-                    Angle.normDelta(extHeading - lastExtHeading)
-                } else {
-                    robotPoseDelta.heading
-                }
-                _poseEstimate = Kinematics.relativeOdometryUpdate(
-                    _poseEstimate,
-                    Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
-                )
+            var odoPoseEst = _poseEstimate
+            var t265PoseEst = _poseEstimate
+            val odoDelta = odoPoseDelta(wheelPositions, extHeading)
+
+            odoPoseEst = Kinematics.relativeOdometryUpdate(
+                odoPoseEst,
+                odoDelta
+            )
+            _poseEstimate = odoPoseEst
+
+            if (isOverPoles) {
+                val headingOffset =  extHeading - t265Localizer.poseEstimate.heading
+                val t265Delta = (t265Localizer.translation).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
+                t265PoseEst = Kinematics.relativeOdometryUpdate(t265PoseEst, t265Delta)
+                _poseEstimate = Pose2d(xFilter.update(t265PoseEst.x, odoPoseEst.x), yFilter.update(t265PoseEst.y, t265PoseEst.y), t265PoseEst.heading)
             }
 
             val wheelVelocities = drive.getWheelVelocities()
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
-                poseVelocity = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
+                poseVelocity =
+                    TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {
                     poseVelocity = Pose2d(poseVelocity!!.vec(), extHeadingVel)
                 }
@@ -114,7 +108,6 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
 
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
-            _lastGyroPose = Pose2d(extPos.x, extPos.y, extHeading)
             timer.reset()
         }
     }
@@ -132,8 +125,20 @@ abstract class ImprovedTankDrive @JvmOverloads constructor(
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
         val voltageMultiplier = 12 / voltage
-        var powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier)
-        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier)
+        var powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kV * voltageMultiplier,
+            kA * voltageMultiplier,
+            kStatic * voltageMultiplier
+        )
+        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kVBackward * voltageMultiplier,
+            kABackward * voltageMultiplier,
+            kStaticBackward * voltageMultiplier
+        )
         setMotorPowers(powers[0], powers[1])
     }
 

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.auto.util.*
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.cycleDumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Details.location
-import org.firstinspires.ftc.teamcode.util.field.Details.side
+import org.firstinspires.ftc.teamcode.util.field.Context.location
+import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
@@ -43,7 +43,7 @@ class CyclingBlue : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        robot.autoInit()
+        robot.visionInit()
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
         val rightSequence = rightAuto()
@@ -71,7 +71,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineTo(
                     Vector2d(20.0, -34.0).flip(blue), 0.0
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -34.0).flip(blue), 0.0
                 )
@@ -89,7 +89,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineTo(
                     Vector2d(26.0, -34.0).flip(blue), Math.PI
                 )
-                .decreaseGains()
+                .increaseGains()
                 .splineTo(
                     Vector2d(24.0, -34.0).flip(blue), Math.PI
                 )

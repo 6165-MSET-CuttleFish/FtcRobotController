@@ -5,12 +5,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Details;
-import org.firstinspires.ftc.teamcode.util.opmode.ModuleTest;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 @TeleOp
 public class DepositTest extends ModuleTest {
@@ -18,25 +18,26 @@ public class DepositTest extends ModuleTest {
     Deposit deposit;
     GamepadEx primary;
     ToggleButtonReader tippedAway, tippedToward;
+
     @Override
-    public void init() {
+    public void initialize() {
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap, intake);
         primary = new GamepadEx(gamepad1);
         tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER);
         tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER);
-        init(intake, deposit);
+        setModules(deposit, intake);
     }
 
 
     @Override
-    public void loop() {
-        assert Details.telemetry != null;
+    public void update() {
+        assert Context.telemetry != null;
         telemetry.addData("isLoaded", Platform.isLoaded);
         telemetry.addData("balance", balance);
         telemetry.addData("LB", tippedAway.getState());
         telemetry.addData("RB", tippedToward.getState());
-        update();
+        telemetry.update();
         tippedToward.readValue();
         tippedAway.readValue();
         intake.setPower(gamepad1.right_trigger);

@@ -4,6 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+
+import androidx.annotation.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
@@ -11,20 +14,23 @@ import org.firstinspires.ftc.teamcode.modules.Module;
  */
 @Config
 public class Arm extends Module<Arm.State> {
-    public enum State {
-        TRANSIT_IN (0,1.4),
-        IN(0.2,0.5),
-        TRANSIT_OUT(0.5, 0.75),
-        OUT(0.5,0.1),
-        PRECAP(0,0.5),
-        CAPOFFSET(0,0),
-        CAP(0,0.3),
-        IDLE(0,0);
-        final double dist;
+    protected enum State implements StateBuilder {
+        TRANSIT_IN (1.4),
+        IN(0.5),
+        TRANSIT_OUT(0.75),
+        OUT(0.1),
+        PRECAP(0.5),
+        CAPOFFSET(0),
+        CAP(0.3),
+        IDLE(0);
         final double time;
-        State(double dist,double time) {
-            this.dist = dist;
+        State(double time) {
             this.time = time;
+        }
+
+        @Override
+        public double getTime() {
+            return 0;
         }
     }
     Servo arm,claw;
@@ -50,32 +56,32 @@ public class Arm extends Module<Arm.State> {
      * This function updates all necessary controls in a loop
      */
     @Override
-    public void update() {
+    public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (elapsedTime.seconds() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (elapsedTime.seconds() > getState().time) {
+                if (getTimeSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
                 out();
                 break;
             case PRECAP:
-                precappos();
-                if (elapsedTime.seconds() > getState().time) {
+                preCapPos();
+                if (getTimeSpentInState() > getState().time) {
                     // setState(State.CAPOFFSET);
                 }
             case CAPOFFSET:
                 break;
             case CAP:
-                cappos();
-                if (elapsedTime.seconds() > getState().time) {
+                capPos();
+                if (getTimeSpentInState() > getState().time) {
                     // setState(State.IDLE);
                 }
                 break;
@@ -94,12 +100,12 @@ public class Arm extends Module<Arm.State> {
         claw.setPosition(0.15);
         arm.setPosition(1);
     }
-    private void precappos() {
+    private void preCapPos() {
         arm.setPosition(preCap);
     }
     public static double preCap = 0.55;
     public static double capPos = 0.4;
-    private void cappos() {
+    private void capPos() {
         arm.setPosition(capPos);
         claw.setPosition(0.5);
     }
@@ -110,7 +116,7 @@ public class Arm extends Module<Arm.State> {
     public void hold(){
         if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
-    public void precap(){
+    public void preCap(){
         setState(State.PRECAP);
     }
     public void cap(){
@@ -120,7 +126,7 @@ public class Arm extends Module<Arm.State> {
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
     @Override
-    public boolean isDoingWork() {
+    public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
     }
 
@@ -128,7 +134,7 @@ public class Arm extends Module<Arm.State> {
      * @return Whether the module is currently in a hazardous state
      */
     @Override
-    public boolean isHazardous() {
+    public boolean isModuleInternalHazardous() {
         return false;
     }
 

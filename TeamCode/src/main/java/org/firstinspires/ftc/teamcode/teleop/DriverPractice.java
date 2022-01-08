@@ -16,10 +16,10 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.Details;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import static org.firstinspires.ftc.teamcode.util.field.Details.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 @TeleOp
 public class DriverPractice extends LinearOpMode {
@@ -78,8 +78,8 @@ public class DriverPractice extends LinearOpMode {
             setIntake();
             setDeposit();
             setCarousel();
-            Details.packet.addLine(intake.getState() + "");
-            Details.packet.addLine(defaultDepositState + "");
+            Context.packet.addLine(intake.getState() + "");
+            Context.packet.addLine(defaultDepositState + "");
             telemetry.addData("Intake State", intake.getState());
             telemetry.addData("Default Height", defaultDepositState);
             if (tippedAway.isDown() && tippedToward.isDown()) {
@@ -101,7 +101,7 @@ public class DriverPractice extends LinearOpMode {
             if (robot.capstone.getState() == Capstone.State.PRECAP) {
                 robot.capstone.cap();
             } else {
-                robot.capstone.precap();
+                robot.capstone.preCap();
             }
         } else if (capstoneIn.wasJustPressed()) {
             robot.capstone.hold();

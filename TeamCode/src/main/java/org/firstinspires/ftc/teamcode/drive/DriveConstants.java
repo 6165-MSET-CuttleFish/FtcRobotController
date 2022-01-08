@@ -25,6 +25,11 @@ public class DriveConstants {
      */
     public static final double TICKS_PER_REV = 378;
     public static final double MAX_RPM = 444.444444444;
+
+
+    /*
+     * Robot statics
+     */
     public static double MAX_CURRENT = 4100;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
     public static double COOLDOWN_TIME = 0.4;
@@ -33,17 +38,17 @@ public class DriveConstants {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     public static boolean integrateUsingPosition = true;
-
+    public static double gyroHorizontalOffset = 6;
+    public static double gyroVerticalOffset = -2;
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      *
-     * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
+     * If using the built-in motor velocity PID, internalUpdate MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = false;
-    public static boolean USE_COVARIANCE = true;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
             getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
@@ -101,8 +106,8 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 55;
-    public static double MAX_ACCEL = 55;
+    public static double MAX_VEL = 65;
+    public static double MAX_ACCEL = 65;
     public static double MAX_ANG_VEL = Math.toRadians(274.5043079608481);
     public static double MAX_ANG_ACCEL = Math.toRadians(274.5043079608481);
 

@@ -11,8 +11,13 @@ import com.acmerobotics.roadrunner.trajectory.*
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import com.acmerobotics.roadrunner.util.Angle.norm
+import org.firstinspires.ftc.teamcode.roadrunnerext.angleTo
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import java.util.*
 import kotlin.math.min
 
@@ -130,39 +135,33 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun lineToSplineHeading(endPose: Pose2d): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    fun lineToSplineHeading(endPose: Pose2d) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToSplineHeading(
                     endPose.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
-    }
 
     fun lineToSplineHeading(
         endPose: Pose2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    ) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToSplineHeading(
                     endPose.flip(isFlipped), velConstraint, accelConstraint
                 )
             }
         })
-    }
 
-    fun strafeTo(endPosition: Vector2d): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    fun strafeTo(endPosition: Vector2d) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeTo(
                     endPosition.flip(isFlipped), currentVelConstraint, currentAccelConstraint
                 )
             }
         })
-    }
 
     fun strafeTo(
         endPosition: Vector2d,
@@ -178,8 +177,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun forward(distance: Double): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    fun forward(distance: Double) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.forward(
                     distance,
@@ -188,14 +186,12 @@ class TrajectorySequenceBuilder(
                 )
             }
         })
-    }
 
     fun forward(
         distance: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    ) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.forward(
                     distance,
@@ -204,10 +200,8 @@ class TrajectorySequenceBuilder(
                 )
             }
         })
-    }
 
-    fun back(distance: Double): TrajectorySequenceBuilder {
-        return addPath(object : AddPathCallback {
+    fun back(distance: Double) = addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.back(
                     distance,
@@ -216,7 +210,6 @@ class TrajectorySequenceBuilder(
                 )
             }
         })
-    }
 
     fun back(
         distance: Double,
@@ -299,6 +292,18 @@ class TrajectorySequenceBuilder(
             }
         })
     }
+
+    fun splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
+        val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
+        return this.splineTo(vector2d, endTangent)
+    }
+
+    fun splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
+        val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
+        return this.splineTo(endPose ?: reference, endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center))
+    }
+
+    fun splineTo(endPosition: Vector2d, endTangent: Vector2d) = splineTo(endPosition, endPosition.angleTo(endTangent))
 
     fun splineTo(
         endPosition: Vector2d,
@@ -484,21 +489,15 @@ class TrajectorySequenceBuilder(
     fun UNSTABLE_addTemporalMarkerOffset(
         offset: Double,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
-        return this.addTemporalMarker(currentDuration + offset, callback)
-    }
+    ) = addTemporalMarker(currentDuration + offset, callback)
 
-    fun addTemporalMarker(time: Double, callback: MarkerCallback?): TrajectorySequenceBuilder {
-        return this.addTemporalMarker(0.0, time, callback)
-    }
+    fun addTemporalMarker(time: Double, callback: MarkerCallback?) = addTemporalMarker(0.0, time, callback)
 
     fun addTemporalMarker(
         scale: Double,
         offset: Double,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
-        return this.addTemporalMarker({ time: Double -> scale * time + offset }, callback)
-    }
+    ) = addTemporalMarker({ time: Double -> scale * time + offset }, callback)
 
     fun addTemporalMarker(
         time: TimeProducer?,
@@ -520,27 +519,21 @@ class TrajectorySequenceBuilder(
     fun UNSTABLE_addDisplacementMarkerOffset(
         offset: Double,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
-        return this.addDisplacementMarker(currentDisplacement + offset, callback)
-    }
+    ) = addDisplacementMarker(currentDisplacement + offset, callback)
 
     fun addDisplacementMarker(
         displacement: Double,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
-        return this.addDisplacementMarker(0.0, displacement, callback)
-    }
+    ) = addDisplacementMarker(0.0, displacement, callback)
 
     fun addDisplacementMarker(
         scale: Double,
         offset: Double,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
-        return addDisplacementMarker(
+    ) = addDisplacementMarker(
             { displacement: Double -> scale * displacement + offset },
             callback
         )
-    }
 
     fun addDisplacementMarker(
         displacement: DisplacementProducer?,
@@ -574,7 +567,7 @@ class TrajectorySequenceBuilder(
 
     fun waitSeconds(seconds: Double): TrajectorySequenceBuilder {
         pushPath()
-        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList(), DriveSignal()))
+        sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList()))
         currentDuration += seconds
         return this
     }
