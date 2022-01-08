@@ -48,9 +48,6 @@ public class Deposit extends Module<Deposit.State> {
             }
             return dist;
         }
-        public void setDist(double dist) {
-            this.dist = dist;
-        }
         @Override
         public double getTime() {
             return 0;
@@ -74,9 +71,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double TICKS_PER_INCH = 43.93;
 
     /**
-     * Constructor which calls the 'init' function
-     *
      * @param hardwareMap instance of the hardware map provided by the OpMode
+     * @param intake instance of robot's intake module
      */
     public Deposit(HardwareMap hardwareMap, Intake intake) {
         super(hardwareMap, State.IDLE);
@@ -121,12 +117,12 @@ public class Deposit extends Module<Deposit.State> {
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
             allowLift = false;
-            if (getTimeSpentInState() > 0.8) { // anti-stall code
+            if (getTimeSpentInState() > 0.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = 0;
-            } else if (getTimeSpentInState() < 0.8) {
-                power = -1;
+            } else if (getTimeSpentInState() <= 0.5) {
+                power = -0.7;
             }
         }
         slides.setPower(power);
@@ -143,15 +139,6 @@ public class Deposit extends Module<Deposit.State> {
         }
         Context.packet.put("Target Height", getState().getDist());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
-    }
-
-    private double accordingDistance() {
-        switch (getState()) {
-            case LEVEL3: return LEVEL3;
-            case LEVEL2: return LEVEL2;
-            case LEVEL1: return LEVEL1;
-        }
-        return LEVEL3;
     }
 
     /**

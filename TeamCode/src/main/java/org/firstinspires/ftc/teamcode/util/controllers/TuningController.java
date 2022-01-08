@@ -14,7 +14,6 @@ public class TuningController<T> {
         }
         stateMachine = builder.exit(states[0]).build();
         stateMachine.setLooping(true);
-        start();
     }
 
     public void start() {

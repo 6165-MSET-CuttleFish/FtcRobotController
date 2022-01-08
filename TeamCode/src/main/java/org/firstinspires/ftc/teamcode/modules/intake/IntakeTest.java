@@ -3,8 +3,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
-@TeleOp(group = "intake")
-public class testIntake extends ModuleTest {
+@TeleOp
+public class IntakeTest extends ModuleTest {
     Intake intake;
 
     @Override

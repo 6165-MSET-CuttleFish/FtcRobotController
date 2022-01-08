@@ -21,9 +21,10 @@ public class SeriesServoTuner extends LinearOpMode {
                 for (String name : names) {
                     hardwareMap.servo.get(name.trim()).setPosition(position);
                 }
-            } catch(Exception ignored) {
-
+            } catch(Exception exception) {
+                telemetry.addData("Error", exception.getMessage());
             }
+            telemetry.update();
         }
     }
 }

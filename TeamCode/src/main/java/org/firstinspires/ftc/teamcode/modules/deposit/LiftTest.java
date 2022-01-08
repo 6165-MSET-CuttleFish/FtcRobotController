@@ -17,6 +17,12 @@ public class LiftTest extends ModuleTest {
     }
 
     @Override
+    public void start() {
+        super.start();
+        tuningController.start();
+    }
+
+    @Override
     public void update() {
         deposit.setState(tuningController.update());
     }

@@ -51,13 +51,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var extendedDuration = 0.0
 
     override fun init() {
-        intake = hardwareMap.get(DcMotorEx::class.java, "intake")
         intake.mode = DcMotor.RunMode.RUN_USING_ENCODER
         intake.direction = DcMotorSimple.Direction.REVERSE
-        outL = hardwareMap.servo["outL"]
-        outR = hardwareMap.servo["outR"]
-        outA = hardwareMap.servo["outA"]
-        flipR = hardwareMap.servo["flipR"]
         slidesIn()
         raiseIntake()
     }
@@ -181,9 +176,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun slidesOut() {
-//        outL.position = outPosition
-//        outR.position = outPosition
-//        outA.position = outPosition
+        if (isHazardous) return
+        outL.position = outPosition
+        outR.position = outPosition
+        outA.position = outPosition
     }
 
     private fun slidesIn() {

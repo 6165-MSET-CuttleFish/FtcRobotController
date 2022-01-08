@@ -49,7 +49,7 @@ public class Platform extends Module<Platform.State> {
             this.time = time;
         }
     }
-    Servo dumpLeft, dumpRight, latch, lock;
+    Servo dumpLeft, dumpRight, tilt, lock;
     private final Intake intake;
     private final Deposit deposit;
 
@@ -72,7 +72,7 @@ public class Platform extends Module<Platform.State> {
     public void init() {
         dumpLeft = hardwareMap.servo.get("depositDumpL");
         dumpRight = hardwareMap.servo.get("depositDumpR");
-        latch = hardwareMap.servo.get("depositLatch");
+        tilt = hardwareMap.servo.get("depositLatch");
         lock = hardwareMap.servo.get("lock");
         flipIn();
         tiltIn();
@@ -191,13 +191,11 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void tiltIn() {
-        latch.setPosition(0.95);
-        // tilt platform in
+        tilt.setPosition(0.95);
     }
 
     private void tiltOut() {
-        latch.setPosition(0.2);
-        // tilt platform out
+        tilt.setPosition(0.2);
     }
 
     private void lock() {

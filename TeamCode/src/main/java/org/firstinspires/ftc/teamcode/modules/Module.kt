@@ -12,12 +12,11 @@ import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: HardwareMap, private var _state: T, var poseOffset: Pose2d = Pose2d()) {
-    /**
-     * Instance of the hardwareMap passed to the constructor
-     */
-    @JvmField
-    var hardwareMap: HardwareMap
+abstract class Module<T : StateBuilder> @JvmOverloads constructor(
+    @JvmField var hardwareMap: HardwareMap,
+    private var _state: T,
+    var poseOffset: Pose2d = Pose2d()
+) {
     private var nestedModules = arrayOf<Module<*>>()
     val modulePoseEstimate: Pose2d
         get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
@@ -25,7 +24,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: H
     /**
      * @return The previous state of the module
      */
-    var previousState: T
+    var previousState: T = _state
         private set
     open var state: T
         /**
@@ -37,22 +36,12 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: H
          * @param value New state of the module
          */
         protected set(value) {
-            if (state === value) return
+            if (state == value) return
             elapsedTime.reset()
             previousState = state
             _state = value
         }
     private val elapsedTime = ElapsedTime()
-
-
-    /**
-     * Constructor which calls the 'init' function
-     */
-    init {
-        previousState = _state
-        this.hardwareMap = hardwareMap
-        init()
-    }
 
     /**
      * This function initializes all necessary hardware modules
@@ -122,7 +111,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(hardwareMap: H
 
     /**
      * This function updates all necessary controls in a loop
-     * Note: Do NOT update any nested modules in this method, this will be taken care of automatically
+     * Note: Do NOT update any nested modules in this method. This will be taken care of automatically
      */
     protected abstract fun internalUpdate()
 

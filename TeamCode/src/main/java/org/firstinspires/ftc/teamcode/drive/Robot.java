@@ -146,7 +146,8 @@ public class Robot extends ImprovedTankDrive {
         ImprovedTrajectoryFollower follower = new ImprovedRamsete();
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        for (LynxModule module : allHubs = hardwareMap.getAll(LynxModule.class)) {
+        allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 //        frontDistance = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
@@ -170,6 +171,9 @@ public class Robot extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 capstone = new Capstone(hardwareMap),
         };
+        for (Module module : modules) {
+            module.init();
+        }
         motors = Arrays.asList(leftFront, leftRear, leftMid, rightFront, rightRear, rightMid);
         leftMotors = Arrays.asList(leftFront, leftRear, leftMid);
         rightMotors = Arrays.asList(rightFront, rightRear, rightMid);

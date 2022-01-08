@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
-public class TestOpModeClaw extends ModuleTest {
+public class CapstoneTest extends ModuleTest {
     Capstone capstone;
 
     @Override
