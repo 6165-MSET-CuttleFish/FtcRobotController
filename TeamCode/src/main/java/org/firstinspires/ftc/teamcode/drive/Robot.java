@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.modules.wrappers.UltrasonicDistanceSensor;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -106,7 +107,7 @@ public class Robot extends ImprovedTankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
-    private  Rev2mDistanceSensor frontDistance, leftDistance, rightDistance;
+    private UltrasonicDistanceSensor frontDistance, leftDistance, rightDistance;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -334,8 +335,8 @@ public class Robot extends ImprovedTankDrive {
     public static double horizontalDistanceSensorOffset = 8;
 
     public void correctPosition() {
-        double frontDist = frontDistance.getDistance(DistanceUnit.INCH);
-        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance(DistanceUnit.INCH) : rightDistance.getDistance(DistanceUnit.INCH);
+        double frontDist = frontDistance.getDistance();
+        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance() : rightDistance.getDistance();
         double rightWallX = 70.5;
         double bottomWallY = alliance == Alliance.BLUE ? 70.5 : -70.5;
         double heading = getPoseEstimate().getHeading();

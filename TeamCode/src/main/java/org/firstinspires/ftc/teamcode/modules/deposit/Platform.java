@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
@@ -50,6 +51,7 @@ public class Platform extends Module<Platform.State> {
         }
     }
     Servo dumpLeft, dumpRight, tilt, lock;
+    ServoImplEx jailbreak;
     private final Intake intake;
     private final Deposit deposit;
 

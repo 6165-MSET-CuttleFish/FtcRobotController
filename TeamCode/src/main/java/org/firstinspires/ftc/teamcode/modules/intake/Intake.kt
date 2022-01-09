@@ -23,7 +23,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var raisedPosition = 0.0
         @JvmField
-        var loweredPosition = 0.6
+        var loweredPosition = 1.0
         @JvmField
         var distanceLimit = 18.0
         @JvmField
@@ -44,7 +44,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var outL = hardwareMap.servo["outL"]
     private var outR = hardwareMap.servo["outR"]
     private var outA = hardwareMap.servo["outA"]
-    private var flipR = hardwareMap.servo["flipR"]
+    private var flipR: ServoImplEx = hardwareMap.get(ServoImplEx::class.java, "flipR")
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private val extendedTimer = ElapsedTime()
@@ -53,6 +53,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        flipR.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         slidesIn()
         raiseIntake()
     }
@@ -93,8 +94,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.TRANSIT_OUT -> {
-                if (extendedDuration > state.time) {
+                if (timeSpentInState > state.time) {
                     state = State.OUT
+                }
+                if (distance < distanceLimit) {
+                    state = State.TRANSIT_IN
+                    containsBlock = true
                 }
                 if (state != State.PREP_OUT) deploy()
                 extendedDuration = Range.clip(
@@ -142,6 +147,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 Platform.isLoaded = true
+                containsBlock = false
                 if (distance > distanceLimit || timeSpentInState > state.time) {
                     state = State.IN
                     power = 0.0
@@ -152,8 +158,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
         intake.power = power
         Context.packet.put("Extended Duration", extendedDuration)
+        Context.packet.put("pwmRange Min", flipR.pwmRange.usPulseLower)
+        Context.packet.put("pwmRange Max", flipR.pwmRange.usPulseUpper)
+        Context.packet.put("containsBlock", containsBlock)
+        Context.packet.put("timeSpentInState", timeSpentInState)
         val intakePose = Context.robotPose.polarAdd(7.7)
-        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
+        // DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
     }
 
     private val distance: Double

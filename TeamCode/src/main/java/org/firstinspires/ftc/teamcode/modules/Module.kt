@@ -71,7 +71,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
             module.update()
         }
         internalUpdate()
-        Context.telemetry?.addData(javaClass.simpleName + " State", state)
+        Context.packet.put(javaClass.simpleName + " State", state)
     }
 
     /**
