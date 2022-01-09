@@ -89,9 +89,6 @@ public class DriverPractice extends LinearOpMode {
             } else if (tippedToward.isDown()) {
                 balance = Balance.TOWARD;
             }
-            if (liftButton.isDown()) {
-                Deposit.allowLift = true;
-            }
             setCapstone();
         }
     }
@@ -140,7 +137,6 @@ public class DriverPractice extends LinearOpMode {
         }
 
         if (dumpButton.wasJustPressed()) {
-            Deposit.allowLift = true;
             deposit.dump();
         }
     }

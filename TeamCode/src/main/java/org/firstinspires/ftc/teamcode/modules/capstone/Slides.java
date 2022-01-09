@@ -46,7 +46,7 @@ public class Slides extends Module<Slides.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         slide = hardwareMap.servo.get("capstoneLowerLift");
     }
 

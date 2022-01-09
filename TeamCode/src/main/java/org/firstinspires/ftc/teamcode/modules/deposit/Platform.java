@@ -24,7 +24,7 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition1 = 0.8;
     public static double outPositionFar = 0.8;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.1;
+    public static double inPosition = 0.05;
     public static double lockPosition = 0.49;
     public static double unlockPosition = 0.7;
     public static double sum = 1;
@@ -69,10 +69,10 @@ public class Platform extends Module<Platform.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         dumpLeft = hardwareMap.servo.get("depositDumpL");
         dumpRight = hardwareMap.servo.get("depositDumpR");
-        tilt = hardwareMap.servo.get("depositLatch");
+        tilt = hardwareMap.servo.get("platformTilt");
         lock = hardwareMap.servo.get("lock");
         flipIn();
         tiltIn();
@@ -90,20 +90,19 @@ public class Platform extends Module<Platform.State> {
                     setState(State.IN);
                 }
             case IN:
-                tiltOut();
+                tiltIn();
                 unlock();
                 flipIn();
-                Deposit.allowLift = false;
                 if(!intake.isDoingWork() && isLoaded)
                     setState(State.CREATE_CLEARANCE);
                 break;
             case CREATE_CLEARANCE:
                 if (getTimeSpentInState() > getState().time) {
                     lock();
-                    setState(State.HOLDING);
+                    setState(State.TRANSIT_OUT);
                 }
             case HOLDING:
-                holdingPosition();
+                //setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
                 if (getTimeSpentInState() > getState().time) {
@@ -112,11 +111,11 @@ public class Platform extends Module<Platform.State> {
             case OUT:
                 lock();
                 flipOut();
+                tiltOut();
                 break;
             case DUMPING:
                 unlock();
                 flipOut();
-                tiltIn();
                 if (isLoaded ? getTimeSpentInState() > getState().getTime(): getTimeSpentInState() > getState().getTime()+ 0.8) {
                     setState(State.TRANSIT_IN);
                 }
@@ -156,7 +155,7 @@ public class Platform extends Module<Platform.State> {
      * Extends the platform out
      */
     private void flipOut() {
-        double position = (Deposit.allowLift || opModeType != OpModeType.TELE) ? outPosition() : 0.3;
+        double position = outPosition();
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }
@@ -190,12 +189,14 @@ public class Platform extends Module<Platform.State> {
         setState(State.TRANSIT_OUT);
     }
 
+    public static double tiltInPos = 0.25, tiltOutPos = 0.6;
+
     private void tiltIn() {
-        tilt.setPosition(0.95);
+        tilt.setPosition(tiltInPos);
     }
 
     private void tiltOut() {
-        tilt.setPosition(0.2);
+        tilt.setPosition(tiltOutPos);
     }
 
     private void lock() {
@@ -219,6 +220,6 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN || getState() == State.HOLDING;
+        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN || getState() == State.HOLDING || getState() == State.TRANSIT_OUT;
     }
 }

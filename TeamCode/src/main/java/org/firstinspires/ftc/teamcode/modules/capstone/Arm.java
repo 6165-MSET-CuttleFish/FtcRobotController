@@ -48,7 +48,7 @@ public class Arm extends Module<Arm.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         arm = hardwareMap.servo.get("capstoneArm");
     }
 

@@ -32,7 +32,7 @@ public class Capstone extends Module <Capstone.State> {
         super(hardwareMap, State.HOLDING);
     }
 
-    public void init() {
+    public void internalInit() {
         capstoneSlides = new Slides(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
         setNestedModules(capstoneArm, capstoneSlides);

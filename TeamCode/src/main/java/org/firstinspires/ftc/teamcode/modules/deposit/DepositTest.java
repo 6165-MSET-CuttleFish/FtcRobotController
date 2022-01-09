@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
@@ -11,44 +12,44 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.packet;
 
 @TeleOp
 public class DepositTest extends ModuleTest {
     Intake intake;
     Deposit deposit;
     GamepadEx primary;
-    ToggleButtonReader tippedAway, tippedToward;
+    Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+    ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement;
 
     @Override
     public void initialize() {
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap, intake);
         primary = new GamepadEx(gamepad1);
-        tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER);
-        tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER);
         setModules(deposit, intake);
+        setKeyReaders(
+                levelDecrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
+                levelIncrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_UP),
+                tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
+                tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER)
+        );
     }
-
 
     @Override
     public void update() {
-        assert Context.telemetry != null;
-        telemetry.addData("isLoaded", Platform.isLoaded);
-        telemetry.addData("balance", balance);
-        telemetry.addData("LB", tippedAway.getState());
-        telemetry.addData("RB", tippedToward.getState());
-        telemetry.update();
-        tippedToward.readValue();
-        tippedAway.readValue();
+        packet.put("isLoaded", Platform.isLoaded);
+        packet.put("farDeposit", Deposit.farDeposit);
+        packet.put("balance", balance);
+        packet.put("LB", tippedAway.getState());
+        packet.put("RB", tippedToward.getState());
         intake.setPower(gamepad1.right_trigger);
-        if (gamepad1.x) {
-            deposit.setState(Deposit.State.LEVEL2);
-        }
         if (gamepad1.b) {
-            deposit.setState(Deposit.State.LEVEL3);
+            Platform.isLoaded = true;
+            deposit.platform.prepPlatform();
         }
-        if (gamepad1.y) {
-            deposit.setState(Deposit.State.IDLE);
+        if (gamepad1.x) {
+            Deposit.farDeposit = !Deposit.farDeposit;
         }
         if (gamepad1.a) {
             deposit.dump();
@@ -59,6 +60,27 @@ public class DepositTest extends ModuleTest {
             balance = Balance.AWAY;
         } else if (tippedToward.isDown()) {
             balance = Balance.TOWARD;
+        }
+        if (levelIncrement.wasJustPressed()) {
+            switch (defaultDepositState) {
+                case LEVEL2:
+                    defaultDepositState = Deposit.State.LEVEL3;
+                    break;
+                case LEVEL1:
+                    defaultDepositState = Deposit.State.LEVEL2;
+                    break;
+            }
+            deposit.setState(defaultDepositState);
+        } else if (levelDecrement.wasJustPressed()) {
+            switch (defaultDepositState) {
+                case LEVEL3:
+                    defaultDepositState = Deposit.State.LEVEL2;
+                    break;
+                case LEVEL2:
+                    defaultDepositState = Deposit.State.LEVEL1;
+                    break;
+            }
+            deposit.setState(defaultDepositState);
         }
     }
 }

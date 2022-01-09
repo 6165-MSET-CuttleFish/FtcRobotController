@@ -46,7 +46,14 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * This function initializes all necessary hardware modules
      */
-    abstract fun init()
+    abstract fun internalInit()
+
+    fun init() {
+        internalInit()
+        for (module in nestedModules) {
+            module.init()
+        }
+    }
 
     /**
      * The time spent in the current state in seconds

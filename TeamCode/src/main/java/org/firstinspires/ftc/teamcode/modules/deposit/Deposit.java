@@ -26,7 +26,6 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
-    public static boolean allowLift;
     public static boolean farDeposit;
     public static double LEVEL3 = 12.8;
     public static double LEVEL2 = 5;
@@ -85,7 +84,7 @@ public class Deposit extends Module<Deposit.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -108,15 +107,14 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
-        pidController.setTargetPosition(getState().getDist());
-        if ((opModeType != OpModeType.TELE && platform.isDoingInternalWork()) || (opModeType == OpModeType.TELE && allowLift)) {
+        pidController.setTargetPosition(farDeposit ? getState().getDist() : 0);
+        if (platform.isDoingInternalWork()) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
         }
-        double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
+        double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-            allowLift = false;
             if (getTimeSpentInState() > 0.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

@@ -13,7 +13,7 @@ public class SampleModuleOpMode extends ModuleTest {
     public void initialize() {
         module = new Module(hardwareMap, null) {
             @Override
-            public void init() {
+            public void internalInit() {
 
             }
 
