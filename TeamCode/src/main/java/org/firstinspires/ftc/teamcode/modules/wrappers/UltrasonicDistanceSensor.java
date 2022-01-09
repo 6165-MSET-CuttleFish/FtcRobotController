@@ -14,6 +14,6 @@ public class UltrasonicDistanceSensor {
     }
 
     public double getDistance() {
-        return analogInput.getVoltage() / 512;
+        return analogInput.getVoltage() * 512;
     }
 }
