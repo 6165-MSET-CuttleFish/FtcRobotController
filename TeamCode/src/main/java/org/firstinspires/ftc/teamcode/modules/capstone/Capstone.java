@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import androidx.annotation.Nullable;
 
 public class Capstone extends Module <Capstone.State> {
-    public Slides capstoneSlides;
     public Arm capstoneArm;
     public enum State implements StateBuilder {
         READY,
@@ -33,9 +32,8 @@ public class Capstone extends Module <Capstone.State> {
     }
 
     public void init() {
-        capstoneSlides = new Slides(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
-        setNestedModules(capstoneArm, capstoneSlides);
+        setNestedModules(capstoneArm);
     }
 
     @Override
@@ -47,40 +45,25 @@ public class Capstone extends Module <Capstone.State> {
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
-                        if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.hold();
-                        }
-                        capstoneSlides.pickUp();
+                        capstoneArm.hold();
                         break;
                     case TRANSIT_IN:
                         break;
                     case IN:
-                        if (capstoneSlides.getState() == Slides.State.IN) {
-                            setState(State.HOLDING);
-                        }
-                        capstoneSlides.dropDown();
+                        setState(State.HOLDING);
                 }
                 break;
             case HOLDING:
                 capstoneArm.hold();
-                if (capstoneArm.getState() == Arm.State.IN) {
-                    capstoneSlides.dropDown();
-                }
                 break;
             case PRECAP:
                 switch (capstoneArm.getState()) {
                     case IN:
-                        if (capstoneSlides.getState() == Slides.State.OUT) {
-                            capstoneArm.preCap();
-                        }
-                        capstoneSlides.pickUp();
+                        capstoneArm.preCap();
                     case TRANSIT_OUT:
                         break;
                     case OUT:
-                        capstoneSlides.half();
-                        if (capstoneSlides.getState() == Slides.State.HALF) {
-                            setState(State.CAPPING);
-                        }
+                        setState(State.CAPPING);
                         break;
                     case CAP:
                         capstoneArm.preCap();
