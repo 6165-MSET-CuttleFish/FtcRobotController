@@ -3,16 +3,13 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -32,22 +29,32 @@ public class Platform extends Module<Platform.State> {
     public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
-        TRANSIT_IN (0.7),
-        IN(0.5),
-        HOLDING(0.0),
-        CREATE_CLEARANCE(0.3),
-        TRANSIT_OUT(0.3),
-        OUT(0),
+        TRANSIT_IN (0.7, 0),
+        IN(0.5, 0),
+        HOLDING(0.0, 0.5),
+        TRANSIT_OUT(0.3, 1),
+        OUT(0, 1),
         DUMPING(0.5);
-        final double time;
+        private final double timeOut;
+        private final double motionProfile;
         @Override
-        public double getTime() {
-            double time = this.time;
+        public double getTimeOut() {
+            double time = this.timeOut;
             if (balance == Balance.AWAY) time += timeDiffBalance;
             return time;
         }
-        State(double time) {
-            this.time = time;
+        State(double timeOut, double motionProfile) {
+            this.timeOut = timeOut;
+            this.motionProfile = motionProfile;
+        }
+        State(double timeOut) {
+            this.timeOut = timeOut;
+            motionProfile = 0;
+        }
+
+        @Override
+        public double getMotionProfile() {
+            return motionProfile;
         }
     }
     Servo dumpLeft, dumpRight, tilt, lock;
@@ -88,26 +95,22 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 isLoaded = false;
-                if (getTimeSpentInState() > getState().time) {
+                if (getTimeSpentInState() > getState().timeOut) {
                     setState(State.IN);
                 }
             case IN:
                 tiltIn();
                 unlock();
                 flipIn();
-                if(!intake.isDoingWork() && isLoaded)
-                    setState(State.CREATE_CLEARANCE);
-                break;
-            case CREATE_CLEARANCE:
-                if (getTimeSpentInState() > getState().time) {
-                    lock();
-                    setState(State.TRANSIT_OUT);
+                if (isLoaded && intake.getState() == Intake.State.CREATE_CLEARANCE) {
+                    prepPlatform();
                 }
+                break;
             case HOLDING:
                 //setState(State.TRANSIT_OUT);
                 break;
             case TRANSIT_OUT:
-                if (getTimeSpentInState() > getState().time) {
+                if (hasExceededTimeOut()) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -118,8 +121,9 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 flipOut();
-                if (isLoaded ? getTimeSpentInState() > getState().getTime(): getTimeSpentInState() > getState().getTime()+ 0.8) {
+                if (isLoaded ? getTimeSpentInState() > getState().getTimeOut(): getTimeSpentInState() > getState().getTimeOut()+ 0.8) {
                     setState(State.TRANSIT_IN);
+                    isLoaded = false;
                 }
                 break;
         }
@@ -163,7 +167,7 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void holdingPosition() {
-        double position = 0.3;
+        double position = 0.4;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }
@@ -181,14 +185,21 @@ public class Platform extends Module<Platform.State> {
      * Dumps the loaded element onto hub
      */
     public void dump() {
-        setState(State.DUMPING);
+        if (getState() == State.OUT || getState() == State.TRANSIT_OUT) setState(State.DUMPING);
     }
 
     /**
-     * Dumps the loaded element onto hub
+     * Puts platform into the prepped position
      */
     public void prepPlatform() {
-        setState(State.TRANSIT_OUT);
+        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
+    }
+
+    /**
+     * Safety position for platform
+     */
+    public void safetyPosition() {
+        setState(State.HOLDING);
     }
 
     public static double tiltInPos = 0.8, tiltOutPos = 0;

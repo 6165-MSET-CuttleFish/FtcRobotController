@@ -38,6 +38,7 @@ public abstract class ModuleTest extends OpMode {
         initialize();
         for (Module module : modules) {
             module.init();
+            module.setDebugMode(true);
         }
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
@@ -53,8 +54,8 @@ public abstract class ModuleTest extends OpMode {
 
     @Override
     public final void loop() {
-        for (LynxModule module : allHubs) {
-            module.clearBulkCache();
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
         }
         for (KeyReader keyReader : keyReaders) {
             keyReader.readValue();

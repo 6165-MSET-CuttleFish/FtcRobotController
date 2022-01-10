@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
-import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
@@ -9,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Context;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.packet;

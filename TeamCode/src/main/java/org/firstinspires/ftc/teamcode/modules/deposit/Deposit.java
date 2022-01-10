@@ -12,13 +12,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Context;
-import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -30,12 +26,13 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL3 = 12.8;
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
+    public static double allowableDepositError = 4;
     public enum State implements StateBuilder {
         LEVEL3(12),
         LEVEL2(5),
         LEVEL1(0),
         IDLE(0);
-        private double dist;
+        private final double dist;
         State(double dist) {
             this.dist = dist;
         }
@@ -48,7 +45,12 @@ public class Deposit extends Module<Deposit.State> {
             return dist;
         }
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getMotionProfile() {
             return 0;
         }
     }
@@ -95,7 +97,11 @@ public class Deposit extends Module<Deposit.State> {
 
     @Override
     public void setState(@NonNull State state) {
-        defaultState = state;
+        if (state == defaultState) return;
+        if (state == State.IDLE) defaultState = State.LEVEL1;
+        else defaultState = state;
+        if (platform.getState() == Platform.State.OUT || platform.getState() == Platform.State.TRANSIT_OUT)
+            platform.safetyPosition();
     }
 
     public void dump() {
@@ -108,7 +114,7 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void internalUpdate() {
         pidController.setTargetPosition(farDeposit ? getState().getDist() : 0);
-        if (platform.isDoingInternalWork()) {
+        if (platform.isDoingWork()) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
@@ -139,12 +145,16 @@ public class Deposit extends Module<Deposit.State> {
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
     }
 
+    public double getLastError() {
+        return getState() != State.IDLE ? pidController.getLastError() : (getTimeSpentInState() > 0.5 ? 0 : 100);
+    }
+
     /**
      * @param ticks current position of the motor
      * @return inches traveled by the slides
      */
     private static double ticksToInches(double ticks) {
-        return (ticks/TICKS_PER_INCH);
+        return ticks / TICKS_PER_INCH;
     }
     
     @Override

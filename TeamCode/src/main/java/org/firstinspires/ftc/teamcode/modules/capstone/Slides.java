@@ -26,8 +26,13 @@ public class Slides extends Module<Slides.State> {
         }
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
             return time;
+        }
+
+        @Override
+        public double getMotionProfile() {
+            return 0;
         }
     }
 

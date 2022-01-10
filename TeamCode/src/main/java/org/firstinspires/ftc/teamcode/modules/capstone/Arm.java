@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 
-import androidx.annotation.Nullable;
-
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
@@ -29,7 +27,12 @@ public class Arm extends Module<Arm.State> {
         }
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getMotionProfile() {
             return 0;
         }
     }

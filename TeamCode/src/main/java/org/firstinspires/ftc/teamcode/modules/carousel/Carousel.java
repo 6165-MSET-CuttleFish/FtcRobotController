@@ -24,7 +24,12 @@ public class Carousel extends Module<Carousel.State> {
         IDLE;
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getMotionProfile() {
             return 0;
         }
     }

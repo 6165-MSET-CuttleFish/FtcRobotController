@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
+import kotlin.math.abs
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -15,11 +16,19 @@ import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
 abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
-    var poseOffset: Pose2d = Pose2d()
+    var poseOffset: Pose2d = Pose2d(),
+    var totalMotionDuration: Double = 1.0
 ) {
     private var nestedModules = arrayOf<Module<*>>()
     val modulePoseEstimate: Pose2d
         get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
+    var isDebugMode = false
+        set(value) {
+            field = value
+            for (module in nestedModules) {
+                module.isDebugMode = value
+            }
+        }
 
     /**
      * @return The previous state of the module
@@ -61,6 +70,11 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     protected val timeSpentInState
         get() = elapsedTime.seconds()
 
+    private val timeOut: Double
+        get() = abs(previousState.motionProfile * totalMotionDuration - state.motionProfile * totalMotionDuration)
+
+    protected fun hasExceededTimeOut(): Boolean = timeSpentInState > timeOut
+
     /**
      * This function updates all necessary controls in a loop.
      * Prints the state of the module.
@@ -71,7 +85,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
             module.update()
         }
         internalUpdate()
-        Context.packet.put(javaClass.simpleName + " State", state)
+        Context.packet.put(javaClass.simpleName + " State", "$previousState --> $state")
     }
 
     /**

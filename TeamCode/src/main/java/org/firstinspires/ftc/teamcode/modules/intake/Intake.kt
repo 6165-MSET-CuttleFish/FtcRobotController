@@ -32,13 +32,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var inPosition = 0.88
     }
-    enum class State(override val time: Double) : StateBuilder {
+    enum class State(override val timeOut: Double, override val motionProfile: Double = 0.0) : StateBuilder {
         PREP_OUT(0.0),
         TRANSIT_OUT(0.8),
         OUT(0.0),
         TRANSIT_IN(0.8),
         TRANSFER(1.2),
-        IN(0.0)
+        IN(0.0),
+        CREATE_CLEARANCE(0.3),
+        TRANSIT_CREATE_CLEARANCE(0.3),
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -54,6 +56,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        // extend range of servo by 30 degrees
         flipR.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         slidesIn()
         raiseIntake()
@@ -90,12 +93,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         when (state) {
             State.PREP_OUT -> {
                 dropIntake()
-                if (timeSpentInState > state.time) {
+                if (timeSpentInState > state.timeOut) {
                     state = State.TRANSIT_OUT
                 }
             }
             State.TRANSIT_OUT -> {
-                if (timeSpentInState > state.time) {
+                if (timeSpentInState > state.timeOut) {
                     state = State.OUT
                 }
                 if (distance < distanceLimit) {
@@ -106,7 +109,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedDuration = Range.clip(
                     extendedDuration + extendedTimer.seconds(),
                     0.0,
-                    State.TRANSIT_IN.time
+                    State.TRANSIT_IN.timeOut
                 )
                 extendedTimer.reset()
             }
@@ -115,7 +118,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedDuration = Range.clip(
                     extendedDuration + extendedTimer.seconds(),
                     0.0,
-                    State.TRANSIT_IN.time
+                    State.TRANSIT_IN.timeOut
                 )
                 extendedTimer.reset()
                 if (distance < distanceLimit) {
@@ -132,7 +135,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedDuration = Range.clip(
                     extendedDuration - extendedTimer.seconds(),
                     0.0,
-                    State.TRANSIT_IN.time
+                    State.TRANSIT_IN.timeOut
                 )
                 extendedTimer.reset()
             }
@@ -141,7 +144,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedDuration = Range.clip(
                     extendedDuration - extendedTimer.seconds(),
                     0.0,
-                    State.TRANSIT_IN.time
+                    State.TRANSIT_IN.timeOut
                 )
                 extendedTimer.reset()
             }
@@ -149,10 +152,20 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 power = -1.0
                 Platform.isLoaded = true
                 containsBlock = false
-                if (distance > distanceLimit || timeSpentInState > state.time) {
-                    state = State.IN
+                if (distance > distanceLimit || timeSpentInState > state.timeOut) {
+                    createClearance()
                     power = 0.0
                     this.power = power
+                }
+            }
+            State.TRANSIT_CREATE_CLEARANCE -> {
+                if (timeSpentInState > state.timeOut) {
+                    state = State.CREATE_CLEARANCE
+                }
+            }
+            State.CREATE_CLEARANCE -> {
+                if (timeSpentInState > state.timeOut) {
+                    state = State.IN
                 }
             }
         }
@@ -174,6 +187,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private fun raiseIntake() {
         flipR.position = raisedPosition
+    }
+
+    private fun createClearance() {
+        state = State.TRANSIT_CREATE_CLEARANCE
     }
 
     private fun deploy() {
