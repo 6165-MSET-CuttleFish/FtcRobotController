@@ -11,9 +11,11 @@ public class UltrasonicDistanceSensor {
 
     public UltrasonicDistanceSensor(HardwareMap hardwareMap, String deviceName) {
         analogInput = hardwareMap.analogInput.get(deviceName);
+        analogInput.resetDeviceConfigurationForOpMode();
     }
 
     public double getDistance() {
-        return analogInput.getVoltage() * 512;
+
+        return analogInput.getVoltage() * inchesPerVolt;
     }
 }
