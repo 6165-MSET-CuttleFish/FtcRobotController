@@ -20,19 +20,19 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.8;
-    public static double outPosition2 = 0.8;
-    public static double outPosition1 = 0.8;
-    public static double outPositionFar = 0.8;
+    public static double outPosition3 = 0.1;
+    public static double outPosition2 = 0.1;
+    public static double outPosition1 = 0.1;
+    public static double outPositionFar = 0.1;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.05;
+    public static double inPosition = 0.82;
     public static double lockPosition = 0.49;
     public static double unlockPosition = 0.7;
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
-        TRANSIT_IN (0.4),
+        TRANSIT_IN (0.7),
         IN(0.5),
         HOLDING(0.0),
         CREATE_CLEARANCE(0.3),
@@ -51,7 +51,6 @@ public class Platform extends Module<Platform.State> {
         }
     }
     Servo dumpLeft, dumpRight, tilt, lock;
-    ServoImplEx jailbreak;
     private final Intake intake;
     private final Deposit deposit;
 
@@ -78,6 +77,7 @@ public class Platform extends Module<Platform.State> {
         lock = hardwareMap.servo.get("lock");
         flipIn();
         tiltIn();
+        unlock();
     }
 
     /**
@@ -191,7 +191,7 @@ public class Platform extends Module<Platform.State> {
         setState(State.TRANSIT_OUT);
     }
 
-    public static double tiltInPos = 0.25, tiltOutPos = 0.6;
+    public static double tiltInPos = 0.8, tiltOutPos = 0;
 
     private void tiltIn() {
         tilt.setPosition(tiltInPos);

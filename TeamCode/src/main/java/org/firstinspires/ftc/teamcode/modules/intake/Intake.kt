@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmField
-        var raisedPosition = 0.0
+        var raisedPosition = 0.32
         @JvmField
         var loweredPosition = 1.0
         @JvmField
@@ -29,15 +30,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var outPosition = 0.65
         @JvmField
-        var inPosition = 0.93
+        var inPosition = 0.88
     }
     enum class State(override val time: Double) : StateBuilder {
         PREP_OUT(0.0),
         TRANSIT_OUT(0.8),
         OUT(0.0),
         TRANSIT_IN(0.8),
-        TRANSFER(0.7),
-        IN(0.0);
+        TRANSFER(1.2),
+        IN(0.0)
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -158,12 +159,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
         intake.power = power
         Context.packet.put("Extended Duration", extendedDuration)
-        Context.packet.put("pwmRange Min", flipR.pwmRange.usPulseLower)
-        Context.packet.put("pwmRange Max", flipR.pwmRange.usPulseUpper)
         Context.packet.put("containsBlock", containsBlock)
-        Context.packet.put("timeSpentInState", timeSpentInState)
+        Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
         val intakePose = Context.robotPose.polarAdd(7.7)
-        // DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
+        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate)
     }
 
     private val distance: Double
@@ -179,7 +178,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private fun deploy() {
         Platform.isLoaded = false
-        slidesOut();
+        slidesOut()
         dropIntake()
     }
 
