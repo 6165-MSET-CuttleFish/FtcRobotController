@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -8,6 +9,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
+
+import androidx.annotation.NonNull;
+import kotlin.jvm.functions.Function0;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
@@ -34,9 +38,12 @@ public class Platform extends Module<Platform.State> {
         HOLDING(0.0, 0.5),
         TRANSIT_OUT(0.3, 1),
         OUT(0, 1),
-        DUMPING(0.5);
+        DUMPING(0.5),
+        OUT1(0.0, 1),
+        OUT2(0, 0.9),
+        OUT3(0, 0.7);
         private final double timeOut;
-        private final double motionProfile;
+        private final double percentMotion;
         @Override
         public double getTimeOut() {
             double time = this.timeOut;
@@ -45,16 +52,16 @@ public class Platform extends Module<Platform.State> {
         }
         State(double timeOut, double motionProfile) {
             this.timeOut = timeOut;
-            this.motionProfile = motionProfile;
+            this.percentMotion = motionProfile;
         }
         State(double timeOut) {
             this.timeOut = timeOut;
-            motionProfile = 0;
+            percentMotion = 0;
         }
 
         @Override
-        public double getMotionProfile() {
-            return motionProfile;
+        public double getPercentMotion() {
+            return percentMotion;
         }
     }
     Servo dumpLeft, dumpRight, tilt, lock;
@@ -68,7 +75,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap, Intake intake, Deposit deposit) {
-        super(hardwareMap, State.IN);
+        super(hardwareMap, State.IN, new Pose2d(), 1);
         this.intake = intake;
         this.deposit = deposit;
     }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -27,6 +28,12 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
     public static double allowableDepositError = 4;
+
+    @Override
+    public boolean isTransitioningState() {
+        return getLastError() < allowableDepositError;
+    }
+
     public enum State implements StateBuilder {
         LEVEL3(12),
         LEVEL2(5),
@@ -50,10 +57,11 @@ public class Deposit extends Module<Deposit.State> {
         }
 
         @Override
-        public double getMotionProfile() {
+        public double getPercentMotion() {
             return 0;
         }
     }
+
     DcMotorEx slides;
     public Platform platform;
 
@@ -76,7 +84,7 @@ public class Deposit extends Module<Deposit.State> {
      * @param intake instance of robot's intake module
      */
     public Deposit(HardwareMap hardwareMap, Intake intake) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.IDLE, new Pose2d(), 1);
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake, this);
         setNestedModules(platform);

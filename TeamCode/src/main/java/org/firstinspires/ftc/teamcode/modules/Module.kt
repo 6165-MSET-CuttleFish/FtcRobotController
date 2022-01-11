@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
@@ -19,22 +20,15 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     var poseOffset: Pose2d = Pose2d(),
     var totalMotionDuration: Double = 1.0
 ) {
-    private var nestedModules = arrayOf<Module<*>>()
-    val modulePoseEstimate: Pose2d
-        get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
-    var isDebugMode = false
-        set(value) {
-            field = value
-            for (module in nestedModules) {
-                module.isDebugMode = value
-            }
-        }
+    /// State related fields
+    private val elapsedTime = ElapsedTime()
 
     /**
      * @return The previous state of the module
      */
     var previousState: T = _state
         private set
+
     open var state: T
         /**
          * @return The state of the module
@@ -46,11 +40,52 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
          */
         protected set(value) {
             if (state == value) return
+            incrementPosition = value.percentMotion > state.percentMotion
+            previousEstimatedPosition = currentEstimatedPosition
             elapsedTime.reset()
             previousState = state
             _state = value
         }
-    private val elapsedTime = ElapsedTime()
+    /**
+     * The time spent in the current state in seconds
+     */
+    protected val timeSpentInState
+        get() = elapsedTime.seconds()
+
+    private val timeOut: Double
+        get() = abs(previousState.percentMotion * totalMotionDuration - state.percentMotion * totalMotionDuration)
+    protected fun hasExceededTimeOut(): Boolean = timeSpentInState > timeOut
+
+    /// Module utilities
+    private var nestedModules = arrayOf<Module<*>>()
+    val modulePoseEstimate: Pose2d
+        get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
+    var isDebugMode = false
+        set(value) {
+            field = value
+            for (module in nestedModules) {
+                module.isDebugMode = value
+            }
+        }
+
+    /// Position estimating
+    /**
+     * Whether the current state is above or below the previous state
+     */
+    private var incrementPosition = true
+    /**
+     * @return previous position as a percentage of the [totalMotionDuration]
+     */
+    var previousEstimatedPosition = 0.0
+        private set
+    /**
+     * @return current position as a percentage of the [totalMotionDuration]
+     */
+    var currentEstimatedPosition: Double = 0.0
+        private set
+        get() =
+            if (incrementPosition) Range.clip(previousEstimatedPosition + timeSpentInState / totalMotionDuration, previousState.percentMotion, state.percentMotion)
+            else Range.clip(previousEstimatedPosition - timeSpentInState / totalMotionDuration, state.percentMotion, previousState.percentMotion)
 
     /**
      * This function initializes all necessary hardware modules
@@ -65,17 +100,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     }
 
     /**
-     * The time spent in the current state in seconds
-     */
-    protected val timeSpentInState
-        get() = elapsedTime.seconds()
-
-    private val timeOut: Double
-        get() = abs(previousState.motionProfile * totalMotionDuration - state.motionProfile * totalMotionDuration)
-
-    protected fun hasExceededTimeOut(): Boolean = timeSpentInState > timeOut
-
-    /**
      * This function updates all necessary controls in a loop.
      * Prints the state of the module.
      * Updates all nested modules.
@@ -85,7 +109,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
             module.update()
         }
         internalUpdate()
-        Context.packet.put(javaClass.simpleName + " State", "$previousState --> $state")
+        Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
     }
 
     /**
@@ -145,4 +169,9 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * @return Whether the module is currently in a hazardous state
      */
     protected abstract fun isModuleInternalHazardous(): Boolean
+
+    /**
+     * @return Whether the module is currently transitioning between states
+     */
+     open fun isTransitioningState(): Boolean = !hasExceededTimeOut()
 }

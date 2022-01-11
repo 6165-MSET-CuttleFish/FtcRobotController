@@ -15,7 +15,6 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism at the back of the robot to deposit freight
- *
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
@@ -29,7 +28,7 @@ public class Carousel extends Module<Carousel.State> {
         }
 
         @Override
-        public double getMotionProfile() {
+        public double getPercentMotion() {
             return 0;
         }
     }

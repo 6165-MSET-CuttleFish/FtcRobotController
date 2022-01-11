@@ -32,7 +32,7 @@ public class Arm extends Module<Arm.State> {
         }
 
         @Override
-        public double getMotionProfile() {
+        public double getPercentMotion() {
             return 0;
         }
     }

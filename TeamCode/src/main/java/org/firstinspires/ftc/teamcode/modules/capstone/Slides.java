@@ -31,7 +31,7 @@ public class Slides extends Module<Slides.State> {
         }
 
         @Override
-        public double getMotionProfile() {
+        public double getPercentMotion() {
             return 0;
         }
     }

@@ -22,7 +22,7 @@ public class SampleModuleOpMode extends ModuleTest {
             }
 
             @Override
-            public double getMotionProfile() {
+            public double getPercentMotion() {
                 return 0;
             }
         }) {

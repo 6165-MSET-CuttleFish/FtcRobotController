@@ -23,7 +23,7 @@ public class Capstone extends Module <Capstone.State> {
         }
 
         @Override
-        public double getMotionProfile() {
+        public double getPercentMotion() {
             return 0;
         }
     }
