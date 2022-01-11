@@ -103,12 +103,16 @@ public class Deposit extends Module<Deposit.State> {
 
     private State defaultState = State.LEVEL3;
 
+    public State getDefaultState() {
+        return defaultState;
+    }
+
     @Override
     public void setState(@NonNull State state) {
         if (state == defaultState) return;
         if (state == State.IDLE) defaultState = State.LEVEL1;
         else defaultState = state;
-        if (platform.getState() == Platform.State.OUT || platform.getState() == Platform.State.TRANSIT_OUT)
+        if (platform.platformIsOut(platform.getState()) && farDeposit)
             platform.safetyPosition();
     }
 
@@ -138,7 +142,6 @@ public class Deposit extends Module<Deposit.State> {
             }
         }
         slides.setPower(power);
-
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
             lastKv = kV;

@@ -44,7 +44,7 @@ public class DepositTest extends ModuleTest {
         intake.setPower(gamepad1.right_trigger);
         if (gamepad1.b) {
             Platform.isLoaded = true;
-            deposit.platform.prepPlatform();
+            deposit.platform.prepPlatform(deposit.getDefaultState());
         }
         if (gamepad1.x) {
             Deposit.farDeposit = !Deposit.farDeposit;

@@ -25,6 +25,7 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition2 = 0.1;
     public static double outPosition1 = 0.1;
     public static double outPositionFar = 0.1;
+    public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
     public static double inPosition = 0.82;
     public static double lockPosition = 0.49;
@@ -33,12 +34,9 @@ public class Platform extends Module<Platform.State> {
     public static double timeDiffBalance = 0.5;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
-        TRANSIT_IN (0.7, 0),
         IN(0.5, 0),
         HOLDING(0.0, 0.5),
-        TRANSIT_OUT(0.3, 1),
-        OUT(0, 1),
-        DUMPING(0.5),
+        DUMPING(0.5, 1),
         OUT1(0.0, 1),
         OUT2(0, 0.9),
         OUT3(0, 0.7);
@@ -64,7 +62,7 @@ public class Platform extends Module<Platform.State> {
             return percentMotion;
         }
     }
-    Servo dumpLeft, dumpRight, tilt, lock;
+    private Servo dumpLeft, dumpRight, tilt, lock;
     private final Intake intake;
     private final Deposit deposit;
 
@@ -94,42 +92,45 @@ public class Platform extends Module<Platform.State> {
         unlock();
     }
 
+    boolean intakeCleared;
     /**
      * This function updates all necessary controls in a loop
      */
     @Override
     protected void internalUpdate() {
         switch (getState()) {
-            case TRANSIT_IN:
-                isLoaded = false;
-                if (getTimeSpentInState() > getState().timeOut) {
-                    setState(State.IN);
-                }
             case IN:
+                if (isTransitioningState() && !intakeCleared) {
+                    intake.createClearance();
+                    intakeCleared = true;
+                } else {
+                    intakeCleared = false;
+                }
                 tiltIn();
                 unlock();
                 flipIn();
-                if (isLoaded && intake.getState() == Intake.State.CREATE_CLEARANCE) {
-                    prepPlatform();
+                if (isLoaded) {
+                    prepPlatform(deposit.getDefaultState());
                 }
                 break;
             case HOLDING:
-                //setState(State.TRANSIT_OUT);
-                break;
-            case TRANSIT_OUT:
-                if (hasExceededTimeOut()) {
-                    setState(State.OUT);
+                holdingPosition();
+                if (deposit.getLastError() < Deposit.allowableDepositError) {
+                    setState(getNeededOutState(deposit.getDefaultState()));
                 }
-            case OUT:
+                break;
+            case OUT1:
+            case OUT2:
+            case OUT3:
+                setState(getNeededOutState(deposit.getDefaultState()));
                 lock();
-                flipOut();
+                flipOut(deposit.getState());
                 tiltOut();
                 break;
             case DUMPING:
                 unlock();
-                flipOut();
                 if (isLoaded ? getTimeSpentInState() > getState().getTimeOut(): getTimeSpentInState() > getState().getTimeOut()+ 0.8) {
-                    setState(State.TRANSIT_IN);
+                    setState(State.IN);
                     isLoaded = false;
                 }
                 break;
@@ -141,9 +142,9 @@ public class Platform extends Module<Platform.State> {
     /**
      * @return servo position based on balance of hub
      */
-    private double outPosition() {
+    private double outPosition(Deposit.State state) {
         double outPos = outPosition3;
-        switch (deposit.getState()) {
+        switch (state) {
             case LEVEL3:
                 outPos = Deposit.farDeposit ? outPositionFar : outPosition3;
                 break;
@@ -167,14 +168,14 @@ public class Platform extends Module<Platform.State> {
     /**
      * Extends the platform out
      */
-    private void flipOut() {
-        double position = outPosition();
+    private void flipOut(Deposit.State state) {
+        double position = outPosition(state);
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }
 
     private void holdingPosition() {
-        double position = 0.4;
+        double position = holdingPosition;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }
@@ -192,14 +193,24 @@ public class Platform extends Module<Platform.State> {
      * Dumps the loaded element onto hub
      */
     public void dump() {
-        if (getState() == State.OUT || getState() == State.TRANSIT_OUT) setState(State.DUMPING);
+        if (getState() == State.OUT3 || getState() == State.OUT2 || getState() == State.OUT1)
+            setState(State.DUMPING);
+    }
+
+    private State getNeededOutState(Deposit.State state) {
+        switch (state) {
+            case LEVEL3: return State.OUT3;
+            case LEVEL2: return State.OUT2;
+            case LEVEL1: return State.OUT1;
+        }
+        return State.OUT3;
     }
 
     /**
      * Puts platform into the prepped position
      */
-    public void prepPlatform() {
-        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
+    public void prepPlatform(Deposit.State state) {
+        setState(getNeededOutState(state));
     }
 
     /**
@@ -240,6 +251,10 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || getState() == State.OUT || getState() == State.TRANSIT_IN || getState() == State.HOLDING || getState() == State.TRANSIT_OUT;
+        return getState() == State.DUMPING || platformIsOut(getState()) || (getState() == State.IN && isTransitioningState()) || getState() == State.HOLDING;
+    }
+
+    public boolean platformIsOut(State state) {
+        return state == State.OUT1 || state == State.OUT2 || state == State.OUT3;
     }
 }

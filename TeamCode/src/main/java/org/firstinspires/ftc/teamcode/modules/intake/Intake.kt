@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @author Matthew Song
  */
 @Config
-class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
+class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
         var raisedPosition = 0.32
@@ -35,8 +35,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
         OUT(0.0, 1.0),
         TRANSFER(1.2),
-        IN(0.0),
-        CREATE_CLEARANCE(0.3, 0.2),
+        IN(0.0, 0.0),
+        CREATE_CLEARANCE(0.3, 0.8),
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -47,7 +47,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private val extendedTimer = ElapsedTime()
-    private var extendedDuration = 0.0
     private var containsBlock = false
 
     override fun internalInit() {
@@ -89,11 +88,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         when (state) {
             State.OUT -> {
                 deploy()
-                extendedDuration = Range.clip(
-                    extendedDuration + extendedTimer.seconds(),
-                    0.0,
-                    State.IN.timeOut
-                )
                 extendedTimer.reset()
                 if (distance < distanceLimit) {
                     state = State.IN
@@ -105,11 +99,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                     state = if (distance < distanceLimit) State.TRANSFER else State.IN
                 }
                 retract()
-                extendedDuration = Range.clip(
-                    extendedDuration - extendedTimer.seconds(),
-                    0.0,
-                    State.IN.timeOut
-                )
                 extendedTimer.reset()
             }
             State.TRANSFER -> {
@@ -117,23 +106,23 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 Platform.isLoaded = true
                 containsBlock = false
                 if (distance > distanceLimit || timeSpentInState > state.timeOut) {
-                    createClearance()
+                    state = State.IN
                     power = 0.0
                     this.power = power
                 }
             }
             State.CREATE_CLEARANCE -> {
+                slidesOut()
                 if (hasExceededTimeOut()) {
                     state = State.IN
                 }
             }
         }
-        poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
+        poseOffset = Pose2d(7.7 + currentEstimatedPosition * 6.0)
         intake.power = power
-        Context.packet.put("Extended Duration", extendedDuration)
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
-        val intakePose = modulePoseEstimate.polarAdd(2 * extendedDuration)
+        val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }
 
@@ -148,7 +137,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         flip.position = raisedPosition
     }
 
-    private fun createClearance() {
+    fun createClearance() {
         state = State.CREATE_CLEARANCE
     }
 
