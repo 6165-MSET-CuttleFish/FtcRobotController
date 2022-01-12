@@ -103,7 +103,7 @@ public class Platform extends Module<Platform.State> {
                 if (isTransitioningState() && !intakeCleared) {
                     intake.createClearance();
                     intakeCleared = true;
-                } else {
+                } else if (!isTransitioningState()){
                     intakeCleared = false;
                 }
                 tiltIn();
@@ -124,7 +124,7 @@ public class Platform extends Module<Platform.State> {
             case OUT3:
                 setState(getNeededOutState(deposit.getDefaultState()));
                 lock();
-                flipOut(deposit.getState());
+                flipOut(deposit.getDefaultState());
                 tiltOut();
                 break;
             case DUMPING:

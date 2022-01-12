@@ -53,7 +53,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
         get() = elapsedTime.seconds()
 
     private val timeOut: Double
-        get() = abs(previousState.percentMotion * totalMotionDuration - state.percentMotion * totalMotionDuration)
+        get() = abs(previousState.percentMotion - state.percentMotion) * totalMotionDuration
     protected fun hasExceededTimeOut(): Boolean = timeSpentInState > timeOut
 
     /// Module utilities
@@ -109,7 +109,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
             module.update()
         }
         internalUpdate()
-        Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else "$previousState : $state")
+        Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
         Context.packet.put(javaClass.simpleName + " Position", currentEstimatedPosition)
     }
 
