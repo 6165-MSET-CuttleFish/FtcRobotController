@@ -35,7 +35,8 @@ public class Platform extends Module<Platform.State> {
     public static boolean isLoaded;
     public enum State implements StateBuilder {
         IN(0.5, 0),
-        HOLDING(0.0, 0.5),
+        HOLDING(0.1, 0.5),
+        LOCKING(0.2, 0),
         DUMPING(0.5, 1),
         OUT1(0.0, 1),
         OUT2(0, 0.9),
@@ -100,23 +101,30 @@ public class Platform extends Module<Platform.State> {
     protected void internalUpdate() {
         switch (getState()) {
             case IN:
+                tiltIn();
+                if (!isLoaded) unlock();
+                if (deposit.getLastError() < Deposit.allowableDepositError) flipIn();
+                if (isLoaded) {
+                    setState(State.LOCKING);
+                }
+            case LOCKING:
                 if (isTransitioningState() && !intakeCleared) {
                     intake.createClearance();
                     intakeCleared = true;
                 } else if (!isTransitioningState()){
                     intakeCleared = false;
                 }
-                tiltIn();
-                unlock();
-                flipIn();
-                if (isLoaded) {
+                if (isLoaded) lock();
+                if (getTimeSpentInState() > getState().timeOut && getState() == State.LOCKING) {
                     prepPlatform(deposit.getDefaultState());
                 }
                 break;
             case HOLDING:
+                intakeCleared = false;
                 holdingPosition();
-                if (deposit.getLastError() < Deposit.allowableDepositError) {
-                    setState(getNeededOutState(deposit.getDefaultState()));
+                if (getTimeSpentInState() > getState().timeOut && deposit.getLastError() < Deposit.allowableDepositError) {
+                    if (isLoaded) setState(getNeededOutState(deposit.getDefaultState()));
+                    else setState(State.IN);
                 }
                 break;
             case OUT1:
@@ -130,7 +138,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 if (isLoaded ? getTimeSpentInState() > getState().getTimeOut(): getTimeSpentInState() > getState().getTimeOut()+ 0.8) {
-                    setState(State.IN);
+                    setState(State.HOLDING);
                     isLoaded = false;
                 }
                 break;
@@ -251,7 +259,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut(getState()) || (getState() == State.IN && isTransitioningState()) || getState() == State.HOLDING;
+        return getState() == State.DUMPING || platformIsOut(getState()) || (getState() == State.HOLDING && isLoaded);
     }
 
     public boolean platformIsOut(State state) {

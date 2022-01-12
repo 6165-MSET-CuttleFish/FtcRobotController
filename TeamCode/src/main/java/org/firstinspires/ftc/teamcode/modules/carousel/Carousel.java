@@ -33,7 +33,7 @@ public class Carousel extends Module<Carousel.State> {
         }
     }
 
-    CRServo duckyR, duckyL;
+    CRServo ducky;
 
     /**
      * Constructor which calls the 'init' function
@@ -48,28 +48,23 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void internalInit() {
-        duckyR = hardwareMap.crservo.get("duckyR");
-        duckyL = hardwareMap.crservo.get("duckyL");
-        duckyL.setDirection(DcMotorSimple.Direction.REVERSE);
-        duckyR.setDirection(DcMotorSimple.Direction.REVERSE);
+        ducky = hardwareMap.crservo.get("duckyR");
+        ducky.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void setPower(double power) {
-        duckyR.setPower(power);
-        duckyL.setPower(power);
+        ducky.setPower(power);
     }
 
     public void on() {
         double power = opModeType == OpModeType.AUTO ? 0.75 : 1;
         if (alliance == Alliance.BLUE) power = -power;
-        duckyR.setPower(power);
-        duckyL.setPower(power);
+        ducky.setPower(power);
         setState(State.ON);
     }
 
     public void off() {
-        duckyR.setPower(0);
-        duckyL.setPower(0);
+        ducky.setPower(0);
         setState(State.IDLE);
     }
 

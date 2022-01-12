@@ -102,7 +102,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 extendedTimer.reset()
             }
             State.TRANSFER -> {
-                power = -1.0
+                power = -0.6
                 Platform.isLoaded = true
                 containsBlock = false
                 if (distance > distanceLimit || timeSpentInState > state.timeOut) {

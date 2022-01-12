@@ -152,8 +152,9 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Context.packet.put("Target Height", getState().getDist());
+        Context.packet.put("Target Height", pidController.getTargetPosition());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+        Context.packet.put("Deposit Motor Power", power);
     }
 
     public double getLastError() {
