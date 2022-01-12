@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules
 
 interface StateBuilder {
-    val time: Double
+    val timeOut: Double
+    val percentMotion: Double
 }

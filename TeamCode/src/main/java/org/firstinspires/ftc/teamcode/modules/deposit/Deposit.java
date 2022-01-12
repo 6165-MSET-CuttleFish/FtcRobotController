@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,13 +13,9 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Context;
-import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -26,17 +23,23 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
-    public static boolean allowLift;
     public static boolean farDeposit;
     public static double LEVEL3 = 12.8;
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
+    public static double allowableDepositError = 4;
+
+    @Override
+    public boolean isTransitioningState() {
+        return getLastError() < allowableDepositError;
+    }
+
     public enum State implements StateBuilder {
         LEVEL3(12),
         LEVEL2(5),
         LEVEL1(0),
         IDLE(0);
-        private double dist;
+        private final double dist;
         State(double dist) {
             this.dist = dist;
         }
@@ -49,10 +52,16 @@ public class Deposit extends Module<Deposit.State> {
             return dist;
         }
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getPercentMotion() {
             return 0;
         }
     }
+
     DcMotorEx slides;
     public Platform platform;
 
@@ -75,7 +84,7 @@ public class Deposit extends Module<Deposit.State> {
      * @param intake instance of robot's intake module
      */
     public Deposit(HardwareMap hardwareMap, Intake intake) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.IDLE, new Pose2d(), 1);
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake, this);
         setNestedModules(platform);
@@ -85,7 +94,7 @@ public class Deposit extends Module<Deposit.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -94,9 +103,17 @@ public class Deposit extends Module<Deposit.State> {
 
     private State defaultState = State.LEVEL3;
 
+    public State getDefaultState() {
+        return defaultState;
+    }
+
     @Override
     public void setState(@NonNull State state) {
-        defaultState = state;
+        if (state == defaultState) return;
+        if (state == State.IDLE) defaultState = State.LEVEL1;
+        else defaultState = state;
+        if (platform.platformIsOut(platform.getState()) && farDeposit)
+            platform.safetyPosition();
     }
 
     public void dump() {
@@ -108,15 +125,14 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
-        pidController.setTargetPosition(getState().getDist());
-        if ((opModeType != OpModeType.TELE && platform.isDoingInternalWork()) || (opModeType == OpModeType.TELE && allowLift)) {
+        pidController.setTargetPosition(farDeposit ? getState().getDist() : 0);
+        if (platform.isDoingWork()) {
             super.setState(defaultState);
         } else {
             super.setState(State.IDLE);
         }
-        double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
+        double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE) {
-            allowLift = false;
             if (getTimeSpentInState() > 0.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -126,7 +142,6 @@ public class Deposit extends Module<Deposit.State> {
             }
         }
         slides.setPower(power);
-
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
             lastKv = kV;
@@ -141,12 +156,16 @@ public class Deposit extends Module<Deposit.State> {
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
     }
 
+    public double getLastError() {
+        return getState() != State.IDLE ? pidController.getLastError() : (getTimeSpentInState() > 0.5 ? 0 : 100);
+    }
+
     /**
      * @param ticks current position of the motor
      * @return inches traveled by the slides
      */
     private static double ticksToInches(double ticks) {
-        return (ticks/TICKS_PER_INCH);
+        return ticks / TICKS_PER_INCH;
     }
     
     @Override

@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
@@ -18,41 +19,40 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @author Matthew Song
  */
 @Config
-class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
+class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.19
+        var raisedPosition = 0.32
         @JvmField
-        var loweredPosition = 0.84
+        var loweredPosition = 1.0
         @JvmField
         var distanceLimit = 18.0
         @JvmField
-        var outPosition = 0.33
+        var outPosition = 0.65
         @JvmField
-        var inPosition = 0.06
+        var inPosition = 0.88
     }
-    enum class State(override val time: Double) : StateBuilder {
-        PREP_OUT(0.3),
-        TRANSIT_OUT(0.3),
-        OUT(0.0),
-        TRANSIT_IN(0.8),
-        TRANSFER(0.7),
-        IN(0.0);
+    enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
+        OUT(0.0, 1.0),
+        TRANSFER(1.2),
+        IN(0.0, 0.0),
+        CREATE_CLEARANCE(0.3, 0.8),
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
     private var outL = hardwareMap.servo["outL"]
     private var outR = hardwareMap.servo["outR"]
     private var outA = hardwareMap.servo["outA"]
-    private var flipR = hardwareMap.servo["flipR"]
+    private var flip: ServoImplEx = hardwareMap.get(ServoImplEx::class.java, "flipR")
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private val extendedTimer = ElapsedTime()
-    private var extendedDuration = 0.0
+    private var containsBlock = false
 
-    override fun init() {
-        intake.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        intake.direction = DcMotorSimple.Direction.REVERSE
+    override fun internalInit() {
+        intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        // extend range of servo by 30°
+        flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         slidesIn()
         raiseIntake()
     }
@@ -60,10 +60,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     fun setPower(power: Double) {
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
             if (power != 0.0 && !isDoingInternalWork()) {
-                state = State.PREP_OUT
+                state = State.OUT
                 extendedTimer.reset()
             } else if (isDoingInternalWork()) {
-                state = State.TRANSIT_IN
+                state = State.IN
             }
         }
         this.power = power
@@ -73,7 +73,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     public override fun isDoingInternalWork(): Boolean {
-        return state != State.IN && state != State.TRANSIT_IN
+        return state != State.IN && state != State.CREATE_CLEARANCE
     }
 
     /**
@@ -86,87 +86,64 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun internalUpdate() {
         var power = power
         when (state) {
-            State.PREP_OUT -> {
-                dropIntake()
-                if (timeSpentInState > state.time) {
-                    state = State.TRANSIT_OUT
-                }
-            }
-            State.TRANSIT_OUT -> {
-                if (timeSpentInState > state.time) {
-                    state = State.OUT
-                }
-                if (state != State.PREP_OUT) deploy()
-                extendedDuration = Range.clip(
-                    extendedDuration + extendedTimer.seconds(),
-                    0.0,
-                    State.TRANSIT_IN.time
-                )
-                extendedTimer.reset()
-            }
             State.OUT -> {
-                if (state != State.PREP_OUT) deploy()
-                extendedDuration = Range.clip(
-                    extendedDuration + extendedTimer.seconds(),
-                    0.0,
-                    State.TRANSIT_IN.time
-                )
+                deploy()
                 extendedTimer.reset()
-            }
-            State.TRANSIT_IN -> {
-                if (extendedDuration <= 0) {
-                    state = if (0 < distanceLimit) State.TRANSFER else State.IN
+                if (distance < distanceLimit) {
+                    state = State.IN
+                    containsBlock = true
                 }
-                power = 0.8
-                retract()
-                extendedDuration = Range.clip(
-                    extendedDuration - extendedTimer.seconds(),
-                    0.0,
-                    State.TRANSIT_IN.time
-                )
-                extendedTimer.reset()
             }
             State.IN -> {
+                if (hasExceededTimeOut() && previousState == State.OUT) {
+                    state = if (distance < distanceLimit) State.TRANSFER else State.IN
+                }
                 retract()
-                extendedDuration = Range.clip(
-                    extendedDuration - extendedTimer.seconds(),
-                    0.0,
-                    State.TRANSIT_IN.time
-                )
                 extendedTimer.reset()
             }
             State.TRANSFER -> {
                 power = -1.0
                 Platform.isLoaded = true
-                if (distance > distanceLimit || timeSpentInState > state.time) {
+                containsBlock = false
+                if (distance > distanceLimit || timeSpentInState > state.timeOut) {
                     state = State.IN
                     power = 0.0
                     this.power = power
                 }
             }
+            State.CREATE_CLEARANCE -> {
+                slidesOut()
+                if (hasExceededTimeOut()) {
+                    state = State.IN
+                }
+            }
         }
-        poseOffset = Pose2d(7.7 + extendedDuration * 6.0)
+        poseOffset = Pose2d(7.7 + currentEstimatedPosition * 6.0)
         intake.power = power
-        Context.packet.put("Extended Duration", extendedDuration)
-        Context.telemetry?.addData("Extended Duration", extendedDuration)
-        val intakePose = Context.robotPose.polarAdd(7.7)
-        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), intakePose, modulePoseEstimate);
+        Context.packet.put("containsBlock", containsBlock)
+        Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
+        val intakePose = modulePoseEstimate.polarAdd(7.7)
+        DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }
 
     private val distance: Double
         get() = blockSensor.getDistance(DistanceUnit.CM)
 
     private fun dropIntake() {
-        flipR.position = loweredPosition
+        flip.position = loweredPosition
     }
 
     private fun raiseIntake() {
-        flipR.position = raisedPosition
+        flip.position = raisedPosition
+    }
+
+    fun createClearance() {
+        state = State.CREATE_CLEARANCE
     }
 
     private fun deploy() {
         Platform.isLoaded = false
-        slidesOut();
+        slidesOut()
         dropIntake()
     }
 

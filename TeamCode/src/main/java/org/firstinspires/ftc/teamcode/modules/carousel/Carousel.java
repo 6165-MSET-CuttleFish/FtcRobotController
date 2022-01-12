@@ -15,7 +15,6 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism at the back of the robot to deposit freight
- *
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
@@ -24,7 +23,12 @@ public class Carousel extends Module<Carousel.State> {
         IDLE;
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getPercentMotion() {
             return 0;
         }
     }
@@ -43,7 +47,7 @@ public class Carousel extends Module<Carousel.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         duckyR = hardwareMap.crservo.get("duckyR");
         duckyL = hardwareMap.crservo.get("duckyL");
         duckyL.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -37,7 +37,7 @@ public class DriveConstants {
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
-    public static boolean integrateUsingPosition = true;
+    public static boolean integrateUsingPosition = false;
     public static double gyroHorizontalOffset = 6;
     public static double gyroVerticalOffset = -2;
     /*

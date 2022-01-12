@@ -26,8 +26,13 @@ public class Slides extends Module<Slides.State> {
         }
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
             return time;
+        }
+
+        @Override
+        public double getPercentMotion() {
+            return 0;
         }
     }
 
@@ -46,7 +51,7 @@ public class Slides extends Module<Slides.State> {
      * This function initializes all necessary hardware modules
      */
     @Override
-    public void init() {
+    public void internalInit() {
         slide = hardwareMap.servo.get("capstoneLowerLift");
     }
 
