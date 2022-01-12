@@ -17,7 +17,12 @@ public class Capstone extends Module <Capstone.State> {
         CAPPING;
 
         @Override
-        public double getTime() {
+        public double getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public double getPercentMotion() {
             return 0;
         }
     }
@@ -31,7 +36,7 @@ public class Capstone extends Module <Capstone.State> {
         super(hardwareMap, State.HOLDING);
     }
 
-    public void init() {
+    public void internalInit() {
         capstoneArm = new Arm(hardwareMap);
         setNestedModules(capstoneArm);
     }
@@ -64,6 +69,7 @@ public class Capstone extends Module <Capstone.State> {
                         break;
                     case OUT:
                         setState(State.CAPPING);
+
                         break;
                     case CAP:
                         capstoneArm.preCap();
