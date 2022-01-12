@@ -8,24 +8,26 @@ import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
 public class CapstoneTest extends ModuleTest {
-    Servo claw;
-    boolean open=true;
+   // Servo claw;
+    //boolean open=true;
 
     @Override
     public void initialize() {
-        claw = hardwareMap.servo.get("capstoneClaw");
+        //telemetry.addData("Hi",1);
+        //telemetry.update();
+        //claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     @Override
     public void update() {
-        telemetry.addData("Claw: ",open);
-        telemetry.update();
-        if(gamepad2.b){
-            claw.setPosition(0.5);
-            open=true;
-        }else if (gamepad1.a){
-            claw.setPosition(0.15);
-            open=false;
-        }
+        //telemetry.addData("Claw: ",open);
+        //telemetry.update();
+        //if(gamepad2.b){
+           // claw.setPosition(0.5);
+            //open=true;
+        //}else if (gamepad1.a){
+            //claw.setPosition(0.15);
+           // open=false;
+        //}
     }
 }
