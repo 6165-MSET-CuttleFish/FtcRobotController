@@ -7,17 +7,17 @@ import com.qualcomm.robotcore.hardware.ServoImpl;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
-public abstract class CapstoneTest extends ModuleTest {
+public class CapstoneTest extends ModuleTest {
     Servo claw;
     boolean open=true;
 
     @Override
-    public void init() {
+    public void initialize() {
         claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     @Override
-    public void loop() {
+    public void update() {
         telemetry.addData("Claw: ",open);
         telemetry.update();
         if(gamepad2.b){
