@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.ServoImpl;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
-public class TestOpModeClaw extends ModuleTest {
+public abstract class CapstoneTest extends ModuleTest {
     Servo claw;
     boolean open=true;
 
