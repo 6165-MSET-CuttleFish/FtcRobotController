@@ -8,8 +8,6 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import androidx.annotation.Nullable;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
