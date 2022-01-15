@@ -7,13 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class UltrasonicDistanceSensor {
     AnalogInput analogInput;
-    public static double inchesPerVolt = 512;
+    public static double inchesPerVolt = 72.8834; //512
+
 
     public UltrasonicDistanceSensor(HardwareMap hardwareMap, String deviceName) {
         analogInput = hardwareMap.analogInput.get(deviceName);
     }
 
     public double getDistance() {
-        return analogInput.getVoltage() * inchesPerVolt;
+
+        return analogInput.getVoltage() * inchesPerVolt + 0.178;
     }
 }
