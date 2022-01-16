@@ -16,8 +16,11 @@ public class DistanceSensorTest extends ModuleTest {
     @Override
     public void update() {
         double distance = distanceSensor.getDistance();
-        telemetry.addData("Distance", distance);
-        telemetry.addData("Voltage", distanceSensor.analogInput.getVoltage());
-        telemetry.update();
+        if(gamepad1.a){
+            telemetry.addData("Distance", distance);
+            telemetry.addData("Voltage", distanceSensor.analogInput.getVoltage());
+            telemetry.update();
+        }
+
     }
 }
