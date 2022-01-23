@@ -29,8 +29,6 @@ public class Capstone extends Module <Capstone.State> {
     }
 
     /**
-     * Constructor which calls the 'init' function
-     *
      * @param hardwareMap  instance of the hardware map provided by the OpMode
      */
     public Capstone(HardwareMap hardwareMap) {
@@ -103,7 +101,7 @@ public class Capstone extends Module <Capstone.State> {
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    public void pickUp(){
+    public void pickUp() {
         setState(State.PICKING_UP);
     }
     public void preCap() {

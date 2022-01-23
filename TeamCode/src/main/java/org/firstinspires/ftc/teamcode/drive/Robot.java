@@ -107,7 +107,6 @@ public class Robot extends ImprovedTankDrive {
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
-    private UltrasonicDistanceSensor frontDistance, leftDistance, rightDistance;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -335,14 +334,7 @@ public class Robot extends ImprovedTankDrive {
     public static double horizontalDistanceSensorOffset = 8;
 
     public void correctPosition() {
-        double frontDist = frontDistance.getDistance();
-        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance() : rightDistance.getDistance();
-        double rightWallX = 70.5;
-        double bottomWallY = alliance == Alliance.BLUE ? 70.5 : -70.5;
-        double heading = getPoseEstimate().getHeading();
-        double x = rightWallX - frontDist * Math.cos(heading) - frontDistanceSensorOffset;
-        double y =  bottomWallY - horizontalDist * Math.cos(heading) - horizontalDistanceSensorOffset;
-        setPoseEstimate(new Pose2d(x, y, heading));
+
     }
 
     public void update() {
