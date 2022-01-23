@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 import androidx.annotation.NonNull;
 import kotlin.jvm.functions.Function0;
@@ -27,8 +28,8 @@ public class Platform extends Module<Platform.State> {
     public static double outPositionFar = 0.1;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.82;
-    public static double lockPosition = 0.49;
+    public static double inPosition = 0.77;
+    public static double lockPosition = 0.25;
     public static double unlockPosition = 0.7;
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
@@ -53,10 +54,6 @@ public class Platform extends Module<Platform.State> {
             this.timeOut = timeOut;
             this.percentMotion = motionProfile;
         }
-        State(double timeOut) {
-            this.timeOut = timeOut;
-            percentMotion = 0;
-        }
 
         @Override
         public double getPercentMotion() {
@@ -74,7 +71,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap, Intake intake, Deposit deposit) {
-        super(hardwareMap, State.IN, new Pose2d(), 1);
+        super(hardwareMap, State.IN, new Pose2d(), 0.7);
         this.intake = intake;
         this.deposit = deposit;
     }
@@ -138,13 +135,14 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 if (isLoaded ? getTimeSpentInState() > getState().getTimeOut(): getTimeSpentInState() > getState().getTimeOut()+ 0.8) {
-                    setState(State.HOLDING);
+                    setState(State.IN);
                     isLoaded = false;
                 }
                 break;
         }
         if (intake.isDoingWork())
             setState(State.IN);
+        Context.packet.put("isLoaded", isLoaded);
     }
 
     /**
@@ -228,7 +226,7 @@ public class Platform extends Module<Platform.State> {
         setState(State.HOLDING);
     }
 
-    public static double tiltInPos = 0.8, tiltOutPos = 0;
+    public static double tiltInPos = 0.86, tiltOutPos = 0;
 
     private void tiltIn() {
         tilt.setPosition(tiltInPos);

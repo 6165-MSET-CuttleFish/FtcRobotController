@@ -111,7 +111,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
         Context.packet.put(javaClass.simpleName + " Position", currentEstimatedPosition)
-        Context.packet.put(javaClass.simpleName + " is doing work?", isDoingWork)
     }
 
     /**

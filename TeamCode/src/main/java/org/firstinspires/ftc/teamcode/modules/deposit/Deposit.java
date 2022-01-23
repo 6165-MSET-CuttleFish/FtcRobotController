@@ -155,6 +155,7 @@ public class Deposit extends Module<Deposit.State> {
         Context.packet.put("Target Height", pidController.getTargetPosition());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
         Context.packet.put("Deposit Motor Power", power);
+        Context.packet.put("Lift Error", getLastError());
     }
 
     public double getLastError() {
