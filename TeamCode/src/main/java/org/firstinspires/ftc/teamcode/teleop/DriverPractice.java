@@ -70,7 +70,7 @@ public class DriverPractice extends LinearOpMode {
                 reader.readValue();
             }
             Pose2d drivePower = new Pose2d(
-                    -gamepad1.left_stick_y,
+                    gamepad1.left_stick_y,
                     0,
                     gamepad1.right_stick_x
             );

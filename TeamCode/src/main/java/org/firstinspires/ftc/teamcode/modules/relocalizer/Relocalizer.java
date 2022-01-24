@@ -17,7 +17,7 @@ import static org.firstinspires.ftc.teamcode.drive.Robot.horizontalDistanceSenso
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 
 public class Relocalizer extends Module<Relocalizer.State> {
-    private UltrasonicDistanceSensor frontDistance, leftDistance, rightDistance;
+    private final UltrasonicDistanceSensor frontDistance, leftDistance, rightDistance;
     Pose2d poseEstimate;
     private final BNO055IMU imu;
     private final double pitchOffset;
@@ -41,6 +41,9 @@ public class Relocalizer extends Module<Relocalizer.State> {
         this.imu = imu;
         pitchOffset = getPitch();
         tiltOffset = getTilt();
+        frontDistance = new UltrasonicDistanceSensor(hardwareMap, "frontDistance");
+        leftDistance = new UltrasonicDistanceSensor(hardwareMap, "leftDistance");
+        rightDistance = new UltrasonicDistanceSensor(hardwareMap, "rightDistance");
     }
 
     @Override

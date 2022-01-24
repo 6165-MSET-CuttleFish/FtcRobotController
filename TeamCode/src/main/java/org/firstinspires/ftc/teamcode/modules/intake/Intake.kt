@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServo
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
@@ -20,13 +21,13 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.35
+        var raisedPosition = 0.0
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 18.0
+        var intakeLimit = 13.0
         @JvmField
-        var transferLimit = 18.0
+        var transferLimit = 20.0
         @JvmField
         var outPosition = 0.27
         @JvmField
@@ -52,7 +53,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         // extend range of servo by 30°
-        flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
+        // flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         slidesIn()
         raiseIntake()
     }
@@ -122,6 +123,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.power = power
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
+        //Context.packet.put("Servo Real Position", outL.realPosition)
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }
