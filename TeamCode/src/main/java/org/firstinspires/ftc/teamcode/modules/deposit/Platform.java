@@ -2,23 +2,19 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Balance;
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
-
-import androidx.annotation.NonNull;
-import kotlin.jvm.functions.Function0;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
- * @author Martin
+ * @author Ayush Raman
  */
 @Config
 public class Platform extends Module<Platform.State> {
@@ -46,9 +42,7 @@ public class Platform extends Module<Platform.State> {
         private final double percentMotion;
         @Override
         public double getTimeOut() {
-            double time = this.timeOut;
-            if (balance == Balance.AWAY) time += timeDiffBalance;
-            return time;
+            return this.timeOut;
         }
         State(double timeOut, double motionProfile) {
             this.timeOut = timeOut;
@@ -60,9 +54,11 @@ public class Platform extends Module<Platform.State> {
             return percentMotion;
         }
     }
-    private Servo dumpLeft, dumpRight, tilt, lock;
+    private ControllableServos dumpLeft, dumpRight, tilt, lock;
     private final Intake intake;
     private final Deposit deposit;
+    private ColorRangeSensor blockDetector;
+    boolean intakeCleared;
 
 
     /**
@@ -81,16 +77,16 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public void internalInit() {
-        dumpLeft = hardwareMap.servo.get("depositDumpL");
-        dumpRight = hardwareMap.servo.get("depositDumpR");
-        tilt = hardwareMap.servo.get("platformTilt");
-        lock = hardwareMap.servo.get("lock");
+        dumpLeft = new ControllableServos(hardwareMap.servo.get("depositDumpL"));
+        dumpRight = new ControllableServos(hardwareMap.servo.get("depositDumpR"));
+        tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
+        lock = new ControllableServos(hardwareMap.servo.get("lock"));
+        // blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         tiltIn();
         unlock();
     }
 
-    boolean intakeCleared;
     /**
      * This function updates all necessary controls in a loop
      */
@@ -99,19 +95,22 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case IN:
                 tiltIn();
-                if (!isLoaded) unlock();
                 if (deposit.getLastError() < Deposit.allowableDepositError) flipIn();
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
             case LOCKING:
-                if (isTransitioningState() && !intakeCleared) {
+                if (dumpLeft.isTransitioning() && !intakeCleared) {
                     intake.createClearance();
                     intakeCleared = true;
-                } else if (!isTransitioningState()){
+                } else if (!dumpLeft.isTransitioning()){
                     intakeCleared = false;
                 }
-                if (isLoaded) lock();
+                if (isLoaded) {
+                    lock();
+                } else {
+                    unlock();
+                }
                 if (getTimeSpentInState() > getState().timeOut && getState() == State.LOCKING) {
                     prepPlatform(deposit.getDefaultState());
                 }
@@ -134,7 +133,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case DUMPING:
                 unlock();
-                if (isLoaded ? getTimeSpentInState() > getState().getTimeOut(): getTimeSpentInState() > getState().getTimeOut()+ 0.8) {
+                if (getTimeSpentInState() > getState().getTimeOut()) {
                     setState(State.IN);
                     isLoaded = false;
                 }

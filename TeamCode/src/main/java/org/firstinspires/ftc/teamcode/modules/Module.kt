@@ -18,7 +18,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
     var poseOffset: Pose2d = Pose2d(),
-    var totalMotionDuration: Double = 1.0
+    private var totalMotionDuration: Double = 1.0
 ) {
     /// State related fields
     private val elapsedTime = ElapsedTime()

@@ -8,14 +8,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServo
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
 
 /**
  * Frontal mechanism for collecting freight
- * @author Matthew Song
+ * @author Ayush Raman
  */
 @Config
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
@@ -32,6 +32,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var outPosition = 0.27
         @JvmField
         var inPosition = 0.0
+        @JvmField
+        var midPosition = 0.1
     }
     enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
         OUT(0.0, 1.0),
@@ -41,18 +43,20 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
-    private var outL = hardwareMap.servo["outL"]
-    private var outR = hardwareMap.servo["outR"]
-    private var outA = hardwareMap.servo["outA"]
-    private var outServos = arrayOf(outL, outR, outA)
-    private var flip: ServoImplEx = hardwareMap.get(ServoImplEx::class.java, "flip")
+    private var extensionServos =
+        ControllableServos(
+            hardwareMap.servo["outL"],
+            hardwareMap.servo["outR"],
+            hardwareMap.servo["outA"],
+        )
+    private var flip = ControllableServos(hardwareMap.get(ServoImplEx::class.java, "flip"))
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private var containsBlock = false
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        // extend range of servo by 30°
+        // Extend range of servo by 30°
         // flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         slidesIn()
         raiseIntake()
@@ -79,9 +83,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     /**
      * @return Whether the module is currently in a hazardous state
      */
-    public override fun isModuleInternalHazardous(): Boolean {
-        return false
-    }
+    public override fun isModuleInternalHazardous() = false
 
     public override fun internalUpdate() {
         var power = power
@@ -94,7 +96,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.IN -> {
-                if (hasExceededTimeOut() && previousState == State.OUT) {
+                if (!extensionServos.isTransitioning && previousState == State.OUT && !flip.isTransitioning) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (isTransitioningState()) {
@@ -113,7 +115,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.CREATE_CLEARANCE -> {
-                slidesOut()
+                extensionServos.position = midPosition
                 if (hasExceededTimeOut()) {
                     state = State.IN
                 }
@@ -145,8 +147,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private fun deploy() {
         Platform.isLoaded = false
-        slidesOut()
         dropIntake()
+        if (flip.isTransitioning) {
+            extensionServos.lock()
+        } else {
+            slidesOut()
+        }
     }
 
     private fun retract() {
@@ -156,8 +162,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private fun slidesOut() {
         if (isHazardous) return
-        outServos.forEach { it.position = outPosition }
+        extensionServos.position = outPosition
     }
 
-    private fun slidesIn() = outServos.forEach { it.position = inPosition }
+    private fun slidesIn() {
+        extensionServos.position = inPosition
+    }
 }
