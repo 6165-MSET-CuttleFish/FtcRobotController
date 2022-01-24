@@ -327,8 +327,10 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
-    public static double frontDistanceSensorOffset = 8;
-    public static double horizontalDistanceSensorOffset = 8;
+    public static double frontDistanceSensorXOffset = 8;
+    public static double horizontalDistanceSensorYOffset = 8;
+    public static double frontDistanceSensorYOffset = 8;
+    public static double horizontalDistanceSensorXOffset = 8;
 
     public void correctPosition() {
 

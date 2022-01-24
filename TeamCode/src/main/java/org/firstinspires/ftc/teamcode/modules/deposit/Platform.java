@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
@@ -29,6 +30,7 @@ public class Platform extends Module<Platform.State> {
     public static double unlockPosition = 0.7;
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
+    public static double blockDistanceTolerance;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
         IN(0.5, 0),
@@ -92,10 +94,11 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     protected void internalUpdate() {
+        // isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
         switch (getState()) {
             case IN:
                 tiltIn();
-                if (deposit.getLastError() < Deposit.allowableDepositError) flipIn();
+                flipIn();
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }

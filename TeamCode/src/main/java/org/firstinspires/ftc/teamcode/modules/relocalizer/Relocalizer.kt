@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.wrappers.UltrasonicDistanceSensor
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
@@ -49,9 +50,12 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             val frontWallX = 70.5
             val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
             val heading = Context.robotPose.heading
-            val x = frontWallX - frontDist * cos(heading) - Robot.frontDistanceSensorOffset
-            val y = sideWallY - horizontalDist * cos(heading) - Robot.horizontalDistanceSensorOffset
-            poseEstimate = Pose2d(x, y, heading)
+            val x = frontWallX - frontDist * cos(heading) - Robot.frontDistanceSensorXOffset
+            val y = sideWallY - horizontalDist * cos(heading) - Robot.horizontalDistanceSensorYOffset
+            poseEstimate =
+                Pose2d(x, y, heading)
+                .polarAdd(Robot.frontDistanceSensorYOffset, Math.toRadians(90.0))
+                .polarAdd(Robot.horizontalDistanceSensorXOffset, Math.toRadians(0.0))
         }
         Context.packet.put("Front Distance", frontDist)
         Context.packet.put("Front Distance", horizontalDist)
