@@ -1,34 +1,34 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers;
 
-import com.qualcomm.robotcore.hardware.ServoControllerEx;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import androidx.annotation.NonNull;
-
-public abstract class ControllableServo extends ServoImplEx {
+public class ControllableServo {
     ElapsedTime timer;
+    Servo servo;
     double previousPosition;
-    double positionMotionPerSecond = 1;
+    double totalMotionDuration = 1;
     boolean incrementingPosition = true;
 
-    public ControllableServo(ServoControllerEx controller, int portNumber, @NonNull ServoConfigurationType servoType) {
-        super(controller, portNumber, servoType);
+    public ControllableServo(Servo servo) {
+        this.servo = servo;
     }
 
     public double getRealPosition() {
-        return incrementingPosition ? Range.clip(previousPosition + timer.seconds() * positionMotionPerSecond, previousPosition, getPosition())
-        : Range.clip(previousPosition - timer.seconds() * positionMotionPerSecond, getPosition(), previousPosition);
+        return incrementingPosition ? Range.clip(previousPosition + timer.seconds() / totalMotionDuration, previousPosition, servo.getPosition())
+        : Range.clip(previousPosition - timer.seconds() / totalMotionDuration, servo.getPosition(), previousPosition);
     }
 
-    @Override
     public void setPosition(double var1) {
-        super.setPosition(var1);
-        if (getPosition() == var1) return;
+        servo.setPosition(var1);
+        if (servo.getPosition() == var1) return;
         incrementingPosition = getRealPosition() < var1;
         previousPosition = getRealPosition();
         timer.reset();
+    }
+
+    public double getPosition() {
+        return servo.getPosition();
     }
 }
