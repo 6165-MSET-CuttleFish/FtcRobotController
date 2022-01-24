@@ -32,13 +32,17 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
 
     override fun internalInit() {}
     override fun internalUpdate() {
+        val frontDist: Double
+        val horizontalDist: Double
         if (Context.side == Side.CAROUSEL) {
+            frontDist = 0.0
+            horizontalDist = 0.0
         } else {
-            val frontDist =
+            frontDist =
                 (if (alliance == Alliance.BLUE) frontRightDistance.distance else frontLeftDistance.distance) * cos(
                     tilt
                 )
-            val horizontalDist =
+            horizontalDist =
                 (if (alliance == Alliance.BLUE) leftDistance.distance else rightDistance.distance) * cos(
                     pitch
                 )
@@ -46,10 +50,11 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
             val heading = Context.robotPose.heading
             val x = frontWallX - frontDist * cos(heading) - Robot.frontDistanceSensorOffset
-            val y =
-                sideWallY - horizontalDist * cos(heading) - Robot.horizontalDistanceSensorOffset
+            val y = sideWallY - horizontalDist * cos(heading) - Robot.horizontalDistanceSensorOffset
             poseEstimate = Pose2d(x, y, heading)
         }
+        Context.packet.put("Front Distance", frontDist)
+        Context.packet.put("Front Distance", horizontalDist)
     }
 
     private val pitch: Double

@@ -150,9 +150,6 @@ public class Robot extends ImprovedTankDrive {
         for (LynxModule module : allHubs) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-//        frontDistance = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
-//        leftDistance = hardwareMap.get(Rev2mDistanceSensor.class, "leftDistance");
-//        rightDistance = hardwareMap.get(Rev2mDistanceSensor.class, "rightDistance");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
