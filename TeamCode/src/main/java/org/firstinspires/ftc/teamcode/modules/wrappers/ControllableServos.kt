@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 
 class ControllableServos(vararg servos: Servo) {
-    var timer: ElapsedTime? = null
-    var servos: Array<Servo> = servos as Array<Servo>
+    private var timer = ElapsedTime()
+    private var servos: Array<Servo> = servos as Array<Servo>
     var previousPosition = 0.0
     var totalMotionDuration = 1.0
     var incrementingPosition = true
-    val realPosition: Double
+    private val realPosition: Double
         get() = if (incrementingPosition) Range.clip(
-            previousPosition + timer!!.seconds() / totalMotionDuration,
+            previousPosition + timer.seconds() / totalMotionDuration,
             previousPosition,
             servos[0].position
         ) else Range.clip(
-            previousPosition - timer!!.seconds() / totalMotionDuration,
+            previousPosition - timer.seconds() / totalMotionDuration,
             servos[0].position,
             previousPosition
         )
@@ -37,7 +37,7 @@ class ControllableServos(vararg servos: Servo) {
             if (servos[0].position == var1) return
             incrementingPosition = realPosition < var1
             previousPosition = realPosition
-            timer!!.reset()
+            timer.reset()
         }
     val isTransitioning: Boolean
         get() = realPosition != servos[0].position
