@@ -27,7 +27,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var intakeLimit = 13.0
         @JvmField
-        var transferLimit = 20.0
+        var transferLimit = 23.0
         @JvmField
         var outPosition = 0.27
         @JvmField
@@ -35,9 +35,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.16
         @JvmField
-        var extensionPositionPerSecond = 0.1
+        var extensionPositionPerSecond = 0.7
         @JvmField
-        var dropPositionPerSecond = 1.0
+        var dropPositionPerSecond = 2.3
     }
     enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
         OUT(0.0, 1.0),
@@ -64,8 +64,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         // flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        slidesIn()
-        raiseIntake()
+        // slidesIn()
+        extensionServos.init(inPosition)
+        // raiseIntake()
+        flip.init(raisedPosition)
     }
 
     fun setPower(power: Double) {
@@ -104,19 +106,19 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.IN -> {
+                retract()
                 if (!flip.isTransitioning && !extensionServos.isTransitioning && previousState == State.OUT) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
                     power = 0.7
                 }
-                retract()
             }
             State.TRANSFER -> {
                 power = -1.0
-                Platform.isLoaded = true
                 containsBlock = false
                 if (distance > transferLimit || timeSpentInState > state.timeOut) {
+                    Platform.isLoaded = true
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -124,7 +126,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.CREATE_CLEARANCE -> {
                 extensionServos.position = midPosition
-                if (hasExceededTimeOut()) {
+                if (!extensionServos.isTransitioning) {
                     state = State.IN
                 }
             }
@@ -134,9 +136,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
         Context.packet.put("Extension Real Position", extensionServos.realPosition)
-        Context.packet.put("Extension Current Position", extensionServos.position)
-        Context.packet.put("Extension Previous Position", extensionServos.previousPosition)
-        Context.packet.put("Extension Timer", extensionServos.timer.seconds())
         Context.packet.put("Drop Real Position", flip.realPosition)
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)

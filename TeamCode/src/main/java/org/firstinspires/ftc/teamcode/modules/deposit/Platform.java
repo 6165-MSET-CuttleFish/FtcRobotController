@@ -31,6 +31,8 @@ public class Platform extends Module<Platform.State> {
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
     public static double blockDistanceTolerance = 15;
+    public static double dumpServoPositionPerSecond = 3;
+    public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
         IN(0.5, 0),
@@ -83,7 +85,7 @@ public class Platform extends Module<Platform.State> {
         dumpRight = new ControllableServos(hardwareMap.servo.get("depositDumpR"));
         tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        // blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
+        blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         tiltIn();
         unlock();
@@ -94,6 +96,9 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     protected void internalUpdate() {
+        dumpLeft.setPositionPerSecond(dumpServoPositionPerSecond);
+        dumpRight.setPositionPerSecond(dumpServoPositionPerSecond);
+        tilt.setPositionPerSecond(flipServoPositionPerSecond);
         // isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
         switch (getState()) {
             case IN:
@@ -102,13 +107,11 @@ public class Platform extends Module<Platform.State> {
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
-            case LOCKING:
-                if (!intakeCleared && isTransitioningState()) {
+                if (!intakeCleared && !dumpLeft.isTransitioning()) {
                     intake.createClearance();
                     intakeCleared = true;
-                } else if (!isTransitioningState()){
-                    intakeCleared = false;
                 }
+            case LOCKING:
                 if (isLoaded) {
                     lock();
                 } else {
@@ -119,9 +122,8 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
             case HOLDING:
-                intakeCleared = false;
                 holdingPosition();
-                if (getTimeSpentInState() > getState().timeOut && deposit.getLastError() < Deposit.allowableDepositError) {
+                if (!dumpLeft.isTransitioning() && deposit.getLastError() < Deposit.allowableDepositError) {
                     if (isLoaded) setState(getNeededOutState(deposit.getDefaultState()));
                     else setState(State.IN);
                 }
@@ -129,6 +131,7 @@ public class Platform extends Module<Platform.State> {
             case OUT1:
             case OUT2:
             case OUT3:
+                intakeCleared = false;
                 setState(getNeededOutState(deposit.getDefaultState()));
                 lock();
                 flipOut(deposit.getDefaultState());
@@ -137,7 +140,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 if (getTimeSpentInState() > getState().getTimeOut()) {
-                    setState(State.IN);
+                    setState(State.HOLDING);
                     isLoaded = false;
                 }
                 break;

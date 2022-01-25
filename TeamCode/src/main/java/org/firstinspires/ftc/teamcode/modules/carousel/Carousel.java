@@ -46,7 +46,7 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void internalInit() {
-        ducky = hardwareMap.crservo.get("duckyR");
+        ducky = hardwareMap.crservo.get("ducky");
         ducky.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 

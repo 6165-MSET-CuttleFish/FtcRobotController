@@ -9,7 +9,7 @@ class ControllableServos(vararg servos: Servo) {
     var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
     var previousPosition = 0.0
-    var positionPerSecond = 1.0
+    var positionPerSecond = 0.7
     var incrementingPosition = true
     val realPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
@@ -33,12 +33,17 @@ class ControllableServos(vararg servos: Servo) {
         get() = servos[0].position
         set(var1) {
             if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000) return
-            previousPosition = realPosition
-            servos.forEach { it.position = var1 }
             incrementingPosition = realPosition < var1
+            previousPosition = realPosition
+            servos.forEach { it.position = round(var1 * 1000) / 1000 }
             timer.reset()
         }
+
+    fun init(var1: Double) {
+        position = var1
+        previousPosition = var1
+    }
+
     val isTransitioning: Boolean
         get() = round(realPosition * 1000) / 1000 != round(position * 1000) / 1000
-
 }

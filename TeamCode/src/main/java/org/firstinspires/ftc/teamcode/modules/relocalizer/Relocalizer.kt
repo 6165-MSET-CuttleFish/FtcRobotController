@@ -67,9 +67,9 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     private val pitch: Double
-        get() = imu.angularOrientation.secondAngle - pitchOffset
+        get() = imu.angularOrientation.thirdAngle - pitchOffset
     private val tilt: Double
-        get() = imu.angularOrientation.thirdAngle - tiltOffset
+        get() = imu.angularOrientation.secondAngle - tiltOffset
 
     override fun isDoingInternalWork(): Boolean {
         return false
