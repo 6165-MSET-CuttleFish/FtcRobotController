@@ -50,12 +50,17 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             val frontWallX = 70.5
             val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
             val heading = Context.robotPose.heading
-            val x = frontWallX - frontDist * cos(heading) - Robot.frontDistanceSensorXOffset
-            val y = sideWallY - horizontalDist * cos(heading) - Robot.horizontalDistanceSensorYOffset
-            poseEstimate =
-                Pose2d(x, y, heading)
-                .polarAdd(Robot.frontDistanceSensorYOffset, Math.toRadians(90.0))
-                .polarAdd(Robot.horizontalDistanceSensorXOffset, Math.toRadians(0.0))
+            val x = frontWallX - frontDist * cos(heading) // - Robot.frontDistanceSensorXOffset
+            val y = sideWallY - horizontalDist * cos(heading) // - Robot.horizontalDistanceSensorYOffset
+            val xPoseEstimate =
+                Pose2d(x, Context.robotPose.y, heading)
+                    .polarAdd(-Robot.frontDistanceSensorXOffset)
+                    .polarAdd(-Robot.frontDistanceSensorYOffset, Math.toRadians(90.0))
+            val yPoseEstimate =
+                Pose2d(Context.robotPose.x, y, heading)
+                    .polarAdd(-Robot.horizontalDistanceSensorXOffset)
+                    .polarAdd(-Robot.horizontalDistanceSensorYOffset, Math.toRadians(90.0))
+            poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
         }
         Context.packet.put("Front Distance", frontDist)
         Context.packet.put("Front Distance", horizontalDist)
