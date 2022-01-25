@@ -21,9 +21,9 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.0
+        var raisedPosition = 0.1
         @JvmField
-        var loweredPosition = 1.0
+        var loweredPosition = 0.86
         @JvmField
         var intakeLimit = 13.0
         @JvmField
@@ -33,13 +33,17 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var inPosition = 0.0
         @JvmField
-        var midPosition = 0.1
+        var midPosition = 0.16
+        @JvmField
+        var extensionPositionPerSecond = 0.1
+        @JvmField
+        var dropPositionPerSecond = 1.0
     }
     enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
         OUT(0.0, 1.0),
         TRANSFER(1.2),
         IN(0.0, 0.0),
-        CREATE_CLEARANCE(0.3, 0.4),
+        CREATE_CLEARANCE(0.3, 0.7),
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -49,7 +53,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             hardwareMap.servo["outR"],
             hardwareMap.servo["outA"],
         )
-    private var flip = ControllableServos(hardwareMap.get(ServoImplEx::class.java, "flip"))
+    private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     private var containsBlock = false
@@ -58,6 +62,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         // Extend range of servo by 30°
         // flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
+        flip.positionPerSecond = dropPositionPerSecond
+        extensionServos.positionPerSecond = extensionPositionPerSecond
         slidesIn()
         raiseIntake()
     }
@@ -86,6 +92,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun isModuleInternalHazardous() = false
 
     public override fun internalUpdate() {
+        flip.positionPerSecond = dropPositionPerSecond
+        extensionServos.positionPerSecond = extensionPositionPerSecond
         var power = power
         when (state) {
             State.OUT -> {
@@ -96,10 +104,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.IN -> {
-                if (!extensionServos.isTransitioning && previousState == State.OUT && !flip.isTransitioning) {
+                if (!flip.isTransitioning && !extensionServos.isTransitioning && previousState == State.OUT) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
-                if (isTransitioningState()) {
+                if (extensionServos.isTransitioning || flip.isTransitioning) {
                     power = 0.7
                 }
                 retract()
@@ -125,7 +133,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.power = power
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
-        //Context.packet.put("Servo Real Position", outL.realPosition)
+        Context.packet.put("Extension Real Position", extensionServos.realPosition)
+        Context.packet.put("Extension Current Position", extensionServos.position)
+        Context.packet.put("Extension Previous Position", extensionServos.previousPosition)
+        Context.packet.put("Extension Timer", extensionServos.timer.seconds())
+        Context.packet.put("Drop Real Position", flip.realPosition)
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }

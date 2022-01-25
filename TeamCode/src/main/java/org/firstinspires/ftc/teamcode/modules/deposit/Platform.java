@@ -25,12 +25,12 @@ public class Platform extends Module<Platform.State> {
     public static double outPositionFar = 0.1;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.77;
+    public static double inPosition = 0.75;
     public static double lockPosition = 0.25;
     public static double unlockPosition = 0.7;
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
-    public static double blockDistanceTolerance;
+    public static double blockDistanceTolerance = 15;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
         IN(0.5, 0),
@@ -103,10 +103,10 @@ public class Platform extends Module<Platform.State> {
                     setState(State.LOCKING);
                 }
             case LOCKING:
-                if (dumpLeft.isTransitioning() && !intakeCleared) {
+                if (!intakeCleared && isTransitioningState()) {
                     intake.createClearance();
                     intakeCleared = true;
-                } else if (!dumpLeft.isTransitioning()){
+                } else if (!isTransitioningState()){
                     intakeCleared = false;
                 }
                 if (isLoaded) {
