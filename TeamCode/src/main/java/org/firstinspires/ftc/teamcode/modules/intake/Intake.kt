@@ -86,7 +86,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    public override fun isDoingInternalWork(): Boolean {
+    override fun isDoingInternalWork(): Boolean {
         return state != State.IN && state != State.CREATE_CLEARANCE && state != State.COUNTER_BALANCE && state != State.TRANSFER
     }
 
@@ -126,7 +126,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.CREATE_CLEARANCE -> {
-                power = -1.0
                 extensionServos.position = midPosition
                 if (!extensionServos.isTransitioning) {
                     state = State.IN

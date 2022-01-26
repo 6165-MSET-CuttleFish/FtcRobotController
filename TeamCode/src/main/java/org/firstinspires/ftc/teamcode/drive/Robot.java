@@ -351,7 +351,7 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime loopTime = new ElapsedTime();
 
     public void correctPosition() {
-
+        setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
     public void update() {
