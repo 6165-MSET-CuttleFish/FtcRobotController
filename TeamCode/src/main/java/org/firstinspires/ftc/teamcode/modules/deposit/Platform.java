@@ -99,7 +99,7 @@ public class Platform extends Module<Platform.State> {
         dumpLeft.setPositionPerSecond(dumpServoPositionPerSecond);
         dumpRight.setPositionPerSecond(dumpServoPositionPerSecond);
         tilt.setPositionPerSecond(flipServoPositionPerSecond);
-        // isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
+        isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
         switch (getState()) {
             case IN:
                 tiltIn();

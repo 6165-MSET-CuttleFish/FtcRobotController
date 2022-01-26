@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
+import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -99,6 +100,7 @@ public class Robot extends ImprovedTankDrive {
     public Deposit deposit;
     public Carousel carousel;
     public Capstone capstone;
+    private Relocalizer relocalizer;
 
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
@@ -151,6 +153,29 @@ public class Robot extends ImprovedTankDrive {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
+
+        // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
+        // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
+        //
+        //             | +Z axis
+        //             |
+        //             |
+        //             |
+        //      _______|_____________     +Y axis
+        //     /       |_____________/|__________
+        //    /   REV / EXPANSION   //
+        //   /       / HUB         //
+        //  /_______/_____________//
+        // |_______/_____________|/
+        //        /
+        //       / +X axis
+        //
+        // This diagram is derived from the axes in section 3.4 https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
+        // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
+        //
+        // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
+        // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+
         DcMotorEx
                 leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
@@ -186,7 +211,7 @@ public class Robot extends ImprovedTankDrive {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        for (DcMotorEx motor : rightMotors) {
+        for (DcMotorEx motor : leftMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
@@ -324,10 +349,6 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
-    public static double frontDistanceSensorXOffset = 8;
-    public static double horizontalDistanceSensorYOffset = 8;
-    public static double frontDistanceSensorYOffset = 8;
-    public static double horizontalDistanceSensorXOffset = 8;
 
     public void correctPosition() {
 
@@ -443,7 +464,7 @@ public class Robot extends ImprovedTankDrive {
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
             vel = new Pose2d(
-                    VX_WEIGHT * drivePower.getX(),
+                    -VX_WEIGHT * drivePower.getX(),
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
@@ -461,7 +482,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        double pitch = getPitch();
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
@@ -473,7 +494,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        double pitch = getPitch();
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
@@ -505,24 +526,6 @@ public class Robot extends ImprovedTankDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        // TODO: This must be changed to match your configuration
-        //                           | Z axis
-        //                           |
-        //     (Motor Port Side)     |   / X axis
-        //                       ____|__/____
-        //          Y axis     / *   | /    /|   (IO Side)
-        //          _________ /______|/    //      I2C
-        //                   /___________ //     Digital
-        //                  |____________|/      Analog
-        //
-        //                 (Servo Port Side)
-        //
-        // The positive x axis points toward the USB port(s)
-        //
-        // Adjust the axis rotation rate as necessary
-        // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
-        // flat on a surface
-
         // To work around an SDK bug, use -zRotationRate in place of xRotationRate
         // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
         // expected). This bug does NOT affect orientation.
