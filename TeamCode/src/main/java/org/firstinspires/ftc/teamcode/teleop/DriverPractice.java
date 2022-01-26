@@ -70,11 +70,11 @@ public class DriverPractice extends LinearOpMode {
                 reader.readValue();
             }
             Pose2d drivePower = new Pose2d(
-                    gamepad1.left_stick_y,
+                    -gamepad1.left_stick_y,
                     0,
-                    gamepad1.right_stick_x
+                    -gamepad1.right_stick_x
             );
-            if (ninjaMode.isDown()) drivePower = drivePower.div(3);
+            if (ninjaMode.isDown()) drivePower = drivePower.times(0.75);
             robot.setWeightedDrivePower(drivePower);
             setIntake();
             setDeposit();

@@ -1,28 +1,20 @@
 package org.firstinspires.ftc.teamcode.modules.carousel;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.util.field.Context;
+import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
-public class CarouselTest extends LinearOpMode {
+public class CarouselTest extends ModuleTest {
     Carousel carousel;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void initialize() {
         carousel = new Carousel(hardwareMap);
-        waitForStart();
-        while (opModeIsActive()) {
-            carousel.update();
-            if (gamepad1.a) {
-                carousel.on();
-            }
-            if (gamepad1.b) {
-                carousel.off();
-            }
-            Context.packet = new TelemetryPacket();
-        }
+        setModules(carousel);
+    }
+
+    @Override
+    public void update() {
+        carousel.setPower(gamepad1.right_stick_y);
     }
 }

@@ -19,25 +19,25 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.1;
-    public static double outPosition2 = 0.1;
-    public static double outPosition1 = 0.1;
-    public static double outPositionFar = 0.1;
+    public static double outPosition3 = 0.25;
+    public static double outPosition2 = 0.15;
+    public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.75;
-    public static double lockPosition = 0.25;
-    public static double unlockPosition = 0.7;
+    public static double inPosition = 0.94;
+    public static double higherInPosition = 0.85;
+    public static double lockPosition = 0.23;
+    public static double unlockPosition = 0.5;
     public static double sum = 1;
     public static double timeDiffBalance = 0.5;
-    public static double blockDistanceTolerance = 15;
+    public static double blockDistanceTolerance = 8;
     public static double dumpServoPositionPerSecond = 3;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public enum State implements StateBuilder {
         IN(0.5, 0),
         HOLDING(0.1, 0.5),
-        LOCKING(0.2, 0),
+        LOCKING(0.5, 0),
         DUMPING(0.5, 1),
         OUT1(0.0, 1),
         OUT2(0, 0.9),
@@ -99,7 +99,9 @@ public class Platform extends Module<Platform.State> {
         dumpLeft.setPositionPerSecond(dumpServoPositionPerSecond);
         dumpRight.setPositionPerSecond(dumpServoPositionPerSecond);
         tilt.setPositionPerSecond(flipServoPositionPerSecond);
-        isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
+        if (intake.getState() == Intake.State.TRANSFER) {
+            isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
+        }
         switch (getState()) {
             case IN:
                 tiltIn();
@@ -111,12 +113,9 @@ public class Platform extends Module<Platform.State> {
                     intake.createClearance();
                     intakeCleared = true;
                 }
+                break;
             case LOCKING:
-                if (isLoaded) {
-                    lock();
-                } else {
-                    unlock();
-                }
+                lock();
                 if (getTimeSpentInState() > getState().timeOut && getState() == State.LOCKING) {
                     prepPlatform(deposit.getDefaultState());
                 }
@@ -131,6 +130,11 @@ public class Platform extends Module<Platform.State> {
             case OUT1:
             case OUT2:
             case OUT3:
+                if (getState() == State.OUT1) {
+                    intake.retractIntake();
+                } else {
+                    intake.counterBalance();
+                }
                 intakeCleared = false;
                 setState(getNeededOutState(deposit.getDefaultState()));
                 lock();
@@ -139,8 +143,9 @@ public class Platform extends Module<Platform.State> {
                 break;
             case DUMPING:
                 unlock();
+                intake.retractIntake();
                 if (getTimeSpentInState() > getState().getTimeOut()) {
-                    setState(State.HOLDING);
+                    setState(State.IN);
                     isLoaded = false;
                 }
                 break;
@@ -157,13 +162,13 @@ public class Platform extends Module<Platform.State> {
         double outPos = outPosition3;
         switch (state) {
             case LEVEL3:
-                outPos = Deposit.farDeposit ? outPositionFar : outPosition3;
+                outPos = outPosition3;
                 break;
             case LEVEL2:
-                outPos = Deposit.farDeposit ? outPositionFar : outPosition2;
+                outPos = outPosition2;
                 break;
             case LEVEL1:
-                outPos = Deposit.farDeposit ? outPositionFar : outPosition1;
+                outPos = outPosition1;
                 break;
         }
         switch (balance) {
@@ -195,7 +200,7 @@ public class Platform extends Module<Platform.State> {
      * Return platform to rest
      */
     private void flipIn() {
-        double position = inPosition;
+        double position = intake.isDoingWork() ? higherInPosition : inPosition;
         dumpLeft.setPosition(position);
         dumpRight.setPosition(sum - position);
     }
@@ -231,10 +236,10 @@ public class Platform extends Module<Platform.State> {
         setState(State.HOLDING);
     }
 
-    public static double tiltInPos = 0.86, tiltOutPos = 0;
+    public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9;
 
     private void tiltIn() {
-        tilt.setPosition(tiltInPos);
+        tilt.setPosition(intake.isDoingWork() ? furtherInPosition : tiltInPos);
     }
 
     private void tiltOut() {

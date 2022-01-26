@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /**
  * Frontal mechanism for collecting freight
@@ -21,13 +22,13 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.1
+        var raisedPosition = 0.18
         @JvmField
-        var loweredPosition = 0.86
+        var loweredPosition = 0.9
         @JvmField
         var intakeLimit = 13.0
         @JvmField
-        var transferLimit = 23.0
+        var transferLimit = 18.5
         @JvmField
         var outPosition = 0.27
         @JvmField
@@ -35,15 +36,16 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.16
         @JvmField
-        var extensionPositionPerSecond = 0.7
+        var extensionPositionPerSecond = 0.5
         @JvmField
-        var dropPositionPerSecond = 2.3
+        var dropPositionPerSecond = 2.1
     }
     enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
         OUT(0.0, 1.0),
-        TRANSFER(1.2),
+        TRANSFER(0.8),
         IN(0.0, 0.0),
         CREATE_CLEARANCE(0.3, 0.7),
+        COUNTER_BALANCE(0.0, 0.5),
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -72,9 +74,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     fun setPower(power: Double) {
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
-            if (power != 0.0 && !isDoingInternalWork()) {
+            if (power != 0.0 && !isDoingWork) {
                 state = State.OUT
-            } else if (isDoingInternalWork()) {
+            } else if (isDoingWork) {
                 state = State.IN
             }
         }
@@ -85,7 +87,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     public override fun isDoingInternalWork(): Boolean {
-        return state != State.IN && state != State.CREATE_CLEARANCE
+        return state != State.IN && state != State.CREATE_CLEARANCE && state != State.COUNTER_BALANCE && state != State.TRANSFER
     }
 
     /**
@@ -117,21 +119,24 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if (distance > transferLimit || timeSpentInState > state.timeOut) {
-                    Platform.isLoaded = true
+                if (Platform.isLoaded || timeSpentInState > state.timeOut) {
                     state = State.IN
                     power = 0.0
                     this.power = power
                 }
             }
             State.CREATE_CLEARANCE -> {
+                power = -1.0
                 extensionServos.position = midPosition
                 if (!extensionServos.isTransitioning) {
                     state = State.IN
                 }
             }
+            State.COUNTER_BALANCE -> {
+                extensionServos.position = midPosition
+            }
         }
-        poseOffset = Pose2d(7.7 + currentEstimatedPosition * 6.0)
+        poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
         intake.power = power
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
@@ -154,6 +159,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     fun createClearance() {
         state = State.CREATE_CLEARANCE
+    }
+
+    fun counterBalance() {
+        if (Context.opModeType != OpModeType.AUTO) state = State.COUNTER_BALANCE
+    }
+
+    fun retractIntake() {
+        state = State.IN
     }
 
     private fun deploy() {

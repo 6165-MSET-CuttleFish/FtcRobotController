@@ -91,7 +91,7 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
-    public static double headingSpeed = 1.8;
+    public static double headingSpeed = 2;
 
     final HardwareMap hardwareMap;
 
@@ -464,7 +464,7 @@ public class Robot extends ImprovedTankDrive {
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
             vel = new Pose2d(
-                    -VX_WEIGHT * drivePower.getX(),
+                    VX_WEIGHT * drivePower.getX(),
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
