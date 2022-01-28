@@ -67,13 +67,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.011; //1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.003;
-    public static double kStatic = 0.09;
-
-    public static double kVBackward = kV;
-    public static double kABackward = kA;
-    public static double kStaticBackward = kStatic;
+    public static double kV = 0.0115; //1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.0025;
+    public static double kStatic = 0.07;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,

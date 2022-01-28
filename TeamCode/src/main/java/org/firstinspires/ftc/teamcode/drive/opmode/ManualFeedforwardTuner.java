@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,17 +18,15 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kABackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStaticBackward;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kVBackward;
 
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
@@ -53,10 +52,6 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private Robot robot;
-
-    private VoltageSensor voltageSensor;
-
     enum Mode {
         DRIVER_MODE,
         TUNING_MODE
@@ -80,8 +75,8 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         //drive = new SampleMecanumDrive(hardwareMap);
-        robot = new Robot(this);
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        Robot robot = new Robot(this);
+        VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         mode = Mode.TUNING_MODE;
 
         NanoClock clock = NanoClock.system();
@@ -97,9 +92,13 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         boolean movingForwards = true;
         MotionProfile activeProfile = generateProfile(true);
         double profileStart = clock.seconds();
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
 
         while (!isStopRequested()) {
+            for (LynxModule module : allHubs) {
+                module.clearBulkCache();
+            }
             telemetry.addData("mode", mode);
 
             switch (mode) {
@@ -121,7 +120,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     MotionState motionState = activeProfile.get(profileTime);
                     final double voltageMultiplier =  12 / voltageSensor.getVoltage();
                     double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier);
-                    if (targetPower < 0) targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier);
+                    // if (targetPower < 0) targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier);
                     robot.setDrivePower(new Pose2d(targetPower, 0, 0));
                     robot.updatePoseEstimate();
 

@@ -115,13 +115,6 @@ abstract class ImprovedTankDrive constructor(
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
         )
-        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(
-            velocities,
-            accelerations,
-            kVBackward * voltageMultiplier,
-            kABackward * voltageMultiplier,
-            kStaticBackward * voltageMultiplier
-        )
         setMotorPowers(powers[0], powers[1])
     }
 
