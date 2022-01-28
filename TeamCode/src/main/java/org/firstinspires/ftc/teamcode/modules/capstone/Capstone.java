@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 public class Capstone extends Module <Capstone.State> {
     public Arm capstoneArm;
+    public Claw capstoneClaw;
     public enum State implements StateBuilder {
         READY,
         PICKING_UP,
@@ -38,6 +39,7 @@ public class Capstone extends Module <Capstone.State> {
 
     public void internalInit() {
         capstoneArm = new Arm(hardwareMap);
+        capstoneClaw = new Claw(hardwareMap);
         setNestedModules(capstoneArm);
     }
 
@@ -46,13 +48,15 @@ public class Capstone extends Module <Capstone.State> {
         switch (getState()) {
             case READY:
                 capstoneArm.ready();
+                capstoneClaw.openClaw();
                 break;
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
-                        capstoneArm.hold();
+                        capstoneClaw.closeClaw();
                         break;
                     case TRANSIT_IN:
+                        capstoneArm.hold();
                         break;
                     case IN:
                         setState(State.HOLDING);
@@ -78,6 +82,7 @@ public class Capstone extends Module <Capstone.State> {
                 break;
             case CAPPING:
                 capstoneArm.cap();
+                capstoneClaw.openClaw();
                 break;
         }
 

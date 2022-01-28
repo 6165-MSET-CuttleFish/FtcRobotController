@@ -6,20 +6,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
  * @author Sreyash Das Sarma
  */
 @Config
-public class Slides extends Module<Slides.State> {
-    public enum State implements StateBuilder {
-        TRANSIT_IN (0.5),
-        IN(1),
-        TRANSIT_OUT(1),
-        OUT(0.4),
-        HALF(0.2);
+public class Claw extends Module<Claw.State> {
+    protected enum State implements StateBuilder {
+        TRANSIT_OPEN (1.4),
+        OPEN(0.5),
+        TRANSIT_CLOSE(0.75),
+        CLOSE(0.1);
         final double time;
         State(double time) {
             this.time = time;
@@ -27,7 +25,7 @@ public class Slides extends Module<Slides.State> {
 
         @Override
         public double getTimeOut() {
-            return time;
+            return 0;
         }
 
         @Override
@@ -35,16 +33,15 @@ public class Slides extends Module<Slides.State> {
             return 0;
         }
     }
-
-    Servo slide;
+    Servo claw;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Slides(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IN);
+    public Claw(HardwareMap hardwareMap) {
+        super(hardwareMap, State.CLOSE);
     }
 
     /**
@@ -52,72 +49,62 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void internalInit() {
-        slide = hardwareMap.servo.get("capstoneLowerLift");
+        claw = hardwareMap.servo.get("capstoneArm");
     }
 
-    /**w
+    /**
      * This function updates all necessary controls in a loop
      */
     @Override
     public void internalUpdate() {
         switch (getState()) {
-            case TRANSIT_IN:
+            case TRANSIT_CLOSE:
                 if (getTimeSpentInState() > getState().time) {
-                    setState(Slides.State.IN);
+                    setState(State.CLOSE);
                 }
-            case IN:
-                in();
+            case CLOSE:
+                close();
                 break;
-            case TRANSIT_OUT:
+            case TRANSIT_OPEN:
                 if (getTimeSpentInState() > getState().time) {
-                    setState(Slides.State.OUT);
+                    setState(State.OPEN);
                 }
-            case OUT:
-                out();
+            case OPEN:
+                open();
                 break;
-            case HALF:
-                halfCase();
-                break;
-
         }
     }
 
-    private void out() {
-        slide.setPosition(0);
+    private void open() {
+        claw.setPosition(0);
+    }
+    /**
+     * Return platform to rest
+     */
+    private void close() {
+        claw.setPosition(0.4);
     }
 
-    private void halfCase() {
-        slide.setPosition(0.05);
+    public void openClaw(){
+        if (getState() != State.OPEN) setState(State.TRANSIT_OPEN);
     }
-
-    public static double inPos = 0.25;
-
-    private void in() {
-        slide.setPosition(inPos);
+    public void closeClaw(){
+        if (getState() != State.CLOSE) setState(State.TRANSIT_CLOSE);
     }
-
-    public void pickUp() {
-        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
-    }
-
-    public void dropDown() {
-        if (getState() != State.IN) setState(State.TRANSIT_IN);
-    }
-
-    public void half() {
-        if (getState() != State.HALF) setState(State.HALF);
-    }
-
+    /**
+     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
+     */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
+        return getState() == State.TRANSIT_CLOSE || getState() == Claw.State.TRANSIT_OPEN;
     }
+
     /**
      * @return Whether the module is currently in a hazardous state
      */
     @Override
     public boolean isModuleInternalHazardous() {
-        return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
+        return false;
     }
 
 }
