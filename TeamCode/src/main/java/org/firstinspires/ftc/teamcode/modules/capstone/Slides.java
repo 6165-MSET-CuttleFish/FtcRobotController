@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Module to collect the team marker at the start of the match
@@ -14,6 +13,11 @@ import org.jetbrains.annotations.Nullable;
  */
 @Config
 public class Slides extends Module<Slides.State> {
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     public enum State implements StateBuilder {
         TRANSIT_IN (0.5),
         IN(1),
@@ -26,13 +30,8 @@ public class Slides extends Module<Slides.State> {
         }
 
         @Override
-        public double getTimeOut() {
+        public Double getTimeOut() {
             return time;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
         }
     }
 

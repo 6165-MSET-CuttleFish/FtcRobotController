@@ -6,6 +6,8 @@ import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
 import com.example.meepmeepsequences.util.geometry.Circle
+import com.example.meepmeepsequences.util.geometry.flip
+import com.example.meepmeepsequences.util.geometry.polarAdd
 
 object FrequentPositions {
     @JvmStatic

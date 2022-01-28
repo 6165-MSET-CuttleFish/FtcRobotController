@@ -12,7 +12,7 @@ object Context {
     @JvmField
     var side = Side.NONE
     val futurePose: Pose2d
-        get() = robotPose.plus(poseVelocity)
+        get() = robotPose + poseVelocity
     @JvmField
     var location = Detector.Location.LEFT
 

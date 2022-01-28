@@ -7,6 +7,7 @@ import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.Robot.getLevel
+import com.example.meepmeepsequences.util.geometry.flip
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
@@ -15,11 +16,11 @@ import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityCon
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 
 class BasicPaths {
-    fun colorSchemeVariable() = if (alliance == Alliance.BLUE) ColorSchemeBlueDark() else ColorSchemeRedDark()
-    val capstone = Capstone()
-    val deposit = Deposit()
+    private fun colorSchemeVariable() = if (alliance == Alliance.BLUE) ColorSchemeBlueDark() else ColorSchemeRedDark()
+    private val capstone = Capstone()
+    private val deposit = Deposit()
     val intake = Intake()
-    val carousel = Carousel()
+    private val carousel = Carousel()
     fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED

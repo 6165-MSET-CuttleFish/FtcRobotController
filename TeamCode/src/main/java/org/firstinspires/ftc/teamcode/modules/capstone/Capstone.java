@@ -5,11 +5,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 
-import androidx.annotation.Nullable;
-
 public class Capstone extends Module <Capstone.State> {
     public Slides capstoneSlides;
     public Arm capstoneArm;
+
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     public enum State implements StateBuilder {
         READY,
         PICKING_UP,
@@ -18,13 +22,8 @@ public class Capstone extends Module <Capstone.State> {
         CAPPING;
 
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 

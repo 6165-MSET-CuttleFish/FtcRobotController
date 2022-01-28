@@ -16,18 +16,18 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     public enum State implements StateBuilder {
         ON,
         IDLE;
 
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 

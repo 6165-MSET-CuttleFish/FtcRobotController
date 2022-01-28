@@ -40,12 +40,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 2.1
     }
-    enum class State(override val timeOut: Double, override val percentMotion: Double = 0.0) : StateBuilder {
-        OUT(0.0, 1.0),
+    enum class State(override val timeOut: Double? = null) : StateBuilder {
+        OUT,
         TRANSFER(0.8),
-        IN(0.0, 0.0),
-        CREATE_CLEARANCE(0.3, 0.7),
-        COUNTER_BALANCE(0.0, 0.5),
+        IN,
+        CREATE_CLEARANCE,
+        COUNTER_BALANCE,
     }
 
     private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
@@ -87,7 +87,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     override fun isDoingInternalWork(): Boolean {
-        return state != State.IN && state != State.CREATE_CLEARANCE && state != State.COUNTER_BALANCE && state != State.TRANSFER
+        return state == State.OUT || state == State.TRANSFER
     }
 
     /**
@@ -119,7 +119,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if (Platform.isLoaded || timeSpentInState > state.timeOut) {
+                if (Platform.isLoaded || timeSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -191,4 +191,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private fun slidesIn() {
         extensionServos.position = inPosition
     }
+
+    override fun isTransitioningState(): Boolean = extensionServos.isTransitioning || flip.isTransitioning
 }

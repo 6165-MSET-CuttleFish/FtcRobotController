@@ -40,8 +40,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
          */
         protected set(value) {
             if (state == value) return
-            incrementPosition = value.percentMotion > state.percentMotion
-            previousEstimatedPosition = currentEstimatedPosition
             elapsedTime.reset()
             previousState = state
             _state = value
@@ -51,10 +49,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      */
     protected val timeSpentInState
         get() = elapsedTime.seconds()
-
-    private val timeOut: Double
-        get() = abs(previousState.percentMotion - state.percentMotion) * totalMotionDuration
-    protected fun hasExceededTimeOut(): Boolean = timeSpentInState > timeOut
 
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
@@ -67,25 +61,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
                 module.isDebugMode = value
             }
         }
-
-    /// Position estimating
-    /**
-     * Whether the current state is above or below the previous state
-     */
-    private var incrementPosition = true
-    /**
-     * @return previous position as a percentage of the [totalMotionDuration]
-     */
-    var previousEstimatedPosition = 0.0
-        private set
-    /**
-     * @return current position as a percentage of the [totalMotionDuration]
-     */
-    var currentEstimatedPosition: Double = 0.0
-        private set
-        get() =
-            if (incrementPosition) Range.clip(previousEstimatedPosition + timeSpentInState / totalMotionDuration, previousState.percentMotion, state.percentMotion)
-            else Range.clip(previousEstimatedPosition - timeSpentInState / totalMotionDuration, state.percentMotion, previousState.percentMotion)
 
     /**
      * This function initializes all necessary hardware modules
@@ -110,7 +85,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
         }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
-        Context.packet.put(javaClass.simpleName + " Position", currentEstimatedPosition)
     }
 
     /**
@@ -174,5 +148,5 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * @return Whether the module is currently transitioning between states
      */
-     open fun isTransitioningState(): Boolean = !hasExceededTimeOut()
+    abstract fun isTransitioningState(): Boolean
 }

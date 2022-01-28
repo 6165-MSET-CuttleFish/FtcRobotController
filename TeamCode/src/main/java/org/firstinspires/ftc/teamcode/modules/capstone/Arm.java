@@ -12,6 +12,11 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
  */
 @Config
 public class Arm extends Module<Arm.State> {
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     protected enum State implements StateBuilder {
         TRANSIT_IN (1.4),
         IN(0.5),
@@ -27,13 +32,8 @@ public class Arm extends Module<Arm.State> {
         }
 
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return 0.0;
         }
     }
     Servo arm;

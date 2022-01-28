@@ -38,8 +38,6 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         RELOCALIZING, IDLE;
 
         override val timeOut = 0.0
-
-        override val percentMotion = 0.0
     }
 
     override fun internalUpdate() {
@@ -90,4 +88,5 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     override fun internalInit(){}
+    override fun isTransitioningState(): Boolean = false
 }

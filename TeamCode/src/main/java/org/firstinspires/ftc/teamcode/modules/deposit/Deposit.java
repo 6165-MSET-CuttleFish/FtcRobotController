@@ -28,6 +28,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
     public static double allowableDepositError = 4;
+    public static double angle = Math.toRadians(30);
 
     @Override
     public boolean isTransitioningState() {
@@ -52,13 +53,8 @@ public class Deposit extends Module<Deposit.State> {
             return dist;
         }
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 
