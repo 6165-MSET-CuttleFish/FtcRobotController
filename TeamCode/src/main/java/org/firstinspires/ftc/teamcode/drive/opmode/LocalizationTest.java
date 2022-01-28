@@ -37,6 +37,9 @@ public class LocalizationTest extends LinearOpMode {
             if (gamepad1.right_bumper) {
                 robot.setPoseEstimate(new Pose2d());
             }
+            telemetry.addData("Velo", robot.getPoseVelocity().getX());
+            telemetry.addData("Heading Velo", Math.toDegrees(robot.getPoseVelocity().getHeading()));
+            telemetry.update();
         }
     }
 }

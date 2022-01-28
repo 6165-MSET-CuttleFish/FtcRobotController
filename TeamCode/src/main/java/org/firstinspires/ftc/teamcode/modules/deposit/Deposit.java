@@ -27,6 +27,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL3 = 12.8;
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
+    public static boolean resetEncoder = false;
     public static double allowableDepositError = 4;
     public static double angle = Math.toRadians(30);
 
@@ -61,7 +62,7 @@ public class Deposit extends Module<Deposit.State> {
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.6,0,0.001);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0.001);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -128,13 +129,13 @@ public class Deposit extends Module<Deposit.State> {
             super.setState(State.IDLE);
         }
         double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
-        if (getState() == State.IDLE) {
-            if (getTimeSpentInState() > 0.8) { // anti-stall code
+        if (getState() == State.IDLE && getTimeSpentInState() < 2.7 && resetEncoder) {
+            if (getTimeSpentInState() > 2.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                power = 0;
-            } else if (getTimeSpentInState() <= 0.8) {
-                power = -0.7;
+                power = -0.0;
+            } else if (getTimeSpentInState() <= 2.5) {
+                power = -1;
             }
         }
         slides.setPower(power);

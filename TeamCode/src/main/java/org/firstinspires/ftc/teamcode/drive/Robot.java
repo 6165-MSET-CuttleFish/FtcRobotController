@@ -501,7 +501,7 @@ public class Robot extends ImprovedTankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v * 1.03092783505);
+            leftMotor.setPower(v);
         }
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);
@@ -531,7 +531,7 @@ public class Robot extends ImprovedTankDrive {
         // expected). This bug does NOT affect orientation.
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return (double) -imu.getAngularVelocity().xRotationRate;
+        return (double) imu.getAngularVelocity().xRotationRate;
     }
 
     @Override

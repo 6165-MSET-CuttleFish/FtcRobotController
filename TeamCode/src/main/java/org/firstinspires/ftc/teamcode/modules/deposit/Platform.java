@@ -20,7 +20,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.25;
+    public static double outPosition3 = 0.3;
     public static double outPosition2 = 0.15;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.4;
