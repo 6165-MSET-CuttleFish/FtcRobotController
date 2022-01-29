@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 
 @TeleOp
 public class CapstoneTest extends ModuleTest {
@@ -14,12 +15,13 @@ public class CapstoneTest extends ModuleTest {
 
     @Override
     public void initialize() {
-        capstone=new Capstone(hardwareMap);
+        //capstone=new Capstone(hardwareMap);
+        wrist = hardwareMap.servo.get("capstoneWrist");
     }
 
     @Override
     public void update() {
-        if(gamepad1.a){
+        /*if(gamepad1.a){
             capstone.ready();
         }else if (gamepad1.b){
             capstone.pickUp();
@@ -28,5 +30,9 @@ public class CapstoneTest extends ModuleTest {
         }else if (gamepad1.y){
             capstone.cap();
         }
+         */
+        ControllableServos servoSet= new ControllableServos(wrist);
+        servoSet.init(0);
+        servoSet.lock();
     }
 }
