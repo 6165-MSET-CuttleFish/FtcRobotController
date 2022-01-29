@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 
 public class Capstone extends Module <Capstone.State> {
-    public Slides capstoneSlides;
+    public Claw capstoneClaw;
     public Arm capstoneArm;
 
     @Override
@@ -35,9 +35,9 @@ public class Capstone extends Module <Capstone.State> {
     }
 
     public void internalInit() {
-        capstoneSlides = new Slides(hardwareMap);
+        capstoneClaw = new Claw(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
-        setNestedModules(capstoneArm, capstoneSlides);
+        setNestedModules(capstoneArm, capstoneClaw);
     }
 
     @Override
@@ -49,38 +49,38 @@ public class Capstone extends Module <Capstone.State> {
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
-                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                        if (capstoneClaw.getState() == Claw.State.OUT) {
                             capstoneArm.hold();
                         }
-                        capstoneSlides.pickUp();
+                        capstoneClaw.pickUp();
                         break;
                     case TRANSIT_IN:
                         break;
                     case IN:
-                        if (capstoneSlides.getState() == Slides.State.IN) {
+                        if (capstoneClaw.getState() == Claw.State.IN) {
                             setState(State.HOLDING);
                         }
-                        capstoneSlides.dropDown();
+                        capstoneClaw.dropDown();
                 }
                 break;
             case HOLDING:
                 capstoneArm.hold();
                 if (capstoneArm.getState() == Arm.State.IN) {
-                    capstoneSlides.dropDown();
+                    capstoneClaw.dropDown();
                 }
                 break;
             case PRECAP:
                 switch (capstoneArm.getState()) {
                     case IN:
-                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                        if (capstoneClaw.getState() == Claw.State.OUT) {
                             capstoneArm.preCap();
                         }
-                        capstoneSlides.pickUp();
+                        capstoneClaw.pickUp();
                     case TRANSIT_OUT:
                         break;
                     case OUT:
-                        capstoneSlides.half();
-                        if (capstoneSlides.getState() == Slides.State.HALF) {
+                        capstoneClaw.half();
+                        if (capstoneClaw.getState() == Claw.State.HALF) {
                             setState(State.CAPPING);
                         }
                         break;

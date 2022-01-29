@@ -16,7 +16,7 @@ public class CapstoneTest extends ModuleTest {
     @Override
     public void initialize() {
         //capstone=new Capstone(hardwareMap);
-        wrist = hardwareMap.servo.get("capstoneWrist");
+        claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CapstoneTest extends ModuleTest {
             capstone.cap();
         }
          */
-        ControllableServos servoSet= new ControllableServos(wrist);
+        ControllableServos servoSet= new ControllableServos(claw);
         servoSet.init(0);
         servoSet.lock();
     }

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
  * @author Sreyash Das Sarma
  */
 @Config
-public class Slides extends Module<Slides.State> {
+public class Claw extends Module<Claw.State> {
     @Override
     public boolean isTransitioningState() {
         return false;
@@ -35,14 +35,14 @@ public class Slides extends Module<Slides.State> {
         }
     }
 
-    Servo slide;
+    Servo claw;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Slides(HardwareMap hardwareMap) {
+    public Claw(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
     }
 
@@ -51,7 +51,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public void internalInit() {
-        slide = hardwareMap.servo.get("capstoneLowerLift");
+        claw = hardwareMap.servo.get("capstoneLowerLift");
     }
 
     /**w
@@ -62,14 +62,14 @@ public class Slides extends Module<Slides.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 if (getTimeSpentInState() > getState().time) {
-                    setState(Slides.State.IN);
+                    setState(Claw.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
                 if (getTimeSpentInState() > getState().time) {
-                    setState(Slides.State.OUT);
+                    setState(Claw.State.OUT);
                 }
             case OUT:
                 out();
@@ -82,17 +82,17 @@ public class Slides extends Module<Slides.State> {
     }
 
     private void out() {
-        slide.setPosition(0);
+        claw.setPosition(0);
     }
 
     private void halfCase() {
-        slide.setPosition(0.05);
+        claw.setPosition(0.4);
     }
 
     public static double inPos = 0.25;
 
     private void in() {
-        slide.setPosition(inPos);
+        claw.setPosition(inPos);
     }
 
     public void pickUp() {
@@ -116,7 +116,7 @@ public class Slides extends Module<Slides.State> {
      */
     @Override
     public boolean isModuleInternalHazardous() {
-        return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
+        return getState() == Claw.State.OUT || getState() == Claw.State.TRANSIT_OUT;
     }
 
 }
