@@ -26,15 +26,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 0.9
         @JvmField
-        var intakeLimit = 13.0
-        @JvmField
-        var transferLimit = 18.5
+        var intakeLimit = 10.0
         @JvmField
         var outPosition = 0.27
         @JvmField
         var inPosition = 0.0
         @JvmField
-        var midPosition = 0.16
+        var midPosition = 0.22
         @JvmField
         var extensionPositionPerSecond = 0.5
         @JvmField
@@ -119,7 +117,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if (Platform.isLoaded || timeSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Platform.isLoaded && timeSpentInState > (state.timeOut?.div(2) ?: 0.0)) || timeSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power

@@ -55,6 +55,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 
@@ -361,6 +362,7 @@ public class Robot extends ImprovedTankDrive {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
             Context.robotPose = getPoseEstimate();
+            Context.poseVelocity = Objects.requireNonNull(getPoseVelocity());
         }
         for (Module module : modules) {
             module.update();

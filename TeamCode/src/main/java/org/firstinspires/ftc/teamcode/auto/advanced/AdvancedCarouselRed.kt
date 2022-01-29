@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import kotlin.Throws
 
+@Autonomous
 class AdvancedCarouselRed : LinearOpMode() {
     lateinit var robot: Robot
     lateinit var deposit: Deposit

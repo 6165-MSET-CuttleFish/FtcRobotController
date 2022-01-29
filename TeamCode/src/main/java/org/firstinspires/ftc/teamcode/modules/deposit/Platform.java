@@ -12,7 +12,10 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -28,10 +31,10 @@ public class Platform extends Module<Platform.State> {
     public static double inPosition = 0.94;
     public static double higherInPosition = 0.85;
     public static double lockPosition = 0.23;
-    public static double unlockPosition = 0.5;
+    public static double unlockPosition = 0.4;
     public static double timeDiffBalance = 0.5;
     public static double blockDistanceTolerance = 8;
-    public static double dumpServoPositionPerSecond = 3;
+    public static double dumpServoPositionPerSecond = 6;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9;
@@ -75,7 +78,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap, Intake intake, Deposit deposit) {
-        super(hardwareMap, State.IN, new Pose2d(), 0.7);
+        super(hardwareMap, opModeType == OpModeType.AUTO ? State.LOCKING : State.IN, new Pose2d(), 0.7);
         this.intake = intake;
         this.deposit = deposit;
     }
@@ -96,6 +99,7 @@ public class Platform extends Module<Platform.State> {
         flipIn();
         tiltIn();
         unlock();
+        if (opModeType == OpModeType.AUTO) lock();
     }
 
     /**
@@ -110,6 +114,7 @@ public class Platform extends Module<Platform.State> {
         }
         switch (getState()) {
             case IN:
+                unlock();
                 tiltIn();
                 flipIn();
                 if (isLoaded) {
@@ -132,7 +137,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case LOCKING:
                 lock();
-                if (getTimeSpentInState() > getState().timeOut && getState() == State.LOCKING) {
+                if (getTimeSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
                     prepPlatform(deposit.getDefaultState());
                 }
                 break;
