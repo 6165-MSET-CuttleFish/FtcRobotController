@@ -50,6 +50,6 @@ class Carousel : Module() {
 
 abstract class Module {
     fun isDoingWork(): Boolean {
-        return true;
+        return true
     }
 }

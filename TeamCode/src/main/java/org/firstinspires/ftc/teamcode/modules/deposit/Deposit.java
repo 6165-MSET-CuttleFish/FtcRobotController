@@ -23,11 +23,14 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
-    public static boolean farDeposit;
+    public static boolean farDeposit = true;
+    public static boolean allowLift = true;
     public static double LEVEL3 = 12.8;
     public static double LEVEL2 = 5;
     public static double LEVEL1 = 0;
+    public static boolean resetEncoder = false;
     public static double allowableDepositError = 4;
+    public static double angle = Math.toRadians(30);
 
     @Override
     public boolean isTransitioningState() {
@@ -52,20 +55,15 @@ public class Deposit extends Module<Deposit.State> {
             return dist;
         }
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 
     DcMotorEx slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(3,0,0.001);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0.001);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -132,13 +130,13 @@ public class Deposit extends Module<Deposit.State> {
             super.setState(State.IDLE);
         }
         double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
-        if (getState() == State.IDLE) {
-            if (getTimeSpentInState() > 0.5) { // anti-stall code
+        if (getState() == State.IDLE && getTimeSpentInState() < 2.7 && resetEncoder) {
+            if (getTimeSpentInState() > 2.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                power = 0;
-            } else if (getTimeSpentInState() <= 0.5) {
-                power = -0.7;
+                power = -0.0;
+            } else if (getTimeSpentInState() <= 2.5) {
+                power = -1;
             }
         }
         slides.setPower(power);
@@ -152,8 +150,10 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Context.packet.put("Target Height", getState().getDist());
+        Context.packet.put("Target Height", pidController.getTargetPosition());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+        Context.packet.put("Deposit Motor Power", power);
+        Context.packet.put("Lift Error", getLastError());
     }
 
     public double getLastError() {

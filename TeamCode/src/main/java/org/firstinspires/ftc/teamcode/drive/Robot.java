@@ -6,8 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.modules.wrappers.UltrasonicDistanceSensor;
+import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -23,7 +22,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -57,6 +55,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 
@@ -93,7 +92,7 @@ public class Robot extends ImprovedTankDrive {
     private final Detector detector = new Detector();
     private final double pitchOffset;
     public static double div = 1;
-    public static double headingSpeed = 1.4;
+    public static double headingSpeed = 2;
 
     final HardwareMap hardwareMap;
 
@@ -102,12 +101,12 @@ public class Robot extends ImprovedTankDrive {
     public Deposit deposit;
     public Carousel carousel;
     public Capstone capstone;
+    private Relocalizer relocalizer;
 
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
-    private UltrasonicDistanceSensor frontDistance, leftDistance, rightDistance;
 
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
 
@@ -151,13 +150,33 @@ public class Robot extends ImprovedTankDrive {
         for (LynxModule module : allHubs) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-//        frontDistance = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
-//        leftDistance = hardwareMap.get(Rev2mDistanceSensor.class, "leftDistance");
-//        rightDistance = hardwareMap.get(Rev2mDistanceSensor.class, "rightDistance");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
+
+        // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
+        // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
+        //
+        //             | +Z axis
+        //             |
+        //             |
+        //             |
+        //      _______|_____________     +Y axis
+        //     /       |_____________/|__________
+        //    /   REV / EXPANSION   //
+        //   /       / HUB         //
+        //  /_______/_____________//
+        // |_______/_____________|/
+        //        /
+        //       / +X axis
+        //
+        // This diagram is derived from the axes in section 3.4 https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
+        // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
+        //
+        // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
+        // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+
         DcMotorEx
                 leftFront = hardwareMap.get(DcMotorEx.class, "fl"), //
                 leftRear = hardwareMap.get(DcMotorEx.class, "bl"), //
@@ -193,7 +212,7 @@ public class Robot extends ImprovedTankDrive {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
-        for (DcMotorEx motor : rightMotors) {
+        for (DcMotorEx motor : leftMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
@@ -331,18 +350,9 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
-    public static double frontDistanceSensorOffset = 8;
-    public static double horizontalDistanceSensorOffset = 8;
 
     public void correctPosition() {
-        double frontDist = frontDistance.getDistance();
-        double horizontalDist = alliance == Alliance.BLUE ? leftDistance.getDistance() : rightDistance.getDistance();
-        double rightWallX = 70.5;
-        double bottomWallY = alliance == Alliance.BLUE ? 70.5 : -70.5;
-        double heading = getPoseEstimate().getHeading();
-        double x = rightWallX - frontDist * Math.cos(heading) - frontDistanceSensorOffset;
-        double y =  bottomWallY - horizontalDist * Math.cos(heading) - horizontalDistanceSensorOffset;
-        setPoseEstimate(new Pose2d(x, y, heading));
+        setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
     public void update() {
@@ -352,6 +362,7 @@ public class Robot extends ImprovedTankDrive {
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
             Context.robotPose = getPoseEstimate();
+            Context.poseVelocity = Objects.requireNonNull(getPoseVelocity());
         }
         for (Module module : modules) {
             module.update();
@@ -473,7 +484,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        double pitch = getPitch();
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
@@ -485,14 +496,14 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        double pitch = getPitch();
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
     @Override
     public void setMotorPowers(double v, double v1) {
         for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v * 1.03092783505);
+            leftMotor.setPower(v);
         }
         for (DcMotorEx rightMotor : rightMotors) {
             rightMotor.setPower(v1);
@@ -517,30 +528,12 @@ public class Robot extends ImprovedTankDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        // TODO: This must be changed to match your configuration
-        //                           | Z axis
-        //                           |
-        //     (Motor Port Side)     |   / X axis
-        //                       ____|__/____
-        //          Y axis     / *   | /    /|   (IO Side)
-        //          _________ /______|/    //      I2C
-        //                   /___________ //     Digital
-        //                  |____________|/      Analog
-        //
-        //                 (Servo Port Side)
-        //
-        // The positive x axis points toward the USB port(s)
-        //
-        // Adjust the axis rotation rate as necessary
-        // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
-        // flat on a surface
-
         // To work around an SDK bug, use -zRotationRate in place of xRotationRate
         // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
         // expected). This bug does NOT affect orientation.
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return (double) -imu.getAngularVelocity().xRotationRate;
+        return (double) imu.getAngularVelocity().xRotationRate;
     }
 
     @Override

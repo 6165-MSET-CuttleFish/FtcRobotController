@@ -298,6 +298,9 @@ class TrajectorySequenceBuilder(
         return this.splineTo(vector2d, endTangent)
     }
 
+    /**
+     * @param reference closest vector to the wanted location in the event that there are 2 intersections to the circle
+     */
     fun splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
         val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
         return this.splineTo(endPose ?: reference, endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center))

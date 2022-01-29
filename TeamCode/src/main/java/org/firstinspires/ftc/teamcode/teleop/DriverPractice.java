@@ -62,6 +62,7 @@ public class DriverPractice extends LinearOpMode {
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
+        Deposit.farDeposit = true;
         waitForStart();
         while (opModeIsActive()) {
             robot.update();
@@ -73,7 +74,7 @@ public class DriverPractice extends LinearOpMode {
                     0,
                     -gamepad1.right_stick_x
             );
-            if (ninjaMode.isDown()) drivePower = drivePower.div(3);
+            if (ninjaMode.isDown()) drivePower = drivePower.times(0.75);
             robot.setWeightedDrivePower(drivePower);
             setIntake();
             setDeposit();

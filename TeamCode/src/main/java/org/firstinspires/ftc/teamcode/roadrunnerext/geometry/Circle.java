@@ -18,4 +18,8 @@ public class Circle {
     public double getRadius() {
         return radius;
     }
+
+    public Circle expandedRadius(double radiusOffset) {
+        return new Circle(center, radius + radiusOffset);
+    }
 }

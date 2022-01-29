@@ -5,11 +5,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 
-import androidx.annotation.Nullable;
-
 public class Capstone extends Module <Capstone.State> {
+    public Slides capstoneSlides;
     public Arm capstoneArm;
-    public Claw capstoneClaw;
+
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     public enum State implements StateBuilder {
         READY,
         PICKING_UP,
@@ -18,19 +22,12 @@ public class Capstone extends Module <Capstone.State> {
         CAPPING;
 
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 
     /**
-     * Constructor which calls the 'init' function
-     *
      * @param hardwareMap  instance of the hardware map provided by the OpMode
      */
     public Capstone(HardwareMap hardwareMap) {
@@ -38,9 +35,9 @@ public class Capstone extends Module <Capstone.State> {
     }
 
     public void internalInit() {
+        capstoneSlides = new Slides(hardwareMap);
         capstoneArm = new Arm(hardwareMap);
-        capstoneClaw = new Claw(hardwareMap);
-        setNestedModules(capstoneArm);
+        setNestedModules(capstoneArm, capstoneSlides);
     }
 
     @Override
@@ -48,32 +45,44 @@ public class Capstone extends Module <Capstone.State> {
         switch (getState()) {
             case READY:
                 capstoneArm.ready();
-                capstoneClaw.openClaw();
                 break;
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
                     case OUT:
-                        capstoneClaw.closeClaw();
+                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                            capstoneArm.hold();
+                        }
+                        capstoneSlides.pickUp();
                         break;
                     case TRANSIT_IN:
-                        capstoneArm.hold();
                         break;
                     case IN:
-                        setState(State.HOLDING);
+                        if (capstoneSlides.getState() == Slides.State.IN) {
+                            setState(State.HOLDING);
+                        }
+                        capstoneSlides.dropDown();
                 }
                 break;
             case HOLDING:
                 capstoneArm.hold();
+                if (capstoneArm.getState() == Arm.State.IN) {
+                    capstoneSlides.dropDown();
+                }
                 break;
             case PRECAP:
                 switch (capstoneArm.getState()) {
                     case IN:
-                        capstoneArm.preCap();
+                        if (capstoneSlides.getState() == Slides.State.OUT) {
+                            capstoneArm.preCap();
+                        }
+                        capstoneSlides.pickUp();
                     case TRANSIT_OUT:
                         break;
                     case OUT:
-                        setState(State.CAPPING);
-
+                        capstoneSlides.half();
+                        if (capstoneSlides.getState() == Slides.State.HALF) {
+                            setState(State.CAPPING);
+                        }
                         break;
                     case CAP:
                         capstoneArm.preCap();
@@ -82,7 +91,6 @@ public class Capstone extends Module <Capstone.State> {
                 break;
             case CAPPING:
                 capstoneArm.cap();
-                capstoneClaw.openClaw();
                 break;
         }
 
@@ -92,7 +100,7 @@ public class Capstone extends Module <Capstone.State> {
     /**
      * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
      */
-    public void pickUp(){
+    public void pickUp() {
         setState(State.PICKING_UP);
     }
     public void preCap() {

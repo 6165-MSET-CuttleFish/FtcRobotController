@@ -1,9 +1,7 @@
-package com.example.meepmeepsequences.util
+package com.example.meepmeepsequences.util.geometry
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.example.meepmeepsequences.util.geometry.Coordinate
-import com.example.meepmeepsequences.util.geometry.Line
 
 
 fun Pose2d.toInches(): Pose2d {

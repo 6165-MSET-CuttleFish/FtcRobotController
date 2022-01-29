@@ -4,9 +4,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
-import com.example.meepmeepsequences.util.geometry.Circle
-import com.example.meepmeepsequences.util.geometry.Coordinate
-import com.example.meepmeepsequences.util.geometry.Line
+import com.example.meepmeepsequences.util.geometry.*
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
@@ -17,7 +15,7 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
 fun TrajectorySequenceBuilder.waitWhile(condition: () -> Boolean): TrajectorySequenceBuilder {
-    return this.waitSeconds(0.5)
+    return this.waitSeconds(0.3)
 }
 
 fun TrajectorySequenceBuilder.splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
@@ -89,7 +87,7 @@ fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
         .setDimensions(17.2, 17.192913)
-        .setConstraints(70.0, 60.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 15.0)
+        .setConstraints(90.0, 90.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
 }
 
 fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {

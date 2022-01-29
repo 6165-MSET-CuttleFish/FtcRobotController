@@ -43,8 +43,6 @@ abstract class ImprovedTankDrive constructor(
         override var poseEstimate: Pose2d
             get() = _poseEstimate
             set(value) {
-                xFilter.setState(value.x)
-                yFilter.setState(value.y)
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
                 if (useExternalHeading) drive.externalHeading = value.heading
@@ -55,11 +53,6 @@ abstract class ImprovedTankDrive constructor(
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
         private val timer = ElapsedTime()
-        private val xFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
-        private val yFilter = KalmanFilter(0.0, 0.1, 0.4, 1.0, 1.0, 0.0, 1.0)
-        private val t265Localizer = T265Localizer(1.0)
-        private val isOverPoles: Boolean
-            get() = abs(Math.toDegrees(drive.getPitch())) > 5 && integrateUsingPosition
 
         private fun odoPoseDelta(wheelPositions: List<Double>, extHeading: Double) : Pose2d {
             if (lastWheelPositions.isEmpty() || wheelPositions.isEmpty()) return Pose2d()
@@ -79,22 +72,12 @@ abstract class ImprovedTankDrive constructor(
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
-            var odoPoseEst = _poseEstimate
-            var t265PoseEst = _poseEstimate
             val odoDelta = odoPoseDelta(wheelPositions, extHeading)
 
-            odoPoseEst = Kinematics.relativeOdometryUpdate(
-                odoPoseEst,
+            _poseEstimate = Kinematics.relativeOdometryUpdate(
+                _poseEstimate,
                 odoDelta
             )
-            _poseEstimate = odoPoseEst
-
-            if (isOverPoles) {
-                val headingOffset =  extHeading - t265Localizer.poseEstimate.heading
-                val t265Delta = (t265Localizer.translation).vec().rotated(headingOffset).toPose(Angle.normDelta(extHeading - lastExtHeading)) // rotate the delta
-                t265PoseEst = Kinematics.relativeOdometryUpdate(t265PoseEst, t265Delta)
-                _poseEstimate = Pose2d(xFilter.update(t265PoseEst.x, odoPoseEst.x), yFilter.update(t265PoseEst.y, t265PoseEst.y), t265PoseEst.heading)
-            }
 
             val wheelVelocities = drive.getWheelVelocities()
             val extHeadingVel = drive.getExternalHeadingVelocity()
@@ -131,13 +114,6 @@ abstract class ImprovedTankDrive constructor(
             kV * voltageMultiplier,
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
-        )
-        if (powers[0] < 0 && powers[1] < 0) powers = Kinematics.calculateMotorFeedforward(
-            velocities,
-            accelerations,
-            kVBackward * voltageMultiplier,
-            kABackward * voltageMultiplier,
-            kStaticBackward * voltageMultiplier
         )
         setMotorPowers(powers[0], powers[1])
     }

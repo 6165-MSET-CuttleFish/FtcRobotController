@@ -18,7 +18,7 @@ public class DepositTest extends ModuleTest {
     Deposit deposit;
     GamepadEx primary;
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
-    ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement;
+    ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement, farDeposit;
 
     @Override
     public void initialize() {
@@ -30,7 +30,8 @@ public class DepositTest extends ModuleTest {
                 levelDecrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 levelIncrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_UP),
                 tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER)
+                tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X)
         );
     }
 
@@ -46,7 +47,7 @@ public class DepositTest extends ModuleTest {
             Platform.isLoaded = true;
             deposit.platform.prepPlatform(deposit.getDefaultState());
         }
-        if (gamepad1.x) {
+        if (farDeposit.wasJustPressed()) {
             Deposit.farDeposit = !Deposit.farDeposit;
         }
         if (gamepad1.a) {

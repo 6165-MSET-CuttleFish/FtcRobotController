@@ -15,17 +15,12 @@ public class SampleModuleOpMode extends ModuleTest {
     KeyReader keyReader;
     @Override
     public void initialize() {
-        module = new Module<StateBuilder>(hardwareMap, new StateBuilder() {
+        module = new Module<StateBuilder>(hardwareMap, () -> null) {
             @Override
-            public double getTimeOut() {
-                return 0;
+            public boolean isTransitioningState() {
+                return false;
             }
 
-            @Override
-            public double getPercentMotion() {
-                return 0;
-            }
-        }) {
             @Override
             public void internalInit() {
 

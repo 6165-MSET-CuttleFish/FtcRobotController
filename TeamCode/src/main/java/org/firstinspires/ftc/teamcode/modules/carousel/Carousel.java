@@ -8,8 +8,6 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
-import androidx.annotation.Nullable;
-
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
@@ -18,22 +16,22 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  * @author Apoorva Talwalkar
  */
 public class Carousel extends Module<Carousel.State> {
+    @Override
+    public boolean isTransitioningState() {
+        return false;
+    }
+
     public enum State implements StateBuilder {
         ON,
         IDLE;
 
         @Override
-        public double getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public double getPercentMotion() {
-            return 0;
+        public Double getTimeOut() {
+            return null;
         }
     }
 
-    CRServo duckyR, duckyL;
+    CRServo ducky;
 
     /**
      * Constructor which calls the 'init' function
@@ -48,28 +46,23 @@ public class Carousel extends Module<Carousel.State> {
      */
     @Override
     public void internalInit() {
-        duckyR = hardwareMap.crservo.get("duckyR");
-        duckyL = hardwareMap.crservo.get("duckyL");
-        duckyL.setDirection(DcMotorSimple.Direction.REVERSE);
-        duckyR.setDirection(DcMotorSimple.Direction.REVERSE);
+        ducky = hardwareMap.crservo.get("ducky");
+        ducky.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void setPower(double power) {
-        duckyR.setPower(power);
-        duckyL.setPower(power);
+        ducky.setPower(power);
     }
 
     public void on() {
         double power = opModeType == OpModeType.AUTO ? 0.75 : 1;
         if (alliance == Alliance.BLUE) power = -power;
-        duckyR.setPower(power);
-        duckyL.setPower(power);
+        ducky.setPower(power);
         setState(State.ON);
     }
 
     public void off() {
-        duckyR.setPower(0);
-        duckyL.setPower(0);
+        ducky.setPower(0);
         setState(State.IDLE);
     }
 

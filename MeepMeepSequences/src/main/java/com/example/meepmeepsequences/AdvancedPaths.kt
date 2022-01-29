@@ -7,30 +7,25 @@ import com.example.meepmeepsequences.util.*
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
-import com.example.meepmeepsequences.util.Context.windowSize
 import com.example.meepmeepsequences.util.FrequentPositions.allianceHub
 import com.example.meepmeepsequences.util.FrequentPositions.barcode
 import com.example.meepmeepsequences.util.FrequentPositions.carouselVec
-import com.example.meepmeepsequences.util.FrequentPositions.cycleDumpPosition
-import com.example.meepmeepsequences.util.FrequentPositions.duckLocation
-import com.example.meepmeepsequences.util.FrequentPositions.dumpPosition
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.geometry.Line
+import com.example.meepmeepsequences.util.geometry.flip
+import com.example.meepmeepsequences.util.geometry.polarAdd
 import com.noahbres.meepmeep.MeepMeep
-import com.noahbres.meepmeep.MeepMeep.Background
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
-import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
-import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder
 
 class AdvancedPaths {
-    fun colorSchemeVariable() = if (alliance == Alliance.BLUE) ColorSchemeBlueDark() else ColorSchemeRedDark()
-    val capstone = Capstone()
-    val deposit = Deposit()
-    val intake = Intake()
-    val carousel = Carousel()
+    private fun colorSchemeVariable() = if (alliance == Alliance.BLUE) ColorSchemeBlueDark() else ColorSchemeRedDark()
+    private val capstone = Capstone()
+    private val deposit = Deposit()
+    private val intake = Intake()
+    private val carousel = Carousel()
     fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
@@ -96,7 +91,7 @@ class AdvancedPaths {
     }
 
     fun cyclingPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
-        side = Side.CAROUSEL
+        side = Side.CYCLING
         alliance = if (blue) Alliance.BLUE else Alliance.RED
         return DefaultBotBuilder(meepMeep)
             .setColorScheme(colorSchemeVariable()) // Set theme
@@ -105,40 +100,35 @@ class AdvancedPaths {
                 val trajectoryBuilder =
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
-                        .capstoneReady(capstone)
-                        .splineToVectorOffset(barcode[1].vec().flip(blue), Pose2d(14.0, -8.0), (Math.PI / 2 + barcode[1].heading).flip(blue))
-                        .capstonePickup(capstone)
-                        .liftUp(deposit, Robot.getLevel(location))
-                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                        .splineToCircle(allianceHub, Line.yAxis(-33.0).flip(blue), Vector2d(1.0, -30.0).flip(blue))
+//                        .capstoneReady(capstone)
+//                        .splineToVectorOffset(barcode[1].vec().flip(blue), Pose2d(14.0, -8.0), (Math.PI / 2 + barcode[1].heading).flip(blue))
+//                        .capstonePickup(capstone)
+//                        .liftUp(deposit, Robot.getLevel(location))
+//                        .waitWhile(capstone::isDoingWork) // capstone loaded
+                        .splineToCircle(allianceHub.expandedRadius(9.0), Line.yAxis(-48.0).flip(blue), Vector2d(1.0, -30.0).flip(blue))
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                for (i in 1..7)
+                for (i in 1..9)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                             intake.setPower(1.0)
                         }
-                        .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
-                        //.increaseGains()
-                        .splineToConstantHeading(Vector2d(28.0, -40.0).flip(blue), 0.0)
-                        .defaultGains()
-                        .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
-                        .splineTo(Vector2d(50.0 + 5 * Math.random(), -45.0).flip(blue), Math.toRadians(-30.0 - 20 * Math.random()).flip(blue))
+                        .splineTo(Vector2d(20.0, -60.0).flip(blue), 0.0)
+                        .splineToConstantHeading(Vector2d(28.0, -60.0).flip(blue), 0.0)
+                        .splineTo(Vector2d(40.0 + i, -60.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
                         .setReversed(true)
                         .intakeOff(intake)
-                        .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
-                        //.increaseGains()
-                        .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
-                        .defaultGains()
+                        .splineTo(Vector2d(39.0, -60.0).flip(blue), Math.PI)
+                        .splineToConstantHeading(Vector2d(20.0, -60.0).flip(blue), Math.PI)
                         .liftUp(deposit, Deposit.State.LEVEL3)
-                        .splineToCircle(allianceHub, Line.yAxis(-33.0 - 0.5*i.toDouble().flip(blue)).flip(blue), Vector2d(12.0, -24.0).flip(blue))
+                        .splineToCircle(allianceHub.expandedRadius(9.0), Line.yAxis(-48.0).flip(blue), Vector2d(12.0, -24.0).flip(blue))
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
                 trajectoryBuilder
-                    .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
-                    .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
+                    .splineTo(Vector2d(20.0, -60.0).flip(blue), 0.0)
+                    .splineToConstantHeading(Vector2d(39.0, -60.0).flip(blue), 0.0)
                     .build()
             }
     }
