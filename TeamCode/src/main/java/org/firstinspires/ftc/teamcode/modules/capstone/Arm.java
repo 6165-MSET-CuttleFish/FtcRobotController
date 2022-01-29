@@ -93,18 +93,19 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        wrist.setPosition(0.5);
+        wrist.setPosition(1);
         arm.setPosition(outPos);
     }
     /**
      * Return platform to rest
      */
     private void in() {
-        wrist.setPosition(0.5);
+        wrist.setPosition(1);
         arm.setPosition(inPos);
     }
     private void preCapPos() {
         arm.setPosition(preCap);
+        wrist.setPosition(0);
     }
     public static double preCap = 0.1;
     public static double capPos = 0.075;

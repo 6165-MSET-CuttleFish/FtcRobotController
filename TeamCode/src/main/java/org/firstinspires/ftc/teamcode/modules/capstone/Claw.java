@@ -82,7 +82,7 @@ public class Claw extends Module<Claw.State> {
      * Return platform to rest
      */
     private void close() {
-        claw.setPosition(0.4);
+        claw.setPosition(0.45);
     }
 
     public void openClaw(){
