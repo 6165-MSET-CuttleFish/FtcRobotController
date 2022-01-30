@@ -12,11 +12,14 @@ public class CapstoneTest extends ModuleTest {
     Servo wrist, arm,claw;
     boolean open=true;
     Capstone capstone;
+    ControllableServos servoSet;
 
     @Override
     public void initialize() {
         //capstone=new Capstone(hardwareMap);
         claw = hardwareMap.servo.get("capstoneClaw");
+        servoSet= new ControllableServos(claw);
+        servoSet.init(0.0);
     }
 
     @Override
@@ -31,8 +34,10 @@ public class CapstoneTest extends ModuleTest {
             capstone.cap();
         }
          */
-        ControllableServos servoSet= new ControllableServos(claw);
-        servoSet.init(0);
-        servoSet.lock();
+        if(gamepad1.a) {
+            servoSet.lock();
+        }
+        telemetry.addData("",servoSet.getPosition());
+        telemetry.update();
     }
 }
