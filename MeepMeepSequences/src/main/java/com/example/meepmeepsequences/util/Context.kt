@@ -8,7 +8,7 @@ object Context {
     @JvmField
     var poseVelocity = Pose2d()
     @JvmField
-    var alliance = Alliance.NONE
+    var alliance =Alliance.NONE
     @JvmField
     var side = Side.NONE
     val futurePose: Pose2d
