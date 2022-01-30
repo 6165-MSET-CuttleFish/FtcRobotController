@@ -51,7 +51,7 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public void internalInit() {
-        claw = hardwareMap.servo.get("capstoneLowerLift");
+        claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     /**w
@@ -82,24 +82,26 @@ public class Claw extends Module<Claw.State> {
     }
 
     private void out() {
-        claw.setPosition(0);
-    }
-
-    private void halfCase() {
         claw.setPosition(0.4);
     }
 
-    public static double inPos = 0.25;
+    private void halfCase() {
+        claw.setPosition(0);
+    }
+
+    public static double inPos = 0;
 
     private void in() {
         claw.setPosition(inPos);
     }
-
-    public void pickUp() {
+    public void ready(){
+        out();
+    }
+    public void dropDown() {
         if (getState() != State.OUT) setState(State.TRANSIT_OUT);
     }
 
-    public void dropDown() {
+    public void pickUp() {
         if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
 

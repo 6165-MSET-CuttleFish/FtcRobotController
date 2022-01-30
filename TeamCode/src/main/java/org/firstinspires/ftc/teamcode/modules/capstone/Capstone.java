@@ -48,19 +48,20 @@ public class Capstone extends Module <Capstone.State> {
                 break;
             case PICKING_UP:
                 switch (capstoneArm.getState()) {
-                    case OUT:
-                        if (capstoneClaw.getState() == Claw.State.OUT) {
-                            capstoneArm.hold();
-                        }
-                        capstoneClaw.pickUp();
-                        break;
-                    case TRANSIT_IN:
-                        break;
-                    case IN:
-                        if (capstoneClaw.getState() == Claw.State.IN) {
-                            setState(State.HOLDING);
-                        }
-                        capstoneClaw.dropDown();
+                        case OUT:
+                            if (capstoneClaw.getState() == Claw.State.OUT) {
+                                capstoneArm.hold();
+                            }
+                            capstoneClaw.pickUp();
+                            break;
+                        case TRANSIT_IN:
+                            capstoneClaw.pickUp();
+                            break;
+                        case IN:
+                            if (capstoneClaw.getState() == Claw.State.IN) {
+                                setState(State.HOLDING);
+                            }
+                            capstoneClaw.dropDown();
                 }
                 break;
             case HOLDING:
@@ -118,7 +119,9 @@ public class Capstone extends Module <Capstone.State> {
     public boolean isDoingInternalWork() {
         return false;
     }
-
+    public boolean checker(){
+        return (capstoneArm.getState() == Arm.State.IN);
+    }
     @Override
     public boolean isModuleInternalHazardous() {
         return false;

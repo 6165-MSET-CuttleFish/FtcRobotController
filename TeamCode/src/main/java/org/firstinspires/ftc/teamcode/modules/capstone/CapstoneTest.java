@@ -16,28 +16,30 @@ public class CapstoneTest extends ModuleTest {
 
     @Override
     public void initialize() {
-        //capstone=new Capstone(hardwareMap);
-        claw = hardwareMap.servo.get("capstoneClaw");
-        servoSet= new ControllableServos(claw);
-        servoSet.init(0.0);
+        capstone=new Capstone(hardwareMap);
+        //claw = hardwareMap.servo.get("capstoneClaw");
     }
 
     @Override
     public void update() {
-        /*if(gamepad1.a){
+        if(gamepad1.a){
+            telemetry.addData("State","ready");
             capstone.ready();
         }else if (gamepad1.b){
+            telemetry.addData("State","pickup");
             capstone.pickUp();
         }else if (gamepad1.x){
+            telemetry.addData("State","precap");
             capstone.preCap();
         }else if (gamepad1.y){
+            telemetry.addData("State","cap");
             capstone.cap();
         }
-         */
+        /*
         if(gamepad1.a) {
             servoSet.lock();
         }
-        telemetry.addData("",servoSet.getPosition());
+         */
         telemetry.update();
     }
 }
