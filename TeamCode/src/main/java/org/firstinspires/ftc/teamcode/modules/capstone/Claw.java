@@ -43,7 +43,7 @@ public class Claw extends Module<Claw.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Claw(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IN);
+        super(hardwareMap, State.OUT);
     }
 
     /**
@@ -86,13 +86,11 @@ public class Claw extends Module<Claw.State> {
     }
 
     private void halfCase() {
-        claw.setPosition(0);
+        claw.setPosition(0.2);
     }
 
-    public static double inPos = 0;
-
     private void in() {
-        claw.setPosition(inPos);
+        claw.setPosition(0);
     }
     public void ready(){
         out();
@@ -102,7 +100,9 @@ public class Claw extends Module<Claw.State> {
     }
 
     public void pickUp() {
-        if (getState() != State.IN) setState(State.TRANSIT_IN);
+        if (getState() != State.IN) {
+            setState(State.TRANSIT_IN);
+        }
     }
 
     public void half() {
