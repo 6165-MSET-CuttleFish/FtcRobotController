@@ -6,11 +6,11 @@ import com.qualcomm.robotcore.util.Range
 import kotlin.math.round
 
 class ControllableServos(vararg servos: Servo) {
-    var timer = ElapsedTime()
+    private var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
-    var previousPosition = 0.0
+    private var previousPosition = 0.0
     var positionPerSecond = 0.7
-    var incrementingPosition = true
+    private var incrementingPosition = true
     private var initted = false
     val realPosition: Double
         get() = round((if (incrementingPosition) Range.clip(

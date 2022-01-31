@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto.advanced
 
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -67,13 +68,18 @@ class CyclingBlue : LinearOpMode() {
                 }
                 .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
                 .splineToConstantHeading(Vector2d(28.0, -55.0).flip(blue), 0.0)
-                .splineTo(Vector2d(45.0 + i, -55.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
+                .splineTo(Vector2d(45.0, -55.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
                 .setReversed(true)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, -55.0).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(20.0, -55.0).flip(blue), Math.PI)
                 .liftUp(deposit, Deposit.State.LEVEL3)
-                .splineToCircle(allianceHub.expandedRadius(8.0), Line.yAxis(-48.0).flip(blue), Vector2d(12.0, -24.0).flip(blue))
+                .splineToCircle(
+                    allianceHub.expandedRadius(8.0),
+                    Line.yAxis(-50.0).flip(blue),
+                    Vector2d(12.0, -24.0).flip(blue),
+                    Pose2d(0.0, 0.0, Math.toRadians(-30.0)).flip(blue)
+                )
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
@@ -91,7 +97,11 @@ class CyclingBlue : LinearOpMode() {
 //                        .capstonePickup(capstone)
 //                        .liftUp(deposit, Robot.getLevel(location))
 //                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineToCircle(allianceHub.expandedRadius(8.0), Line.yAxis(-48.0).flip(blue), Vector2d(1.0, -30.0).flip(blue))
+                .splineToCircle(
+                    allianceHub.expandedRadius(6.0),
+                    Line.yAxis(-48.0).flip(blue),
+                    Vector2d(1.0, -30.0).flip(blue),
+                    Pose2d(0.0, 0.0, Math.toRadians(-30.0)).flip(blue))
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition

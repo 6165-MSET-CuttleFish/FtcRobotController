@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
-import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /**
  * Frontal mechanism for collecting freight
@@ -24,11 +23,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var raisedPosition = 0.18
         @JvmField
-        var loweredPosition = 0.9
+        var loweredPosition = 0.92
         @JvmField
-        var intakeLimit = 10.0
+        var intakeLimit = 8.0
         @JvmField
-        var outPosition = 0.27
+        var outPosition = 0.39
         @JvmField
         var inPosition = 0.0
         @JvmField
@@ -107,7 +106,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.IN -> {
                 retract()
-                if (!flip.isTransitioning && !extensionServos.isTransitioning && previousState == State.OUT) {
+                if (!isTransitioningState() && previousState == State.OUT) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
@@ -159,7 +158,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun counterBalance() {
-        if (Context.opModeType != OpModeType.AUTO) state = State.COUNTER_BALANCE
+        state = State.COUNTER_BALANCE
     }
 
     fun retractIntake() {
