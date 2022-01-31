@@ -37,9 +37,20 @@ class CarouselPath {
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
                 trajectoryBuilder
-                    .splineTo(Vector2d(-60.0, -60.0).flip(blue), 0.0)
-                    .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
+                    .splineToCircle(allianceHub, Line.yAxis(-45.0).flip(blue), Vector2d(-14.0, -43.0).flip(blue))
+                    .waitWhile(deposit::isDoingWork)
+                    .setReversed(false)
+                    .splineTo(carouselVec.center.polarAdd(carouselVec.radius, Math.toRadians(40.0).flip(blue)), carouselVec.center)
+                    .waitWhile(carousel::isDoingWork)
+                    .setReversed(true)
+                    .splineTo(Vector2d(-59.0, -35.0).flip(blue), Math.toRadians(90.0).flip(blue))
                     .build()
             }
     }
 }
+/*
+        .setReversed(true)
+                    .splineTo(Vector2d(-53.0, -50.0).flip(blue), Math.toRadians(0.0).flip(blue))
+                    .splineTo(Vector2d(-30.0, -57.0).flip(blue), Math.toRadians(0.0).flip(blue))
+                    .splineToConstantHeading(Vector2d(39.0, -57.0).flip(blue), 0.0)
+                    */
