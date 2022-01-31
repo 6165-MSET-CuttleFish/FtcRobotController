@@ -116,7 +116,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if ((Platform.isLoaded && timeSpentInState > (state.timeOut?.div(2) ?: 0.0)) || timeSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power

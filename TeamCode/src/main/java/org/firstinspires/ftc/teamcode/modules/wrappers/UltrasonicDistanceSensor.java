@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
@@ -13,13 +11,13 @@ import androidx.annotation.Nullable;
 
 @Config
 public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.State> {
-    //AnalogInput analogInput;
-    DigitalChannel digitalInput;
-    //public static double inchesPerVolt = 72.8834; //512
-    public double distance;
+    DigitalChannel digitalChannel;
+    private double distance;
+    public static double constant = 7.40525e-5 / 2.0;
 
     public enum State implements StateBuilder {
-        SENDING,
+        SENDING_LOW,
+        SENDING_HIGH,
         RECEIVING;
 
         @Nullable
@@ -34,27 +32,38 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
         return false;
     }
 
-    //inches = 72.8834 * volts + 0.178
-
     public UltrasonicDistanceSensor(HardwareMap hardwareMap, String deviceName) {
-        super(hardwareMap, State.SENDING);
-        //analogInput = hardwareMap.analogInput.get(deviceName);
-        digitalInput = hardwareMap.digitalChannel.get(deviceName);
+        super(hardwareMap, State.SENDING_LOW);
+        digitalChannel = hardwareMap.digitalChannel.get(deviceName);
     }
     @Override
     public void internalInit() {
+        digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
+        digitalChannel.setState(false);
     }
-
 
     protected void internalUpdate() {
         switch (getState()) {
-            case SENDING:
-                if (digitalInput.getState()) {
-                    distance = getTimeSpentInState() * 330;
+            case SENDING_LOW:
+                digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
+                digitalChannel.setState(false);
+                if (getMicrosecondsSpentInState() > 2) {
+                    setState(State.SENDING_HIGH);
+                }
+                break;
+            case SENDING_HIGH:
+                digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
+                digitalChannel.setState(true);
+                if (getMicrosecondsSpentInState() > 10) {
                     setState(State.RECEIVING);
                 }
+                break;
             case RECEIVING:
-                setState(State.SENDING);
+                digitalChannel.setMode(DigitalChannel.Mode.INPUT);
+                if (digitalChannel.getState()) {
+                    distance = getMillisecondsSpentInState() * constant;
+                    setState(State.SENDING_LOW);
+                }
                 break;
         }
     }
@@ -69,8 +78,11 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
         return false;
     }
 
+    /**
+     *
+     * @return distance in inches
+     */
     public double getDistance() {
-
         return distance;
     }
 }

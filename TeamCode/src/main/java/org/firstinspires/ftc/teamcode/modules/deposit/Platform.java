@@ -135,7 +135,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case LOCKING:
                 lock();
-                if (getTimeSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
+                if (getSecondsSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
                     prepPlatform(deposit.getDefaultState());
                 }
                 break;
@@ -163,7 +163,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 intake.retractIntake();
-                if (getTimeSpentInState() > getState().timeOut) {
+                if (getSecondsSpentInState() > getState().timeOut) {
                     setState(State.IN);
                     isLoaded = false;
                 }

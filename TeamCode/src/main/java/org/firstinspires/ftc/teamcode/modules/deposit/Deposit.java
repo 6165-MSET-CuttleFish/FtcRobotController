@@ -130,12 +130,12 @@ public class Deposit extends Module<Deposit.State> {
             super.setState(State.IDLE);
         }
         double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
-        if (getState() == State.IDLE && getTimeSpentInState() < 2.7 && resetEncoder) {
-            if (getTimeSpentInState() > 2.5) { // anti-stall code
+        if (getState() == State.IDLE && getSecondsSpentInState() < 2.7 && resetEncoder) {
+            if (getSecondsSpentInState() > 2.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 power = -0.0;
-            } else if (getTimeSpentInState() <= 2.5) {
+            } else if (getSecondsSpentInState() <= 2.5) {
                 power = -1;
             }
         }
@@ -157,7 +157,7 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public double getLastError() {
-        return getState() != State.IDLE ? pidController.getLastError() : (getTimeSpentInState() > 0.5 ? 0 : 100);
+        return getState() != State.IDLE ? pidController.getLastError() : (getSecondsSpentInState() > 0.5 ? 0 : 100);
     }
 
     /**
