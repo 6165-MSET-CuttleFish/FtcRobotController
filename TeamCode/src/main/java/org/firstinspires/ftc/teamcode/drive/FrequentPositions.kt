@@ -24,7 +24,7 @@ object FrequentPositions {
 
     @JvmStatic
     fun startingPosition(): Pose2d {
-        val regular = if (side == Side.CYCLING) Pose2d(8.2, -58.0, Math.toRadians(-90.0)) else Pose2d(
+        val regular = if (side == Side.CYCLING) Pose2d(8.4389765, -62.22915, Math.toRadians(-90.0)) else Pose2d(
             -36.0,
             -58.0,
             Math.toRadians(-90.0)

@@ -86,7 +86,7 @@ fun TrajectorySequenceBuilder.carouselOff(carousel: Carousel): TrajectorySequenc
 fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
-        .setDimensions(17.2, 17.192913)
+        .setDimensions(16.877953, 16.1417)
         .setConstraints(90.0, 90.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
 }
 
