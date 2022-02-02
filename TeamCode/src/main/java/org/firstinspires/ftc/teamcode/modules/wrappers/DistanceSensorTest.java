@@ -14,6 +14,7 @@ public class DistanceSensorTest extends ModuleTest {
 
     public void update() {
         telemetry.addData("Measured Distance", distanceSensor.getDistance());
+        telemetry.addData("State", distanceSensor.getState());
         telemetry.update();
     }
 }
