@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.State> {
     DigitalChannel digitalChannel;
     private double distance;
-    public static double constant = 13503.9 / 2.0;
+    public static double halfSpeedOfSound = 7.40525e-5 / 2.0;
 
     public enum State implements StateBuilder {
         SENDING_LOW,
@@ -55,14 +55,13 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
                 digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
                 digitalChannel.setState(true);
                 if (getMicrosecondsSpentInState() > 10) {
-                    digitalChannel.setState(false);
                     setState(State.RECEIVING);
                 }
                 break;
             case RECEIVING:
                 digitalChannel.setMode(DigitalChannel.Mode.INPUT);
-                if (!digitalChannel.getState()) {
-                    distance = getMillisecondsSpentInState() * constant;
+                if (digitalChannel.getState()) {
+                    distance = getMillisecondsSpentInState() * halfSpeedOfSound;
                     setState(State.SENDING_LOW);
                 }
                 break;

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 /**
  * Slides that go up to the level for depositing freight
- * @author Martin
+ * @author Ayush Raman
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
@@ -31,11 +32,6 @@ public class Deposit extends Module<Deposit.State> {
     public static boolean resetEncoder = false;
     public static double allowableDepositError = 4;
     public static double angle = Math.toRadians(30);
-
-    @Override
-    public boolean isTransitioningState() {
-        return getLastError() < allowableDepositError;
-    }
 
     public enum State implements StateBuilder {
         LEVEL3(12),
@@ -67,7 +63,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
-    PIDFController pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
+    BPIDFController pidController = new BPIDFController(MOTOR_PID, kV, kA, kStatic);
 
     double lastKv = kV;
     double lastKa = kA;
@@ -97,6 +93,11 @@ public class Deposit extends Module<Deposit.State> {
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    @Override
+    public boolean isTransitioningState() {
+        return getLastError() < allowableDepositError;
     }
 
     private State defaultState = State.LEVEL3;
@@ -148,7 +149,7 @@ public class Deposit extends Module<Deposit.State> {
             lastKp = MOTOR_PID.kP;
             lastKi = MOTOR_PID.kI;
             lastKd = MOTOR_PID.kD;
-            pidController = new PIDFController(MOTOR_PID, kV, kA, kStatic);
+            pidController = new BPIDFController(MOTOR_PID, kV, kA, kStatic);
         }
         Context.packet.put("Target Height", pidController.getTargetPosition());
         Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
@@ -157,7 +158,7 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public double getLastError() {
-        return getState() != State.IDLE ? pidController.getLastError() : (getSecondsSpentInState() > 0.5 ? 0 : 100);
+        return pidController.getLastError();
     }
 
     /**
