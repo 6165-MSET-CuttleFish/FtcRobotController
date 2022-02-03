@@ -87,11 +87,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         return state == State.OUT || state == State.TRANSFER
     }
 
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    public override fun isModuleInternalHazardous() = false
-
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond

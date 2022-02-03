@@ -130,12 +130,4 @@ public class Arm extends Module<Arm.State> {
         return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
     }
 
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
-    }
-
 }

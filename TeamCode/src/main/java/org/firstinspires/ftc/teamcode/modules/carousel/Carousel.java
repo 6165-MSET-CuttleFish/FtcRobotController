@@ -80,12 +80,4 @@ public class Carousel extends Module<Carousel.State> {
     public boolean isDoingInternalWork() {
         return false;
     }
-
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
-    }
 }

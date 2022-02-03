@@ -265,14 +265,6 @@ public class Platform extends Module<Platform.State> {
     private void unlock() {
         lock.setPosition(unlockPosition);
     }
-
-    /**
-     * @return Whether the elapsed time passes set time before module reaches position
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
-    }
   
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for

@@ -111,12 +111,4 @@ public class Slides extends Module<Slides.State> {
     public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
     }
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return getState() == Slides.State.OUT || getState() == Slides.State.TRANSIT_OUT;
-    }
-
 }
