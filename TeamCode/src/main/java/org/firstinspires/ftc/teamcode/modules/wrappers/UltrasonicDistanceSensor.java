@@ -11,9 +11,10 @@ import androidx.annotation.Nullable;
 
 @Config
 public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.State> {
-    DigitalChannel digitalChannel;
+    DigitalChannel trig;
+    DigitalChannel echo;
     private double distance;
-    public static double halfSpeedOfSound = 7.40525e-5 / 2.0;
+    public static double halfSpeedOfSound = 13503.9 / 2.0;
 
     public enum State implements StateBuilder {
         SENDING_LOW,
@@ -32,36 +33,42 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
         return false;
     }
 
-    public UltrasonicDistanceSensor(HardwareMap hardwareMap, String deviceName) {
+    public UltrasonicDistanceSensor(HardwareMap hardwareMap, String outName, String inName) {
         super(hardwareMap, State.SENDING_LOW);
-        digitalChannel = hardwareMap.digitalChannel.get(deviceName);
+        trig = hardwareMap.digitalChannel.get(outName);
+        echo = hardwareMap.digitalChannel.get(inName);
     }
+
     @Override
     public void internalInit() {
-        digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
-        digitalChannel.setState(false);
+        trig.setMode(DigitalChannel.Mode.OUTPUT);
+        echo.setMode(DigitalChannel.Mode.INPUT);
     }
 
     protected void internalUpdate() {
+        trig.setState(false);
         switch (getState()) {
             case SENDING_LOW:
-                digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
-                digitalChannel.setState(false);
+                //trig.setMode(DigitalChannel.Mode.OUTPUT);
+                trig.setState(false);
                 if (getMicrosecondsSpentInState() > 2) {
                     setState(State.SENDING_HIGH);
                 }
                 break;
             case SENDING_HIGH:
-                digitalChannel.setMode(DigitalChannel.Mode.OUTPUT);
-                digitalChannel.setState(true);
+                //trig.setMode(DigitalChannel.Mode.OUTPUT);
+                trig.setState(true);
                 if (getMicrosecondsSpentInState() > 10) {
+                    trig.setState(false);
                     setState(State.RECEIVING);
                 }
                 break;
             case RECEIVING:
-                digitalChannel.setMode(DigitalChannel.Mode.INPUT);
-                if (digitalChannel.getState()) {
-                    distance = getMillisecondsSpentInState() * halfSpeedOfSound;
+                // echo.setMode(DigitalChannel.Mode.INPUT);
+                if (echo.getState()) {
+                    distance = getSecondsSpentInState() * halfSpeedOfSound;
+                    setState(State.SENDING_LOW);
+                } else {
                     setState(State.SENDING_LOW);
                 }
                 break;
@@ -84,5 +91,9 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
      */
     public double getDistance() {
         return distance;
+    }
+
+    public double getMicros() {
+        return getMicrosecondsSpentInState();
     }
 }
