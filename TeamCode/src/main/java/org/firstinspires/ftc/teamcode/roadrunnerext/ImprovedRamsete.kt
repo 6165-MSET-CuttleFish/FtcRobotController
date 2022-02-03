@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import org.firstinspires.ftc.teamcode.roadrunnerext.RamseteConstants.*
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -26,6 +27,7 @@ class ImprovedRamsete @JvmOverloads constructor(
     clock: NanoClock = NanoClock.system(),
 ) : ImprovedTrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
+    override var lastVelocityError: Pose2d? = Pose2d()
 
     private fun sinc(x: Double) =
         if (x epsilonEquals 0.0) {
@@ -49,7 +51,7 @@ class ImprovedRamsete @JvmOverloads constructor(
 
         val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
-        val k1 = 2 * zeta * sqrt(targetOmega * targetOmega + b * targetV * targetV)
+        val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
         val k2 = b
 
@@ -64,7 +66,29 @@ class ImprovedRamsete @JvmOverloads constructor(
         val outOmega = omega + (currentRobotVel?.toMeters()?.let { kHeading * (omega - it.heading) } ?: 0.0)
 
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
-
+        lastVelocityError = currentRobotVel?.toMeters()?.let { Kinematics.calculateRobotPoseError(Pose2d(v, 0.0, omega).toInches(), it.toInches()) }
+        val alternative = calculate(currentPose.toFTCLibPose2d(), targetPose.toFTCLibPose2d(), targetRobotVel.x, targetRobotVel.heading)
         return DriveSignal(Pose2d(outV, 0.0, outOmega).toInches(), targetRobotAccel.toInches())
     }
+        private fun calculate(
+            currentPose: com.arcrobotics.ftclib.geometry.Pose2d?,
+            poseRef: com.arcrobotics.ftclib.geometry.Pose2d,
+            linearVelocityRefMeters: Double,
+            angularVelocityRefRadiansPerSecond: Double
+        ): DriveSignal {
+            val m_poseError = poseRef.relativeTo(currentPose)
+            val eX: Double = m_poseError.translation.x
+            val eY: Double = m_poseError.translation.y
+            val eTheta: Double = m_poseError.rotation.radians
+            val k: Double = 2.0 * zeta * sqrt(
+                    angularVelocityRefRadiansPerSecond.pow(2)
+                ) + b * linearVelocityRefMeters.pow(2)
+            return DriveSignal(
+                Pose2d(
+                    linearVelocityRefMeters * m_poseError.heading + k * eX,
+                    0.0,
+                    angularVelocityRefRadiansPerSecond + k * eTheta + b * linearVelocityRefMeters * sinc(eTheta) * eY
+                ).toInches()
+            )
+        }
 }

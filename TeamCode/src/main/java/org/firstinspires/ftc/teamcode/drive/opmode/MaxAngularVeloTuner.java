@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -39,16 +41,20 @@ public class MaxAngularVeloTuner extends LinearOpMode {
         telemetry.addLine("");
         telemetry.addLine("Press start when ready.");
         telemetry.update();
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         waitForStart();
 
         telemetry.clearAll();
         telemetry.update();
 
-        drive.setDrivePower(new Pose2d(0, 0, 1));
+        drive.setDrivePower(new Pose2d(0, 0, 2));
         timer = new ElapsedTime();
 
         while (!isStopRequested() && timer.seconds() < RUNTIME) {
+            for (LynxModule module : allHubs) {
+                module.clearBulkCache();
+            }
             drive.updatePoseEstimate();
 
             Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
