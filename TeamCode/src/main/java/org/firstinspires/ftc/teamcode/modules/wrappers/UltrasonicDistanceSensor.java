@@ -80,11 +80,6 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
         return false;
     }
 
-    @Override
-    protected boolean isModuleInternalHazardous() {
-        return false;
-    }
-
     /**
      *
      * @return distance in inches
