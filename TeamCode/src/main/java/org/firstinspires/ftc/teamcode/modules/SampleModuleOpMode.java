@@ -35,11 +35,6 @@ public class SampleModuleOpMode extends ModuleTest {
             public boolean isDoingInternalWork() {
                 return false;
             }
-
-            @Override
-            public boolean isModuleInternalHazardous() {
-                return false;
-            }
         };
         keyReader = new ButtonReader(new GamepadEx(gamepad1), GamepadKeys.Button.A);
         setModules(module);

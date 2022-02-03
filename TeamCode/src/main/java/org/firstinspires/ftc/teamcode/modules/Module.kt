@@ -102,15 +102,12 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * @return Whether the module or its nested modules are currently hazardous
      */
-    val isHazardous: Boolean
-        get() {
-            var isHazardous = isModuleInternalHazardous()
+    var isHazardous: Boolean = false
+        set(value) {
+            field = value
             for (module in nestedModules) {
-                if (module.isHazardous) {
-                    isHazardous = true
-                }
+                module.isHazardous = value
             }
-            return isHazardous
         }
 
     /**
@@ -151,11 +148,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * @return Whether the module is currently doing work for which the robot must remain stationary
      */
     protected abstract fun isDoingInternalWork(): Boolean
-
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    protected abstract fun isModuleInternalHazardous(): Boolean
 
     /**
      * @return Whether the module is currently transitioning between states

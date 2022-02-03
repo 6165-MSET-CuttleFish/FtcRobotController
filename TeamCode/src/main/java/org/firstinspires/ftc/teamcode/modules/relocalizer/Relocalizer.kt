@@ -83,10 +83,6 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         return false
     }
 
-    override fun isModuleInternalHazardous(): Boolean {
-        return false
-    }
-
     override fun internalInit() {
         setNestedModules(frontLeftDistance, frontRightDistance, rightDistance, leftDistance)
     }

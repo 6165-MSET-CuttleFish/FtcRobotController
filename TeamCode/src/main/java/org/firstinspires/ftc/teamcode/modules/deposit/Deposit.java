@@ -168,11 +168,6 @@ public class Deposit extends Module<Deposit.State> {
     private static double ticksToInches(double ticks) {
         return ticks / TICKS_PER_INCH;
     }
-    
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
-    }
       
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for

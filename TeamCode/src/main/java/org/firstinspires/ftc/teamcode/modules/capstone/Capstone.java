@@ -118,9 +118,4 @@ public class Capstone extends Module <Capstone.State> {
     public boolean isDoingInternalWork() {
         return false;
     }
-
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
-    }
 }
