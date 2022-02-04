@@ -46,7 +46,7 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         HOLDING(0.1),
-        LOCKING(0.5),
+        LOCKING(0.2),
         DUMPING(0.5),
         OUT1,
         OUT2,

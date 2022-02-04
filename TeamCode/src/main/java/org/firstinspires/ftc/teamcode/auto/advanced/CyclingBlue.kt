@@ -38,7 +38,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var radiusOffset = 5.0
         @JvmField var line = -44.0
         @JvmField var coast = -55.0
-        @JvmField var stop = 54.0
+        @JvmField var stop = 58.0
     }
 
     @Throws(InterruptedException::class)
@@ -76,7 +76,7 @@ class CyclingBlue : LinearOpMode() {
                 }
                 .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
                 .splineToConstantHeading(Vector2d(28.0, coast).flip(blue), 0.0)
-                .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 50 * Math.random()).flip(blue))
+                .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
                 .setReversed(true)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
