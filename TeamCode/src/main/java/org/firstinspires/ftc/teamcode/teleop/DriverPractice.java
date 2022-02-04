@@ -34,6 +34,7 @@ public class DriverPractice extends LinearOpMode {
     Capstone capstone;
 
     Mode mode = Mode.DRIVING;
+    boolean toggleMode;
 
     GamepadEx primary;
     GamepadEx secondary;
@@ -77,6 +78,18 @@ public class DriverPractice extends LinearOpMode {
                     -gamepad1.right_stick_x
             );
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
+            if (gamepad1.left_bumper && gamepad1.right_bumper) {
+                if (!toggleMode) {
+                    if (mode == Mode.DRIVING) {
+                        mode = Mode.ENDGAME;
+                    } else {
+                        mode = Mode.DRIVING;
+                    }
+                }
+                toggleMode = true;
+            } else {
+                toggleMode = false;
+            }
             if (mode == Mode.ENDGAME) {
                 drivePower = new Pose2d();
                 setCapstone();
