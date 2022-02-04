@@ -21,9 +21,9 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.18
+        var raisedPosition = 0.0
         @JvmField
-        var loweredPosition = 0.92
+        var loweredPosition = 0.70
         @JvmField
         var intakeLimit = 8.0
         @JvmField
@@ -66,6 +66,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         // slidesIn()
         extensionServos.init(inPosition)
         // raiseIntake()
+        flip.init(raisedPosition)
         flip.init(raisedPosition)
     }
 

@@ -20,6 +20,7 @@ import kotlin.math.sqrt
  * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param timeout max time to wait for the error to be admissible
  * @param clock clock
+ * @author Ayush Raman
  */
 class ImprovedRamsete @JvmOverloads constructor(
     admissibleError: Pose2d = Pose2d(2.0, 2.0, Math.toRadians(5.0)),
