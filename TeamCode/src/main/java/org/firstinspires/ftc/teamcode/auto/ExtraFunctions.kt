@@ -48,11 +48,11 @@ fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder = UNSTA
 }.resetConstraints()
 
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
-    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {}
 }
 
 fun TrajectorySequenceBuilder.capstonePickup(capstone: Capstone): TrajectorySequenceBuilder {
-    return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::pickUp)
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {}
 }
 
 fun TrajectorySequenceBuilder.dump(deposit: Deposit): TrajectorySequenceBuilder {
