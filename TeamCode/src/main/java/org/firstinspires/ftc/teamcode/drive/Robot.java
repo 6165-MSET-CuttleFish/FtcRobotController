@@ -356,8 +356,10 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void update() {
+        double current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
+            current += module.getCurrent(CurrentUnit.MILLIAMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -368,6 +370,7 @@ public class Robot extends ImprovedTankDrive {
             module.update();
         }
         Context.packet.put("Loop Time", loopTime.milliseconds());
+        Context.packet.put("Total Current", current);
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
