@@ -40,9 +40,11 @@ class CarouselPath {
                     .splineToCircle(allianceHub, Line.yAxis(-45.0).flip(blue), Vector2d(-14.0, -43.0).flip(blue))
                     .waitWhile(deposit::isDoingWork)
                     .setReversed(false)
+                    .splineTo(Vector2d(-47.0,-47.0).flip(blue),Math.toRadians(90.0).flip(blue))
+                    .setReversed(true)
                     .splineTo(carouselVec.center.polarAdd(carouselVec.radius, Math.toRadians(40.0).flip(blue)), carouselVec.center)
                     .waitWhile(carousel::isDoingWork)
-                    .setReversed(true)
+                    .setReversed(false)
                     .splineTo(Vector2d(-59.0, -35.0).flip(blue), Math.toRadians(90.0).flip(blue))
                     .build()
             }

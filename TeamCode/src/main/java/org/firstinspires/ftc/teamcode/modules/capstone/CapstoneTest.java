@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 
@@ -9,38 +10,32 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 
 @TeleOp
 public class CapstoneTest extends ModuleTest {
-    Servo wrist, arm,claw;
-    boolean open=true;
-    Capstone capstone;
-    Claw capstoneClaw;
-    ControllableServos servoSet;
+    Servo turntable, pointer;
+    CRServo tape;
 
     @Override
     public void initialize() {
-        capstone=new Capstone(hardwareMap);
-        capstoneClaw=new Claw(hardwareMap);
-        //claw = hardwareMap.servo.get("capstoneClaw");
+        pointer = hardwareMap.servo.get("capstoneWrist");
+        tape = hardwareMap.crservo.get("capstoneExtension");
+        turntable = hardwareMap.servo.get("capstoneBase");
     }
 
     @Override
     public void update() {
-        if(gamepad1.a){
-            telemetry.addData("State","ready");
+        if(gamepad1.left_bumper){
+            turntable.setPosition((turntable.getPosition()-0.05)%1);
+        }else if(gamepad1.right_bumper){
+            turntable.setPosition((turntable.getPosition()+0.05)%1);
+        }if (gamepad1.x&&pointer.getPosition()<0.5){
+            pointer.setPosition((pointer.getPosition()+0.05));
+        }else if (gamepad1.y&&pointer.getPosition()>0.0){
+            pointer.setPosition((pointer.getPosition()-0.05));
+        }if (gamepad1.a){
+            tape.setPower(0);
         }else if (gamepad1.b){
-            telemetry.addData("State","pickup");
-            capstoneClaw.pickUp();
-        }else if (gamepad1.x){
-            telemetry.addData("State","precap");
-        }else if (gamepad1.y){
-            telemetry.addData("State","cap");
-            capstoneClaw.dropDown();
+            tape.setPower(1);
+        }else {
+            tape.setPower(0.5);
         }
-        /*
-        if(gamepad1.a) {
-            servoSet.lock();
-        }
-         */
-        telemetry.addData("",capstoneClaw.getState());
-        telemetry.update();
     }
 }
