@@ -17,7 +17,7 @@ public class DistanceSensorTest extends ModuleTest {
     public void update() {
         double Vobserved = distanceSensor.getVoltage();
         double Vcc = distanceSensor.getMaxVoltage();
-        double dist =  ((Vobserved / ((Vcc/1024)) * 6)) / 10;
+        double dist =  89.4897 * Vobserved - 12.9012;
         telemetry.addData("Max Voltage", Vcc);
         telemetry.addData("Voltage", Vobserved);
         telemetry.addData("Measured Distance", dist);

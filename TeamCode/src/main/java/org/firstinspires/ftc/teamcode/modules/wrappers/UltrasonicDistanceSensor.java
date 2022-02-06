@@ -15,7 +15,7 @@ public class UltrasonicDistanceSensor extends Module<UltrasonicDistanceSensor.St
     DigitalChannel echo;
     private double distance;
     public static double halfSpeedOfSound = 13503.9 / 2.0;
-
+    //conversion: inches = 89.4897 * volts - 12.9012
     public enum State implements StateBuilder {
         SENDING_LOW,
         SENDING_HIGH,
