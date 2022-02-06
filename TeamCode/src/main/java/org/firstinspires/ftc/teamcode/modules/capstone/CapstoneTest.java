@@ -12,21 +12,23 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 public class CapstoneTest extends ModuleTest {
     Servo turntable, pointer;
     CRServo tape;
-
+    private double turntablepos;
     @Override
     public void initialize() {
         pointer = hardwareMap.servo.get("capstoneWrist");
         tape = hardwareMap.crservo.get("capstoneExtension");
         turntable = hardwareMap.servo.get("capstoneBase");
+        turntable.setPosition(1.0);
     }
 
     @Override
     public void update() {
         telemetry.addData("Turntable", turntable.getPosition());
+        turntablepos=turntable.getPosition();
         if(gamepad1.left_bumper){
-            turntable.setPosition((turntable.getPosition()-0.01));
+            turntable.setPosition((turntablepos-0.01));
         }else if(gamepad1.right_bumper){
-            turntable.setPosition((turntable.getPosition()+0.01));
+            turntable.setPosition((turntablepos+0.01));
         }
         /*if (gamepad1.x&&pointer.getPosition()<0.5){
             pointer.setPosition((pointer.getPosition()+0.05));
