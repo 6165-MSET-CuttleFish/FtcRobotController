@@ -66,6 +66,7 @@ public class TrajectorySequenceRunner {
     private int lastSegmentIndex;
 
     private Pose2d lastPoseError = new Pose2d();
+    private Pose2d lastVelocityError = new Pose2d();
 
     List<TrajectoryMarker> remainingMarkers = new ArrayList<>();
 
@@ -157,6 +158,7 @@ public class TrajectorySequenceRunner {
                 } else {
                     driveSignal = follower.update(poseEstimate, poseVelocity);
                     lastPoseError = follower.getLastError();
+                    lastVelocityError = follower.getLastVelocityError();
                 }
 
                 targetPose = currentTrajectory.get(deltaTime);
@@ -178,6 +180,7 @@ public class TrajectorySequenceRunner {
                 double targetAlpha = targetState.getA();
 
                 lastPoseError = new Pose2d(0, 0, turnController.getLastError());
+                lastVelocityError = new Pose2d(0, 0, turnController.getTargetVelocity() - poseVelocity.getHeading());
 
                 Pose2d startPose = currentSegment.getStartPose();
                 targetPose = startPose.copy(startPose.getX(), startPose.getY(), targetState.getX());
@@ -227,9 +230,18 @@ public class TrajectorySequenceRunner {
         packet.put("y", poseEstimate.getY());
         packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));
 
+        packet.put("xVelocity", poseVelocity.getX());
+        packet.put("yVelocity", poseVelocity.getY());
+        packet.put("headingVelocity (deg)", Math.toDegrees(poseVelocity.getHeading()));
+
         packet.put("xError", getLastPoseError().getX());
         packet.put("yError", getLastPoseError().getY());
         packet.put("headingError (deg)", Math.toDegrees(getLastPoseError().getHeading()));
+
+        assert getLastVelocityError() != null;
+        packet.put("xVelocityError", getLastVelocityError().getX());
+        packet.put("yVelocityError", getLastVelocityError().getY());
+        packet.put("headingVelocityError (deg)", Math.toDegrees(getLastVelocityError().getHeading()));
 
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
@@ -324,6 +336,11 @@ public class TrajectorySequenceRunner {
 
     public Pose2d getLastPoseError() {
         return lastPoseError;
+    }
+
+    @Nullable
+    public Pose2d getLastVelocityError() {
+        return lastVelocityError;
     }
 
     public boolean isBusy() {

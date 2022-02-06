@@ -108,7 +108,7 @@ public class Robot extends ImprovedTankDrive {
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
 
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15,0,0.7);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(19,0,0.6);
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
@@ -356,8 +356,10 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void update() {
+        double current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
+            current += module.getCurrent(CurrentUnit.MILLIAMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -368,6 +370,7 @@ public class Robot extends ImprovedTankDrive {
             module.update();
         }
         Context.packet.put("Loop Time", loopTime.milliseconds());
+        Context.packet.put("Total Current", current);
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));

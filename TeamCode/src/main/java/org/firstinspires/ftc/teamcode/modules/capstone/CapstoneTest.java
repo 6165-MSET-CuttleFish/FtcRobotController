@@ -1,46 +1,48 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImpl;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
+import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 
 @TeleOp
 public class CapstoneTest extends ModuleTest {
-    Servo turntable, pointer;
-    CRServo tape;
-    private double turntablepos;
+    Capstone capstone;
+    Carousel carousel;
+    GamepadEx gamepadEx;
+    ButtonReader incrementVertical, decrementVertical, incrementHorizontal, decrementHorizontal;
     @Override
     public void initialize() {
-        pointer = hardwareMap.servo.get("capstoneWrist");
-        tape = hardwareMap.crservo.get("capstoneExtension");
-        turntable = hardwareMap.servo.get("capstoneBase");
-        turntable.setPosition(1.0);
+        capstone = new Capstone(hardwareMap);
+        carousel = new Carousel(hardwareMap);
+        setModules(capstone, carousel);
+        gamepadEx = new GamepadEx(gamepad1);
+        setKeyReaders(
+                incrementHorizontal = new ButtonReader(gamepadEx, GamepadKeys.Button.DPAD_RIGHT),
+                decrementHorizontal = new ButtonReader(gamepadEx, GamepadKeys.Button.DPAD_LEFT),
+                incrementVertical = new ButtonReader(gamepadEx, GamepadKeys.Button.DPAD_UP),
+                decrementVertical = new ButtonReader(gamepadEx, GamepadKeys.Button.DPAD_DOWN)
+        );
     }
 
     @Override
     public void update() {
-        telemetry.addData("Turntable", turntable.getPosition());
-        turntablepos=turntable.getPosition();
-        if(gamepad1.left_bumper){
-            turntable.setPosition((turntablepos-0.01));
-        }else if(gamepad1.right_bumper){
-            turntable.setPosition((turntablepos+0.01));
+        capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
+        capstone.setVerticalTurret(gamepad1.left_stick_y);
+        capstone.setHorizontalTurret(gamepad1.right_stick_x);
+        carousel.setPower(gamepad2.right_stick_y);
+        if (incrementHorizontal.wasJustPressed()) {
+            capstone.incrementHorizontal(1);
+        } else if (decrementHorizontal.wasJustPressed()) {
+            capstone.incrementHorizontal(-1);
         }
-        /*if (gamepad1.x&&pointer.getPosition()<0.5){
-            pointer.setPosition((pointer.getPosition()+0.05));
-        }else if (gamepad1.y&&pointer.getPosition()>0.0){
-            pointer.setPosition((pointer.getPosition()-0.05));
-        }if (gamepad1.a){
-            tape.setPower(0);
-        }else if (gamepad1.b){
-            tape.setPower(1);
-        }else {
-            tape.setPower(0.5);
-        }*/
-        telemetry.update();
+        if (incrementVertical.wasJustPressed()) {
+            capstone.incrementVertical(1);
+        } else if (decrementVertical.wasJustPressed()) {
+            capstone.incrementVertical(-1);
+        }
     }
 }

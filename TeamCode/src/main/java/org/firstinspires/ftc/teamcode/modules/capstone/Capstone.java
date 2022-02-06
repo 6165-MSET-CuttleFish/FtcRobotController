@@ -1,13 +1,23 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 
-public class Capstone extends Module <Capstone.State> {
-    public Claw capstoneClaw;
-    public Arm capstoneArm;
+@Config
+public class Capstone extends Module<Capstone.State> {
+    public static double servoIncrementHorizontal = 0.0001, servoIncrementVertical = 0.0001;
+    public static double horizontalTolerance = 0.5, verticalTolerance = 0.2;
+    public static double servoIncrementHorizontalLarge = 0.001, servoIncrementVerticalLarge = 0.01;
+    private double horizontalPos = 0.5, verticalPos;
+    private CRServo tape;
+    private Servo verticalTurret, horizontalTurret;
 
     @Override
     public boolean isTransitioningState() {
@@ -35,95 +45,42 @@ public class Capstone extends Module <Capstone.State> {
     }
 
     public void internalInit() {
-        capstoneClaw = new Claw(hardwareMap);
-        capstoneArm = new Arm(hardwareMap);
-        setNestedModules(capstoneArm, capstoneClaw);
+        tape = hardwareMap.crservo.get("tape");
+        tape.setDirection(DcMotorSimple.Direction.REVERSE);
+        horizontalTurret = hardwareMap.servo.get("hTurret");
+        verticalTurret = hardwareMap.servo.get("vTurret");
     }
 
     @Override
     protected void internalUpdate() {
-        switch (getState()) {
-            case READY:
-                capstoneArm.ready();
-                break;
-            case PICKING_UP:
-                switch (capstoneArm.getState()) {
-                        case OUT:
-                            if (capstoneClaw.getState() == Claw.State.OUT) {
-                                capstoneArm.hold();
-                            }
-                            capstoneClaw.pickUp();
-                            break;
-                        case TRANSIT_IN:
-                            capstoneClaw.pickUp();
-                            break;
-                        case IN:
-                            if (capstoneClaw.getState() == Claw.State.IN) {
-                                setState(State.HOLDING);
-                            }
-                            capstoneClaw.dropDown();
-                }
-                break;
-            case HOLDING:
-                capstoneArm.hold();
-                if (capstoneArm.getState() == Arm.State.IN) {
-                    capstoneClaw.dropDown();
-                }
-                break;
-            case PRECAP:
-                switch (capstoneArm.getState()) {
-                    case IN:
-                        if (capstoneClaw.getState() == Claw.State.OUT) {
-                            capstoneArm.preCap();
-                        }
-                        capstoneClaw.pickUp();
-                    case TRANSIT_OUT:
-                        break;
-                    case OUT:
-                        capstoneClaw.half();
-                        if (capstoneClaw.getState() == Claw.State.HALF) {
-                            setState(State.CAPPING);
-                        }
-                        break;
-                    case CAP:
-                        capstoneArm.preCap();
-                        break;
-                }
-                break;
-            case CAPPING:
-                capstoneArm.cap();
-                break;
-        }
-
-
+        verticalPos = Range.clip(verticalPos, 0, 1);
+        horizontalPos = Range.clip(horizontalPos, 0, 1);
     }
 
-    /**
-     * @return Whether the module is currently in a potentially hazardous state for autonomous to resume
-     */
-    public void pickUp() {
-        setState(State.PICKING_UP);
+    public void setHorizontalTurret(double pwr) {
+        if (pwr > horizontalTolerance) horizontalPos += servoIncrementHorizontal;
+        else if (pwr < -horizontalTolerance) horizontalPos -= servoIncrementHorizontal;
+        horizontalTurret.setPosition(horizontalPos);
     }
-    public void preCap() {
-        setState(State.PRECAP);
+    public void incrementHorizontal(double pwr) {
+        if (pwr > horizontalTolerance) horizontalPos += servoIncrementHorizontalLarge;
+        else if (pwr < -horizontalTolerance) horizontalPos -= servoIncrementHorizontalLarge;
+        horizontalTurret.setPosition(horizontalPos);
     }
-    public void cap() {
-        if (getState() == State.PRECAP) setState(State.CAPPING);
+    public void incrementVertical(double pwr) {
+        if (pwr > -verticalTolerance) verticalPos += servoIncrementVerticalLarge;
+        else if (pwr < verticalTolerance) verticalPos -= servoIncrementVerticalLarge;
+        verticalTurret.setPosition(verticalPos);
     }
-    public void ready() {
-        setState(State.READY);
+    public void setVerticalTurret(double pwr) {
+        if (pwr < -verticalTolerance) verticalPos += servoIncrementVertical;
+        else if (pwr > verticalTolerance) verticalPos -= servoIncrementVertical;
+        verticalTurret.setPosition(verticalPos);
     }
-    public void hold() {
-        setState(State.HOLDING);
+    public void setTape(double pwr) {
+        tape.setPower(pwr);
     }
     public boolean isDoingInternalWork() {
-        return false;
-    }
-    public boolean checker(){
-        return (capstoneArm.getState() == Arm.State.IN);
-    }
-    @Override
-    public boolean isModuleInternalHazardous() {
         return false;
     }
 }

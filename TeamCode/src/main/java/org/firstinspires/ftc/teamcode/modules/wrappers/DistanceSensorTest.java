@@ -1,26 +1,26 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
 public class DistanceSensorTest extends ModuleTest {
-    UltrasonicDistanceSensor distanceSensor;
+    AnalogInput distanceSensor;
     @Override
     public void initialize() {
-        distanceSensor = new UltrasonicDistanceSensor(hardwareMap, "distance");
+        distanceSensor = hardwareMap.analogInput.get("ultra");
+//        setModules(distanceSensor);
     }
 
-    @Override
     public void update() {
-        double distance = distanceSensor.getDistance();
-        if(gamepad1.a){
-            telemetry.addData("Distance", distance);
-            telemetry.addData("Voltage", distanceSensor.analogInput.getVoltage());
-            telemetry.update();
-        }
-
+        double Vobserved = distanceSensor.getVoltage();
+        double Vcc = distanceSensor.getMaxVoltage();
+        double dist =  ((Vobserved / ((Vcc/1024)) * 6)) / 10;
+        telemetry.addData("Max Voltage", Vcc);
+        telemetry.addData("Voltage", Vobserved);
+        telemetry.addData("Measured Distance", dist);
+        telemetry.update();
     }
 }

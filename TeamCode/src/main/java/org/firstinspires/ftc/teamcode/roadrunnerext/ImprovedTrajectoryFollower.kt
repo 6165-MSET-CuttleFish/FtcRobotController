@@ -39,6 +39,12 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
         protected set
 
     /**
+     * Robot velocity error computed in the last [update] call.
+     */
+    abstract var lastVelocityError: Pose2d?
+        protected set
+
+    /**
      * Follow the given [trajectory].
      */
     open fun followTrajectory(trajectory: Trajectory) {

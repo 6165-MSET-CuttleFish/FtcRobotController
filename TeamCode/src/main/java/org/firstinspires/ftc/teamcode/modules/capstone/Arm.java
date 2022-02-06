@@ -62,14 +62,14 @@ public class Arm extends Module<Arm.State> {
     public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (getTimeSpentInState() > getState().time) {
+                if (getSecondsSpentInState() > getState().time) {
                     setState(State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (getTimeSpentInState() > getState().time) {
+                if (getSecondsSpentInState() > getState().time) {
                     setState(State.OUT);
                 }
             case OUT:
@@ -77,14 +77,14 @@ public class Arm extends Module<Arm.State> {
                 break;
             case PRECAP:
                 preCapPos();
-                if (getTimeSpentInState() > getState().time) {
+                if (getSecondsSpentInState() > getState().time) {
                     // setState(State.CAPOFFSET);
                 }
             case CAPOFFSET:
                 break;
             case CAP:
                 capPos();
-                if (getTimeSpentInState() > getState().time) {
+                if (getSecondsSpentInState() > getState().time) {
                     // setState(State.IDLE);
                 }
                 break;
@@ -133,14 +133,6 @@ public class Arm extends Module<Arm.State> {
     @Override
     public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_IN || getState() == Arm.State.TRANSIT_OUT;
-    }
-
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
     }
 
 }

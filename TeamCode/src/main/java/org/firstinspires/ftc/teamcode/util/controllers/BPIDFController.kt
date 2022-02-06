@@ -25,10 +25,10 @@ class BPIDFController
  */
 @JvmOverloads constructor(
     private val pid: PIDCoefficients,
-    private val integralBand: Double = Double.POSITIVE_INFINITY,
     private val kV: Double = 0.0,
     private val kA: Double = 0.0,
     private val kStatic: Double = 0.0,
+    private val integralBand: Double = Double.POSITIVE_INFINITY,
     private val kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
     private val clock: NanoClock = NanoClock.system()
 ) {

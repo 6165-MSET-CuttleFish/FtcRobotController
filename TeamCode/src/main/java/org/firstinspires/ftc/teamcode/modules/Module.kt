@@ -47,8 +47,20 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * The time spent in the current state in seconds
      */
-    protected val timeSpentInState
+    protected val secondsSpentInState
         get() = elapsedTime.seconds()
+
+    /**
+     * The time spent in the current state in milliseconds
+     */
+    protected val millisecondsSpentInState
+        get() = elapsedTime.milliseconds()
+
+    /**
+     * The time spent in the current state in microseconds
+     */
+    protected val microsecondsSpentInState
+        get() = millisecondsSpentInState * 1000
 
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
@@ -90,15 +102,12 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * @return Whether the module or its nested modules are currently hazardous
      */
-    val isHazardous: Boolean
-        get() {
-            var isHazardous = isModuleInternalHazardous()
+    var isHazardous: Boolean = false
+        set(value) {
+            field = value
             for (module in nestedModules) {
-                if (module.isHazardous) {
-                    isHazardous = true
-                }
+                module.isHazardous = value
             }
-            return isHazardous
         }
 
     /**
@@ -139,11 +148,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * @return Whether the module is currently doing work for which the robot must remain stationary
      */
     protected abstract fun isDoingInternalWork(): Boolean
-
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    protected abstract fun isModuleInternalHazardous(): Boolean
 
     /**
      * @return Whether the module is currently transitioning between states

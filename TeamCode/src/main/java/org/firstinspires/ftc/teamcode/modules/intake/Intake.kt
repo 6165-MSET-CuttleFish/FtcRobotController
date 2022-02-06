@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
-import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /**
  * Frontal mechanism for collecting freight
@@ -22,13 +21,13 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
     companion object {
         @JvmField
-        var raisedPosition = 0.18
+        var raisedPosition = 0.0
         @JvmField
-        var loweredPosition = 0.9
+        var loweredPosition = 0.70
         @JvmField
-        var intakeLimit = 10.0
+        var intakeLimit = 8.0
         @JvmField
-        var outPosition = 0.27
+        var outPosition = 0.39
         @JvmField
         var inPosition = 0.0
         @JvmField
@@ -68,6 +67,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.init(inPosition)
         // raiseIntake()
         flip.init(raisedPosition)
+        flip.init(raisedPosition)
     }
 
     fun setPower(power: Double) {
@@ -88,11 +88,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         return state == State.OUT || state == State.TRANSFER
     }
 
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    public override fun isModuleInternalHazardous() = false
-
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
@@ -107,7 +102,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.IN -> {
                 retract()
-                if (!flip.isTransitioning && !extensionServos.isTransitioning && previousState == State.OUT) {
+                if (!isTransitioningState() && previousState == State.OUT) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
@@ -117,7 +112,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if ((Platform.isLoaded && timeSpentInState > (state.timeOut?.div(2) ?: 0.0)) || timeSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -159,7 +154,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun counterBalance() {
-        if (Context.opModeType != OpModeType.AUTO) state = State.COUNTER_BALANCE
+        state = State.COUNTER_BALANCE
     }
 
     fun retractIntake() {

@@ -28,11 +28,9 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.94;
-    public static double higherInPosition = 0.85;
+    public static double inPosition = 0.94, higherInPosition = 0.85;
     public static double lockPosition = 0.23;
     public static double unlockPosition = 0.4;
-    public static double timeDiffBalance = 0.5;
     public static double blockDistanceTolerance = 8;
     public static double dumpServoPositionPerSecond = 6;
     public static double flipServoPositionPerSecond = 2;
@@ -48,7 +46,7 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         HOLDING(0.1),
-        LOCKING(0.5),
+        LOCKING(0.2),
         DUMPING(0.5),
         OUT1,
         OUT2,
@@ -137,7 +135,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case LOCKING:
                 lock();
-                if (getTimeSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
+                if (getSecondsSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
                     prepPlatform(deposit.getDefaultState());
                 }
                 break;
@@ -165,7 +163,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 intake.retractIntake();
-                if (getTimeSpentInState() > getState().timeOut) {
+                if (getSecondsSpentInState() > getState().timeOut) {
                     setState(State.IN);
                     isLoaded = false;
                 }
@@ -266,14 +264,6 @@ public class Platform extends Module<Platform.State> {
 
     private void unlock() {
         lock.setPosition(unlockPosition);
-    }
-
-    /**
-     * @return Whether the elapsed time passes set time before module reaches position
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return false;
     }
   
     /**

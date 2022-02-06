@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
  * @author Sreyash Das Sarma
  */
 @Config
-public class Claw extends Module<Claw.State> {
+public class Slides extends Module<Slides.State> {
     @Override
     public boolean isTransitioningState() {
         return false;
@@ -35,15 +35,15 @@ public class Claw extends Module<Claw.State> {
         }
     }
 
-    Servo claw;
+    Servo slide;
 
     /**
      * Constructor which calls the 'init' function
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Claw(HardwareMap hardwareMap) {
-        super(hardwareMap, State.OUT);
+    public Slides(HardwareMap hardwareMap) {
+        super(hardwareMap, State.IN);
     }
 
     /**
@@ -51,7 +51,7 @@ public class Claw extends Module<Claw.State> {
      */
     @Override
     public void internalInit() {
-        claw = hardwareMap.servo.get("capstoneClaw");
+        slide = hardwareMap.servo.get("capstoneLowerLift");
     }
 
     /**w
@@ -61,15 +61,15 @@ public class Claw extends Module<Claw.State> {
     public void internalUpdate() {
         switch (getState()) {
             case TRANSIT_IN:
-                if (getTimeSpentInState() > getState().time) {
-                    setState(Claw.State.IN);
+                if (getSecondsSpentInState() > getState().time) {
+                    setState(Slides.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
-                if (getTimeSpentInState() > getState().time) {
-                    setState(Claw.State.OUT);
+                if (getSecondsSpentInState() > getState().time) {
+                    setState(Slides.State.OUT);
                 }
             case OUT:
                 out();
@@ -82,27 +82,25 @@ public class Claw extends Module<Claw.State> {
     }
 
     private void out() {
-        claw.setPosition(0.4);
+        slide.setPosition(0);
     }
 
     private void halfCase() {
-        claw.setPosition(0.2);
+        slide.setPosition(0.05);
     }
 
+    public static double inPos = 0.25;
+
     private void in() {
-        claw.setPosition(0);
-    }
-    public void ready(){
-        out();
-    }
-    public void dropDown() {
-        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
+        slide.setPosition(inPos);
     }
 
     public void pickUp() {
-        if (getState() != State.IN) {
-            setState(State.TRANSIT_IN);
-        }
+        if (getState() != State.OUT) setState(State.TRANSIT_OUT);
+    }
+
+    public void dropDown() {
+        if (getState() != State.IN) setState(State.TRANSIT_IN);
     }
 
     public void half() {
@@ -113,12 +111,4 @@ public class Claw extends Module<Claw.State> {
     public boolean isDoingInternalWork() {
         return getState() == State.TRANSIT_OUT || getState() == State.TRANSIT_IN;
     }
-    /**
-     * @return Whether the module is currently in a hazardous state
-     */
-    @Override
-    public boolean isModuleInternalHazardous() {
-        return getState() == Claw.State.OUT || getState() == Claw.State.TRANSIT_OUT;
-    }
-
 }

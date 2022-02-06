@@ -114,21 +114,21 @@ class AdvancedPaths {
                         .UNSTABLE_addDisplacementMarkerOffset(10.0) {
                             intake.setPower(1.0)
                         }
-                        .splineTo(Vector2d(20.0, -60.0).flip(blue), 0.0)
-                        .splineToConstantHeading(Vector2d(28.0, -60.0).flip(blue), 0.0)
-                        .splineTo(Vector2d(40.0 + i, -60.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
+                        .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
+                        .splineToConstantHeading(Vector2d(28.0, -55.0).flip(blue), 0.0)
+                        .splineTo(Vector2d(45.0 + i, -55.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
                         .setReversed(true)
                         .intakeOff(intake)
-                        .splineTo(Vector2d(39.0, -60.0).flip(blue), Math.PI)
-                        .splineToConstantHeading(Vector2d(20.0, -60.0).flip(blue), Math.PI)
+                        .splineTo(Vector2d(39.0, -55.0).flip(blue), Math.PI)
+                        .splineToConstantHeading(Vector2d(20.0, -55.0).flip(blue), Math.PI)
                         .liftUp(deposit, Deposit.State.LEVEL3)
-                        .splineToCircle(allianceHub.expandedRadius(9.0), Line.yAxis(-48.0).flip(blue), Vector2d(12.0, -24.0).flip(blue))
+                        .splineToCircle(allianceHub.expandedRadius(8.0), Line.yAxis(-48.0).flip(blue), Vector2d(12.0, -24.0).flip(blue))
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
                 trajectoryBuilder
-                    .splineTo(Vector2d(20.0, -60.0).flip(blue), 0.0)
-                    .splineToConstantHeading(Vector2d(39.0, -60.0).flip(blue), 0.0)
+                    .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
+                    .splineToConstantHeading(Vector2d(39.0, -55.0).flip(blue), 0.0)
                     .build()
             }
     }
