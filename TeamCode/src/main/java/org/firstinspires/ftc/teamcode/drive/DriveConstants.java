@@ -26,17 +26,6 @@ public class DriveConstants {
     public static double TICKS_PER_REV = 56;
     public static final double MAX_RPM = 5800;
 
-
-    /*
-     * Robot statics
-     */
-    public static double MAX_CURRENT = 4100;
-    public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
-    public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
-    public static double admissibleDistance = admissibleError.getX();
-    public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
-    public static double admissibleTimeout = 0.5;
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization

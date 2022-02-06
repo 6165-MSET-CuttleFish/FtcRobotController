@@ -58,13 +58,6 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.COOLDOWN_TIME;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleHeading;
 import static org.firstinspires.ftc.teamcode.util.field.Context.location;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
@@ -85,6 +78,24 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
  */
 @Config
 public class Robot extends ImprovedTankDrive {
+    /*
+     * Robot statics
+     */
+    public static double MAX_CURRENT = 4100;
+    public static double MIN_PUSHING_VELO;
+    public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
+    public static double COOLDOWN_TIME = 0.4;
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static double admissibleDistance = admissibleError.getX();
+    public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
+    public static double admissibleTimeout = 0.5;
+    CurrentState currentState = CurrentState.NORMAL;
+    enum CurrentState {
+        NORMAL,
+        CURRENT_OVER_PUSHING,
+        CURRENT_OVER_STALLING,
+    }
+
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
@@ -346,11 +357,10 @@ public class Robot extends ImprovedTankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    boolean isRobotDisabled;
     ElapsedTime currentTimer = new ElapsedTime();
+    ElapsedTime stateTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
-    int currentLimitingState = 0;
 
     public void correctPosition() {
         setPoseEstimate(relocalizer.getPoseEstimate());
@@ -369,6 +379,8 @@ public class Robot extends ImprovedTankDrive {
         }
         for (Module module : modules) {
             module.update();
+            if (currentState == CurrentState.NORMAL) module.setHazardous(false);
+            else module.setHazardous(true);
         }
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
@@ -376,12 +388,15 @@ public class Robot extends ImprovedTankDrive {
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        boolean systemIsOverCurrent = false; //current > MAX_CURRENT;
-        if (systemIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
-            isRobotDisabled = true;
-            coolDown.reset();
+        boolean systemIsOverCurrent = current > MAX_CURRENT;
+        if (systemIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME && currentState == CurrentState.NORMAL) {
+            currentState = Math.abs(Objects.requireNonNull(getPoseVelocity()).getX()) > MIN_PUSHING_VELO ? CurrentState.CURRENT_OVER_PUSHING : CurrentState.CURRENT_OVER_STALLING;
+            stateTimer.reset();
         } else {
-            if (coolDown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
+            if (stateTimer.seconds() > COOLDOWN_TIME && (currentState == CurrentState.CURRENT_OVER_STALLING || currentState == CurrentState.CURRENT_OVER_PUSHING)) {
+                currentState = CurrentState.NORMAL;
+                stateTimer.reset();
+            }
             if (!systemIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -461,8 +476,8 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = isRobotDisabled ? new Pose2d() : new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
-        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
+        Pose2d vel = new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
+        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
@@ -471,6 +486,17 @@ public class Robot extends ImprovedTankDrive {
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
+        }
+        switch (currentState) {
+            case NORMAL:
+                slowFactor = 1;
+                break;
+            case CURRENT_OVER_STALLING:
+                vel = new Pose2d();
+                break;
+            case CURRENT_OVER_PUSHING:
+                slowFactor += 7 * stateTimer.seconds();
+                break;
         }
         setDrivePower(vel.div(slowFactor));
     }
