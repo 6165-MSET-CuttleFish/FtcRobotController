@@ -55,6 +55,10 @@ public class DriverPractice extends LinearOpMode {
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[] {
+                capHorizontalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_RIGHT),
+                capHorizontalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_LEFT),
+                capVerticalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
+                capVerticalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
