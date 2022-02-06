@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers
 
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.ServoImplEx
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import kotlin.math.round
 
-class ControllableServos(vararg servos: Servo) {
+class ControllableServos(vararg servos: Servo) : Actuator {
     private var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0
@@ -48,4 +49,12 @@ class ControllableServos(vararg servos: Servo) {
 
     val isTransitioning: Boolean
         get() = round(realPosition * 1000) / 1000 != round(position * 1000) / 1000
+
+    override fun disable() {
+        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == true) it.setPwmDisable() }
+    }
+
+    override fun enable() {
+        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
+    }
 }

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
@@ -45,7 +46,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         COUNTER_BALANCE,
     }
 
-    private var intake = hardwareMap.get(DcMotorEx::class.java, "intake")
+    private var intake = ControllableMotor(hardwareMap.get(DcMotorEx::class.java, "intake"))
     private var extensionServos =
         ControllableServos(
             hardwareMap.servo["outL"],
@@ -59,13 +60,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         // Extend range of servo by 30°
-        // flip.pwmRange = PwmControl.PwmRange(500.0, 2500.0)
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        // slidesIn()
         extensionServos.init(inPosition)
-        // raiseIntake()
         flip.init(raisedPosition)
         flip.init(raisedPosition)
     }
@@ -129,7 +128,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
         }
         poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
-        intake.power = power
+        intake.power = if (isHazardous) 0.0 else power
         Context.packet.put("containsBlock", containsBlock)
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
         Context.packet.put("Extension Real Position", extensionServos.realPosition)

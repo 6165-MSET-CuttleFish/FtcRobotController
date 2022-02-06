@@ -91,7 +91,7 @@ public class Robot extends ImprovedTankDrive {
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
     private final double pitchOffset;
-    public static double div = 1;
+    public static double slowFactor = 1;
     public static double headingSpeed = 2;
 
     final HardwareMap hardwareMap;
@@ -186,10 +186,10 @@ public class Robot extends ImprovedTankDrive {
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[] {
+                capstone = new Capstone(hardwareMap),
+                carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-                carousel = new Carousel(hardwareMap),
-                capstone = new Capstone(hardwareMap),
         };
         for (Module module : modules) {
             module.init();
@@ -350,6 +350,7 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime coolDown = new ElapsedTime();
     ElapsedTime loopTime = new ElapsedTime();
+    int currentLimitingState = 0;
 
     public void correctPosition() {
         setPoseEstimate(relocalizer.getPoseEstimate());
@@ -474,7 +475,7 @@ public class Robot extends ImprovedTankDrive {
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-        setDrivePower(vel.div(div));
+        setDrivePower(vel.div(slowFactor));
     }
 
     @NonNull
