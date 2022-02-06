@@ -44,5 +44,6 @@ public class CapstoneTest extends ModuleTest {
         } else if (decrementVertical.wasJustPressed()) {
             capstone.incrementVertical(-1);
         }
+        telemetry.addData("",capstone.getVerticalTurretPos());
     }
 }
