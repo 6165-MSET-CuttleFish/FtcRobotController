@@ -376,16 +376,13 @@ public class Robot extends ImprovedTankDrive {
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        boolean anyMotorIsOverCurrent = false;
-        for (DcMotorEx motor : motors) {
-            if (motor.isOverCurrent()) anyMotorIsOverCurrent = true;
-        }
-        if (anyMotorIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
+        boolean systemIsOverCurrent = false; //current > MAX_CURRENT;
+        if (systemIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
             isRobotDisabled = true;
             coolDown.reset();
         } else {
             if (coolDown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
-            if (!anyMotorIsOverCurrent) currentTimer.reset();
+            if (!systemIsOverCurrent) currentTimer.reset();
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);

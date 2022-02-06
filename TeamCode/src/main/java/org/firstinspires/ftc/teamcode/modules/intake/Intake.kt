@@ -67,6 +67,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.init(inPosition)
         flip.init(raisedPosition)
         flip.init(raisedPosition)
+        setActuators(flip, intake)
     }
 
     fun setPower(power: Double) {

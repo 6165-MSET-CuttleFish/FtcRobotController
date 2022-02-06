@@ -98,6 +98,7 @@ public class Platform extends Module<Platform.State> {
         tiltIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
+        setActuators(arm, tilt, lock);
     }
 
     /**
