@@ -22,11 +22,13 @@ public class CapstoneTest extends ModuleTest {
 
     @Override
     public void update() {
+        telemetry.addData("Turntable", turntable.getPosition());
         if(gamepad1.left_bumper){
-            turntable.setPosition((turntable.getPosition()-0.05)%1);
+            turntable.setPosition((turntable.getPosition()-0.01));
         }else if(gamepad1.right_bumper){
-            turntable.setPosition((turntable.getPosition()+0.05)%1);
-        }if (gamepad1.x&&pointer.getPosition()<0.5){
+            turntable.setPosition((turntable.getPosition()+0.01));
+        }
+        /*if (gamepad1.x&&pointer.getPosition()<0.5){
             pointer.setPosition((pointer.getPosition()+0.05));
         }else if (gamepad1.y&&pointer.getPosition()>0.0){
             pointer.setPosition((pointer.getPosition()-0.05));
@@ -36,6 +38,7 @@ public class CapstoneTest extends ModuleTest {
             tape.setPower(1);
         }else {
             tape.setPower(0.5);
-        }
+        }*/
+        telemetry.update();
     }
 }
