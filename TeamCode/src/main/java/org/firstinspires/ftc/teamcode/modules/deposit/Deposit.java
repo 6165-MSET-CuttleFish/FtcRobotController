@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor;
 import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 
@@ -56,7 +57,7 @@ public class Deposit extends Module<Deposit.State> {
         }
     }
 
-    DcMotorEx slides;
+    ControllableMotor slides;
     public Platform platform;
 
     public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0.001);
@@ -89,10 +90,11 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalInit() {
-        slides = hardwareMap.get(DcMotorEx.class, "depositSlides");
+        slides = new ControllableMotor(hardwareMap.get(DcMotorEx.class, "depositSlides"));
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setActuators(slides);
     }
 
     @Override

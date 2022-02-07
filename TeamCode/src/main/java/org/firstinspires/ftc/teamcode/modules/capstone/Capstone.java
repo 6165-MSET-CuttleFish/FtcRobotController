@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
@@ -17,7 +18,7 @@ public class Capstone extends Module<Capstone.State> {
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.8;
     private CRServo tape;
-    private Servo verticalTurret, horizontalTurret;
+    private ControllableServos verticalTurret, horizontalTurret;
 
     @Override
     public boolean isTransitioningState() {
@@ -47,8 +48,9 @@ public class Capstone extends Module<Capstone.State> {
     public void internalInit() {
         tape = hardwareMap.crservo.get("tape");
         tape.setDirection(DcMotorSimple.Direction.REVERSE);
-        horizontalTurret = hardwareMap.servo.get("hTurret");
-        verticalTurret = hardwareMap.servo.get("vTurret");
+        horizontalTurret = new ControllableServos(hardwareMap.servo.get("hTurret"));
+        verticalTurret = new ControllableServos(hardwareMap.servo.get("vTurret"));
+        setActuators(horizontalTurret, verticalTurret);
     }
     public double getVerticalTurretPos(){
         return verticalTurret.getPosition();

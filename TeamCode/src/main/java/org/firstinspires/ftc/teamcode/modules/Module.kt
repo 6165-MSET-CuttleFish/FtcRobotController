@@ -3,6 +3,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.teamcode.modules.wrappers.Actuator
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
@@ -64,14 +65,13 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
 
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
+    private var actuators = arrayOf<Actuator>()
     val modulePoseEstimate: Pose2d
         get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
     var isDebugMode = false
         set(value) {
             field = value
-            for (module in nestedModules) {
-                module.isDebugMode = value
-            }
+            nestedModules.forEach { it.isDebugMode = value }
         }
 
     /**
@@ -81,9 +81,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
 
     fun init() {
         internalInit()
-        for (module in nestedModules) {
-            module.init()
-        }
+        nestedModules.forEach { it.init() }
     }
 
     /**
@@ -92,9 +90,8 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * Updates all nested modules.
      */
     fun update() {
-        for (module in nestedModules) {
-            module.update()
-        }
+        // actuators.forEach { if (isHazardous) it.disable() else it.enable() }
+        nestedModules.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
     }
@@ -105,9 +102,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     var isHazardous: Boolean = false
         set(value) {
             field = value
-            for (module in nestedModules) {
-                module.isHazardous = value
-            }
+            nestedModules.forEach { it.isHazardous = value }
         }
 
     /**
@@ -116,11 +111,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     val isDoingWork: Boolean
         get() {
             var isDoingWork = isDoingInternalWork()
-            for (module in nestedModules) {
-                if (module.isDoingWork) {
-                    isDoingWork = true
-                }
-            }
+            nestedModules.forEach { if (it.isDoingWork) isDoingWork = true }
             return isDoingWork
         }
 
@@ -129,6 +120,13 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      */
     fun setNestedModules(vararg modules: Module<*>) {
         nestedModules = modules as Array<Module<*>>
+    }
+
+    /**
+     * Add any nested modules to be updated
+     */
+    fun setActuators(vararg actuators: Actuator) {
+        this.actuators = actuators as Array<Actuator>
     }
 
     /**

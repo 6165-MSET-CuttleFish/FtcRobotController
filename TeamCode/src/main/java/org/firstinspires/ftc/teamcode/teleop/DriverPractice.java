@@ -81,6 +81,10 @@ public class DriverPractice extends LinearOpMode {
                     0,
                     -gamepad1.right_stick_x
             );
+            if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
+                gamepad1.rumble(500);
+                gamepad2.rumble(500);
+            }
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             if (gamepad1.left_bumper && gamepad1.right_bumper) {
                 if (!toggleMode) {
@@ -113,7 +117,6 @@ public class DriverPractice extends LinearOpMode {
             } else if (tippedToward.isDown()) {
                 balance = Balance.TOWARD;
             }
-            setCapstone();
         }
     }
 

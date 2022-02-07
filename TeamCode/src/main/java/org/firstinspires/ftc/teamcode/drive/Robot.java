@@ -58,13 +58,6 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.COOLDOWN_TIME;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_CURRENT_OVERFLOW_TIME;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleDistance;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleError;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.admissibleHeading;
 import static org.firstinspires.ftc.teamcode.util.field.Context.location;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
@@ -85,13 +78,31 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
  */
 @Config
 public class Robot extends ImprovedTankDrive {
+    /*
+     * Robot statics
+     */
+    public static double MAX_CURRENT = 15;
+    public static double MIN_PUSHING_VELO = 40;
+    public static double MAX_CURRENT_OVERFLOW_TIME = 0.9;
+    public static double COOLDOWN_TIME = 0.4;
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static double admissibleDistance = admissibleError.getX();
+    public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
+    public static double admissibleTimeout = 0.5;
+    CurrentState currentState = CurrentState.NORMAL;
+    enum CurrentState {
+        NORMAL,
+        CURRENT_OVER_PUSHING,
+        CURRENT_OVER_STALLING,
+    }
+
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
     private final Detector detector = new Detector();
     private final double pitchOffset;
-    public static double div = 1;
+    public static double slowFactor = 1;
     public static double headingSpeed = 2;
 
     final HardwareMap hardwareMap;
@@ -186,10 +197,10 @@ public class Robot extends ImprovedTankDrive {
                 rightFront = hardwareMap.get(DcMotorEx.class, "fr"), //
                 rightMid = hardwareMap.get(DcMotorEx.class, "mr"); //
         modules = new Module[] {
+                capstone = new Capstone(hardwareMap),
+                carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-                carousel = new Carousel(hardwareMap),
-                capstone = new Capstone(hardwareMap),
         };
         for (Module module : modules) {
             module.init();
@@ -201,7 +212,7 @@ public class Robot extends ImprovedTankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
-            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
+//            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -346,9 +357,9 @@ public class Robot extends ImprovedTankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-    boolean isRobotDisabled;
     ElapsedTime currentTimer = new ElapsedTime();
-    ElapsedTime coolDown = new ElapsedTime();
+    ElapsedTime stateTimer = new ElapsedTime();
+    double currentIntegral;
     ElapsedTime loopTime = new ElapsedTime();
 
     public void correctPosition() {
@@ -359,7 +370,7 @@ public class Robot extends ImprovedTankDrive {
         double current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
-            current += module.getCurrent(CurrentUnit.MILLIAMPS);
+            current += module.getCurrent(CurrentUnit.AMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -368,23 +379,29 @@ public class Robot extends ImprovedTankDrive {
         }
         for (Module module : modules) {
             module.update();
+            module.setHazardous(currentState != CurrentState.NORMAL);
         }
+        currentIntegral += current * loopTime.seconds();
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
+        Context.packet.put("Current State", currentState);
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        boolean anyMotorIsOverCurrent = false;
-        for (DcMotorEx motor : motors) {
-            if (motor.isOverCurrent()) anyMotorIsOverCurrent = true;
-        }
-        if (anyMotorIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME) {
-            isRobotDisabled = true;
-            coolDown.reset();
+        boolean systemIsOverCurrent = current > MAX_CURRENT;
+        if (systemIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME && currentState == CurrentState.NORMAL) {
+            currentState = Math.abs(Objects.requireNonNull(getPoseVelocity()).getX()) > MIN_PUSHING_VELO ? CurrentState.CURRENT_OVER_PUSHING : CurrentState.CURRENT_OVER_STALLING;
+            stateTimer.reset();
         } else {
-            if (coolDown.seconds() > COOLDOWN_TIME) isRobotDisabled = false;
-            if (!anyMotorIsOverCurrent) currentTimer.reset();
+            if (stateTimer.seconds() > COOLDOWN_TIME && (currentState == CurrentState.CURRENT_OVER_STALLING || currentState == CurrentState.CURRENT_OVER_PUSHING)) {
+                currentState = CurrentState.NORMAL;
+                stateTimer.reset();
+            }
+            if (!systemIsOverCurrent) {
+                currentTimer.reset();
+                currentIntegral = 0;
+            }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -463,8 +480,8 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
-        Pose2d vel = isRobotDisabled ? new Pose2d() : new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
-        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1 && !isRobotDisabled) {
+        Pose2d vel = new Pose2d(drivePower.getX(), drivePower.getY(), drivePower.getHeading() * headingSpeed);
+        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * Math.abs(drivePower.getX())
                     + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
@@ -474,7 +491,18 @@ public class Robot extends ImprovedTankDrive {
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-        setDrivePower(vel.div(div));
+        switch (currentState) {
+            case NORMAL:
+                slowFactor = 1;
+                break;
+            case CURRENT_OVER_STALLING:
+                vel = new Pose2d();
+                break;
+            case CURRENT_OVER_PUSHING:
+                slowFactor += 7 * stateTimer.seconds();
+                break;
+        }
+        setDrivePower(vel.div(slowFactor));
     }
 
     @NonNull
@@ -505,11 +533,11 @@ public class Robot extends ImprovedTankDrive {
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
+        for (int i = 0; i < leftMotors.size(); i++) {
+            leftMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(v1);
+        for (int i = 0; i < rightMotors.size(); i++) {
+            rightMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
         }
     }
 
