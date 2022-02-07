@@ -36,8 +36,7 @@ public class Arm extends Module<Arm.State> {
             return 0.0;
         }
     }
-    Servo arm;
-
+    Servo arm, wrist;
     /**
      * Constructor which calls the 'init' function
      *
@@ -53,6 +52,7 @@ public class Arm extends Module<Arm.State> {
     @Override
     public void internalInit() {
         arm = hardwareMap.servo.get("capstoneArm");
+        wrist = hardwareMap.servo.get("capstoneWrist");
     }
 
     /**
@@ -93,19 +93,24 @@ public class Arm extends Module<Arm.State> {
     }
 
     private void out() {
-        arm.setPosition(0.16);
+        wrist.setPosition(1);
+        arm.setPosition(outPos);
     }
     /**
      * Return platform to rest
      */
     private void in() {
-         arm.setPosition(1);
+        wrist.setPosition(1);
+        arm.setPosition(inPos);
     }
     private void preCapPos() {
         arm.setPosition(preCap);
+        wrist.setPosition(0);
     }
-    public static double preCap = 0.55;
-    public static double capPos = 0.4;
+    public static double preCap = 0.1;
+    public static double capPos = 0.075;
+    public static double inPos = 0.2;
+    public static double outPos = 0;
     private void capPos() {
         arm.setPosition(capPos);
     }

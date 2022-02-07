@@ -50,7 +50,9 @@ public class Capstone extends Module<Capstone.State> {
         horizontalTurret = hardwareMap.servo.get("hTurret");
         verticalTurret = hardwareMap.servo.get("vTurret");
     }
-
+    public double getVerticalTurretPos(){
+        return verticalTurret.getPosition();
+    }
     @Override
     protected void internalUpdate() {
         verticalPos = Range.clip(verticalPos, 0, 1);

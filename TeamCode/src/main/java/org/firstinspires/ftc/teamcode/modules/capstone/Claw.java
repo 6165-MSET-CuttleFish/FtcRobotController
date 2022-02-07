@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.modules.StateBuilder;
  * @author Sreyash Das Sarma
  */
 @Config
-public class Slides extends Module<Slides.State> {
+public class Claw extends Module<Claw.State> {
     @Override
     public boolean isTransitioningState() {
         return false;
@@ -42,7 +42,7 @@ public class Slides extends Module<Slides.State> {
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Slides(HardwareMap hardwareMap) {
+    public Claw(HardwareMap hardwareMap) {
         super(hardwareMap, State.IN);
     }
 
@@ -62,14 +62,14 @@ public class Slides extends Module<Slides.State> {
         switch (getState()) {
             case TRANSIT_IN:
                 if (getSecondsSpentInState() > getState().time) {
-                    setState(Slides.State.IN);
+                    setState(Claw.State.IN);
                 }
             case IN:
                 in();
                 break;
             case TRANSIT_OUT:
                 if (getSecondsSpentInState() > getState().time) {
-                    setState(Slides.State.OUT);
+                    setState(Claw.State.OUT);
                 }
             case OUT:
                 out();
