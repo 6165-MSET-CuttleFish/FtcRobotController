@@ -63,6 +63,13 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
     }
 }
 
+fun TrajectorySequenceBuilder.relocalize(relocalizer: Relocalizer): TrajectorySequenceBuilder {
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {
+        relocalizer.update()
+        println("${relocalizer.poseEstimate.x}, ${relocalizer.poseEstimate.y}, ${Math.toDegrees(relocalizer.poseEstimate.heading)}")
+    }
+}
+
 fun TrajectorySequenceBuilder.capstoneReady(capstone: Capstone): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0, capstone::ready)
 }

@@ -32,9 +32,10 @@ fun Vector2d.polarAdd (distance: Double, angle: Double) : Vector2d {
     return Coordinate.toPoint(this).polarAdd(distance, angle).toVector()
 }
 
-fun Pose2d.polarAdd (distance: Double) : Pose2d {
-    return Coordinate.toPoint(this).polarAdd(distance, this.heading).toPose2d(this.heading)
+fun Pose2d.polarAdd (distance: Double, angleOffset: Double = 0.0) : Pose2d {
+    return Coordinate.toPoint(this).polarAdd(distance, this.heading + angleOffset).toPose2d(this.heading)
 }
+
 fun Vector2d.toPose (angle: Double) : Pose2d {
     return Pose2d(this, angle)
 }

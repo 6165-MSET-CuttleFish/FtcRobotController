@@ -26,6 +26,7 @@ class AdvancedPaths {
     private val deposit = Deposit()
     private val intake = Intake()
     private val carousel = Carousel()
+    private val relocalizer = Relocalizer()
     fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
@@ -117,6 +118,7 @@ class AdvancedPaths {
                         .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
                         .splineToConstantHeading(Vector2d(28.0, -55.0).flip(blue), 0.0)
                         .splineTo(Vector2d(45.0 + i, -55.0).flip(blue), Math.toRadians(0.0 + 20 * Math.random()).flip(blue))
+                        .relocalize(relocalizer)
                         .setReversed(true)
                         .intakeOff(intake)
                         .splineTo(Vector2d(39.0, -55.0).flip(blue), Math.PI)
