@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 @Config
 public class UltrasonicDistanceSensor {
     AnalogInput distanceSensor;
-    public UltrasonicDistanceSensor(HardwareMap map){
-        distanceSensor = map.analogInput.get("ultra");
+    public UltrasonicDistanceSensor(HardwareMap map, String name){
+        distanceSensor = map.analogInput.get(name);
     }
     public double getDistance(){
         return 89.4897 * distanceSensor.getVoltage() - 12.9012;

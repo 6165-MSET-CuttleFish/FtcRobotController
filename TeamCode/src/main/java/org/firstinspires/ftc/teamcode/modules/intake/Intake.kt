@@ -23,7 +23,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var raisedPosition = 0.0
         @JvmField
-        var loweredPosition = 0.70
+        var loweredPosition = 0.80
         @JvmField
         var intakeLimit = 8.0
         @JvmField
