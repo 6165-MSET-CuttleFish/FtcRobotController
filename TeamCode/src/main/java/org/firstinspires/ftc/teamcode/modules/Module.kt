@@ -71,9 +71,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     var isDebugMode = false
         set(value) {
             field = value
-            for (module in nestedModules) {
-                module.isDebugMode = value
-            }
+            nestedModules.forEach { it.isDebugMode = value }
         }
 
     /**
@@ -83,9 +81,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
 
     fun init() {
         internalInit()
-        for (module in nestedModules) {
-            module.init()
-        }
+        nestedModules.forEach { it.init() }
     }
 
     /**
@@ -94,7 +90,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * Updates all nested modules.
      */
     fun update() {
-        actuators.forEach { if (isHazardous) it.disable() else it.enable() }
+        // actuators.forEach { if (isHazardous) it.disable() else it.enable() }
         nestedModules.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
@@ -115,11 +111,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     val isDoingWork: Boolean
         get() {
             var isDoingWork = isDoingInternalWork()
-            for (module in nestedModules) {
-                if (module.isDoingWork) {
-                    isDoingWork = true
-                }
-            }
+            nestedModules.forEach { if (it.isDoingWork) isDoingWork = true }
             return isDoingWork
         }
 

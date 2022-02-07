@@ -56,7 +56,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
-    private var containsBlock = false
+    var containsBlock = false
+        private set
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -95,14 +96,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         when (state) {
             State.OUT -> {
                 deploy()
-                if (distance < intakeLimit) {
+                if (containsBlock) {
                     state = State.IN
-                    containsBlock = true
                 }
+                containsBlock = distance < intakeLimit
             }
             State.IN -> {
                 retract()
-                if (!isTransitioningState() && previousState == State.OUT) {
+                if (!isTransitioningState() && previousState == State.OUT && containsBlock) {
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
@@ -111,8 +112,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.TRANSFER -> {
                 power = -1.0
-                containsBlock = false
                 if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                    containsBlock = false
                     state = State.IN
                     power = 0.0
                     this.power = power

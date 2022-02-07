@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
+import org.firstinspires.ftc.teamcode.drive.Robot
 import kotlin.math.abs
 
 /**
@@ -82,9 +83,9 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
-        if (DriveConstants.admissibleError != this.admissibleError || DriveConstants.admissibleTimeout != this.timeout) {
-            this.admissibleError = DriveConstants.admissibleError
-            this.timeout = DriveConstants.admissibleTimeout
+        if (Robot.admissibleError != this.admissibleError || Robot.admissibleTimeout != this.timeout) {
+            this.admissibleError = Robot.admissibleError
+            this.timeout = Robot.admissibleTimeout
         }
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()

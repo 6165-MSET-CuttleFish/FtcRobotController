@@ -81,9 +81,9 @@ public class Robot extends ImprovedTankDrive {
     /*
      * Robot statics
      */
-    public static double MAX_CURRENT = 4100;
-    public static double MIN_PUSHING_VELO;
-    public static double MAX_CURRENT_OVERFLOW_TIME = 0.4;
+    public static double MAX_CURRENT = 15;
+    public static double MIN_PUSHING_VELO = 40;
+    public static double MAX_CURRENT_OVERFLOW_TIME = 0.9;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
@@ -212,7 +212,7 @@ public class Robot extends ImprovedTankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
-            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
+//            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -359,7 +359,7 @@ public class Robot extends ImprovedTankDrive {
 
     ElapsedTime currentTimer = new ElapsedTime();
     ElapsedTime stateTimer = new ElapsedTime();
-    ElapsedTime coolDown = new ElapsedTime();
+    double currentIntegral;
     ElapsedTime loopTime = new ElapsedTime();
 
     public void correctPosition() {
@@ -370,7 +370,7 @@ public class Robot extends ImprovedTankDrive {
         double current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
-            current += module.getCurrent(CurrentUnit.MILLIAMPS);
+            current += module.getCurrent(CurrentUnit.AMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -379,11 +379,12 @@ public class Robot extends ImprovedTankDrive {
         }
         for (Module module : modules) {
             module.update();
-            if (currentState == CurrentState.NORMAL) module.setHazardous(false);
-            else module.setHazardous(true);
+            module.setHazardous(currentState != CurrentState.NORMAL);
         }
+        currentIntegral += current * loopTime.seconds();
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
+        Context.packet.put("Current State", currentState);
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
@@ -397,7 +398,10 @@ public class Robot extends ImprovedTankDrive {
                 currentState = CurrentState.NORMAL;
                 stateTimer.reset();
             }
-            if (!systemIsOverCurrent) currentTimer.reset();
+            if (!systemIsOverCurrent) {
+                currentTimer.reset();
+                currentIntegral = 0;
+            }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
@@ -529,11 +533,11 @@ public class Robot extends ImprovedTankDrive {
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
+        for (int i = 0; i < leftMotors.size(); i++) {
+            leftMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
         }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(v1);
+        for (int i = 0; i < rightMotors.size(); i++) {
+            rightMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
         }
     }
 
