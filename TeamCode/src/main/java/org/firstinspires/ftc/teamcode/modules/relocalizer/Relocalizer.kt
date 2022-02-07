@@ -16,10 +16,10 @@ import kotlin.math.cos
 
 @Config
 class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module<Relocalizer.State>(hardwareMap, State.IDLE) {
-    private val frontLeftDistance = UltrasonicDistanceSensor(hardwareMap, "frontLeftDistance", "")
-    private val frontRightDistance = UltrasonicDistanceSensor(hardwareMap, "frontRightDistance", "")
-    private val leftDistance = UltrasonicDistanceSensor(hardwareMap, "leftDistance", "")
-    private val rightDistance = UltrasonicDistanceSensor(hardwareMap, "rightDistance", "")
+    private val frontLeftDistance = UltrasonicDistanceSensor(hardwareMap, "frontLeftDistance")
+    private val frontRightDistance = UltrasonicDistanceSensor(hardwareMap, "frontRightDistance")
+    private val leftDistance = UltrasonicDistanceSensor(hardwareMap, "leftDistance")
+    private val rightDistance = UltrasonicDistanceSensor(hardwareMap, "rightDistance")
     companion object {
         @JvmField
         var frontDistanceSensorXOffset = 8.0
@@ -84,7 +84,6 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     override fun internalInit() {
-        setNestedModules(frontLeftDistance, frontRightDistance, rightDistance, leftDistance)
     }
     override fun isTransitioningState(): Boolean = false
 }
