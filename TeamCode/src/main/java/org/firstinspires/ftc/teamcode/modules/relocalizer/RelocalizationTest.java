@@ -17,7 +17,6 @@ public class RelocalizationTest extends ModuleTest {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         relocalizer = new Relocalizer(hardwareMap, imu);
-        setModules(relocalizer);
     }
 
     @Override

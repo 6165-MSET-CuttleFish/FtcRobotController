@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
+import org.firstinspires.ftc.teamcode.modules.freight.Freight
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
  * @author Ayush Raman
  */
 @Config
-class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7), 0.6) {
+class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmField
         var raisedPosition = 0.0
@@ -37,6 +38,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var extensionPositionPerSecond = 0.5
         @JvmField
         var dropPositionPerSecond = 2.1
+        @JvmField
+        var alphaTolerance = 2.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -56,8 +59,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
-    var containsBlock = false
+    var freight: Freight? = null
         private set
+    val containsBlock
+        get() =  freight != null
 
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -99,7 +104,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 if (containsBlock) {
                     state = State.IN
                 }
-                containsBlock = distance < intakeLimit
+                if (distance < intakeLimit) {
+                    val color = blockSensor.normalizedColors
+                    freight = if (color.alpha > alphaTolerance) {
+                        Freight.BALL
+                    } else {
+                        Freight.CUBE
+                    }
+                }
             }
             State.IN -> {
                 retract()
@@ -107,13 +119,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                     state = if (distance < intakeLimit) State.TRANSFER else State.IN
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
-                    power = 0.7
+                    power = 1.0
                 }
             }
             State.TRANSFER -> {
                 power = -1.0
                 if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
-                    containsBlock = false
+                    freight = null
                     state = State.IN
                     power = 0.0
                     this.power = power

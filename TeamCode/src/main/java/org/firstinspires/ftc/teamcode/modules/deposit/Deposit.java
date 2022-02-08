@@ -79,7 +79,7 @@ public class Deposit extends Module<Deposit.State> {
      * @param intake instance of robot's intake module
      */
     public Deposit(HardwareMap hardwareMap, Intake intake) {
-        super(hardwareMap, State.IDLE, new Pose2d(), 1);
+        super(hardwareMap, State.IDLE, new Pose2d());
         pidController.setOutputBounds(-1, 1);
         platform = new Platform(hardwareMap, intake, this);
         setNestedModules(platform);

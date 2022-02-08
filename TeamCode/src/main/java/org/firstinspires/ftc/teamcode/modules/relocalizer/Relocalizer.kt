@@ -48,7 +48,7 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) {
         @JvmField
         var horizontalDistanceSensorXOffset = 8.0
     }
-    var poseEstimate = Pose2d()
+    val poseEstimate: Pose2d
         get() {
             val frontDist: Double
             val horizontalDist: Double

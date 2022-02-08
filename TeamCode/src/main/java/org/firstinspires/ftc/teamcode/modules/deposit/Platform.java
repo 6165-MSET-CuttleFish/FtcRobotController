@@ -35,6 +35,7 @@ public class Platform extends Module<Platform.State> {
     public static double dumpServoPositionPerSecond = 6;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
+    public static boolean
     public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9;
 
     @Override
@@ -76,7 +77,7 @@ public class Platform extends Module<Platform.State> {
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
     public Platform(HardwareMap hardwareMap, Intake intake, Deposit deposit) {
-        super(hardwareMap, opModeType == OpModeType.AUTO ? State.LOCKING : State.IN, new Pose2d(), 0.7);
+        super(hardwareMap, opModeType == OpModeType.AUTO ? State.LOCKING : State.IN, new Pose2d());
         this.intake = intake;
         this.deposit = deposit;
     }

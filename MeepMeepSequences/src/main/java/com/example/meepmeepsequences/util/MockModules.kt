@@ -75,8 +75,8 @@ class Relocalizer : Module() {
     }
 
     fun update() {
-        val frontDist = 8.0
-        val horizontalDist = 2.0
+        val frontDist = 8.0 * cos(tilt)
+        val horizontalDist = 2.0 * cos(tilt)
         if (Context.side == Side.CAROUSEL) {
 //            frontDist = 0.0
 //            horizontalDist = 0.0
@@ -109,9 +109,9 @@ class Relocalizer : Module() {
     }
 
     private val pitch: Double
-        get() = Math.toRadians(5.0)
+        get() = Math.toRadians(30.0)
     private val tilt: Double
-        get() = Math.toRadians(5.0)
+        get() = Math.toRadians(30.0)
 }
 
 abstract class Module {

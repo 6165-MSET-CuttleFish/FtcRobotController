@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode.modules
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
-import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.modules.wrappers.Actuator
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
-import kotlin.math.abs
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -19,7 +17,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
     var poseOffset: Pose2d = Pose2d(),
-    private var totalMotionDuration: Double = 1.0
 ) {
     /// State related fields
     private val elapsedTime = ElapsedTime()
@@ -90,7 +87,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
      * Updates all nested modules.
      */
     fun update() {
-        // actuators.forEach { if (isHazardous) it.disable() else it.enable() }
         nestedModules.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
@@ -103,6 +99,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
         set(value) {
             field = value
             nestedModules.forEach { it.isHazardous = value }
+            actuators.forEach { if (isHazardous) it.disable() else it.enable() }
         }
 
     /**
@@ -118,7 +115,7 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     /**
      * Add any nested modules to be updated
      */
-    fun setNestedModules(vararg modules: Module<*>) {
+    fun setNestedModules(vararg modules: Module<*   >) {
         nestedModules = modules as Array<Module<*>>
     }
 
