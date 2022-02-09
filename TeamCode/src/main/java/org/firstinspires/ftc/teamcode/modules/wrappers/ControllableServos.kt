@@ -51,10 +51,10 @@ class ControllableServos(vararg servos: Servo) : Actuator {
         get() = round(realPosition * 1000) / 1000 != round(position * 1000) / 1000
 
     override fun disable() {
-        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == true) it.setPwmDisable() }
+//        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == true) it.setPwmDisable() }
     }
 
     override fun enable() {
-        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
+//        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
     }
 }

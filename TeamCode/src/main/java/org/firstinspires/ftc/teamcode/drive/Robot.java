@@ -82,6 +82,8 @@ public class Robot extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
+    public static double MID_POWER = 10;
+    public static double MAX_POWER = 20;
     public static double MIN_PUSHING_VELO = 40;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.9;
     public static double COOLDOWN_TIME = 0.4;
@@ -92,8 +94,7 @@ public class Robot extends ImprovedTankDrive {
     CurrentState currentState = CurrentState.NORMAL;
     enum CurrentState {
         NORMAL,
-        CURRENT_OVER_PUSHING,
-        CURRENT_OVER_STALLING,
+        ROBOT_DISABLED,
     }
 
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
@@ -361,7 +362,9 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime stateTimer = new ElapsedTime();
     double currentIntegral;
     ElapsedTime loopTime = new ElapsedTime();
-
+    boolean systemIsOverCurrent;
+    boolean robotSlowed;
+    boolean robotDisabled;
     public void correctPosition() {
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
@@ -379,22 +382,29 @@ public class Robot extends ImprovedTankDrive {
         }
         for (Module module : modules) {
             module.update();
-            module.setHazardous(currentState != CurrentState.NORMAL);
+           // module.setHazardous(currentState != CurrentState.NORMAL);
         }
-        currentIntegral += current * loopTime.seconds();
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
+        Context.packet.put("Integral Power", currentIntegral);
+        Context.packet.put("MAX POWER", MAX_POWER);
+        Context.packet.put("MAX CURRENT", MAX_CURRENT);
         Context.packet.put("Current State", currentState);
+        currentIntegral += current * loopTime.seconds();
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        boolean systemIsOverCurrent = current > MAX_CURRENT;
-        if (systemIsOverCurrent && currentTimer.seconds() > MAX_CURRENT_OVERFLOW_TIME && currentState == CurrentState.NORMAL) {
-            currentState = Math.abs(Objects.requireNonNull(getPoseVelocity()).getX()) > MIN_PUSHING_VELO ? CurrentState.CURRENT_OVER_PUSHING : CurrentState.CURRENT_OVER_STALLING;
+        systemIsOverCurrent = current > MAX_CURRENT;
+        robotSlowed = systemIsOverCurrent && currentIntegral > MID_POWER;
+        robotDisabled = systemIsOverCurrent && currentIntegral > MAX_POWER;
+        if (systemIsOverCurrent) {
+            if (currentIntegral > MAX_POWER) {
+                currentState = CurrentState.ROBOT_DISABLED;
+            }
             stateTimer.reset();
         } else {
-            if (stateTimer.seconds() > COOLDOWN_TIME && (currentState == CurrentState.CURRENT_OVER_STALLING || currentState == CurrentState.CURRENT_OVER_PUSHING)) {
+            if (stateTimer.seconds() > COOLDOWN_TIME && robotDisabled) {
                 currentState = CurrentState.NORMAL;
                 stateTimer.reset();
             }
@@ -491,17 +501,7 @@ public class Robot extends ImprovedTankDrive {
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-        switch (currentState) {
-            case NORMAL:
-                slowFactor = 1;
-                break;
-            case CURRENT_OVER_STALLING:
-                vel = new Pose2d();
-                break;
-            case CURRENT_OVER_PUSHING:
-                slowFactor += 7 * stateTimer.seconds();
-                break;
-        }
+        if (robotDisabled) vel = new Pose2d();
         setDrivePower(vel.div(slowFactor));
     }
 
@@ -534,10 +534,10 @@ public class Robot extends ImprovedTankDrive {
     @Override
     public void setMotorPowers(double v, double v1) {
         for (int i = 0; i < leftMotors.size(); i++) {
-            leftMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
+            leftMotors.get(i).setPower((!robotSlowed || i < 2) ? v : 0);
         }
         for (int i = 0; i < rightMotors.size(); i++) {
-            rightMotors.get(i).setPower((currentState == CurrentState.NORMAL || i < 2) ? v : 0);
+            rightMotors.get(i).setPower((!robotSlowed || i < 2) ? v1 : 0);
         }
     }
 

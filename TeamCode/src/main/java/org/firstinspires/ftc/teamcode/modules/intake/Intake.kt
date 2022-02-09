@@ -13,7 +13,9 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
+import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.field.Context
+import org.firstinspires.ftc.teamcode.util.field.Context.freight
 
 /**
  * Frontal mechanism for collecting freight
@@ -39,7 +41,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 2.1
         @JvmField
-        var alphaTolerance = 2.0
+        var alphaTolerance = 0.4
+        @JvmField
+        var smoothingCoeffecient = 0.2
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -59,11 +63,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
-    var freight: Freight? = null
-        private set
-    val containsBlock
-        get() =  freight != null
-
+    var containsBlock = false
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -104,19 +104,21 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 if (containsBlock) {
                     state = State.IN
                 }
-                if (distance < intakeLimit) {
-                    val color = blockSensor.normalizedColors
-                    freight = if (color.alpha > alphaTolerance) {
-                        Freight.BALL
-                    } else {
-                        Freight.CUBE
-                    }
-                }
+                containsBlock = distance < intakeLimit
             }
             State.IN -> {
                 retract()
-                if (!isTransitioningState() && previousState == State.OUT && containsBlock) {
-                    state = if (distance < intakeLimit) State.TRANSFER else State.IN
+                if (containsBlock) {
+                    if (isTransitioningState()) {
+                        val color = blockSensor.normalizedColors
+                        freight = if (color.alpha > alphaTolerance) {
+                            Freight.BALL
+                        } else {
+                            Freight.CUBE
+                        }
+                    } else {
+                        state = State.TRANSFER
+                    }
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
                     power = 1.0
@@ -124,8 +126,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.TRANSFER -> {
                 power = -1.0
-                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
-                    freight = null
+                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(3) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                    containsBlock = false
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -147,6 +149,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
         Context.packet.put("Extension Real Position", extensionServos.realPosition)
         Context.packet.put("Drop Real Position", flip.realPosition)
+        Context.packet.put("Intake Color Alpha", blockSensor.normalizedColors.alpha)
+        Context.packet.put("Freight", freight)
+        Context.packet.put("Block Sensor Distance", distance)
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }

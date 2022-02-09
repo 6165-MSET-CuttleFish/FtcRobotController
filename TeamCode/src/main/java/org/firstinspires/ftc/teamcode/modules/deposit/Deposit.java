@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.modules.freight.Freight;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor;
 import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context;
 
 import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
+import static org.firstinspires.ftc.teamcode.util.field.Context.freight;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -28,15 +30,24 @@ public class Deposit extends Module<Deposit.State> {
     public static boolean farDeposit = true;
     public static boolean allowLift = true;
     public static double LEVEL3 = 12.8;
-    public static double LEVEL2 = 5;
+    public static double LEVEL2 = 6;
     public static double LEVEL1 = 0;
     public static boolean resetEncoder = false;
     public static double allowableDepositError = 4;
     public static double angle = Math.toRadians(30);
 
+    private double getLevelHeight(State state) {
+        switch (state) {
+            case LEVEL3: return LEVEL3;
+            case LEVEL2: return LEVEL2;
+            case LEVEL1: return LEVEL1;
+        }
+        return 0;
+    }
+
     public enum State implements StateBuilder {
         LEVEL3(12),
-        LEVEL2(5),
+        LEVEL2(6),
         LEVEL1(0),
         IDLE(0);
         private final double dist;
@@ -60,7 +71,7 @@ public class Deposit extends Module<Deposit.State> {
     ControllableMotor slides;
     public Platform platform;
 
-    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(1,0,0.001);
+    public static PIDCoefficients MOTOR_PID = new PIDCoefficients(0.8,0,0.01);
     public static double kV = 0;
     public static double kA = 0;
     public static double kStatic = 0;
@@ -105,6 +116,9 @@ public class Deposit extends Module<Deposit.State> {
     private State defaultState = State.LEVEL3;
 
     public State getDefaultState() {
+        if (freight == Freight.BALL && defaultState == State.LEVEL3) {
+            return State.LEVEL2;
+        }
         return defaultState;
     }
 
@@ -126,9 +140,13 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
-        pidController.setTargetPosition(farDeposit ? getState().getDist() : 0);
+        State state = getState();
+        if (freight == Freight.BALL && state == State.LEVEL3) {
+            state = State.LEVEL2;
+        }
+        pidController.setTargetPosition(farDeposit ? getLevelHeight(state) : 0);
         if (platform.isDoingWork()) {
-            super.setState(defaultState);
+            super.setState(getDefaultState());
         } else {
             super.setState(State.IDLE);
         }

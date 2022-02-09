@@ -4,4 +4,5 @@ public enum Freight {
     BALL,
     CUBE,
     DUCK,
+    NONE,
 }

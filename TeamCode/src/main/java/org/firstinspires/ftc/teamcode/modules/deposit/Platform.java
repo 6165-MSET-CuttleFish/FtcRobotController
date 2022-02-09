@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.modules.freight.Freight;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
@@ -24,7 +25,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Platform extends Module<Platform.State> {
     public static double outPosition3 = 0.3;
-    public static double outPosition2 = 0.15;
+    public static double outPosition2 = 0.0;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.015;
@@ -35,8 +36,7 @@ public class Platform extends Module<Platform.State> {
     public static double dumpServoPositionPerSecond = 6;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
-    public static boolean
-    public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9;
+    public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
 
     @Override
     public boolean isTransitioningState() {
@@ -121,7 +121,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.LOCKING);
                 }
                 if (!intakeCleared && !arm.isTransitioning()) {
-                    intake.createClearance();
+                    if (intake.getState() != Intake.State.OUT) intake.createClearance();
                     intakeCleared = true;
                 }
                 if (intake.getState() == Intake.State.OUT && intake.isTransitioningState()) {
@@ -257,7 +257,17 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void tiltOut() {
-        tilt.setPosition(tiltOutPos);
+        switch (deposit.getDefaultState()) {
+            case LEVEL3:
+                tilt.setPosition(tiltOutPos);
+                break;
+            case LEVEL2:
+                tilt.setPosition(tiltOutPos2);
+                break;
+            case LEVEL1:
+                tilt.setPosition(tiltOutPos1);
+        }
+        //tilt.setPosition(tiltOutPos);
     }
 
     private void lock() {

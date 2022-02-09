@@ -86,7 +86,7 @@ public class DriverPractice extends LinearOpMode {
                 gamepad2.rumble(500);
             }
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
-            if (gamepad1.left_bumper && gamepad1.right_bumper) {
+            if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
                         mode = Mode.ENDGAME;
