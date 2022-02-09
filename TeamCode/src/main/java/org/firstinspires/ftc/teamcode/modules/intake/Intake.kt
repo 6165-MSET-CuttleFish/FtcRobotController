@@ -29,13 +29,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 0.80
         @JvmField
-        var intakeLimit = 8.0
+        var intakeLimit = 15.0
         @JvmField
         var outPosition = 0.39
         @JvmField
         var inPosition = 0.0
         @JvmField
-        var midPosition = 0.22
+        var midPosition = 0.29
         @JvmField
         var extensionPositionPerSecond = 0.5
         @JvmField
@@ -43,7 +43,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var alphaTolerance = 0.4
         @JvmField
-        var smoothingCoeffecient = 0.2
+        var smoothingCoeffecientDistance = 0.85
+        @JvmField
+        var smoothingCoefficientAlpha = 0.85
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -64,6 +66,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
     private var power = 0.0
     var containsBlock = false
+    private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
+    private var colorFilter = LowPassFilter(smoothingCoefficientAlpha, 0.0)
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -97,7 +101,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
+        distanceFilter.a = smoothingCoeffecientDistance
+        colorFilter.a = smoothingCoefficientAlpha
         var power = power
+        val unfilteredAlpha = blockSensor.normalizedColors.alpha.toDouble()
+        val alpha = colorFilter.update(unfilteredAlpha)
+        val unfilteredDistance = distance
+        val distance = distanceFilter.update(unfilteredDistance)
         when (state) {
             State.OUT -> {
                 deploy()
@@ -108,10 +118,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.IN -> {
                 retract()
+                if (distance < intakeLimit && isTransitioningState()) {
+                    containsBlock = true
+                }
                 if (containsBlock) {
                     if (isTransitioningState()) {
-                        val color = blockSensor.normalizedColors
-                        freight = if (color.alpha > alphaTolerance) {
+                        freight = if (alpha > alphaTolerance) {
                             Freight.BALL
                         } else {
                             Freight.CUBE
@@ -145,13 +157,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         }
         poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
         intake.power = if (isHazardous) 0.0 else power
+
         Context.packet.put("containsBlock", containsBlock)
-        Context.packet.put("Intake Motor Current", intake.getCurrent(CurrentUnit.MILLIAMPS))
         Context.packet.put("Extension Real Position", extensionServos.realPosition)
         Context.packet.put("Drop Real Position", flip.realPosition)
-        Context.packet.put("Intake Color Alpha", blockSensor.normalizedColors.alpha)
-        Context.packet.put("Freight", freight)
-        Context.packet.put("Block Sensor Distance", distance)
+        Context.packet.put("Raw Alpha", unfilteredAlpha)
+        Context.packet.put("Filtered Alpha", alpha)
+        Context.packet.put("Filtered Block Distance", distance)
+        Context.packet.put("Block Sensor Distance", unfilteredDistance)
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }
