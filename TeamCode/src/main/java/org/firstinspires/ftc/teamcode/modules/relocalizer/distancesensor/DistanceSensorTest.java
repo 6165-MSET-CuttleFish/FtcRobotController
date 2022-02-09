@@ -5,13 +5,14 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
+import org.outoftheboxrobotics.neutrinoi2c.MB1242.AsyncMB1242;
 
 @TeleOp
 public class DistanceSensorTest extends ModuleTest {
     DistanceSensor distanceSensor;
     @Override
     public void initialize() {
-        distanceSensor = new MB1242(hardwareMap.i2cDeviceSynch.get("ultra"));
+        distanceSensor = hardwareMap.get(AsyncMB1242.class, "ultra");
     }
 
     public void update() {

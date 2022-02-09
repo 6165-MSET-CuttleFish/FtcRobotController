@@ -53,12 +53,10 @@ class AdvancedCarouselRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .capstoneReady(capstone)
                 .splineTo(
                     duckLocation().vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
-                .capstonePickup(capstone)
                 .liftUp(deposit, Deposit.State.LEVEL3)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))

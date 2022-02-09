@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.modules.freight;
+package org.firstinspires.ftc.teamcode.util.field;
 
 public enum Freight {
     BALL,

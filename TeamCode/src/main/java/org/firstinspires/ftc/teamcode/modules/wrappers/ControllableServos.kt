@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers
 
 import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.hardware.ServoImplEx
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import kotlin.math.round
@@ -56,5 +55,9 @@ class ControllableServos(vararg servos: Servo) : Actuator {
 
     override fun enable() {
 //        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
+    }
+
+    override fun update() {
+        TODO("Not yet implemented")
     }
 }

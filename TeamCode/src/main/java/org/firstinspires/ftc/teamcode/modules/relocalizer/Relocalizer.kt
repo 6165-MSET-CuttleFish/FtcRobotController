@@ -5,9 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
-import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1242
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1643
-import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.UltrasonicDistanceSensor
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
@@ -20,18 +18,8 @@ import kotlin.math.cos
 class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) {
     private val frontLeftDistance = hardwareMap.get(AsyncMB1242::class.java,"leftFrontDS")
     private val frontRightDistance = hardwareMap.get(AsyncMB1242::class.java,"rightFrontDS")
-    private val leftDistance =
-        MB1643(
-            hardwareMap,
-            "leftDS",
-            // Pose2d(-8.0, 8.0)
-        )
-    private val rightDistance =
-        MB1643(
-            hardwareMap,
-            "rightDS",
-            // Pose2d(-8.0, -8.0)
-        )
+    private val leftDistance = MB1643(hardwareMap,"leftDS")
+    private val rightDistance = MB1643(hardwareMap,"rightDS")
     companion object {
         @JvmField
         var frontDistanceSensorXOffset = 8.0
@@ -79,7 +67,7 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) {
                 val yPoseEstimate =
                     Pose2d(Context.robotPose.x, y, heading)
                         .polarAdd(-horizontalDistanceSensorXOffset)
-                        .polarAdd(horizontalDistanceSensorYOffset, Math.toRadians(90.0))
+                        .polarAdd(if (alliance == Alliance.BLUE) -horizontalDistanceSensorYOffset else horizontalDistanceSensorYOffset, Math.toRadians(90.0))
                 return Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
             }
         }

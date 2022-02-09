@@ -44,4 +44,8 @@ class ControllableMotor(vararg motors: DcMotorEx) : Actuator {
     override fun enable() {
         disabled = false
     }
+
+    override fun update() {
+        TODO("Not yet implemented")
+    }
 }

@@ -56,11 +56,9 @@ class CarouselBlue : LinearOpMode() {
                 .splineTo(Vector2d(-56.5, -36.0).flip(blue), Math.toRadians(-270.0).flip(blue))
                 .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
-                .capstoneReady(capstone)
                 .waitWhile(capstone::isDoingWork)
                 .back(20.0)
                 .resetConstraints()
-                .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(40.0).flip(blue))

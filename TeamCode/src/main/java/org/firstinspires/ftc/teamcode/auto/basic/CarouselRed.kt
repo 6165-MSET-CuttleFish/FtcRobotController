@@ -57,11 +57,9 @@ class CarouselRed : LinearOpMode() {
                 .setConstraints(getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(10.0))
                 .turn(Math.toRadians(-90.0).flip(blue))
                 .forward(3.0)
-                .capstoneReady(capstone)
                 .waitWhile(capstone::isDoingWork)
                 .back(20.0)
                 .resetConstraints()
-                .capstonePickup(capstone)
                 .liftUp(deposit, getLevel(location))
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(Vector2d(-27.9, -25.0).flip(blue), Math.toRadians(30.0).flip(blue))

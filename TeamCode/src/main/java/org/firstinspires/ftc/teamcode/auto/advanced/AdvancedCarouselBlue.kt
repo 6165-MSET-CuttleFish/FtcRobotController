@@ -52,12 +52,10 @@ class AdvancedCarouselBlue : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .capstoneReady(capstone)
                 .splineTo(
                     duckLocation().vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
-                .capstonePickup(capstone)
                 .liftUp(deposit, Deposit.State.LEVEL3)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), dumpPosition().heading)

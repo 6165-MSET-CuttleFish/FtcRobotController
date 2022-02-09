@@ -3,12 +3,11 @@ package org.firstinspires.ftc.teamcode.modules.intake
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.*
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
-import org.firstinspires.ftc.teamcode.modules.freight.Freight
+import org.firstinspires.ftc.teamcode.util.field.Freight
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd

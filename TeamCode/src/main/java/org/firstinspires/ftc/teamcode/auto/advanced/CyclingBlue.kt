@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
 import org.firstinspires.ftc.teamcode.modules.vision.Detector
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
@@ -33,6 +34,7 @@ class CyclingBlue : LinearOpMode() {
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
+    lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
         @JvmField var radiusOffset = 5.0
@@ -49,6 +51,7 @@ class CyclingBlue : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
+        relocalizer = robot.relocalizer
 //        robot.visionInit()
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
@@ -77,6 +80,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
                 .splineToConstantHeading(Vector2d(28.0, coast).flip(blue), 0.0)
                 .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
+                .relocalize(relocalizer, robot)
                 .setReversed(true)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)

@@ -19,36 +19,43 @@ public class MB1643 implements DistanceSensor {
 
     @Override
     public double getDistance(DistanceUnit unit) {
-        return 89.4897 * distanceSensor.getVoltage() - 12.9012;
+        double inches = 89.4897 * distanceSensor.getVoltage() - 12.9012;
+        switch (unit) {
+            case INCH: return inches;
+            case CM: return inches * 2.54;
+            case MM: return inches * 25.4;
+            case METER: return inches * 0.0254;
+        }
+        return inches;
     }
 
     @Override
     public Manufacturer getManufacturer() {
-        return null;
+        return distanceSensor.getManufacturer();
     }
 
     @Override
     public String getDeviceName() {
-        return null;
+        return distanceSensor.getDeviceName();
     }
 
     @Override
     public String getConnectionInfo() {
-        return null;
+        return distanceSensor.getConnectionInfo();
     }
 
     @Override
     public int getVersion() {
-        return 0;
+        return distanceSensor.getVersion();
     }
 
     @Override
     public void resetDeviceConfigurationForOpMode() {
-
+        distanceSensor.resetDeviceConfigurationForOpMode();
     }
 
     @Override
     public void close() {
-
+        distanceSensor.close();
     }
 }

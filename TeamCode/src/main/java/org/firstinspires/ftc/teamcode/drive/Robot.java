@@ -113,7 +113,7 @@ public class Robot extends ImprovedTankDrive {
     public Deposit deposit;
     public Carousel carousel;
     public Capstone capstone;
-    private Relocalizer relocalizer;
+    public Relocalizer relocalizer;
 
     private final BNO055IMU imu;
     private final List<DcMotorEx> motors, leftMotors, rightMotors;
@@ -397,6 +397,13 @@ public class Robot extends ImprovedTankDrive {
         }
         systemIsOverCurrent = current > MAX_CURRENT;
         robotSlowed = currentIntegral > MID_POWER;
+        if (robotSlowed) {
+            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } else {
+            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
         if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
             robotDisabled = true;
             currentTimer.reset();
