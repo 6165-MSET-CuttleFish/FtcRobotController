@@ -13,20 +13,13 @@ import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
 import org.firstinspires.ftc.teamcode.util.field.Side
+import org.outoftheboxrobotics.neutrinoi2c.MB1242.AsyncMB1242
 import kotlin.math.cos
 
 @Config
 class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) {
-    private val frontLeftDistance =
-        MB1242(
-            hardwareMap.i2cDeviceSynch.get("leftFrontDS"),
-            // Pose2d(8.0, 8.0)
-        )
-    private val frontRightDistance =
-        MB1242(
-            hardwareMap.i2cDeviceSynch.get("rightFrontDS"),
-            // Pose2d(8.0, 8.0)
-        )
+    private val frontLeftDistance = hardwareMap.get(AsyncMB1242::class.java,"leftFrontDS")
+    private val frontRightDistance = hardwareMap.get(AsyncMB1242::class.java,"rightFrontDS")
     private val leftDistance =
         MB1643(
             hardwareMap,
