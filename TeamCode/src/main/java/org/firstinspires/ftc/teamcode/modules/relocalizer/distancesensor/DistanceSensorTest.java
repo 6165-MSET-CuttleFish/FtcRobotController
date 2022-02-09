@@ -1,20 +1,21 @@
 package org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
 public class DistanceSensorTest extends ModuleTest {
-    UltrasonicDistanceSensor distanceSensor;
+    DistanceSensor distanceSensor;
     @Override
     public void initialize() {
-        distanceSensor = new UltrasonicDistanceSensor(hardwareMap, "ultra", new Pose2d());
+        distanceSensor = new MB1242(hardwareMap.i2cDeviceSynch.get("ultra"));
     }
 
     public void update() {
-        telemetry.addData("Measured Distance", distanceSensor.getDistance());
+        telemetry.addData("Measured Distance", distanceSensor.getDistance(DistanceUnit.CM));
         telemetry.update();
     }
 }
