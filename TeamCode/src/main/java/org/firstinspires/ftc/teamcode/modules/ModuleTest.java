@@ -36,6 +36,12 @@ public abstract class ModuleTest extends OpMode {
 
     @Override
     public final void init() {
+        Context.telemetry = telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        Context.opModeType = OpModeType.NONE;
+        Context.side = Side.NONE;
+        Context.robotPose = new Pose2d();
+        Context.alliance = Alliance.NONE;
+        Context.balance = Balance.BALANCED;
         initialize();
         for (Module module : modules) {
             module.init();
@@ -45,12 +51,6 @@ public abstract class ModuleTest extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-        Context.telemetry = telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        Context.opModeType = OpModeType.NONE;
-        Context.side = Side.NONE;
-        Context.robotPose = new Pose2d();
-        Context.alliance = Alliance.NONE;
-        Context.balance = Balance.BALANCED;
     }
 
     @Override

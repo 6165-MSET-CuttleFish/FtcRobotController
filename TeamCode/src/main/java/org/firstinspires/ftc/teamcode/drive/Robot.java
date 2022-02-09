@@ -82,7 +82,7 @@ public class Robot extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 10;
+    public static double MID_POWER = 15;
     public static double MAX_POWER = 20;
     public static double MIN_PUSHING_VELO = 40;
     public static double MAX_CURRENT_OVERFLOW_TIME = 0.9;
@@ -359,7 +359,6 @@ public class Robot extends ImprovedTankDrive {
     }
 
     ElapsedTime currentTimer = new ElapsedTime();
-    ElapsedTime stateTimer = new ElapsedTime();
     double currentIntegral;
     ElapsedTime loopTime = new ElapsedTime();
     boolean systemIsOverCurrent;
@@ -388,6 +387,7 @@ public class Robot extends ImprovedTankDrive {
         Context.packet.put("Total Current", current);
         Context.packet.put("Integral Power", currentIntegral);
         Context.packet.put("MAX POWER", MAX_POWER);
+        Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
         Context.packet.put("Current State", currentState);
         currentIntegral += current * loopTime.seconds();
@@ -396,20 +396,16 @@ public class Robot extends ImprovedTankDrive {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
         systemIsOverCurrent = current > MAX_CURRENT;
-        robotSlowed = systemIsOverCurrent && currentIntegral > MID_POWER;
-        robotDisabled = systemIsOverCurrent && currentIntegral > MAX_POWER;
-        if (systemIsOverCurrent) {
-            if (currentIntegral > MAX_POWER) {
-                currentState = CurrentState.ROBOT_DISABLED;
-            }
-            stateTimer.reset();
+        robotSlowed = currentIntegral > MID_POWER;
+        if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
+            robotDisabled = true;
+            currentTimer.reset();
         } else {
-            if (stateTimer.seconds() > COOLDOWN_TIME && robotDisabled) {
-                currentState = CurrentState.NORMAL;
-                stateTimer.reset();
+            if (currentTimer.seconds() > COOLDOWN_TIME && robotDisabled) {
+                robotDisabled = false;
+                currentTimer.reset();
             }
             if (!systemIsOverCurrent) {
-                currentTimer.reset();
                 currentIntegral = 0;
             }
         }
