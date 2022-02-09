@@ -29,11 +29,11 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.freight;
 public class Deposit extends Module<Deposit.State> {
     public static boolean farDeposit = true;
     public static boolean allowLift = true;
-    public static double LEVEL3 = 12.8;
+    public static double LEVEL3 = 12;
     public static double LEVEL2 = 6;
     public static double LEVEL1 = 0;
     public static boolean resetEncoder = false;
-    public static double allowableDepositError = 4;
+    public static double allowableDepositError = 1;
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(State state) {

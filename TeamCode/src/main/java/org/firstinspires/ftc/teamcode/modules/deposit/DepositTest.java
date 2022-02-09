@@ -42,13 +42,17 @@ public class DepositTest extends ModuleTest {
         packet.put("balance", balance);
         packet.put("LB", tippedAway.getState());
         packet.put("RB", tippedToward.getState());
-        intake.setPower(gamepad1.right_trigger);
+        intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
         if (gamepad1.b) {
             Platform.isLoaded = true;
             deposit.platform.prepPlatform(deposit.getDefaultState());
         }
         if (farDeposit.wasJustPressed()) {
             Deposit.farDeposit = !Deposit.farDeposit;
+        }
+        if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
+            gamepad1.rumble(500);
+            gamepad2.rumble(500);
         }
         if (gamepad1.a) {
             deposit.dump();

@@ -27,13 +27,13 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition3 = 0.3;
     public static double outPosition2 = 0.0;
     public static double outPosition1 = 0.0;
-    public static double holdingPosition = 0.4;
+    public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
     public static double inPosition = 0.94, higherInPosition = 0.85;
     public static double lockPosition = 0.23;
     public static double unlockPosition = 0.4;
     public static double blockDistanceTolerance = 8;
-    public static double dumpServoPositionPerSecond = 6;
+    public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public static double tiltInPos = 0.82, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
@@ -121,7 +121,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.LOCKING);
                 }
                 if (!intakeCleared && !arm.isTransitioning()) {
-                    if (intake.getState() != Intake.State.OUT) intake.createClearance();
+                    if (intake.getState() != Intake.State.OUT) intake.retractIntake();
                     intakeCleared = true;
                 }
                 if (intake.getState() == Intake.State.OUT && intake.isTransitioningState()) {
@@ -164,7 +164,6 @@ public class Platform extends Module<Platform.State> {
                 break;
             case DUMPING:
                 unlock();
-                intake.retractIntake();
                 if (getSecondsSpentInState() > getState().timeOut) {
                     setState(State.IN);
                     isLoaded = false;
@@ -172,6 +171,7 @@ public class Platform extends Module<Platform.State> {
                 break;
         }
         Context.packet.put("isLoaded", isLoaded);
+        Context.packet.put("Arm Real Position", arm.getRealPosition());
     }
 
     /**
