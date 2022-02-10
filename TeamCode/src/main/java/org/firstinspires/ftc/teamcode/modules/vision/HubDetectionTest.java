@@ -1,25 +1,22 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(name = "TSEVision Test")
-public class TestOpMode extends OpMode {
+@TeleOp
+public class HubDetectionTest extends ModuleTest {
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     public OpenCvWebcam webcam;
-    private TSEDetector TSEDetector;
-    FtcDashboard dashboard = FtcDashboard.getInstance();
+    private ShippingHubDetector shippingHubDetector;
 
     @Override
-    public void init() {
+    public void initialize() {
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -32,7 +29,7 @@ public class TestOpMode extends OpMode {
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        webcam.setPipeline(TSEDetector = new TSEDetector());
+        webcam.setPipeline(shippingHubDetector = new ShippingHubDetector());
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -42,7 +39,6 @@ public class TestOpMode extends OpMode {
             public void onError(int errorCode) {
             }
         });
-
         dashboard.startCameraStream(webcam, 30);
 
         telemetry.addLine("waiting for start");
@@ -50,8 +46,8 @@ public class TestOpMode extends OpMode {
     }
 
     @Override
-    public void loop() {
-        telemetry.addData("Location", TSEDetector.getLocation());
-        telemetry.update();
+    public void update() {
+        telemetry.addData("X", shippingHubDetector.getX());
+        telemetry.addData("Y", shippingHubDetector.getY());
     }
 }

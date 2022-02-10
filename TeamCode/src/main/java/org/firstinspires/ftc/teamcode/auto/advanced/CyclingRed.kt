@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
-import org.firstinspires.ftc.teamcode.modules.vision.Detector
+import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import org.firstinspires.ftc.teamcode.util.field.Alliance
@@ -52,9 +52,9 @@ class CyclingRed : LinearOpMode() {
         waitForStart()
         robot.scan()
         val sequence = when (location) {
-            Detector.Location.LEFT -> leftSequence
-            Detector.Location.MIDDLE -> middleSequence
-            Detector.Location.RIGHT -> rightSequence
+            TSEDetector.Location.LEFT -> leftSequence
+            TSEDetector.Location.MIDDLE -> middleSequence
+            TSEDetector.Location.RIGHT -> rightSequence
         }
         robot.turnOffVision()
         robot.followTrajectorySequence(sequence)

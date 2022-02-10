@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1242
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1643
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Alliance
@@ -16,8 +17,8 @@ import kotlin.math.cos
 
 @Config
 class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) {
-    private val frontLeftDistance = hardwareMap.get(AsyncMB1242::class.java,"leftFrontDS")
-    private val frontRightDistance = hardwareMap.get(AsyncMB1242::class.java,"rightFrontDS")
+    private val frontLeftDistance = MB1242(hardwareMap.i2cDeviceSynch.get("leftFrontDS"))
+    private val frontRightDistance = MB1242(hardwareMap.i2cDeviceSynch.get("rightFrontDS"))
     private val leftDistance = MB1643(hardwareMap,"leftDS")
     private val rightDistance = MB1643(hardwareMap,"rightDS")
     companion object {

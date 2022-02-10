@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.drive
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import org.firstinspires.ftc.teamcode.modules.vision.Detector
+import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.util.field.Alliance
@@ -51,18 +51,18 @@ object FrequentPositions {
     fun duckLocation(): Pose2d {
         val arr = duckLocations
         return when (location) {
-            Detector.Location.LEFT -> arr[0]
-            Detector.Location.RIGHT -> arr[2]
-            Detector.Location.MIDDLE -> arr[1]
+            TSEDetector.Location.LEFT -> arr[0]
+            TSEDetector.Location.RIGHT -> arr[2]
+            TSEDetector.Location.MIDDLE -> arr[1]
         }
     }
 
-    fun duckLocation(location: Detector.Location): Pose2d {
+    fun duckLocation(location: TSEDetector.Location): Pose2d {
         val arr = duckLocations
         return when (location) {
-            Detector.Location.LEFT -> arr[0]
-            Detector.Location.RIGHT -> arr[2]
-            Detector.Location.MIDDLE -> arr[1]
+            TSEDetector.Location.LEFT -> arr[0]
+            TSEDetector.Location.RIGHT -> arr[2]
+            TSEDetector.Location.MIDDLE -> arr[1]
         }
     }
 

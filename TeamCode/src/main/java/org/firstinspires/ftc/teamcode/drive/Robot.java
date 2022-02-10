@@ -37,7 +37,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.modules.vision.Detector;
+import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
@@ -101,7 +101,7 @@ public class Robot extends ImprovedTankDrive {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
-    private final Detector detector = new Detector();
+    private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     public static double slowFactor = 1;
     public static double headingSpeed = 2;
@@ -248,7 +248,7 @@ public class Robot extends ImprovedTankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(detector);
+        webcam.setPipeline(TSEDetector);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -270,10 +270,10 @@ public class Robot extends ImprovedTankDrive {
     }
 
     public void scan() {
-        location = detector.getLocation();
+        location = TSEDetector.getLocation();
     }
 
-    public static Deposit.State getLevel(Detector.Location location) {
+    public static Deposit.State getLevel(TSEDetector.Location location) {
         switch (location) {
             case LEFT: return Deposit.State.IDLE;
             case MIDDLE: return Deposit.State.LEVEL2;

@@ -17,7 +17,7 @@ import static org.opencv.imgproc.Imgproc.rectangle;
 
 //
 @Config
-public class Detector extends OpenCvPipeline {
+public class TSEDetector extends OpenCvPipeline {
     public enum Location {
         LEFT,
         MIDDLE,

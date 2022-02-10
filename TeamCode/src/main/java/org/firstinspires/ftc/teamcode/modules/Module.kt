@@ -54,12 +54,6 @@ abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     protected val millisecondsSpentInState
         get() = elapsedTime.milliseconds()
 
-    /**
-     * The time spent in the current state in microseconds
-     */
-    protected val microsecondsSpentInState
-        get() = millisecondsSpentInState * 1000
-
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
     private var actuators = arrayOf<Actuator>()
