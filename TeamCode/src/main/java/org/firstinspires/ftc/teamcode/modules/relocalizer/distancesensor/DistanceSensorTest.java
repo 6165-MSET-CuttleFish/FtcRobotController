@@ -8,14 +8,16 @@ import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
 public class DistanceSensorTest extends ModuleTest {
-    DistanceSensor distanceSensor;
+    DistanceSensor frontDist, sideDist;
     @Override
     public void initialize() {
-        distanceSensor = new MB1242(hardwareMap.i2cDeviceSynch.get("leftFrontDS"));
+        frontDist = new MB1242(hardwareMap.i2cDeviceSynch.get("rightFrontDS"));
+        sideDist = new MB1643(hardwareMap, "leftDS");
     }
 
     public void update() {
-        telemetry.addData("Measured Distance", distanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Front Distance", frontDist.getDistance(DistanceUnit.INCH));
+        telemetry.addData("Left Distance", sideDist.getDistance(DistanceUnit.INCH));
         telemetry.update();
     }
 }

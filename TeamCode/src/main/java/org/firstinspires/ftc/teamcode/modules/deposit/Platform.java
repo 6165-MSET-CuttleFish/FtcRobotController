@@ -169,8 +169,10 @@ public class Platform extends Module<Platform.State> {
                 }
                 break;
         }
-        Context.packet.put("isLoaded", isLoaded);
-        Context.packet.put("Arm Real Position", arm.getRealPosition());
+        if (isDebugMode()) {
+            Context.packet.put("isLoaded", isLoaded);
+            Context.packet.put("Arm Real Position", arm.getRealPosition());
+        }
     }
 
     /**

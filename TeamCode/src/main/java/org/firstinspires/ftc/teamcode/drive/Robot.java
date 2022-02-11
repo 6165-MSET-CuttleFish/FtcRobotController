@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -43,6 +44,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySeque
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -84,18 +86,12 @@ public class Robot extends ImprovedTankDrive {
     public static double MAX_CURRENT = 15;
     public static double MID_POWER = 15;
     public static double MAX_POWER = 20;
-    public static double MIN_PUSHING_VELO = 40;
-    public static double MAX_CURRENT_OVERFLOW_TIME = 0.9;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
-    CurrentState currentState = CurrentState.NORMAL;
-    enum CurrentState {
-        NORMAL,
-        ROBOT_DISABLED,
-    }
+    public static boolean isGainScheduled;
 
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
@@ -202,6 +198,7 @@ public class Robot extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
+                relocalizer = new Relocalizer(hardwareMap, imu)
         };
         for (Module module : modules) {
             module.init();
@@ -213,7 +210,6 @@ public class Robot extends ImprovedTankDrive {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
-//            motor.setCurrentAlert(MAX_CURRENT, CurrentUnit.MILLIAMPS);
         }
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -364,7 +360,17 @@ public class Robot extends ImprovedTankDrive {
     boolean systemIsOverCurrent;
     boolean robotSlowed;
     boolean robotDisabled;
+
+    public static double correctionTolerance = 15;
+
     public void correctPosition() {
+        Pose2d newPose = relocalizer.getPoseEstimate();
+        Pose2d currPose = getPoseEstimate();
+        Pose2d delta = newPose.minus(currPose);
+        if (Math.abs(delta.getX()) < correctionTolerance && Math.abs(delta.getY()) < correctionTolerance) setPoseEstimate(newPose);
+    }
+
+    public void rawCorrectPosition() {
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
@@ -383,13 +389,18 @@ public class Robot extends ImprovedTankDrive {
             module.update();
            // module.setHazardous(currentState != CurrentState.NORMAL);
         }
+        Pose2d delta = relocalizer.getPoseEstimate().minus(getPoseEstimate());
+        Context.packet.put("Delta X", delta.getX());
+        Context.packet.put("Delta Y", delta.getY());
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
         Context.packet.put("Integral Power", currentIntegral);
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
-        Context.packet.put("Current State", currentState);
+        Canvas canvas = Context.packet.fieldOverlay();
+        canvas.setStroke("#F04141");
+        DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
         currentIntegral += current * loopTime.seconds();
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {

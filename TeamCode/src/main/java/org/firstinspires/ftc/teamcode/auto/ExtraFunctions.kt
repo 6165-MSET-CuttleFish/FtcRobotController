@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto
 
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
@@ -13,8 +15,17 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
     return addTrajectory(segment.trajectory)
 }
 
-fun TrajectorySequenceBuilder.relocalize(relocalizer: Relocalizer, robot: Robot) = UNSTABLE_addDisplacementMarkerOffset(0.0) {
-    robot.poseEstimate = relocalizer.poseEstimate
+fun TrajectorySequenceBuilder.relocalize(robot: Robot, offset: Double = 0.0) = UNSTABLE_addDisplacementMarkerOffset(offset) {
+    robot.correctPosition()
+}
+
+fun TrajectorySequenceBuilder.increaseGains() : TrajectorySequenceBuilder {
+    setConstraints(
+        Robot.getVelocityConstraint(10.0, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH),
+        Robot.getAccelerationConstraint(10.0)
+    )
+    Robot.isGainScheduled = true
+    return this
 }
 
 fun TrajectorySequenceBuilder.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder {

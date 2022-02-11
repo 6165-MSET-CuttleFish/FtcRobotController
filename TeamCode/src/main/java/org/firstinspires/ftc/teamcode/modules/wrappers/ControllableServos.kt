@@ -58,6 +58,6 @@ class ControllableServos(vararg servos: Servo) : Actuator {
     }
 
     override fun update() {
-        TODO("Not yet implemented")
+
     }
 }

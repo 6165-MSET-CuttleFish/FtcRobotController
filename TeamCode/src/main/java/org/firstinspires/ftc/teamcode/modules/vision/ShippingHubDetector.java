@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
-import com.acmerobotics.dashboard.config.Config;
-
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -16,7 +14,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
-@Config
 public class ShippingHubDetector extends OpenCvPipeline {
     public ShippingHubDetector(){
         ret = new Mat();

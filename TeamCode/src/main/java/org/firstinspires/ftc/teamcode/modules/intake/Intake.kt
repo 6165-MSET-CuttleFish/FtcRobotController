@@ -28,7 +28,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 0.80
         @JvmField
-        var intakeLimit = 15.0
+        var intakeLimit = 7.0
         @JvmField
         var outPosition = 0.39
         @JvmField
@@ -156,14 +156,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         }
         poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
         intake.power = if (isHazardous) 0.0 else power
-
-        Context.packet.put("containsBlock", containsBlock)
-        Context.packet.put("Extension Real Position", extensionServos.realPosition)
-        Context.packet.put("Drop Real Position", flip.realPosition)
-        Context.packet.put("Raw Alpha", unfilteredAlpha)
-        Context.packet.put("Filtered Alpha", alpha)
-        Context.packet.put("Filtered Block Distance", distance)
-        Context.packet.put("Block Sensor Distance", unfilteredDistance)
+        if (isDebugMode) {
+            Context.packet.put("containsBlock", containsBlock)
+            Context.packet.put("Extension Real Position", extensionServos.realPosition)
+            Context.packet.put("Drop Real Position", flip.realPosition)
+            Context.packet.put("Raw Alpha", unfilteredAlpha)
+            Context.packet.put("Filtered Alpha", alpha)
+            Context.packet.put("Filtered Block Distance", distance)
+            Context.packet.put("Block Sensor Distance", unfilteredDistance)
+        }
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
     }

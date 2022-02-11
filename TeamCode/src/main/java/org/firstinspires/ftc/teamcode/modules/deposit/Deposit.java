@@ -15,10 +15,16 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor;
 import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.freight;
+import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
  * Slides that go up to the level for depositing freight
@@ -115,7 +121,7 @@ public class Deposit extends Module<Deposit.State> {
     private State defaultState = State.LEVEL3;
 
     public State getDefaultState() {
-        if (freight == Freight.BALL && defaultState == State.LEVEL3) {
+        if (freight == Freight.BALL && defaultState == State.LEVEL3 && opModeType != OpModeType.AUTO) {
             return State.LEVEL2;
         }
         return defaultState;
@@ -140,7 +146,7 @@ public class Deposit extends Module<Deposit.State> {
     @Override
     public void internalUpdate() {
         State state = getState();
-        if (freight == Freight.BALL && state == State.LEVEL3) {
+        if (freight == Freight.BALL && state == State.LEVEL3 && opModeType != OpModeType.AUTO) {
             state = State.LEVEL2;
         }
         pidController.setTargetPosition(farDeposit ? getLevelHeight(state) : 0);
@@ -170,10 +176,12 @@ public class Deposit extends Module<Deposit.State> {
             lastKd = MOTOR_PID.kD;
             pidController = new BPIDFController(MOTOR_PID, kV, kA, kStatic);
         }
-        Context.packet.put("Target Height", pidController.getTargetPosition());
-        Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
-        Context.packet.put("Deposit Motor Power", power);
-        Context.packet.put("Lift Error", getLastError());
+        if (isDebugMode()) {
+            Context.packet.put("Target Height", pidController.getTargetPosition());
+            Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+            Context.packet.put("Deposit Motor Power", power);
+            Context.packet.put("Lift Error", getLastError());
+        }
     }
 
     public double getLastError() {

@@ -41,6 +41,8 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var line = -44.0
         @JvmField var coast = -55.0
         @JvmField var stop = 58.0
+        @JvmField var intakeDelay = 7.0
+        @JvmField var conjoiningPoint = 18.0
     }
 
     @Throws(InterruptedException::class)
@@ -74,17 +76,18 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder): TrajectorySequence {
         for (i in 1..9)
             trajectoryBuilder
-                .UNSTABLE_addDisplacementMarkerOffset(3.0) {
+                .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
                 }
-                .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
+                .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .splineToConstantHeading(Vector2d(28.0, coast).flip(blue), 0.0)
                 .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
-                .relocalize(relocalizer, robot)
                 .setReversed(true)
+                .waitSeconds(0.4)
+                .relocalize(robot)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
-                .splineToConstantHeading(Vector2d(20.0, coast).flip(blue), Math.PI)
+                .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .liftUp(deposit, Deposit.State.LEVEL3)
                 .splineToCircle(
                     allianceHub.expandedRadius(radiusOffset),

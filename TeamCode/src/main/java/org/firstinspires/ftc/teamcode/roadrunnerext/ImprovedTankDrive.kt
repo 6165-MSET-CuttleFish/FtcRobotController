@@ -3,21 +3,16 @@ package org.firstinspires.ftc.teamcode.roadrunnerext
 import com.acmerobotics.roadrunner.drive.Drive
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
-import org.firstinspires.ftc.teamcode.localizers.t265.T265Localizer
-import org.firstinspires.ftc.teamcode.util.controllers.KalmanFilter
-import org.firstinspires.ftc.teamcode.util.field.Context
-import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.drive.Robot
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
@@ -108,14 +103,18 @@ abstract class ImprovedTankDrive constructor(
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
         val voltageMultiplier = 12 / voltage
-        var powers = Kinematics.calculateMotorFeedforward(
+        val powers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
             kV * voltageMultiplier,
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
         )
-        setMotorPowers(powers[0], powers[1])
+        if (Robot.isGainScheduled) {
+            setMotorPowers(if (powers[0] > 0) 1.0 else -1.0, if (powers[0] > 0) 1.0 else -1.0)
+        } else {
+            setMotorPowers(powers[0], powers[1])
+        }
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
