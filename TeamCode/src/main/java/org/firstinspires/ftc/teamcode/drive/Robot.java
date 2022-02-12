@@ -91,7 +91,14 @@ public class Robot extends ImprovedTankDrive {
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
-    public static boolean isGainScheduled;
+    @NonNull public static GainMode gainMode = GainMode.IDLE;
+    public static double gainIncrease = 2.0;
+    public static double loweredVelo = 30;
+    public enum GainMode {
+        IDLE,
+        FORWARD,
+        BACKWARD,
+    }
 
     private static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
@@ -361,13 +368,12 @@ public class Robot extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 15;
+    public static double correctionTolerance = 20;
 
     public void correctPosition() {
         Pose2d newPose = relocalizer.getPoseEstimate();
         Pose2d currPose = getPoseEstimate();
-        Pose2d delta = newPose.minus(currPose);
-        if (Math.abs(delta.getX()) < correctionTolerance && Math.abs(delta.getY()) < correctionTolerance) setPoseEstimate(newPose);
+        if (Math.abs(currPose.vec().distTo(newPose.vec())) < correctionTolerance) setPoseEstimate(newPose);
     }
 
     public void rawCorrectPosition() {

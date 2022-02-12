@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.gamepad.KeyReader;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
@@ -16,11 +16,11 @@ import org.firstinspires.ftc.teamcode.util.field.Side;
 
 import java.util.List;
 
-public abstract class ModuleTest extends OpMode {
+public abstract class ModuleTest extends LinearOpMode {
     private Module[] modules = {};
     private KeyReader[] keyReaders = {};
     public FtcDashboard dashboard = FtcDashboard.getInstance();
-    private List<LynxModule> allHubs;
+
     public abstract void initialize();
 
     public abstract void update();
@@ -34,7 +34,7 @@ public abstract class ModuleTest extends OpMode {
     }
 
     @Override
-    public final void init() {
+    public final void runOpMode() throws InterruptedException {
         Context.telemetry = telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         Context.opModeType = OpModeType.NONE;
         Context.side = Side.NONE;
@@ -46,26 +46,25 @@ public abstract class ModuleTest extends OpMode {
             module.init();
             module.setDebugMode(true);
         }
-        allHubs = hardwareMap.getAll(LynxModule.class);
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-    }
-
-    @Override
-    public final void loop() {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
+        waitForStart();
+        while (opModeIsActive()) {
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
+            }
+            for (KeyReader keyReader : keyReaders) {
+                keyReader.readValue();
+            }
+            for (Module module : modules) {
+                module.update();
+            }
+            update();
+            assert Context.telemetry != null;
+            dashboard.sendTelemetryPacket(Context.packet);
+            Context.packet = new TelemetryPacket();
         }
-        for (KeyReader keyReader : keyReaders) {
-            keyReader.readValue();
-        }
-        for (Module module : modules) {
-            module.update();
-        }
-        update();
-        assert Context.telemetry != null;
-        dashboard.sendTelemetryPacket(Context.packet);
-        Context.packet = new TelemetryPacket();
     }
 }

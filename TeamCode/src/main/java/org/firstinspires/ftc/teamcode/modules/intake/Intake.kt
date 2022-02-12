@@ -28,7 +28,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 0.80
         @JvmField
-        var intakeLimit = 7.0
+        var intakeLimit = 8.0
         @JvmField
         var outPosition = 0.39
         @JvmField
@@ -36,15 +36,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.29
         @JvmField
-        var extensionPositionPerSecond = 0.5
+        var extensionPositionPerSecond = 0.55
         @JvmField
         var dropPositionPerSecond = 2.1
         @JvmField
         var alphaTolerance = 0.4
         @JvmField
-        var smoothingCoeffecientDistance = 0.85
+        var smoothingCoeffecientDistance = 0.8
         @JvmField
-        var smoothingCoefficientAlpha = 0.85
+        var smoothingCoefficientAlpha = 0.8
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -117,7 +117,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.IN -> {
                 retract()
-                if (distance < intakeLimit && isTransitioningState()) {
+                if (distance < intakeLimit && isTransitioningState() && previousState == State.OUT) {
                     containsBlock = true
                 }
                 if (containsBlock) {
@@ -137,7 +137,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.TRANSFER -> {
                 power = -1.0
-                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(3) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2.3) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     containsBlock = false
                     state = State.IN
                     power = 0.0

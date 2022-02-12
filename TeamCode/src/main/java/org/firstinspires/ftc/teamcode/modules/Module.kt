@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.Actuator
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
+import javax.lang.model.type.NullType
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T : StateBuilder> @JvmOverloads constructor(
+abstract class Module<T> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
     var poseOffset: Pose2d = Pose2d(),

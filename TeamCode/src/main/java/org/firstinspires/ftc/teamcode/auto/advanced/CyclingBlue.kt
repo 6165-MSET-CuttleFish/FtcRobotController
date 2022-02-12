@@ -40,8 +40,8 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var radiusOffset = 5.0
         @JvmField var line = -44.0
         @JvmField var coast = -55.0
-        @JvmField var stop = 58.0
-        @JvmField var intakeDelay = 7.0
+        @JvmField var stop = 51.0
+        @JvmField var intakeDelay = 4.0
         @JvmField var conjoiningPoint = 18.0
     }
 
@@ -80,14 +80,19 @@ class CyclingBlue : LinearOpMode() {
                     intake.setPower(1.0)
                 }
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
+                .increaseGains(Robot.GainMode.FORWARD)
                 .splineToConstantHeading(Vector2d(28.0, coast).flip(blue), 0.0)
+                .defaultGains()
                 .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
                 .setReversed(true)
                 .waitSeconds(0.4)
                 .relocalize(robot)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
+                .splineToConstantHeading(Vector2d(28.0, coast).flip(blue), Math.PI)
+                .increaseGains(Robot.GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
+                .defaultGains()
                 .liftUp(deposit, Deposit.State.LEVEL3)
                 .splineToCircle(
                     allianceHub.expandedRadius(radiusOffset),

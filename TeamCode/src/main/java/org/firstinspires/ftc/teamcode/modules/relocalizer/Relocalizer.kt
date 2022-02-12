@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
-import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1242
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.MB1643
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
@@ -14,17 +13,15 @@ import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
 import org.firstinspires.ftc.teamcode.util.field.Side
+import javax.lang.model.type.NullType
 import kotlin.math.cos
 
 @Config
-class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module<Relocalizer.State>(hardwareMap, State.IDLE) {
-    private val frontLeftDistance = MB1242(hardwareMap.i2cDeviceSynch.get("leftFrontDS"))
-    private val frontRightDistance = MB1242(hardwareMap.i2cDeviceSynch.get("rightFrontDS"))
+class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module<NullType?>(hardwareMap, null) {
+    private val frontLeftDistance = MB1242(hardwareMap ,"leftFrontDS")
+    private val frontRightDistance = MB1242(hardwareMap, "rightFrontDS")
     private val leftDistance = MB1643(hardwareMap,"leftDS")
     private val rightDistance = MB1643(hardwareMap,"rightDS")
-    enum class State(override val timeOut: Double? = null) : StateBuilder {
-       IDLE
-    }
     companion object {
         @JvmField
         var frontDistanceSensorXOffset = 7.5

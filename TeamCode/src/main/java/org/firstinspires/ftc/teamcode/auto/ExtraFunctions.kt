@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.auto
 
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
-import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TrajectorySegment
 
@@ -19,12 +17,22 @@ fun TrajectorySequenceBuilder.relocalize(robot: Robot, offset: Double = 0.0) = U
     robot.correctPosition()
 }
 
-fun TrajectorySequenceBuilder.increaseGains() : TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.increaseGains(gainMode: Robot.GainMode) : TrajectorySequenceBuilder {
     setConstraints(
-        Robot.getVelocityConstraint(10.0, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH),
-        Robot.getAccelerationConstraint(10.0)
+        Robot.getVelocityConstraint(Robot.loweredVelo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH),
+        Robot.getAccelerationConstraint(Robot.loweredVelo)
     )
-    Robot.isGainScheduled = true
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        Robot.gainMode = gainMode
+    }
+    return this
+}
+
+fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder {
+    resetConstraints()
+    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+        Robot.gainMode = Robot.GainMode.IDLE
+    }
     return this
 }
 

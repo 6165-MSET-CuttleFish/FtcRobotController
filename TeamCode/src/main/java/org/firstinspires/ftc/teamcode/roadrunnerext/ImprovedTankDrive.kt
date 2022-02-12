@@ -102,7 +102,11 @@ abstract class ImprovedTankDrive constructor(
         val velocities = TankKinematics.robotToWheelVelocities(driveSignal.vel, trackWidth)
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
-        val voltageMultiplier = 12 / voltage
+        val voltageMultiplier = when (Robot.gainMode) {
+            Robot.GainMode.IDLE -> 12 / voltage
+            Robot.GainMode.FORWARD -> Robot.gainIncrease
+            Robot.GainMode.BACKWARD -> Robot.gainIncrease
+        }
         val powers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
@@ -110,11 +114,7 @@ abstract class ImprovedTankDrive constructor(
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
         )
-        if (Robot.isGainScheduled) {
-            setMotorPowers(if (powers[0] > 0) 1.0 else -1.0, if (powers[0] > 0) 1.0 else -1.0)
-        } else {
-            setMotorPowers(powers[0], powers[1])
-        }
+        setMotorPowers(powers[0], powers[1])
     }
 
     override fun setDrivePower(drivePower: Pose2d) {

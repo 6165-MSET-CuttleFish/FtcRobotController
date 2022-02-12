@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.telemetry
  * to perform localization with a T265 camera.
  */
 @Suppress("UNUSED")
-class T265Localizer @JvmOverloads constructor(override val weight: Double = 1.0) : ImprovedLocalizer {
+class T265Localizer @JvmOverloads constructor (override val weight: Double = 1.0) : ImprovedLocalizer {
     /**
      * Updates the T265 camera and returns the last pose
      * if isn't null from the Easy265 wrapper static class.

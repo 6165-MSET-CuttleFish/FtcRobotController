@@ -1,6 +1,7 @@
  package org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -21,6 +22,10 @@ public class MB1242 extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Dist
     private long runDelayMs = 40;
 
     private short lastReading = 0;
+
+    public MB1242(HardwareMap hardwareMap, String name) {
+        this(hardwareMap.i2cDeviceSynch.get(name));
+    }
 
     public MB1242(I2cDeviceSynch i2cDeviceSynch) {
         super(i2cDeviceSynch, true);
