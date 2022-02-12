@@ -19,19 +19,20 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.min
 
 class TrajectorySequenceBuilder(
     startPose: Pose2d,
     startTangent: Double?,
-    private val baseVelConstraint: TrajectoryVelocityConstraint?,
-    private val baseAccelConstraint: TrajectoryAccelerationConstraint?,
+    private val baseVelConstraint: TrajectoryVelocityConstraint,
+    private val baseAccelConstraint: TrajectoryAccelerationConstraint,
     baseTurnConstraintMaxAngVel: Double,
     baseTurnConstraintMaxAngAccel: Double
 ) {
     private val resolution = 0.25
-    private var currentVelConstraint: TrajectoryVelocityConstraint?
-    private var currentAccelConstraint: TrajectoryAccelerationConstraint?
+    private var currentVelConstraint: TrajectoryVelocityConstraint
+    private var currentAccelConstraint: TrajectoryAccelerationConstraint
     private val baseTurnConstraintMaxAngVel: Double
     private val baseTurnConstraintMaxAngAccel: Double
     private var currentTurnConstraintMaxAngVel: Double
@@ -53,8 +54,8 @@ class TrajectorySequenceBuilder(
 
     constructor(
         startPose: Pose2d,
-        baseVelConstraint: TrajectoryVelocityConstraint?,
-        baseAccelConstraint: TrajectoryAccelerationConstraint?,
+        baseVelConstraint: TrajectoryVelocityConstraint,
+        baseAccelConstraint: TrajectoryAccelerationConstraint,
         baseTurnConstraintMaxAngVel: Double,
         baseTurnConstraintMaxAngAccel: Double
     ) : this(
@@ -439,8 +440,8 @@ class TrajectorySequenceBuilder(
     }
 
     fun setConstraints(
-        velConstraint: TrajectoryVelocityConstraint?,
-        accelConstraint: TrajectoryAccelerationConstraint?
+        velConstraint: TrajectoryVelocityConstraint,
+        accelConstraint: TrajectoryAccelerationConstraint
     ): TrajectorySequenceBuilder {
         currentVelConstraint = velConstraint
         currentAccelConstraint = accelConstraint
@@ -453,7 +454,7 @@ class TrajectorySequenceBuilder(
         return this
     }
 
-    fun setVelConstraint(velConstraint: TrajectoryVelocityConstraint?): TrajectorySequenceBuilder {
+    fun setVelConstraint(velConstraint: TrajectoryVelocityConstraint): TrajectorySequenceBuilder {
         currentVelConstraint = velConstraint
         return this
     }
@@ -463,7 +464,7 @@ class TrajectorySequenceBuilder(
         return this
     }
 
-    fun setAccelConstraint(accelConstraint: TrajectoryAccelerationConstraint?): TrajectorySequenceBuilder {
+    fun setAccelConstraint(accelConstraint: TrajectoryAccelerationConstraint): TrajectorySequenceBuilder {
         currentAccelConstraint = accelConstraint
         return this
     }
@@ -586,7 +587,6 @@ class TrajectorySequenceBuilder(
         waitSeconds(0.1)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition))
-        currentDuration += 0
         return this
     }
 
@@ -630,13 +630,12 @@ class TrajectorySequenceBuilder(
         if (currentTrajectoryBuilder != null) pushPath()
         lastDurationTraj = 0.0
         lastDisplacementTraj = 0.0
-        val tangent =
-            if (setAbsoluteTangent) absoluteTangent else norm(lastPose.heading + tangentOffset)
+        val tangent = if (setAbsoluteTangent) absoluteTangent else norm(lastPose.heading + tangentOffset)
         currentTrajectoryBuilder = TrajectoryBuilder(
             lastPose,
             tangent,
-            currentVelConstraint!!,
-            currentAccelConstraint!!,
+            currentVelConstraint,
+            currentAccelConstraint,
             resolution
         )
     }
@@ -650,8 +649,8 @@ class TrajectorySequenceBuilder(
         currentTrajectoryBuilder = TrajectoryBuilder(
             future.endPose,
             tangent,
-            currentVelConstraint!!,
-            currentAccelConstraint!!,
+            currentVelConstraint,
+            currentAccelConstraint,
             resolution
         )
     }
