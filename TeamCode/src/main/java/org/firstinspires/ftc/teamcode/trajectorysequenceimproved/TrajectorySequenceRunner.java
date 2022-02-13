@@ -58,7 +58,7 @@ public class TrajectorySequenceRunner {
 
     private final NanoClock clock;
     private double offset;
-    private ElapsedTime time = new ElapsedTime();
+    private final ElapsedTime time = new ElapsedTime();
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
@@ -151,7 +151,7 @@ public class TrajectorySequenceRunner {
                 if (isNewTransition)
                     follower.followTrajectory(currentTrajectory);
 
-                if (!follower.isFollowing()) {
+                if (!follower.isFollowing() || ((TrajectorySegment) currentSegment).getCancelCondition().invoke()) {
                     currentSegmentIndex++;
 
                     driveSignal = new DriveSignal();

@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 import kotlin.math.min
 
 class TrajectorySequenceBuilder(
@@ -51,6 +52,7 @@ class TrajectorySequenceBuilder(
     private var lastDurationTraj: Double
     private var lastDisplacementTraj: Double
     private var isFlipped = false
+    private lateinit var cancelCondition: () -> Boolean
 
     constructor(
         startPose: Pose2d,
@@ -594,7 +596,8 @@ class TrajectorySequenceBuilder(
         pushPath()
         sequenceSegments.add(
             TrajectorySegment(
-                trajectory
+                trajectory,
+                cancelCondition
             )
         )
         return this
@@ -621,7 +624,7 @@ class TrajectorySequenceBuilder(
     private fun pushPath() {
         if (currentTrajectoryBuilder != null) {
             val builtTraj = currentTrajectoryBuilder!!.build()
-            sequenceSegments.add(TrajectorySegment(builtTraj))
+            sequenceSegments.add(TrajectorySegment(builtTraj, cancelCondition))
         }
         currentTrajectoryBuilder = null
     }
@@ -766,7 +769,8 @@ class TrajectorySequenceBuilder(
                         thisSegment.trajectory.path,
                         thisSegment.trajectory.profile,
                         newMarkers
-                    )
+                    ),
+                    cancelCondition
                 )
             }
             sequenceSegments[segmentIndex] = newSegment
@@ -779,7 +783,7 @@ class TrajectorySequenceBuilder(
     private fun motionProfileDisplacementToTime(profile: MotionProfile, s: Double): Double {
         var tLo = 0.0
         var tHi = profile.duration()
-        while (Math.abs(tLo - tHi) >= 1e-6) {
+        while (abs(tLo - tHi) >= 1e-6) {
             val tMid = 0.5 * (tLo + tHi)
             if (profile[tMid].x > s) {
                 tHi = tMid
