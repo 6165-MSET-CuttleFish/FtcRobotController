@@ -13,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Context
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
@@ -113,7 +115,20 @@ abstract class ImprovedTankDrive constructor(
             kV * voltageMultiplier,
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
-        )
+        ).toMutableList()
+        if (Robot.gainMode == Robot.GainMode.FORWARD) {
+            if (Context.alliance == Alliance.BLUE) {
+                powers[1] = 1.0
+            } else {
+                powers[0] = 1.0
+            }
+        } else if (Robot.gainMode == Robot.GainMode.BACKWARD) {
+            if (Context.alliance == Alliance.BLUE) {
+                powers[1] = -1.0
+            } else {
+                powers[0] = -1.0
+            }
+        }
         setMotorPowers(powers[0], powers[1])
     }
 

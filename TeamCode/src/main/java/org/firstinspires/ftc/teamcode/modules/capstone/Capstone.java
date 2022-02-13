@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos;
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 
 @Config
 public class Capstone extends Module<Capstone.State> {

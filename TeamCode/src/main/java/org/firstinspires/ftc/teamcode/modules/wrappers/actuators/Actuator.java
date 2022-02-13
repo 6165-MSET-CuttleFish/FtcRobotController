@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.modules.wrappers;
+package org.firstinspires.ftc.teamcode.modules.wrappers.actuators;
 
 public interface Actuator {
     void disable();

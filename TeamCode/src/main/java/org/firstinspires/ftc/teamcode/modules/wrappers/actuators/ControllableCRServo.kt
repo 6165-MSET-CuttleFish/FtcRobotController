@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.modules.wrappers
+package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.util.ElapsedTime

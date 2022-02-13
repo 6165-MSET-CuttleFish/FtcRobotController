@@ -4,6 +4,9 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.Path;
+
+import org.firstinspires.ftc.teamcode.modules.Module;
+
 import java.util.List;
 
 /**
@@ -11,7 +14,7 @@ import java.util.List;
  */
 public class DashboardUtil {
     private static final double DEFAULT_RESOLUTION = 2.0; // distance units; presumed inches
-    private static final double ROBOT_RADIUS = 9; // in
+    private static final double ROBOT_RADIUS = 8; // in
 
 
     public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {
@@ -44,6 +47,10 @@ public class DashboardUtil {
     }
 
     public static void drawRobot(Canvas canvas, Pose2d pose) {
+        drawRobot(canvas, pose, ROBOT_RADIUS);
+    }
+
+    private static void drawRobot(Canvas canvas, Pose2d pose, double radius) {
         canvas.strokeCircle(pose.getX(), pose.getY(), ROBOT_RADIUS);
         Vector2d v = pose.headingVec().times(ROBOT_RADIUS);
         double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
@@ -55,5 +62,10 @@ public class DashboardUtil {
         Vector2d midPt = center.plus(endPt).div(2).vec();
         double distance = center.vec().distTo(endPt.vec());
         canvas.strokeRect(midPt.getX(), midPt.getY(), 2.0, distance);
+    }
+
+    public static void drawModule(Canvas canvas, Module module) {
+        Pose2d modulePose = module.getModulePoseEstimate();
+        drawRobot(canvas, modulePose, 2);
     }
 }

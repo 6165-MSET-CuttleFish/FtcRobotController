@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.util.field.Freight
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableServos
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter

@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.modules.wrappers
+package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import kotlin.math.round
 
-class ControllableServos(vararg servos: Servo) : Actuator {
+class ControllableServos(vararg servos: Servo) :
+    Actuator {
     private var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0

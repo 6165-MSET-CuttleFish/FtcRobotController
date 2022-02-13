@@ -12,14 +12,10 @@ import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.util.field.Freight;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.modules.wrappers.ControllableMotor;
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor;
 import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;

@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.modules
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.modules.wrappers.Actuator
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.Actuator
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
-import javax.lang.model.type.NullType
 
 /**
  * This abstract class represents any module or subcomponent of the robot
@@ -88,6 +88,10 @@ abstract class Module<T> @JvmOverloads constructor(
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
     }
 
+    fun drawModule() {
+        DashboardUtil.drawModule(Context.packet.fieldOverlay(), this)
+    }
+
     /**
      * @return Whether the module or its nested modules are currently hazardous
      */
@@ -111,7 +115,7 @@ abstract class Module<T> @JvmOverloads constructor(
     /**
      * Add any nested modules to be updated
      */
-    fun setNestedModules(vararg modules: Module<*   >) {
+    fun setNestedModules(vararg modules: Module<*>) {
         nestedModules = modules as Array<Module<*>>
     }
 

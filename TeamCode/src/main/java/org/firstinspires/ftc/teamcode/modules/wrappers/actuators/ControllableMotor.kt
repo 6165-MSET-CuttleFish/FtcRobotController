@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.modules.wrappers
+package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
-class ControllableMotor(vararg motors: DcMotorEx) : Actuator {
+class ControllableMotor(vararg motors: DcMotorEx) :
+    Actuator {
     private var motors: Array<DcMotorEx> = motors as Array<DcMotorEx>
     private var disabled = false
 
