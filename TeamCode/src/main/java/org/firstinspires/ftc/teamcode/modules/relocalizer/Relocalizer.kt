@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules.relocalizer
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -91,9 +92,9 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         val tilt = tilt
         val pitch = pitch
         val xDist = xSensor.getDistance(DistanceUnit.INCH) * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val yDist = ySensor.getDistance(DistanceUnit.INCH) * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val x = frontWallX - xDist * (xSensor.modulePoseEstimate.heading)
-        val y = sideWallY - yDist * (ySensor.modulePoseEstimate.heading)
+        val yDist = ySensor.getDistance(DistanceUnit.INCH) * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
+        val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
+        val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)
         val xPoseEstimate =
             Pose2d(x, Context.robotPose.y, heading)
                 .polarAdd(-xSensor.poseOffset.x)
