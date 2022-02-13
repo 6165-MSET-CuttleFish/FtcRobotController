@@ -35,7 +35,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.packet;
 
 
 @Config
-public class TrajectorySequenceRunner {
+public class TrajectorySequenceRunner<T> {
     public static String COLOR_INACTIVE_TRAJECTORY = "#4caf507a";
     public static String COLOR_INACTIVE_TURN = "#7c4dff7a";
     public static String COLOR_INACTIVE_WAIT = "#dd2c007a";
@@ -59,6 +59,8 @@ public class TrajectorySequenceRunner {
     private final NanoClock clock;
     private double offset;
     private final ElapsedTime time = new ElapsedTime();
+    private final ElapsedTime segmentDuration = new ElapsedTime();
+    private T state;
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
@@ -85,6 +87,10 @@ public class TrajectorySequenceRunner {
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
+    }
+
+    public T getState() {
+        return state;
     }
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
@@ -124,6 +130,7 @@ public class TrajectorySequenceRunner {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
+                segmentDuration.reset();
                 if (lastSegmentIndex >= 0) {
                     if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
                         offset += time.seconds();
@@ -148,12 +155,13 @@ public class TrajectorySequenceRunner {
             if (currentSegment instanceof TrajectorySegment) {
                 Trajectory currentTrajectory = ((TrajectorySegment) currentSegment).getTrajectory();
 
-                if (isNewTransition)
+                if (isNewTransition) {
                     follower.followTrajectory(currentTrajectory);
+                    state = (T) ((TrajectorySegment) currentSegment).getState();
+                }
 
-                if (!follower.isFollowing() || ((TrajectorySegment) currentSegment).getCancelCondition().invoke()) {
+                if (!follower.isFollowing()) {
                     currentSegmentIndex++;
-
                     driveSignal = new DriveSignal();
                 } else {
                     driveSignal = follower.update(poseEstimate, poseVelocity);
@@ -163,7 +171,7 @@ public class TrajectorySequenceRunner {
 
                 targetPose = currentTrajectory.get(deltaTime);
             } else if (currentSegment instanceof FutureSegment) {
-                TrajectorySequenceRunner runner = new TrajectorySequenceRunner(follower, headingPIDCoefficients);
+                TrajectorySequenceRunner<T> runner = new TrajectorySequenceRunner<T>(follower, headingPIDCoefficients);
                 runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
                 if (!runner.follower.isFollowing()) {
                     currentSegmentIndex++;
@@ -345,5 +353,13 @@ public class TrajectorySequenceRunner {
 
     public boolean isBusy() {
         return currentTrajectorySequence != null;
+    }
+    public void nextSegment() {
+        SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
+        if (currentSegment instanceof TrajectorySegment) {
+            offset -= ((TrajectorySegment<?>) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
+        }
+        currentSegmentIndex++;
+        segmentDuration.reset();
     }
 }

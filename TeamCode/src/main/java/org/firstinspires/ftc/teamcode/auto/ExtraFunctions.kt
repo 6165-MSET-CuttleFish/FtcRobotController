@@ -6,18 +6,14 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.*
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
-import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.TrajectorySegment
 
-fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): TrajectorySequenceBuilder {
-    return addTrajectory(segment.trajectory)
-}
-
-fun TrajectorySequenceBuilder.relocalize(robot: Robot, offset: Double = 0.0) = UNSTABLE_addDisplacementMarkerOffset(offset) {
+fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.0) = UNSTABLE_addDisplacementMarkerOffset(offset) {
     robot.correctPosition()
 }
 
-fun TrajectorySequenceBuilder.increaseGains(gainMode: Robot.GainMode) : TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.increaseGains(gainMode: Robot.GainMode) : TrajectorySequenceBuilder<*> {
     setConstraints(
         Robot.getVelocityConstraint(Robot.loweredVelo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH),
         Robot.getAccelerationConstraint(Robot.loweredVelo)
@@ -28,7 +24,7 @@ fun TrajectorySequenceBuilder.increaseGains(gainMode: Robot.GainMode) : Trajecto
     return this
 }
 
-fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
     resetConstraints()
     UNSTABLE_addDisplacementMarkerOffset(0.0) {
         Robot.gainMode = Robot.GainMode.IDLE
@@ -36,33 +32,33 @@ fun TrajectorySequenceBuilder.defaultGains() : TrajectorySequenceBuilder {
     return this
 }
 
-fun TrajectorySequenceBuilder.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addDisplacementMarkerOffset(0.0) {
         Platform.isLoaded = true
         deposit.setState(level)
     }
 }
 
-fun TrajectorySequenceBuilder.intakeOn(intake: Intake): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.intakeOn(intake: Intake): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
         intake.setPower(1.0)
     }
 }
 
-fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.intakeOff(intake: Intake): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
         intake.setPower(0.0)
     }
 }
 
-fun TrajectorySequenceBuilder.dump(deposit: Deposit): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.dump(deposit: Deposit): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::dump)
 }
 
-fun TrajectorySequenceBuilder.carouselOn(carousel: Carousel): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.carouselOn(carousel: Carousel): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::on)
 }
 
-fun TrajectorySequenceBuilder.carouselOff(carousel: Carousel): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder<*>.carouselOff(carousel: Carousel): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0, carousel::off)
 }

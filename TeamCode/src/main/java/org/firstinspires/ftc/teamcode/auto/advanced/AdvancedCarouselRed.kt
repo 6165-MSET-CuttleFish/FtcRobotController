@@ -24,12 +24,18 @@ import kotlin.Throws
 
 @Autonomous
 class AdvancedCarouselRed : LinearOpMode() {
-    lateinit var robot: Robot
+    lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
     private val blue = false
+
+    enum class PathState {
+        INTAKING,
+        DUMPING,
+        IDLE,
+    }
 
     @Throws(InterruptedException::class)
     override fun runOpMode() {

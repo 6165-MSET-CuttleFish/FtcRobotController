@@ -25,12 +25,18 @@ import kotlin.Throws
 
 @Autonomous
 class CyclingRed : LinearOpMode() {
-    lateinit var robot: Robot
+    lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
     private val blue = false
+
+    enum class PathState {
+        INTAKING,
+        DUMPING,
+        IDLE,
+    }
 
     @Throws(InterruptedException::class)
     override fun runOpMode() {
@@ -59,7 +65,7 @@ class CyclingRed : LinearOpMode() {
         robot.turnOffVision()
         robot.followTrajectorySequence(sequence)
     }
-    private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder): TrajectorySequence {
+    private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..9)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(10.0) {
@@ -95,7 +101,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun middleAuto() : TrajectorySequence {
         val trajectoryBuilder =
@@ -110,7 +116,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun rightAuto() : TrajectorySequence {
         val trajectoryBuilder =
@@ -125,6 +131,6 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
 }

@@ -79,7 +79,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
  * @author Ayush Raman
  */
 @Config
-public class Robot extends ImprovedTankDrive {
+public class Robot<T> extends ImprovedTankDrive {
     /*
      * Robot statics
      */
@@ -129,7 +129,7 @@ public class Robot extends ImprovedTankDrive {
     public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
-    private final TrajectorySequenceRunner trajectorySequenceRunner;
+    private final TrajectorySequenceRunner<T> trajectorySequenceRunner;
     private final FtcDashboard dashboard;
 
     public Robot(OpMode opMode, Pose2d pose2d) {
@@ -230,13 +230,21 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx motor : leftMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        trajectorySequenceRunner = new TrajectorySequenceRunner<T>(follower, HEADING_PID);
         pitchOffset = -imu.getAngularOrientation().secondAngle;
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
         telemetry.update();
+    }
+
+    public T getPathState() {
+        return trajectorySequenceRunner.getState();
+    }
+
+    public void nextSegment() {
+        trajectorySequenceRunner.nextSegment();
     }
 
     public void visionInit() {
@@ -301,16 +309,16 @@ public class Robot extends ImprovedTankDrive {
         return new TrajectoryBuilder(Context.robotPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
-    public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
-        return new TrajectorySequenceBuilder(
+    public TrajectorySequenceBuilder<T> trajectorySequenceBuilder(Pose2d startPose) {
+        return new TrajectorySequenceBuilder<T>(
                 startPose,
                 VEL_CONSTRAINT, ACCEL_CONSTRAINT,
                 MAX_ANG_VEL, MAX_ANG_ACCEL
         );
     }
 
-    public TrajectorySequenceBuilder futureBuilder(FutureSegment futureSegment) {
-        return new TrajectorySequenceBuilder(
+    public TrajectorySequenceBuilder<T> futureBuilder(FutureSegment futureSegment) {
+        return new TrajectorySequenceBuilder<T>(
                 futureSegment.getStartPose(),
                 VEL_CONSTRAINT, ACCEL_CONSTRAINT,
                 MAX_ANG_VEL, MAX_ANG_ACCEL

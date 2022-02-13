@@ -24,12 +24,13 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
+import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.Throws
 
 @Autonomous
 @Config
 class CyclingBlue : LinearOpMode() {
-    lateinit var robot: Robot
+    lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit
     lateinit var intake: Intake
     lateinit var capstone: Capstone
@@ -43,6 +44,12 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 4.0
         @JvmField var conjoiningPoint = 18.0
+    }
+
+    enum class PathState {
+        INTAKING,
+        DUMPING,
+        IDLE,
     }
 
     @Throws(InterruptedException::class)
@@ -71,11 +78,28 @@ class CyclingBlue : LinearOpMode() {
             TSEDetector.Location.RIGHT -> rightSequence
         }
         // robot.turnOffVision()
-        robot.followTrajectorySequence(sequence)
+        robot.followTrajectorySequenceAsync(sequence)
+        while (robot.isBusy && opModeIsActive()) {
+            robot.update()
+            when (robot.pathState) {
+                PathState.INTAKING -> {
+                    if (intake.state == Intake.State.IN && intake.containsBlock && Context.robotPose.x > 40) {
+                        robot.nextSegment()
+                    }
+                }
+                PathState.DUMPING -> {
+
+                }
+                else -> {
+
+                }
+            }
+        }
     }
-    private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder): TrajectorySequence {
+    private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..9)
             trajectoryBuilder
+                .setState(PathState.INTAKING)
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
                 }
@@ -85,7 +109,7 @@ class CyclingBlue : LinearOpMode() {
                 .defaultGains()
                 .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
                 .setReversed(true)
-                .waitSeconds(0.4)
+                .waitSeconds(0.1)
                 .relocalize(robot)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -121,7 +145,7 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun middleAuto() : TrajectorySequence {
         val trajectoryBuilder =
@@ -136,7 +160,7 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun rightAuto() : TrajectorySequence {
         val trajectoryBuilder =
@@ -151,6 +175,6 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-        return theRest(trajectoryBuilder)
+        return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
 }

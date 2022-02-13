@@ -18,12 +18,11 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.min
 
-class TrajectorySequenceBuilder(
+class TrajectorySequenceBuilder<T>(
     startPose: Pose2d,
     startTangent: Double?,
     private val baseVelConstraint: TrajectoryVelocityConstraint,
@@ -52,7 +51,7 @@ class TrajectorySequenceBuilder(
     private var lastDurationTraj: Double
     private var lastDisplacementTraj: Double
     private var isFlipped = false
-    private lateinit var cancelCondition: () -> Boolean
+    private var state: T? = null
 
     constructor(
         startPose: Pose2d,
@@ -66,7 +65,7 @@ class TrajectorySequenceBuilder(
         baseTurnConstraintMaxAngVel, baseTurnConstraintMaxAngAccel
     )
 
-    fun lineTo(endPosition: Vector2d): TrajectorySequenceBuilder {
+    fun lineTo(endPosition: Vector2d): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineTo(
@@ -80,7 +79,7 @@ class TrajectorySequenceBuilder(
         endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineTo(
@@ -90,7 +89,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun lineToConstantHeading(endPosition: Vector2d): TrajectorySequenceBuilder {
+    fun lineToConstantHeading(endPosition: Vector2d): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToConstantHeading(
@@ -104,7 +103,7 @@ class TrajectorySequenceBuilder(
         endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToConstantHeading(
@@ -114,7 +113,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun lineToLinearHeading(endPose: Pose2d): TrajectorySequenceBuilder {
+    fun lineToLinearHeading(endPose: Pose2d): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToLinearHeading(
@@ -128,7 +127,7 @@ class TrajectorySequenceBuilder(
         endPose: Pose2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.lineToLinearHeading(
@@ -170,7 +169,7 @@ class TrajectorySequenceBuilder(
         endPosition: Vector2d,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeTo(
@@ -218,7 +217,7 @@ class TrajectorySequenceBuilder(
         distance: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.back(
@@ -230,7 +229,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun strafeLeft(distance: Double): TrajectorySequenceBuilder {
+    fun strafeLeft(distance: Double): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeLeft(
@@ -246,7 +245,7 @@ class TrajectorySequenceBuilder(
         distance: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeLeft(
@@ -258,7 +257,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun strafeRight(distance: Double): TrajectorySequenceBuilder {
+    fun strafeRight(distance: Double): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeRight(
@@ -274,7 +273,7 @@ class TrajectorySequenceBuilder(
         distance: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.strafeRight(
@@ -286,7 +285,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun splineTo(endPosition: Vector2d, endHeading: Double): TrajectorySequenceBuilder {
+    fun splineTo(endPosition: Vector2d, endHeading: Double): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineTo(
@@ -296,7 +295,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder {
+    fun splineToVectorOffset(endTangentVector: Vector2d, offset: Pose2d, endTangent: Double) : TrajectorySequenceBuilder<T> {
         val vector2d = endTangentVector.polarAdd(-offset.x, endTangent).polarAdd(-offset.y, endTangent + Math.PI / 2)
         return this.splineTo(vector2d, endTangent)
     }
@@ -304,7 +303,7 @@ class TrajectorySequenceBuilder(
     /**
      * @param reference closest vector to the wanted location in the event that there are 2 intersections to the circle
      */
-    fun splineToCircle(circle: Circle, line: Line, reference: Vector2d, offset: Pose2d = Pose2d()) : TrajectorySequenceBuilder {
+    fun splineToCircle(circle: Circle, line: Line, reference: Vector2d, offset: Pose2d = Pose2d()) : TrajectorySequenceBuilder<T> {
         val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
         return this.splineTo((endPose ?: reference) + offset.vec(), (endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center)) + offset.heading)
     }
@@ -316,7 +315,7 @@ class TrajectorySequenceBuilder(
         endHeading: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineTo(
@@ -329,7 +328,7 @@ class TrajectorySequenceBuilder(
     fun splineToConstantHeading(
         endPosition: Vector2d,
         endHeading: Double
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToConstantHeading(
@@ -344,7 +343,7 @@ class TrajectorySequenceBuilder(
         endHeading: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToConstantHeading(
@@ -354,7 +353,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun splineToLinearHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder {
+    fun splineToLinearHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToLinearHeading(
@@ -369,7 +368,7 @@ class TrajectorySequenceBuilder(
         endHeading: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToLinearHeading(
@@ -379,7 +378,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    fun splineToSplineHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder {
+    fun splineToSplineHeading(endPose: Pose2d, endHeading: Double): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToSplineHeading(
@@ -394,7 +393,7 @@ class TrajectorySequenceBuilder(
         endHeading: Double,
         velConstraint: TrajectoryVelocityConstraint?,
         accelConstraint: TrajectoryAccelerationConstraint?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         return addPath(object : AddPathCallback {
             override fun run() {
                 currentTrajectoryBuilder?.splineToSplineHeading(
@@ -404,7 +403,7 @@ class TrajectorySequenceBuilder(
         })
     }
 
-    private fun addPath(callback: AddPathCallback): TrajectorySequenceBuilder {
+    private fun addPath(callback: AddPathCallback): TrajectorySequenceBuilder<T> {
         if (currentTrajectoryBuilder == null) newPath()
         try {
             callback.run()
@@ -423,72 +422,72 @@ class TrajectorySequenceBuilder(
         return this
     }
 
-    fun setTangent(tangent: Double): TrajectorySequenceBuilder {
+    fun setTangent(tangent: Double): TrajectorySequenceBuilder<T> {
         setAbsoluteTangent = true
         absoluteTangent = tangent
         pushPath()
         return this
     }
 
-    private fun setTangentOffset(offset: Double): TrajectorySequenceBuilder {
+    private fun setTangentOffset(offset: Double): TrajectorySequenceBuilder<T> {
         setAbsoluteTangent = false
         tangentOffset = offset
         pushPath()
         return this
     }
 
-    fun setReversed(reversed: Boolean): TrajectorySequenceBuilder {
+    fun setReversed(reversed: Boolean): TrajectorySequenceBuilder<T> {
         return if (reversed) setTangentOffset(Math.toRadians(180.0)) else setTangentOffset(0.0)
     }
 
     fun setConstraints(
         velConstraint: TrajectoryVelocityConstraint,
         accelConstraint: TrajectoryAccelerationConstraint
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         currentVelConstraint = velConstraint
         currentAccelConstraint = accelConstraint
         return this
     }
 
-    fun resetConstraints(): TrajectorySequenceBuilder {
+    fun resetConstraints(): TrajectorySequenceBuilder<T> {
         currentVelConstraint = baseVelConstraint
         currentAccelConstraint = baseAccelConstraint
         return this
     }
 
-    fun setVelConstraint(velConstraint: TrajectoryVelocityConstraint): TrajectorySequenceBuilder {
+    fun setVelConstraint(velConstraint: TrajectoryVelocityConstraint): TrajectorySequenceBuilder<T> {
         currentVelConstraint = velConstraint
         return this
     }
 
-    fun resetVelConstraint(): TrajectorySequenceBuilder {
+    fun resetVelConstraint(): TrajectorySequenceBuilder<T> {
         currentVelConstraint = baseVelConstraint
         return this
     }
 
-    fun setAccelConstraint(accelConstraint: TrajectoryAccelerationConstraint): TrajectorySequenceBuilder {
+    fun setAccelConstraint(accelConstraint: TrajectoryAccelerationConstraint): TrajectorySequenceBuilder<T> {
         currentAccelConstraint = accelConstraint
         return this
     }
 
-    fun resetAccelConstraint(): TrajectorySequenceBuilder {
+    fun resetAccelConstraint(): TrajectorySequenceBuilder<T> {
         currentAccelConstraint = baseAccelConstraint
         return this
     }
 
-    fun setTurnConstraint(maxAngVel: Double, maxAngAccel: Double): TrajectorySequenceBuilder {
+    fun setTurnConstraint(maxAngVel: Double, maxAngAccel: Double): TrajectorySequenceBuilder<T> {
         currentTurnConstraintMaxAngVel = maxAngVel
         currentTurnConstraintMaxAngAccel = maxAngAccel
         return this
     }
 
-    fun resetTurnConstraint(): TrajectorySequenceBuilder {
+    fun resetTurnConstraint(): TrajectorySequenceBuilder<T> {
         currentTurnConstraintMaxAngVel = baseTurnConstraintMaxAngVel
         currentTurnConstraintMaxAngAccel = baseTurnConstraintMaxAngAccel
         return this
     }
 
-    fun addTemporalMarker(callback: MarkerCallback?): TrajectorySequenceBuilder {
+    fun addTemporalMarker(callback: MarkerCallback?): TrajectorySequenceBuilder<T> {
         return this.addTemporalMarker(currentDuration, callback)
     }
 
@@ -508,17 +507,17 @@ class TrajectorySequenceBuilder(
     fun addTemporalMarker(
         time: TimeProducer?,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         temporalMarkers.add(TemporalMarker(time!!, callback!!))
         return this
     }
 
-    fun addSpatialMarker(point: Vector2d?, callback: MarkerCallback?): TrajectorySequenceBuilder {
+    fun addSpatialMarker(point: Vector2d?, callback: MarkerCallback?): TrajectorySequenceBuilder<T> {
         spatialMarkers.add(SpatialMarker(point!!, callback!!))
         return this
     }
 
-    fun addDisplacementMarker(callback: MarkerCallback?): TrajectorySequenceBuilder {
+    fun addDisplacementMarker(callback: MarkerCallback?): TrajectorySequenceBuilder<T> {
         return this.addDisplacementMarker(currentDisplacement, callback)
     }
 
@@ -544,7 +543,7 @@ class TrajectorySequenceBuilder(
     fun addDisplacementMarker(
         displacement: DisplacementProducer?,
         callback: MarkerCallback?
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         displacementMarkers.add(DisplacementMarker(displacement!!, callback!!))
         return this
     }
@@ -554,7 +553,7 @@ class TrajectorySequenceBuilder(
         angle: Double,
         maxAngVel: Double = currentTurnConstraintMaxAngVel,
         maxAngAccel: Double = currentTurnConstraintMaxAngAccel
-    ): TrajectorySequenceBuilder {
+    ): TrajectorySequenceBuilder<T> {
         pushPath()
         val turnProfile = generateSimpleMotionProfile(
             MotionState(lastPose.heading, 0.0, 0.0, 0.0),
@@ -571,39 +570,38 @@ class TrajectorySequenceBuilder(
         return this
     }
 
-    fun waitSeconds(seconds: Double): TrajectorySequenceBuilder {
+    fun waitSeconds(seconds: Double): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList()))
         currentDuration += seconds
         return this
     }
 
-    fun waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder {
+    fun waitSeconds(seconds: Double, driveSignal: DriveSignal): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList(), driveSignal))
         currentDuration += seconds
         return this
     }
 
-    fun waitWhile(condition: () -> Boolean) : TrajectorySequenceBuilder {
+    fun waitWhile(condition: () -> Boolean) : TrajectorySequenceBuilder<T> {
         waitSeconds(0.1)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition))
         return this
     }
 
-    fun addTrajectory(trajectory: Trajectory): TrajectorySequenceBuilder {
+    fun addTrajectory(trajectory: Trajectory): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(
-            TrajectorySegment(
-                trajectory,
-                cancelCondition
+            TrajectorySegment<T>(
+                trajectory
             )
         )
         return this
     }
 
-    fun addFutureTrajectory(future: FutureSegment, endPose: Pose2d): TrajectorySequenceBuilder {
+    fun addFutureTrajectory(future: FutureSegment, endPose: Pose2d): TrajectorySequenceBuilder<T> {
         future.startPose = lastPose
         future.endPose = endPose
         futurePath(future)
@@ -613,10 +611,15 @@ class TrajectorySequenceBuilder(
         return this
     }
 
+    fun setState(state: T): TrajectorySequenceBuilder<T> {
+        this.state = state
+        return this
+    }
+
     /**
      * reflect path across the x-axis
      */
-    fun flipSide(): TrajectorySequenceBuilder {
+    fun flipSide(): TrajectorySequenceBuilder<T> {
         isFlipped = true
         return this
     }
@@ -624,7 +627,8 @@ class TrajectorySequenceBuilder(
     private fun pushPath() {
         if (currentTrajectoryBuilder != null) {
             val builtTraj = currentTrajectoryBuilder!!.build()
-            sequenceSegments.add(TrajectorySegment(builtTraj, cancelCondition))
+            sequenceSegments.add(TrajectorySegment<T>(builtTraj, state))
+            state = null
         }
         currentTrajectoryBuilder = null
     }
@@ -759,18 +763,17 @@ class TrajectorySequenceBuilder(
                     thisSegment.motionProfile,
                     newMarkers
                 )
-            } else if (segment is TrajectorySegment) {
+            } else if (segment is TrajectorySegment<*>) {
                 val thisSegment = segment
                 val newMarkers: MutableList<TrajectoryMarker> =
                     ArrayList(thisSegment.trajectory.markers)
                 newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
-                newSegment = TrajectorySegment(
+                newSegment = TrajectorySegment<T>(
                     Trajectory(
                         thisSegment.trajectory.path,
                         thisSegment.trajectory.profile,
                         newMarkers
                     ),
-                    cancelCondition
                 )
             }
             sequenceSegments[segmentIndex] = newSegment
@@ -798,7 +801,7 @@ class TrajectorySequenceBuilder(
         var currentTime = 0.0
         var currentDisplacement = 0.0
         for (segment in sequenceSegments) {
-            if (segment is TrajectorySegment) {
+            if (segment is TrajectorySegment<*>) {
                 val thisSegment = segment
                 val segmentLength = thisSegment.trajectory.path.length()
                 if (currentDisplacement + segmentLength > s) {
@@ -828,7 +831,7 @@ class TrajectorySequenceBuilder(
 
         val projectedPoints: MutableList<ComparingPoints> = ArrayList()
         for (segment in sequenceSegments) {
-            if (segment is TrajectorySegment) {
+            if (segment is TrajectorySegment<*>) {
                 val thisSegment = segment
                 val displacement = thisSegment.trajectory.path.project(point, 0.25)
                 val projectedPoint = thisSegment.trajectory.path[displacement].vec()
