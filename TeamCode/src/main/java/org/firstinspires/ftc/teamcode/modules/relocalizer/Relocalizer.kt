@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules.relocalizer
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -29,13 +30,13 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             hardwareMap ,
             "leftFrontDS",
             UltrasonicDistanceSensor.SensorType.LongRange,
-            Pose2d(7.5, 7.0, Math.toRadians(45.0))
+            Pose2d(7.5, 7.0, Math.toRadians(0.0))
         )
     private val frontRightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightFrontDS",
         UltrasonicDistanceSensor.SensorType.LongRange,
-        Pose2d(7.5, -7.0, Math.toRadians(-45.0))
+        Pose2d(7.5, -7.0, Math.toRadians(-0.0))
     )
     private val leftDistance = UltrasonicDistanceSensor(
         hardwareMap ,
@@ -46,7 +47,7 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     private val rightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightDS",
-        UltrasonicDistanceSensor.SensorType.LongRange,
+        UltrasonicDistanceSensor.SensorType.ShortRange,
         Pose2d(-3.0785, -7.5, Math.toRadians(-90.0))
     )
     companion object {
@@ -88,10 +89,12 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         val frontWallX = 70.5
         val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
         val heading = Context.robotPose.heading
+        val tilt = tilt
+        val pitch = pitch
         val xDist = xSensor.getDistance(DistanceUnit.INCH) * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val yDist = ySensor.getDistance(DistanceUnit.INCH) * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val x = frontWallX - xDist * (xSensor.modulePoseEstimate.heading)
-        val y = sideWallY - yDist * (ySensor.modulePoseEstimate.heading)
+        val yDist = ySensor.getDistance(DistanceUnit.INCH) * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
+        val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
+        val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)
         val xPoseEstimate =
             Pose2d(x, Context.robotPose.y, heading)
                 .polarAdd(-xSensor.poseOffset.x)

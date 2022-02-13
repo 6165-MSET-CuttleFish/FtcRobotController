@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.modules
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.Actuator
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.toPose
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
@@ -59,7 +61,7 @@ abstract class Module<T> @JvmOverloads constructor(
     private var nestedModules = arrayOf<Module<*>>()
     private var actuators = arrayOf<Actuator>()
     val modulePoseEstimate: Pose2d
-        get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2)
+        get() = robotPose.polarAdd(poseOffset.x).polarAdd(poseOffset.y, Math.PI / 2).vec().toPose(Angle.normDelta(poseOffset.heading + robotPose.heading))
     var isDebugMode = false
         set(value) {
             field = value

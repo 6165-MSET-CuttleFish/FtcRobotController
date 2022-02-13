@@ -34,6 +34,8 @@ public abstract class ModuleTest extends LinearOpMode {
         this.keyReaders = keyReaders;
     }
 
+    public void opening() {}
+
     @Override
     public final void runOpMode() throws InterruptedException {
         Context.telemetry = telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -52,6 +54,7 @@ public abstract class ModuleTest extends LinearOpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
         waitForStart();
+        opening();
         while (opModeIsActive()) {
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
