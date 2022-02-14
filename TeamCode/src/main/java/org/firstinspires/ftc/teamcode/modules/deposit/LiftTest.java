@@ -18,7 +18,6 @@ public class LiftTest extends ModuleTest {
 
     @Override
     public void opening() {
-        super.start();
         tuningController.start();
     }
 
