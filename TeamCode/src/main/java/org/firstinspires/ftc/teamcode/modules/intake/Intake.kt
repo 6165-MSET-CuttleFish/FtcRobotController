@@ -26,9 +26,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var raisedPosition = 0.0
         @JvmField
-        var loweredPosition = 0.80
+        var loweredPosition = 0.9
         @JvmField
-        var intakeLimit = 8.0
+        var intakeLimit = 15.0
         @JvmField
         var outPosition = 0.39
         @JvmField
@@ -36,7 +36,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.29
         @JvmField
-        var extensionPositionPerSecond = 0.55
+        var stallingSpeed = 0.4
+        @JvmField
+        var extensionPositionPerSecond = 0.6
         @JvmField
         var dropPositionPerSecond = 2.1
         @JvmField
@@ -132,13 +134,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                     }
                 }
                 if (extensionServos.isTransitioning || flip.isTransitioning) {
-                    power = 1.0
+                    power = stallingSpeed
                 }
             }
             State.TRANSFER -> {
                 power = -1.0
+                containsBlock = false
                 if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2.3) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
-                    containsBlock = false
                     state = State.IN
                     power = 0.0
                     this.power = power

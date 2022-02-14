@@ -31,7 +31,7 @@ public class Platform extends Module<Platform.State> {
     public static double inPosition = 0.94, higherInPosition = 0.85;
     public static double lockPosition = 0.52;
     public static double unlockPosition = 0.3;
-    public static double blockDistanceTolerance = 8;
+    public static double blockDistanceTolerance = 6;
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
@@ -108,8 +108,9 @@ public class Platform extends Module<Platform.State> {
     protected void internalUpdate() {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
         tilt.setPositionPerSecond(flipServoPositionPerSecond);
+        double distance = blockDetector.getDistance(DistanceUnit.CM);
         if (intake.getState() == Intake.State.TRANSFER) {
-            isLoaded = blockDetector.getDistance(DistanceUnit.CM) < blockDistanceTolerance;
+            isLoaded = distance < blockDistanceTolerance;
         }
         switch (getState()) {
             case IN:
@@ -172,6 +173,7 @@ public class Platform extends Module<Platform.State> {
         if (isDebugMode()) {
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Position", arm.getRealPosition());
+            Context.packet.put("Platform DS Distance", distance);
         }
     }
 

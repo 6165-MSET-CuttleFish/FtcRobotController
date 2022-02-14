@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableSer
 
 @Config
 public class Capstone extends Module<Capstone.State> {
-    public static double servoIncrementHorizontal = 0.007, servoIncrementVertical = 0.001;
+    public static double servoIncrementHorizontal = 0.007, servoIncrementVertical = -0.01;
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
-    private double horizontalPos = 0.5, verticalPos = 0.8;
+    private double horizontalPos = 0.5, verticalPos = 0.55;
     private CRServo tape;
     private ControllableServos verticalTurret, horizontalTurret;
 
