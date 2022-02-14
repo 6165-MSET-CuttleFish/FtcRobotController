@@ -83,9 +83,9 @@ public class Robot<T> extends ImprovedTankDrive {
     /*
      * Robot statics
      */
-    public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 15;
-    public static double MAX_POWER = 20;
+    public static double MAX_CURRENT = 16;
+    public static double MID_POWER = 17;
+    public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
@@ -403,18 +403,18 @@ public class Robot<T> extends ImprovedTankDrive {
             module.update();
            // module.setHazardous(currentState != CurrentState.NORMAL);
         }
-        Pose2d delta = relocalizer.getPoseEstimate().minus(getPoseEstimate());
-        Context.packet.put("Delta X", delta.getX());
-        Context.packet.put("Delta Y", delta.getY());
+        // Pose2d delta = relocalizer.getPoseEstimate().minus(getPoseEstimate());
+//        Context.packet.put("Delta X", delta.getX());
+//        Context.packet.put("Delta Y", delta.getY());
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
         Context.packet.put("Integral Power", currentIntegral);
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
-        Canvas canvas = Context.packet.fieldOverlay();
-        canvas.setStroke("#F04141");
-        DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
+//        Canvas canvas = Context.packet.fieldOverlay();
+//        canvas.setStroke("#F04141");
+//        DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
         currentIntegral += current * loopTime.seconds();
         loopTime.reset();
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {

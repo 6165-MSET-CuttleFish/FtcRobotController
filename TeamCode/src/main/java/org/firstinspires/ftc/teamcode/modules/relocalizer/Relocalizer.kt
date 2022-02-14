@@ -107,44 +107,44 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     override fun internalUpdate() {
-        val frontDist: Double
-        val horizontalDist: Double
-        if (Context.side == Side.CAROUSEL) {
-            frontDist = (if (alliance == Alliance.BLUE) frontRightDistance.getDistance(DistanceUnit.INCH) else frontLeftDistance.getDistance(DistanceUnit.INCH)) * cos(pitch)
-            horizontalDist = (if (alliance == Alliance.BLUE) rightDistance.getDistance(DistanceUnit.INCH) else leftDistance.getDistance(DistanceUnit.INCH)) * cos(tilt)
-            val frontWallX = 70.5
-            val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
-            val heading = Context.robotPose.heading
-            val x = frontWallX - horizontalDist * cos(heading)
-            val y = sideWallY - frontDist * cos(heading)
-            val xPoseEstimate =
-                Pose2d(x, Context.robotPose.y, heading)
-                    .polarAdd(-horizontalDistanceSensorXOffset)
-                    .polarAdd(-horizontalDistanceSensorYOffset, Math.toRadians(90.0))
-            val yPoseEstimate =
-                Pose2d(Context.robotPose.x, y, heading)
-                    .polarAdd(-frontDistanceSensorXOffset)
-                    .polarAdd(-frontDistanceSensorYOffset, Math.toRadians(90.0))
-
-            poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
-        } else {
-            frontDist = (if (alliance == Alliance.BLUE) frontRightDistance.getDistance(DistanceUnit.INCH) else frontLeftDistance.getDistance(DistanceUnit.INCH)) * cos(tilt)
-            horizontalDist = (if (alliance == Alliance.BLUE) leftDistance.getDistance(DistanceUnit.INCH) else rightDistance.getDistance(DistanceUnit.INCH)) * cos(pitch)
-            val frontWallX = 70.5
-            val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
-            val heading = Context.robotPose.heading
-            val x = frontWallX - frontDist * cos(heading)
-            val y = sideWallY - horizontalDist * cos(heading)
-            val xPoseEstimate =
-                Pose2d(x, Context.robotPose.y, heading)
-                    .polarAdd(-frontDistanceSensorXOffset)
-                    .polarAdd(-frontDistanceSensorYOffset, Math.toRadians(90.0))
-            val yPoseEstimate =
-                Pose2d(Context.robotPose.x, y, heading)
-                    .polarAdd(-horizontalDistanceSensorXOffset)
-                    .polarAdd(if (alliance == Alliance.BLUE) -horizontalDistanceSensorYOffset else horizontalDistanceSensorYOffset, Math.toRadians(90.0))
-            poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
-        }
+//        val frontDist: Double
+//        val horizontalDist: Double
+//        if (Context.side == Side.CAROUSEL) {
+//            frontDist = (if (alliance == Alliance.BLUE) frontRightDistance.getDistance(DistanceUnit.INCH) else frontLeftDistance.getDistance(DistanceUnit.INCH)) * cos(pitch)
+//            horizontalDist = (if (alliance == Alliance.BLUE) rightDistance.getDistance(DistanceUnit.INCH) else leftDistance.getDistance(DistanceUnit.INCH)) * cos(tilt)
+//            val frontWallX = 70.5
+//            val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
+//            val heading = Context.robotPose.heading
+//            val x = frontWallX - horizontalDist * cos(heading)
+//            val y = sideWallY - frontDist * cos(heading)
+//            val xPoseEstimate =
+//                Pose2d(x, Context.robotPose.y, heading)
+//                    .polarAdd(-horizontalDistanceSensorXOffset)
+//                    .polarAdd(-horizontalDistanceSensorYOffset, Math.toRadians(90.0))
+//            val yPoseEstimate =
+//                Pose2d(Context.robotPose.x, y, heading)
+//                    .polarAdd(-frontDistanceSensorXOffset)
+//                    .polarAdd(-frontDistanceSensorYOffset, Math.toRadians(90.0))
+//
+//            poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
+//        } else {
+//            frontDist = (if (alliance == Alliance.BLUE) frontRightDistance.getDistance(DistanceUnit.INCH) else frontLeftDistance.getDistance(DistanceUnit.INCH)) * cos(tilt)
+//            horizontalDist = (if (alliance == Alliance.BLUE) leftDistance.getDistance(DistanceUnit.INCH) else rightDistance.getDistance(DistanceUnit.INCH)) * cos(pitch)
+//            val frontWallX = 70.5
+//            val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
+//            val heading = Context.robotPose.heading
+//            val x = frontWallX - frontDist * cos(heading)
+//            val y = sideWallY - horizontalDist * cos(heading)
+//            val xPoseEstimate =
+//                Pose2d(x, Context.robotPose.y, heading)
+//                    .polarAdd(-frontDistanceSensorXOffset)
+//                    .polarAdd(-frontDistanceSensorYOffset, Math.toRadians(90.0))
+//            val yPoseEstimate =
+//                Pose2d(Context.robotPose.x, y, heading)
+//                    .polarAdd(-horizontalDistanceSensorXOffset)
+//                    .polarAdd(if (alliance == Alliance.BLUE) -horizontalDistanceSensorYOffset else horizontalDistanceSensorYOffset, Math.toRadians(90.0))
+//            poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
+//        }
     }
 
     override fun isDoingInternalWork() = false

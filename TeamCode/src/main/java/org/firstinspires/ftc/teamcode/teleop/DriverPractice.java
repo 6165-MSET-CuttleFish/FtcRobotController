@@ -89,6 +89,7 @@ public class DriverPractice extends LinearOpMode {
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
+                        capstone.setTape(0);
                         mode = Mode.ENDGAME;
                     } else {
                         mode = Mode.DRIVING;

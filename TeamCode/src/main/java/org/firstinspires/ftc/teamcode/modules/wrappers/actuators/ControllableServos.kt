@@ -34,7 +34,10 @@ class ControllableServos(vararg servos: Servo) :
     var position: Double
         get() = servos[0].position
         set(var1) {
-            if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000 && initted) return
+            if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000 && initted) {
+                servos.forEach { it.position = round(var1 * 1000) / 1000 }
+                return
+            }
             initted = true
             incrementingPosition = realPosition < var1
             previousPosition = realPosition

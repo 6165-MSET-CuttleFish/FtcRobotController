@@ -85,7 +85,7 @@ abstract class Module<T> @JvmOverloads constructor(
      */
     fun update() {
         nestedModules.forEach { it.update() }
-        actuators.forEach { it.update() }
+        // actuators.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
     }
@@ -101,7 +101,7 @@ abstract class Module<T> @JvmOverloads constructor(
         set(value) {
             field = value
             nestedModules.forEach { it.isHazardous = value }
-            actuators.forEach { if (isHazardous) it.disable() else it.enable() }
+            // actuators.forEach { if (isHazardous) it.disable() else it.enable() }
         }
 
     /**
