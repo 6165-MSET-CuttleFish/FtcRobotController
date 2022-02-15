@@ -11,7 +11,7 @@ public class DistanceSensorTest extends ModuleTest {
     DistanceSensor frontDist, sideDist;
     @Override
     public void initialize() {
-        frontDist = new MB1242(hardwareMap.i2cDeviceSynch.get("rightFrontDS"));
+        frontDist = new MB1242(hardwareMap.i2cDeviceSynch.get("leftFrontDS"));
         sideDist = new MB1643(hardwareMap, "leftDS");
     }
 

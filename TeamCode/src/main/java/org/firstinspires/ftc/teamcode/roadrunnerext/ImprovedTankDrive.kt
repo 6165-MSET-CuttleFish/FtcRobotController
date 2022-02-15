@@ -158,5 +158,7 @@ abstract class ImprovedTankDrive constructor(
 
     abstract fun getPitch(): Double
 
+    abstract fun getTilt(): Double
+
     abstract fun getPosition(): Position
 }

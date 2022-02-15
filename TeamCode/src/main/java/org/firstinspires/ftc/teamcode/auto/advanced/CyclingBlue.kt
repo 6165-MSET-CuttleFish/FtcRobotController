@@ -40,9 +40,10 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var radiusOffset = 5.0
         @JvmField var line = -44.0
         @JvmField var coast = -55.0
-        @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 4.0
+        @JvmField var stop = 47.0
+        @JvmField var intakeDelay = 8.0
         @JvmField var conjoiningPoint = 18.0
+        @JvmField var waitTime = 1.0
     }
 
     @Throws(InterruptedException::class)
@@ -85,7 +86,7 @@ class CyclingBlue : LinearOpMode() {
                 .defaultGains()
                 .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
                 .setReversed(true)
-                .waitSeconds(0.4)
+                .waitSeconds(waitTime)
                 .relocalize(robot)
                 .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
