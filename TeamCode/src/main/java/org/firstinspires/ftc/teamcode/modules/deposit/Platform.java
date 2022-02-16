@@ -28,9 +28,9 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.94, higherInPosition = 0.85;
+    public static double inPosition = 0.92, higherInPosition = 0.85;
     public static double lockPosition = 0.52;
-    public static double unlockPosition = 0.3;
+    public static double unlockPosition = 0.23;
     public static double blockDistanceTolerance = 6;
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
@@ -109,8 +109,8 @@ public class Platform extends Module<Platform.State> {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
         tilt.setPositionPerSecond(flipServoPositionPerSecond);
         double distance = blockDetector.getDistance(DistanceUnit.CM);
-        if (intake.getState() == Intake.State.TRANSFER) {
-            isLoaded = distance < blockDistanceTolerance;
+        if (intake.getState() == Intake.State.TRANSFER && distance < blockDistanceTolerance) {
+            isLoaded = true;
         }
         switch (getState()) {
             case IN:
