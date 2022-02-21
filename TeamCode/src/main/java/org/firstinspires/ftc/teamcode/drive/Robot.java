@@ -91,13 +91,13 @@ public class Robot extends ImprovedTankDrive {
     public static double MID_POWER = 5;
     public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(1, 1, Math.toRadians(5));
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
-    public static double admissibleTimeout = 0.5;
+    public static double admissibleTimeout = 0.8;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double gainIncrease = 2.0;
-    public static double loweredVelo = 30;
+    public static double loweredVelo = 20;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -375,17 +375,17 @@ public class Robot extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 8;
+    public static double correctionTolerance = 30;
 
     public void correctPosition() {
-        relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+        relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
         Pose2d newPose = relocalizer.getPoseEstimate();
         Pose2d currPose = getPoseEstimate();
         if (Math.abs(currPose.vec().distTo(newPose.vec())) < correctionTolerance) setPoseEstimate(newPose);
     }
 
     public void rawCorrectPosition() {
-        relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+        // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
@@ -549,7 +549,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        double pitch = 0;
+        double pitch = Context.pitch;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
@@ -561,7 +561,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        double pitch = 0;
+        double pitch = Context.pitch;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 

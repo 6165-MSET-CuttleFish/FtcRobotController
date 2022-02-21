@@ -117,12 +117,16 @@ abstract class ImprovedTankDrive constructor(
             kStatic * voltageMultiplier
         ).toMutableList()
         if (Robot.gainMode == Robot.GainMode.FORWARD) {
+//            powers[1] = 1.0
+//            powers[0] = 1.0
             if (Context.alliance == Alliance.BLUE) {
                 powers[1] = 1.0
             } else {
                 powers[0] = 1.0
             }
         } else if (Robot.gainMode == Robot.GainMode.BACKWARD) {
+//            powers[1] = -1.0
+//            powers[0] = -1.0
             if (Context.alliance == Alliance.BLUE) {
                 powers[1] = -1.0
             } else {
