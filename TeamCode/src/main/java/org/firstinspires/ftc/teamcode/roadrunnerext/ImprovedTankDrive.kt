@@ -133,7 +133,7 @@ abstract class ImprovedTankDrive constructor(
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
-        val powers = TankKinematics.robotToWheelVelocities(drivePower, 1.0)
+        val powers = TankKinematics.robotToWheelVelocities(drivePower, 2.0)
         setMotorPowers(powers[0], powers[1])
     }
 
