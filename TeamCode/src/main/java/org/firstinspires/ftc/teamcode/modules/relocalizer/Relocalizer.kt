@@ -29,14 +29,14 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         UltrasonicDistanceSensor(
             hardwareMap ,
             "leftFrontDS",
-            UltrasonicDistanceSensor.SensorType.LongRange,
-            Pose2d(7.5, 7.0, Math.toRadians(45.0))
+            UltrasonicDistanceSensor.SensorType.ShortRange,
+            Pose2d(7.5, 7.0, Math.toRadians(0.0))
         )
     private val frontRightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightFrontDS",
-        UltrasonicDistanceSensor.SensorType.LongRange,
-        Pose2d(7.5, -7.0, Math.toRadians(-45.0))
+        UltrasonicDistanceSensor.SensorType.ShortRange,
+        Pose2d(7.5, -7.0, Math.toRadians(-0.0))
     )
     private val leftDistance = UltrasonicDistanceSensor(
         hardwareMap ,
@@ -103,7 +103,7 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     override fun internalUpdate() {
-        // updatePoseEstimate(Sensor.FRONT_RIGHT, Sensor.LEFT)
+         updatePoseEstimate(Sensor.FRONT_LEFT, Sensor.RIGHT)
     }
 
     override fun isDoingInternalWork() = false
