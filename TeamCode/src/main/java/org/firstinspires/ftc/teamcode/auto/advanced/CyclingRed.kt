@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import kotlin.Throws
 
 @Autonomous
@@ -40,11 +41,13 @@ class CyclingRed : LinearOpMode() {
         @JvmField var radiusOffset = 4.5
         @JvmField var line = -44.0
         @JvmField var coast = -55.0
+        @JvmField var intakeY = -57.0
         @JvmField var stop = 50.0
         @JvmField var intakeDelay = 9.0
         @JvmField var conjoiningPoint = 27.0
         @JvmField var waitTime = 1.0
         @JvmField var gainsPoint = 33.0
+        @JvmField var depositDistance = 25.0
     }
 
     @Throws(InterruptedException::class)
@@ -87,7 +90,7 @@ class CyclingRed : LinearOpMode() {
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
                 .carouselOff(carousel)
-                .splineTo(Vector2d(stop, coast).flip(blue), Math.toRadians(0.0 - 20 * Math.random()).flip(blue))
+                .splineTo(Vector2d(stop, intakeY).flip(blue), Math.toRadians(-20.0 - 20 * Math.random()).flip(blue))
                 .setReversed(true)
                 .waitSeconds(waitTime)
                 .relocalize(robot)
@@ -98,12 +101,7 @@ class CyclingRed : LinearOpMode() {
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .defaultGains()
                 .liftUp(deposit, Deposit.State.LEVEL3)
-                .splineToCircle(
-                    allianceHub.expandedRadius(radiusOffset),
-                    Line.yAxis(line).flip(blue),
-                    Vector2d(12.0, -24.0).flip(blue),
-                    Pose2d(0.0, 0.0, Math.toRadians(0.0)).flip(blue)
-                )
+                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
@@ -116,12 +114,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .splineToCircle(
-                    allianceHub.expandedRadius(radiusOffset),
-                    Line.yAxis(line).flip(blue),
-                    Vector2d(12.0, -24.0).flip(blue),
-                    Pose2d(0.0, 0.0, Math.toRadians(0.0)).flip(blue)
-                )
+                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -136,7 +129,7 @@ class CyclingRed : LinearOpMode() {
 //                        .capstonePickup(capstone)
 //                        .liftUp(deposit, Robot.getLevel(location))
 //                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineToCircle(allianceHub.expandedRadius(9.0), Line.yAxis(-48.0).flip(blue), Vector2d(1.0, -30.0).flip(blue))
+                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
@@ -151,7 +144,7 @@ class CyclingRed : LinearOpMode() {
 //                        .capstonePickup(capstone)
 //                        .liftUp(deposit, Robot.getLevel(location))
 //                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineToCircle(allianceHub.expandedRadius(9.0), Line.yAxis(-48.0).flip(blue), Vector2d(1.0, -30.0).flip(blue))
+                .splineTo(allianceHub.center.polarAdd(allianceHub.radius, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition

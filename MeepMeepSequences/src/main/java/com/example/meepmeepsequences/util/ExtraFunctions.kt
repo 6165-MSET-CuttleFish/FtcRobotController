@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.example.meepmeepsequences.util.geometry.*
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
+import com.noahbres.meepmeep.roadrunner.DriveShim
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
@@ -63,10 +64,10 @@ fun TrajectorySequenceBuilder.intakeOff(intake: Intake): TrajectorySequenceBuild
     }
 }
 
-fun TrajectorySequenceBuilder.relocalize(relocalizer: Relocalizer): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.relocalize(robot: DriveShim): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
-        relocalizer.update()
-        println("${relocalizer.poseEstimate.x}, ${relocalizer.poseEstimate.y}, ${Math.toDegrees(relocalizer.poseEstimate.heading)}")
+//        relocalizer.update()
+//        println("${relocalizer.poseEstimate.x}, ${relocalizer.poseEstimate.y}, ${Math.toDegrees(relocalizer.poseEstimate.heading)}")
     }
 }
 
@@ -103,17 +104,17 @@ fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBot
         .addEntity(botEntityBuilder(false, this))
 }
 
-fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addDisplacementMarkerOffset(0.0) {
     println("Gains Increased")
-}.setConstraints(
+}.setVelConstraint(
         getVelocityConstraint(
-            50.0,
+            40.0,
             Math.toRadians(274.0),
             15.0
-        ), getAccelerationConstraint(50.0) ?: ProfileAccelerationConstraint(50.0)
+        )
     )
 
-fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addTemporalMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.defaultGains() = UNSTABLE_addDisplacementMarkerOffset(0.0) {
         println("Gains Default")
     }.resetConstraints()
 

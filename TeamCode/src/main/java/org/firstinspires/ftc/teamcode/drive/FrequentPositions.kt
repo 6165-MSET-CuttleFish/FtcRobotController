@@ -19,7 +19,7 @@ object FrequentPositions {
             Vector2d(
                 -11.0,
                 -24.0
-            ).flip(alliance == Alliance.BLUE), 19.0
+            ).flip(alliance == Alliance.BLUE), 10.0
         )
 
     @JvmStatic

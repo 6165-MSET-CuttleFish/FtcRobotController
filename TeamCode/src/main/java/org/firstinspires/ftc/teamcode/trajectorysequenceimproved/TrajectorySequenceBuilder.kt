@@ -307,7 +307,7 @@ class TrajectorySequenceBuilder(
         return this.splineTo((endPose ?: reference) + offset.vec(), (endPose?.angleTo(circle.center) ?: reference.angleTo(circle.center)) + offset.heading)
     }
 
-    fun splineTo(endPosition: Vector2d, endTangent: Vector2d, offset: Pose2d) = splineTo(endPosition + offset.vec(), endPosition.angleTo(endTangent) + offset.heading)
+    fun splineTo(endPosition: Vector2d, endTangent: Vector2d, offset: Pose2d = Pose2d()) = splineTo(endPosition + offset.vec(), endPosition.angleTo(endTangent) + offset.heading)
 
     fun splineTo(
         endPosition: Vector2d,

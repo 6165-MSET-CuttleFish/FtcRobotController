@@ -102,9 +102,12 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
     }
 
-    override fun internalUpdate() {
-         updatePoseEstimate(Sensor.FRONT_LEFT, Sensor.RIGHT)
-    }
+    override fun internalUpdate() =
+         if (alliance == Alliance.RED) {
+             updatePoseEstimate(Sensor.FRONT_LEFT, Sensor.RIGHT)
+         } else {
+             updatePoseEstimate(Sensor.FRONT_RIGHT, Sensor.LEFT)
+         }
 
     override fun isDoingInternalWork() = false
 
