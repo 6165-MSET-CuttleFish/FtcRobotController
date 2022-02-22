@@ -15,7 +15,7 @@ object MeepMeepSequences {
             .setBackground(Background.FIELD_FREIGHTFRENZY_ADI_DARK)
             .setDarkMode(true)
             .setBackgroundAlpha(0.95f)
-            .addMultiPath(AdvancedPaths()::cyclingPath)
+            .addMultiPath(TestingPaths()::backAndForth)
             .start()
     }
 }

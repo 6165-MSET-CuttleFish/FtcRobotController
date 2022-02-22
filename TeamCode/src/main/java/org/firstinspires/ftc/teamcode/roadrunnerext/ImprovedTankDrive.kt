@@ -106,8 +106,8 @@ abstract class ImprovedTankDrive constructor(
 
         val voltageMultiplier = when (Robot.gainMode) {
             Robot.GainMode.IDLE -> 12 / voltage
-            Robot.GainMode.FORWARD -> Robot.gainIncrease
-            Robot.GainMode.BACKWARD -> Robot.gainIncrease
+            Robot.GainMode.FORWARD -> 12 / voltage
+            Robot.GainMode.BACKWARD -> 12 / voltage
         }
         val powers = Kinematics.calculateMotorFeedforward(
             velocities,
@@ -116,24 +116,31 @@ abstract class ImprovedTankDrive constructor(
             kA * voltageMultiplier,
             kStatic * voltageMultiplier
         ).toMutableList()
+        val gainedPowers = Kinematics.calculateMotorFeedforward(
+            velocities,
+            accelerations,
+            kV * voltageMultiplier * Robot.gainIncrease,
+            kA * voltageMultiplier * Robot.gainIncrease,
+            kStatic * voltageMultiplier * Robot.gainIncrease,
+        ).toMutableList()
         if (Robot.gainMode == Robot.GainMode.FORWARD) {
             if (Context.alliance == Alliance.BLUE) {
-                powers[1] = 1.0
+                powers[1] = gainedPowers[1]
             } else {
-                powers[0] = 1.0
+                powers[0] = gainedPowers[0]
             }
         } else if (Robot.gainMode == Robot.GainMode.BACKWARD) {
             if (Context.alliance == Alliance.BLUE) {
-                powers[1] = -1.0
+                powers[1] = gainedPowers[1]
             } else {
-                powers[0] = -1.0
+                powers[0] = gainedPowers[0]
             }
         }
         setMotorPowers(powers[0], powers[1])
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
-        val powers = TankKinematics.robotToWheelVelocities(drivePower, 1.0)
+        val powers = TankKinematics.robotToWheelVelocities(drivePower, 1.5)
         setMotorPowers(powers[0], powers[1])
     }
 
@@ -157,6 +164,8 @@ abstract class ImprovedTankDrive constructor(
     abstract fun getVelocity(): Velocity
 
     abstract fun getPitch(): Double
+
+    abstract fun getTilt(): Double
 
     abstract fun getPosition(): Position
 }

@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.freight
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmField
-        var raisedPosition = 0.0
+        var raisedPosition = 0.11
         @JvmField
         var loweredPosition = 0.9
         @JvmField
@@ -47,6 +47,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var smoothingCoeffecientDistance = 0.8
         @JvmField
         var smoothingCoefficientAlpha = 0.8
+        @JvmField
+        var div = 2.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -140,7 +142,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(2.3) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power

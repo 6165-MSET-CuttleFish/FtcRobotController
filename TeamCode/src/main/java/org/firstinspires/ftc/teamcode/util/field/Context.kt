@@ -36,4 +36,8 @@ object Context {
     var location = TSEDetector.Location.LEFT
     @JvmField
     var freight = Freight.NONE
+    @JvmField
+    var pitch = 0.0
+    @JvmField
+    var tilt = 0.0
 }

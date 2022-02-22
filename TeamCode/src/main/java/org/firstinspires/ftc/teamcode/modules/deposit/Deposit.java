@@ -141,22 +141,22 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
-        State state = getState();
-        if (freight == Freight.BALL && state == State.LEVEL3 && opModeType != OpModeType.AUTO) {
-            state = State.LEVEL2;
-        }
-        pidController.setTargetPosition(farDeposit ? getLevelHeight(state) : 0);
         if (platform.isDoingWork()) {
             super.setState(getDefaultState());
         } else {
             super.setState(State.IDLE);
         }
+        State state = getState();
+        if (freight == Freight.BALL && state == State.LEVEL3 && opModeType != OpModeType.AUTO) {
+            state = State.LEVEL2;
+        }
+        pidController.setTargetPosition(farDeposit ? getLevelHeight(state) : 0);
         double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE && getSecondsSpentInState() < 2.7 && resetEncoder) {
             if (getSecondsSpentInState() > 2.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                power = -0.0;
+                power = 0.0;
             } else if (getSecondsSpentInState() <= 2.5) {
                 power = -1;
             }

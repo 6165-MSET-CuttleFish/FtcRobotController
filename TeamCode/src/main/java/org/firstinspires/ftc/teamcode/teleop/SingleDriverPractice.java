@@ -16,26 +16,17 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 @TeleOp
-public class DriverPractice extends LinearOpMode {
-    enum Mode {
-        DRIVING,
-        ENDGAME
-    }
+public class SingleDriverPractice extends LinearOpMode {
     Robot robot;
     Intake intake;
     Deposit deposit;
     Carousel carousel;
     Capstone capstone;
-
-    Mode mode = Mode.DRIVING;
-    boolean toggleMode;
-
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
@@ -44,7 +35,6 @@ public class DriverPractice extends LinearOpMode {
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
@@ -55,19 +45,15 @@ public class DriverPractice extends LinearOpMode {
         primary = new GamepadEx(gamepad1);
         secondary = new GamepadEx(gamepad2);
         keyReaders = new KeyReader[] {
-                capHorizontalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_RIGHT),
-                capHorizontalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_LEFT),
-                capVerticalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
-                capVerticalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
-                intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
+                intakeButton = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
-                levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
-                levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
+                levelIncrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
+                levelDecrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 liftButton = new TriggerReader(secondary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.A),
         };
         Deposit.farDeposit = true;
         waitForStart();
@@ -86,27 +72,9 @@ public class DriverPractice extends LinearOpMode {
                 gamepad2.rumble(500);
             }
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
-            if (gamepad1.touchpad) {
-                if (!toggleMode) {
-                    if (mode == Mode.DRIVING) {
-                        capstone.setTape(0);
-                        mode = Mode.ENDGAME;
-                    } else {
-                        mode = Mode.DRIVING;
-                    }
-                }
-                toggleMode = true;
-            } else {
-                toggleMode = false;
-            }
-            if (mode == Mode.ENDGAME) {
-                drivePower = new Pose2d();
-                setCapstone();
-            }
             robot.setWeightedDrivePower(drivePower);
             setIntake();
             setDeposit();
-            setCarousel();
             if (tippedAway.isDown() && tippedToward.isDown()) {
                 balance = Balance.BALANCED;
             } else if (tippedAway.isDown()) {
@@ -116,24 +84,6 @@ public class DriverPractice extends LinearOpMode {
             }
         }
     }
-
-    void setCapstone() {
-        capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
-        capstone.setVerticalTurret(gamepad1.left_stick_y);
-        capstone.setHorizontalTurret(gamepad1.right_stick_x);
-        carousel.setPower(gamepad2.right_stick_y);
-        if (capHorizontalInc.wasJustPressed()) {
-            capstone.incrementHorizontal(1);
-        } else if (capHorizontalDec.wasJustPressed()) {
-            capstone.incrementHorizontal(-1);
-        }
-        if (capVerticalInc.wasJustPressed()) {
-            capstone.incrementVertical(1);
-        } else if (capVerticalDec.wasJustPressed()) {
-            capstone.incrementVertical(-1);
-        }
-    }
-
     void setIntake() {
         if (intakeButton.isDown()) {
             intake.setPower(1);
@@ -168,9 +118,5 @@ public class DriverPractice extends LinearOpMode {
         if (dumpButton.wasJustPressed()) {
             deposit.dump();
         }
-    }
-
-    void setCarousel() {
-        carousel.setPower(gamepad2.right_stick_y);
     }
 }
