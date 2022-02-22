@@ -6,8 +6,11 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Context.alliance
 
 /*
 * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -32,21 +35,38 @@ class PolesBackAndForth : LinearOpMode() {
         @JvmField var blue = false
         @JvmField var inGain = 29.0
         @JvmField var outGain = 34.0
+        @JvmField var waitTime = 1.0
     }
     override fun runOpMode() {
         val robot = Robot(this)
         waitForStart()
+        robot.poseEstimate = Pose2d(-16.1417 / 2, -55.0, Math.toRadians(0.0))
         while (opModeIsActive() && !isStopRequested) {
+            alliance = if (blue) {
+                Alliance.BLUE
+            } else {
+                Alliance.RED
+            }
             robot.followTrajectorySequence(
-                robot.trajectorySequenceBuilder(Pose2d(16.1417 / 2, -50.0, Math.toRadians(0.0)).flip(blue))
+                robot.trajectorySequenceBuilder(Pose2d(-16.1417 / 2, -55.0, Math.toRadians(0.0)).flip(blue))
                     .setReversed(false)
                     .splineTo(Vector2d(inGain, -55.0).flip(blue), Math.toRadians(0.0))
+                    .increaseGains(Robot.GainMode.FORWARD)
+                    .carouselOn(robot.carousel)
                     .splineToConstantHeading(Vector2d(outGain, -55.0).flip(blue), Math.toRadians(0.0))
+                    .defaultGains()
+                    .carouselOff(robot.carousel)
                     .splineTo(Vector2d(50.0, -55.0).flip(blue), Math.toRadians(0.0))
+                    .waitSeconds(waitTime)
+                    .relocalize(robot)
                     .setReversed(true)
                     .splineTo(Vector2d(outGain, -55.0).flip(blue), Math.toRadians(180.0))
+                    .carouselOn(robot.carousel)
+                    .increaseGains(Robot.GainMode.BACKWARD)
                     .splineTo(Vector2d(inGain, -55.0).flip(blue), Math.toRadians(180.0))
-                    .splineTo(Vector2d(16.1417 / 2, -55.0).flip(blue), Math.toRadians(180.0))
+                    .defaultGains()
+                    .carouselOff(robot.carousel)
+                    .splineTo(Vector2d(-16.1417 / 2, -55.0).flip(blue), Math.toRadians(180.0))
                     .build()
             )
         }

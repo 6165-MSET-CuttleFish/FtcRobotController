@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -87,16 +85,16 @@ public class Robot extends ImprovedTankDrive {
     /*
      * Robot statics
      */
-    public static double MAX_CURRENT = 16;
-    public static double MID_POWER = 5;
+    public static double MAX_CURRENT = 15;
+    public static double MID_POWER = 0;
     public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
-    public static double admissibleTimeout = 0.8;
+    public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 2.0;
+    public static double gainIncrease = 3;
     public static double loweredVelo = 20;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -427,14 +425,14 @@ public class Robot extends ImprovedTankDrive {
         }
         systemIsOverCurrent = current > MAX_CURRENT;
         robotSlowed = currentIntegral > MID_POWER;
-        if (robotSlowed) {
-            Log.println(Log.INFO, "Total System Power", currentIntegral + "");
+//        if (robotSlowed) {
+//            Log.println(Log.INFO, "Total System Power", currentIntegral + "");
 //            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 //            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        } else {
+//        } else {
 //            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
+//        }
         if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
             robotDisabled = true;
             currentTimer.reset();
@@ -549,7 +547,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getCurrentPosition());
         }
-        double pitch = Context.pitch;
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
 
@@ -564,14 +562,24 @@ public class Robot extends ImprovedTankDrive {
         double pitch = Context.pitch;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
-
+    public static boolean is4md = false;
     @Override
     public void setMotorPowers(double v, double v1) {
         for (int i = 0; i < leftMotors.size(); i++) {
-            leftMotors.get(i).setPower((!robotSlowed) ? v : v * (MAX_POWER - currentIntegral) / MAX_POWER);
+            double pwr = (!robotSlowed) ? v : v * (MAX_POWER - currentIntegral) / MAX_POWER;
+            if (is4md && i == 2) {
+                leftMotors.get(i).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                pwr = 0;
+            }
+            leftMotors.get(i).setPower(pwr);
         }
         for (int i = 0; i < rightMotors.size(); i++) {
-            rightMotors.get(i).setPower((!robotSlowed) ? v1 : v1 * (MAX_POWER - currentIntegral) / MAX_POWER);
+            double pwr = (!robotSlowed) ? v1 : v1 * (MAX_POWER - currentIntegral) / MAX_POWER;
+            if (is4md && i == 2) {
+                rightMotors.get(i).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                pwr = 0;
+            }
+            rightMotors.get(i).setPower(pwr);
         }
     }
 

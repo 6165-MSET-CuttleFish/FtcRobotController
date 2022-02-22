@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import kotlin.Throws
 
@@ -45,9 +44,9 @@ class CyclingRed : LinearOpMode() {
         @JvmField var stop = 50.0
         @JvmField var intakeDelay = 9.0
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 1.0
-        @JvmField var gainsPoint = 33.0
-        @JvmField var depositDistance = 25.0
+        @JvmField var waitTime = 0.1
+        @JvmField var gainsPoint = 36.0
+        @JvmField var depositDistance = 22.0
     }
 
     @Throws(InterruptedException::class)
@@ -94,8 +93,8 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(true)
                 .waitSeconds(waitTime)
                 .relocalize(robot)
-                .intakeOff(intake)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
+                .intakeOff(intake)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                 .increaseGains(Robot.GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
