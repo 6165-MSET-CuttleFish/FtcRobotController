@@ -38,7 +38,7 @@ class PolesBackAndForth : LinearOpMode() {
         @JvmField var waitTime = 1.0
     }
     override fun runOpMode() {
-        val robot = Robot(this)
+        val robot = Robot<Any>(this)
         waitForStart()
         robot.poseEstimate = Pose2d(-16.1417 / 2, -55.0, Math.toRadians(0.0))
         while (opModeIsActive() && !isStopRequested) {
