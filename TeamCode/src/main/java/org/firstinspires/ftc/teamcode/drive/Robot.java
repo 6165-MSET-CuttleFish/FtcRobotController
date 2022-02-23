@@ -95,7 +95,7 @@ public class Robot extends ImprovedTankDrive {
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double gainIncrease = 1.6;
-    public static double loweredVelo = 40;
+    public static double loweredVelo = 35;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -391,6 +391,7 @@ public class Robot extends ImprovedTankDrive {
     double lastVelo = 0;
     boolean isOverPoles = false;
     public static double MIN_ACCEL = 9000;
+    public static double MIN_PITCH = 10;
 
     public void update() {
         double current = 0;
@@ -419,6 +420,8 @@ public class Robot extends ImprovedTankDrive {
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
         double leftVelo = leftMotors.get(1).getVelocity();
         double accel = (leftVelo - lastVelo) / loopTime.seconds();
+        double pitchVelo = imu.getAngularVelocity().yRotationRate;
+        Context.packet.put("PITCH VELOCITY", pitchVelo);
         if (Math.abs(leftMotors.get(1).getPower()) > 0 && Math.abs(accel) > MIN_ACCEL) {
             isOverPoles = true;
             poleTime.reset();
