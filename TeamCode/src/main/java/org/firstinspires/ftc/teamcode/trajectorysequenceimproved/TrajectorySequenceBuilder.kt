@@ -584,9 +584,16 @@ class TrajectorySequenceBuilder(
     }
 
     fun waitWhile(condition: () -> Boolean) : TrajectorySequenceBuilder {
-        waitSeconds(0.1)
+        waitSeconds(0.01)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition))
+        return this
+    }
+
+    fun waitWhile(condition: () -> Boolean, driveSignal: DriveSignal) : TrajectorySequenceBuilder {
+        waitSeconds(0.01)
+        pushPath()
+        sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition, driveSignal))
         return this
     }
 

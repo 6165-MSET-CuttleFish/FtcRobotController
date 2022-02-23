@@ -24,11 +24,11 @@ import org.firstinspires.ftc.teamcode.util.field.Context.freight
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmField
-        var raisedPosition = 0.11
+        var raisedPosition = 0.2
         @JvmField
-        var loweredPosition = 0.9
+        var loweredPosition = 0.96
         @JvmField
-        var intakeLimit = 15.0
+        var intakeLimit = 14.0
         @JvmField
         var outPosition = 0.39
         @JvmField
@@ -104,7 +104,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        distanceFilter.a = smoothingCoeffecientDistance
+        distanceFilter.a = if (state == State.OUT) 0.7 else smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
         val unfilteredAlpha = blockSensor.normalizedColors.alpha.toDouble()

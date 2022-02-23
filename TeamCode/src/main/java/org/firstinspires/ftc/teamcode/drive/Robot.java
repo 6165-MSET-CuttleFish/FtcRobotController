@@ -86,7 +86,7 @@ public class Robot extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 0;
+    public static double MID_POWER = 10;
     public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
@@ -94,8 +94,8 @@ public class Robot extends ImprovedTankDrive {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 3;
-    public static double loweredVelo = 20;
+    public static double gainIncrease = 1.6;
+    public static double loweredVelo = 40;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -369,6 +369,7 @@ public class Robot extends ImprovedTankDrive {
     ElapsedTime currentTimer = new ElapsedTime();
     double currentIntegral;
     ElapsedTime loopTime = new ElapsedTime();
+    ElapsedTime poleTime = new ElapsedTime();
     boolean systemIsOverCurrent;
     boolean robotSlowed;
     boolean robotDisabled;
@@ -386,6 +387,10 @@ public class Robot extends ImprovedTankDrive {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
+
+    double lastVelo = 0;
+    boolean isOverPoles = false;
+    public static double MIN_ACCEL = 9000;
 
     public void update() {
         double current = 0;
@@ -406,15 +411,21 @@ public class Robot extends ImprovedTankDrive {
         Context.tilt = getTilt();
         Context.packet.put("Pitch", Math.toDegrees(pitch));
         Context.packet.put("Tilt", Math.toDegrees(tilt));
-        // Pose2d delta = relocalizer.getPoseEstimate().minus(getPoseEstimate());
-//        Context.packet.put("Delta X", delta.getX());
-//        Context.packet.put("Delta Y", delta.getY());
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
         Context.packet.put("Total Power", currentIntegral);
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
+        double leftVelo = leftMotors.get(1).getVelocity();
+        double accel = (leftVelo - lastVelo) / loopTime.seconds();
+        if (Math.abs(leftMotors.get(1).getPower()) > 0 && Math.abs(accel) > MIN_ACCEL) {
+            isOverPoles = true;
+            poleTime.reset();
+        }
+        Context.packet.put("Left Velo", leftVelo);
+        Context.packet.put("Left Accel", accel);
+        lastVelo = leftVelo;
         Canvas canvas = Context.packet.fieldOverlay();
         canvas.setStroke("#F04141");
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
@@ -423,16 +434,16 @@ public class Robot extends ImprovedTankDrive {
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
+        if (isOverPoles && poleTime.seconds() < 0.1) {
+            carousel.setPower(1);
+            gainMode = GainMode.FORWARD;
+        } else if (poleTime.seconds() > 0.1){
+            isOverPoles = false;
+            carousel.setPower(0);
+            gainMode = GainMode.IDLE;
+        }
         systemIsOverCurrent = current > MAX_CURRENT;
         robotSlowed = currentIntegral > MID_POWER;
-//        if (robotSlowed) {
-//            Log.println(Log.INFO, "Total System Power", currentIntegral + "");
-//            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-//            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-//        } else {
-//            leftMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//            rightMotors.get(2).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        }
         if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
             robotDisabled = true;
             currentTimer.reset();
@@ -559,7 +570,7 @@ public class Robot extends ImprovedTankDrive {
         for (DcMotorEx rightMotor : rightMotors) {
             rightSum += encoderTicksToInches(rightMotor.getVelocity());
         }
-        double pitch = Context.pitch;
+        double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
     }
     public static boolean is4md = false;
