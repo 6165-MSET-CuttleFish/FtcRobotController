@@ -591,6 +591,13 @@ class TrajectorySequenceBuilder<T>(
         return this
     }
 
+    fun waitWhile(condition: () -> Boolean, driveSignal: DriveSignal) : TrajectorySequenceBuilder<T> {
+        waitSeconds(0.01)
+        pushPath()
+        sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition, driveSignal))
+        return this
+    }
+    
     fun addTrajectory(trajectory: Trajectory): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(

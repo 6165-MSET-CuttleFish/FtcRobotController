@@ -26,9 +26,8 @@ public class ShippingHubDetector extends OpenCvPipeline {
 
     private Mat mat;
     private Mat ret;
-    public static Scalar lowerOrange = new Scalar(0.0, 100.0, 100.0);
-    public static Scalar upperOrange = new Scalar(100.0, 100.0, 255.0);
-    public static boolean seeOriginal;
+    Scalar lowerOrange = new Scalar(16.0, 128.0, 128.0);
+    Scalar upperOrange = new Scalar(32.0, 128.0, 128.0);
     private double x;
     private double y;
     double width;
@@ -44,18 +43,18 @@ public class ShippingHubDetector extends OpenCvPipeline {
         ret = new Mat(); // resetting pointer held in ret
         try { // try catch in order for opMode to not crash and force a restart
             /**converting from RGB color space to YCrCb color space**/
-            Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2Lab, Imgproc.COLOR_BGRA2BGR565); //blue
+            Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2Lab); //black
 
 
             /**checking if any pixel is within the orange bounds to make a black and white mask**/
-            Mat mask = new Mat(mat.rows(), mat.cols(), CvType.CV_8UC1); // variable to store mask in
+            Mat mask = new Mat(mat.rows(), mat.cols(), CvType.CV_16F); // variable to store mask in
             Core.inRange(mat, lowerOrange, upperOrange, mask);
 
             /**applying to input and putting it on ret in black or yellow**/
             Core.bitwise_and(input, input, ret, mask);
 
             /**applying GaussianBlur to reduce noise when finding contours**/
-            Imgproc.GaussianBlur(mask, mask, new Size(5.0, 15.0), 0.00);
+            Imgproc.GaussianBlur(mask, mask, new Size(25.0, 25.0), 0.00);
 
             /**finding contours on mask**/
             ArrayList<MatOfPoint> contours = new ArrayList<>();
@@ -73,7 +72,7 @@ public class ShippingHubDetector extends OpenCvPipeline {
                     height = ellipse.size.height;
                     x = ellipse.center.x;
                     y = ellipse.center.y;
-                    Imgproc.ellipse(ret, ellipse, new Scalar(0.0, 0.0, 255.0), 1);
+                    Imgproc.ellipse(ret, ellipse, new Scalar(0.0, 0.0, 255.0), 2);
                 }
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
@@ -81,7 +80,7 @@ public class ShippingHubDetector extends OpenCvPipeline {
             Imgproc.line(
                     ret,
                     new Point(
-                            0,
+                            .0,
                             HORIZON
                     ),
                     new Point(
@@ -91,8 +90,7 @@ public class ShippingHubDetector extends OpenCvPipeline {
                     new Scalar(
                             255.0,
                             .0,
-                            255.0
-                    )
+                            255.0)
             );
             mat.release();
             mask.release();
@@ -101,7 +99,7 @@ public class ShippingHubDetector extends OpenCvPipeline {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return seeOriginal ? input : ret;
+        return ret;
     }
 
     public double getX(){
