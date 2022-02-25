@@ -37,17 +37,16 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var radiusOffset = 4.5
         @JvmField var line = -44.0
-        @JvmField var coast = -55.0
-        @JvmField var intakeY = -57.0
-        @JvmField var stop = 49.5
+        @JvmField var coast = -56.5
+        @JvmField var intakeY = -56.5
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 9.0
         @JvmField var conjoiningPoint = 27.0
         @JvmField var waitTime = 0.01
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 22.5
-        @JvmField var divConstant = 1.4
+        @JvmField var depositDistance = 23.0
+        @JvmField var divConstant = 1.3
         @JvmField var depositingAngle = -60.0
     }
 

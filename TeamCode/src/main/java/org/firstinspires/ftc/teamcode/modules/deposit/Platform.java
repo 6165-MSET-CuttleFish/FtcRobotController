@@ -35,7 +35,7 @@ public class Platform extends Module<Platform.State> {
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
-    public static double tiltInPos = 0.85, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
+    public static double tiltInPos = 0.9, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
 
     @Override
     public boolean isTransitioningState() {

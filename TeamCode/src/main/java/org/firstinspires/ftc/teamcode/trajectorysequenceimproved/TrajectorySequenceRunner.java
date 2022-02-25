@@ -214,7 +214,7 @@ public class TrajectorySequenceRunner<T> {
                 lastPoseError = new Pose2d();
 
                 targetPose = currentSegment.getStartPose();
-                driveSignal = new DriveSignal();
+                driveSignal = ((ConditionalWait) currentSegment).getDriveSignal();
                 if (!((ConditionalWait) currentSegment).getCondition().invoke()) {
                     offset += time.seconds();
                     time.reset();
