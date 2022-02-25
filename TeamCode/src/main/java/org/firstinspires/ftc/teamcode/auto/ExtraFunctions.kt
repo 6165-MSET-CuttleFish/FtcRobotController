@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
-import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.*
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 
 fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.0) = UNSTABLE_addDisplacementMarkerOffset(offset) {

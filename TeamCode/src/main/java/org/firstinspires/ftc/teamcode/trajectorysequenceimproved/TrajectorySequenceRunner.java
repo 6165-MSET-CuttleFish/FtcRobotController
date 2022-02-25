@@ -90,6 +90,9 @@ public class TrajectorySequenceRunner<T> {
     }
 
     public T getState() {
+        if (!(currentTrajectorySequence.get(currentSegmentIndex) instanceof TrajectorySegment)) {
+            return null;
+        }
         return state;
     }
 
@@ -157,8 +160,8 @@ public class TrajectorySequenceRunner<T> {
 
                 if (isNewTransition) {
                     follower.followTrajectory(currentTrajectory);
-                    state = (T) ((TrajectorySegment) currentSegment).getState();
                 }
+                state = (T) ((TrajectorySegment) currentSegment).getState();
 
                 if (!follower.isFollowing()) {
                     currentSegmentIndex++;
@@ -171,7 +174,7 @@ public class TrajectorySequenceRunner<T> {
 
                 targetPose = currentTrajectory.get(deltaTime);
             } else if (currentSegment instanceof FutureSegment) {
-                TrajectorySequenceRunner<T> runner = new TrajectorySequenceRunner<T>(follower, headingPIDCoefficients);
+                TrajectorySequenceRunner<T> runner = new TrajectorySequenceRunner<>(follower, headingPIDCoefficients);
                 runner.followTrajectorySequenceAsync(((FutureSegment) currentSegment).getTrajectory());
                 if (!runner.follower.isFollowing()) {
                     currentSegmentIndex++;
@@ -250,6 +253,8 @@ public class TrajectorySequenceRunner<T> {
         packet.put("xVelocityError", getLastVelocityError().getX());
         packet.put("yVelocityError", getLastVelocityError().getY());
         packet.put("headingVelocityError (deg)", Math.toDegrees(getLastVelocityError().getHeading()));
+
+        packet.put("Path State Actual", state);
 
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
@@ -357,8 +362,9 @@ public class TrajectorySequenceRunner<T> {
     public void nextSegment() {
         SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
         if (currentSegment instanceof TrajectorySegment) {
-            offset -= ((TrajectorySegment<?>) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
+            offset -= ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
         }
+        state = null;
         currentSegmentIndex++;
         segmentDuration.reset();
     }

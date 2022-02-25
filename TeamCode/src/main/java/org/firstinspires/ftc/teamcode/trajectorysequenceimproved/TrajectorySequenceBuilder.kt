@@ -591,7 +591,7 @@ class TrajectorySequenceBuilder<T>(
         return this
     }
 
-    fun waitWhile(condition: () -> Boolean, driveSignal: DriveSignal) : TrajectorySequenceBuilder<T> {
+    fun waitWhile(driveSignal: DriveSignal, condition: () -> Boolean) : TrajectorySequenceBuilder<T> {
         waitSeconds(0.01)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition, driveSignal))
@@ -601,7 +601,7 @@ class TrajectorySequenceBuilder<T>(
     fun addTrajectory(trajectory: Trajectory): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(
-            TrajectorySegment<T>(
+            TrajectorySegment(
                 trajectory
             )
         )
@@ -634,8 +634,8 @@ class TrajectorySequenceBuilder<T>(
     private fun pushPath() {
         if (currentTrajectoryBuilder != null) {
             val builtTraj = currentTrajectoryBuilder!!.build()
-            sequenceSegments.add(TrajectorySegment<T>(builtTraj, state))
-            state = null
+            sequenceSegments.add(TrajectorySegment(builtTraj, state))
+           // state = null
         }
         currentTrajectoryBuilder = null
     }
@@ -753,35 +753,40 @@ class TrajectorySequenceBuilder<T>(
                 }
             }
             var newSegment: SequenceSegment? = null
-            if (segment is WaitSegment) {
-                val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
-                newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
-                newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
-                val thisSegment = segment
-                newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers, DriveSignal())
-            } else if (segment is TurnSegment) {
-                val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
-                newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
-                newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
-                val thisSegment = segment
-                newSegment = TurnSegment(
-                    thisSegment.startPose,
-                    thisSegment.totalRotation,
-                    thisSegment.motionProfile,
-                    newMarkers
-                )
-            } else if (segment is TrajectorySegment<*>) {
-                val thisSegment = segment
-                val newMarkers: MutableList<TrajectoryMarker> =
-                    ArrayList(thisSegment.trajectory.markers)
-                newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
-                newSegment = TrajectorySegment<T>(
-                    Trajectory(
-                        thisSegment.trajectory.path,
-                        thisSegment.trajectory.profile,
+            when (segment) {
+                is WaitSegment -> {
+                    val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+                    newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
+                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
+                    val thisSegment = segment
+                    newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers, DriveSignal())
+                }
+                is TurnSegment -> {
+                    val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+                    newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
+                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
+                    val thisSegment = segment
+                    newSegment = TurnSegment(
+                        thisSegment.startPose,
+                        thisSegment.totalRotation,
+                        thisSegment.motionProfile,
                         newMarkers
-                    ),
-                )
+                    )
+                }
+                is TrajectorySegment -> {
+                    val thisSegment = segment
+                    val newMarkers: MutableList<TrajectoryMarker> =
+                        ArrayList(thisSegment.trajectory.markers)
+                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
+                    newSegment = TrajectorySegment(
+                        Trajectory(
+                            thisSegment.trajectory.path,
+                            thisSegment.trajectory.profile,
+                            newMarkers
+                        ),
+                        segment.state
+                    )
+                }
             }
             sequenceSegments[segmentIndex] = newSegment
         }
@@ -808,7 +813,7 @@ class TrajectorySequenceBuilder<T>(
         var currentTime = 0.0
         var currentDisplacement = 0.0
         for (segment in sequenceSegments) {
-            if (segment is TrajectorySegment<*>) {
+            if (segment is TrajectorySegment) {
                 val thisSegment = segment
                 val segmentLength = thisSegment.trajectory.path.length()
                 if (currentDisplacement + segmentLength > s) {
@@ -838,7 +843,7 @@ class TrajectorySequenceBuilder<T>(
 
         val projectedPoints: MutableList<ComparingPoints> = ArrayList()
         for (segment in sequenceSegments) {
-            if (segment is TrajectorySegment<*>) {
+            if (segment is TrajectorySegment) {
                 val thisSegment = segment
                 val displacement = thisSegment.trajectory.path.project(point, 0.25)
                 val projectedPoint = thisSegment.trajectory.path[displacement].vec()

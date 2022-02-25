@@ -28,14 +28,14 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.95, higherInPosition = 0.85;
+    public static double inPosition = 0.99, higherInPosition = 0.85;
     public static double lockPosition = 0.52;
     public static double unlockPosition = 0.29;
     public static double blockDistanceTolerance = 14;
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
-    public static double tiltInPos = 0.9, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
+    public static double tiltInPos = 0.85, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
 
     @Override
     public boolean isTransitioningState() {
@@ -47,7 +47,7 @@ public class Platform extends Module<Platform.State> {
         CREATE_CLEARANCE,
         HOLDING(0.1),
         LOCKING(0.2),
-        DUMPING(0.19),
+        DUMPING(0.18),
         OUT1,
         OUT2,
         OUT3;
