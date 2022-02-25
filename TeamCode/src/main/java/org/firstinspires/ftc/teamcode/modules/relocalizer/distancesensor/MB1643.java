@@ -11,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class MB1643 implements DistanceSensor {
     AnalogInput distanceSensor;
-    Pose2d centerOffset;
 
     public MB1643(HardwareMap hardwareMap, String deviceName) {
         distanceSensor = hardwareMap.analogInput.get(deviceName);

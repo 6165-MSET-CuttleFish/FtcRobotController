@@ -17,10 +17,9 @@ class UltrasonicDistanceSensor constructor(
         LongRange,
         ShortRange,
     }
-    private val distanceSensor: DistanceSensor
-    init {
-        distanceSensor = if (_state == SensorType.LongRange) MB1242(hardwareMap, name) else MB1643(hardwareMap, name)
-    }
+    private val distanceSensor: DistanceSensor =
+        if (_state == SensorType.LongRange) MB1242(hardwareMap, name) else MB1643(hardwareMap, name)
+
     override fun internalInit() {
     }
 
