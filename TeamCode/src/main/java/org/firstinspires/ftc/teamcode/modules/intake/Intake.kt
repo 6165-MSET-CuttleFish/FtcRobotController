@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.modules.intake
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
@@ -30,11 +31,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var intakeLimit = 14.0
         @JvmField
-        var outPosition = 0.39
+        var outPosition = 0.45
         @JvmField
-        var inPosition = 0.0
+        var inPosition = 0.1
         @JvmField
-        var midPosition = 0.29
+        var midPosition = 0.4
         @JvmField
         var stallingSpeed = 0.4
         @JvmField
@@ -49,6 +50,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var smoothingCoefficientAlpha = 0.8
         @JvmField
         var div = 2.0
+        @JvmField
+        var distanceTolerance = 15.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -67,6 +70,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         )
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
+    private var extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
     private var power = 0.0
     var containsBlock = false
     private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
@@ -132,10 +136,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                             Freight.CUBE
                         }
                     } else {
-                        state = State.TRANSFER
+                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
+                            state = State.TRANSFER
+                        }
                     }
                 }
-                if (extensionServos.isTransitioning || flip.isTransitioning) {
+                if (isTransitioningState()) {
                     power = stallingSpeed
                 }
             }
@@ -168,6 +174,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             Context.packet.put("Filtered Alpha", alpha)
             Context.packet.put("Filtered Block Distance", distance)
             Context.packet.put("Block Sensor Distance", unfilteredDistance)
+            Context.packet.put("Extension Distance", extensionDistance.getDistance(DistanceUnit.CM))
         }
         val intakePose = modulePoseEstimate.polarAdd(7.7)
         DashboardUtil.drawIntake(Context.packet.fieldOverlay(), modulePoseEstimate, intakePose)
@@ -220,5 +227,5 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.position = inPosition
     }
 
-    override fun isTransitioningState(): Boolean = extensionServos.isTransitioning || flip.isTransitioning
+    override fun isTransitioningState() = extensionServos.isTransitioning || flip.isTransitioning
 }
