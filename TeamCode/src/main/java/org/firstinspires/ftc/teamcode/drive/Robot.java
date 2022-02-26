@@ -398,8 +398,10 @@ public class Robot<T> extends ImprovedTankDrive {
 
     double lastVelo = 0;
     boolean isOverPoles = false;
-    public static double MIN_ACCEL = 6000;
-    public static double MIN_VELO = 20;
+    public static double MIN_ACCEL = 7000;
+    public static double minX = 20;
+    public static double maxX = 34;
+
 
     public void update() {
         double current = 0;
@@ -427,11 +429,14 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
 
+        Context.packet.put("Left Power", leftMotors.get(0).getPower());
+        Context.packet.put("Right Power", rightMotors.get(0).getPower());
+
         double leftVelo = leftMotors.get(1).getVelocity();
         double accel = (leftVelo - lastVelo) / loopTime.seconds();
         double pitchVelo = imu.getAngularVelocity().yRotationRate;
         Context.packet.put("PITCH VELOCITY", Math.toDegrees(pitchVelo));
-        if (Math.abs(accel) > MIN_ACCEL && getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 25) {
+        if (Math.abs(accel) > MIN_ACCEL && getPoseEstimate().getX() < maxX && getPoseEstimate().getX() > minX) {
             isOverPoles = true;
             poleTime.reset();
         }

@@ -39,17 +39,17 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var waitTime = 0.1
+        @JvmField var waitTime = 0.9
         @JvmField var line = -44.0
-        @JvmField var coast = -55.5
+        @JvmField var coast = -56.0
         @JvmField var intakeY = -56.0
         @JvmField var stop = 50.5
         @JvmField var intakeDelay = 9.0
-        @JvmField var conjoiningPoint = 27.0
+        @JvmField var conjoiningPoint = 20.0
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
         @JvmField var divConstant = 1.3
-        @JvmField var depositingAngle = -60.0
+        @JvmField var depositingAngle = -65.0
     }
 
     enum class PathState {
@@ -118,11 +118,11 @@ class CyclingRed : LinearOpMode() {
                 //.carouselOff(carousel)
                 .splineTo(
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
-                    Math.toRadians(-15.0 - 20 * Math.random()).flip(blue)
+                    Math.toRadians(-5.0 - 20 * Math.random()).flip(blue)
                 )
-                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
-                    intake.state == Intake.State.OUT
-                }
+//                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
+//                    intake.state == Intake.State.OUT
+//                }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)
