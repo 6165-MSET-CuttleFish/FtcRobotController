@@ -110,8 +110,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
-    public static double slowFactor = 1;
-    public static double headingSpeed = 2;
+    public static double slowFactor = 1.1;
 
     final HardwareMap hardwareMap;
 
@@ -562,7 +561,7 @@ public class Robot<T> extends ImprovedTankDrive {
             ).div(denom);
         }
         if (robotDisabled) vel = new Pose2d();
-        setDrivePower(vel.div(slowFactor));
+        setDrivePower(vel);
     }
 
     @NonNull

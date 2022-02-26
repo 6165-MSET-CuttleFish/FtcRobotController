@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.drive.Robot.admissibleError
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
@@ -84,18 +85,24 @@ class CyclingRed : LinearOpMode() {
             TSEDetector.Location.RIGHT -> rightSequence
         }
         // robot.turnOffVision()
+        var relocalized = false
         robot.followTrajectorySequenceAsync(sequence)
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    if (intake.state == Intake.State.IN && intake.containsBlock && Context.robotPose.x > 35) {
-                        robot.nextSegment()
+                    relocalized = false
+                    admissibleError = Pose2d(5.0, 5.0, 30.0)
+                    if (intake.state == Intake.State.IN && intake.containsBlock && Context.robotPose.x > 45) {
+                        // robot.nextSegment()
                     }
                 }
                 PathState.DUMPING -> {
-
+                    admissibleError = Pose2d(2.0, 2.0, 5.0)
+                    if (!relocalized) {
+                        robot.correctPosition()
+                    }
                 }
                 else -> {
 
@@ -117,15 +124,14 @@ class CyclingRed : LinearOpMode() {
                 .defaultGains()
                 //.carouselOff(carousel)
                 .splineTo(
-                    Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
-                    Math.toRadians(-5.0 - 20 * Math.random()).flip(blue)
+                    Vector2d(stop + i / divConstant, intakeY - i / 4).flip(blue),
+                    Math.toRadians(-2.0 - 10 * Math.random()).flip(blue)
                 )
 //                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
 //                    intake.state == Intake.State.OUT
 //                }
-                .waitSeconds(waitTime)
                 .setReversed(true)
-                .relocalize(robot)
+                //.relocalize(robot)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -147,8 +153,8 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
         }
         return trajectoryBuilder
-            .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
-            .splineToConstantHeading(Vector2d(39.0, -55.0).flip(blue), 0.0)
+            .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
+            .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
             .build()
     }
     private fun leftAuto() : TrajectorySequence {
