@@ -59,9 +59,9 @@ abstract class ImprovedTankDrive constructor(
                 .toMutableList()
             if (Robot.gainMode != Robot.GainMode.IDLE) {
                 if (Context.alliance == Alliance.BLUE) {
-                    wheelDeltas[1] = wheelDeltas[0]
+                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
                 } else {
-                    wheelDeltas[0] = wheelDeltas[1]
+                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
                 }
             }
             val robotPoseDelta =

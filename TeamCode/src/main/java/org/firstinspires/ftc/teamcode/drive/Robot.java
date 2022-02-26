@@ -110,7 +110,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
-    public static double slowFactor = 1.1;
+    public static double slowFactor = 1;
 
     final HardwareMap hardwareMap;
 
@@ -398,8 +398,8 @@ public class Robot<T> extends ImprovedTankDrive {
     double lastVelo = 0;
     boolean isOverPoles = false;
     public static double MIN_ACCEL = 7000;
-    public static double minX = 20;
-    public static double maxX = 34;
+    public static double minX = 14;
+    public static double maxX = 36;
 
 
     public void update() {
@@ -435,9 +435,11 @@ public class Robot<T> extends ImprovedTankDrive {
         double accel = (leftVelo - lastVelo) / loopTime.seconds();
         double pitchVelo = imu.getAngularVelocity().yRotationRate;
         Context.packet.put("PITCH VELOCITY", Math.toDegrees(pitchVelo));
-        if (Math.abs(accel) > MIN_ACCEL && getPoseEstimate().getX() < maxX && getPoseEstimate().getX() > minX) {
+        if (getPoseEstimate().getX() < maxX && getPoseEstimate().getX() > minX) {
             isOverPoles = true;
             poleTime.reset();
+        } else {
+            isOverPoles = false;
         }
         Context.packet.put("Left Velo", leftVelo);
         Context.packet.put("Left Accel", accel);
@@ -450,11 +452,10 @@ public class Robot<T> extends ImprovedTankDrive {
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        if (isOverPoles && poleTime.seconds() < 0.1) {
+        if (isOverPoles) {
             carousel.setPower(1);
             gainMode = GainMode.FORWARD;
-        } else if (poleTime.seconds() > 0.1){
-            isOverPoles = false;
+        } else {
             carousel.setPower(0);
             gainMode = GainMode.IDLE;
         }

@@ -44,13 +44,13 @@ class CyclingRed : LinearOpMode() {
         @JvmField var line = -44.0
         @JvmField var coast = -56.0
         @JvmField var intakeY = -56.0
-        @JvmField var stop = 50.5
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 9.0
-        @JvmField var conjoiningPoint = 20.0
+        @JvmField var conjoiningPoint = 28.0
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
         @JvmField var divConstant = 1.3
-        @JvmField var depositingAngle = -65.0
+        @JvmField var depositingAngle = -60.0
     }
 
     enum class PathState {
@@ -93,15 +93,16 @@ class CyclingRed : LinearOpMode() {
             when (robot.pathState) {
                 PathState.INTAKING -> {
                     relocalized = false
-                    admissibleError = Pose2d(5.0, 5.0, 30.0)
+                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
                     if (intake.state == Intake.State.IN && intake.containsBlock && Context.robotPose.x > 45) {
                         // robot.nextSegment()
                     }
                 }
                 PathState.DUMPING -> {
-                    admissibleError = Pose2d(2.0, 2.0, 5.0)
+                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
                     if (!relocalized) {
-                        robot.correctPosition()
+                        // robot.correctPosition()
+                        relocalized = true
                     }
                 }
                 else -> {
@@ -124,14 +125,14 @@ class CyclingRed : LinearOpMode() {
                 .defaultGains()
                 //.carouselOff(carousel)
                 .splineTo(
-                    Vector2d(stop + i / divConstant, intakeY - i / 4).flip(blue),
-                    Math.toRadians(-2.0 - 10 * Math.random()).flip(blue)
+                    Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
+                    Math.toRadians(-15.0 - 20 * Math.random()).flip(blue)
                 )
-//                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
-//                    intake.state == Intake.State.OUT
-//                }
+                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-30.0)))) {
+                    intake.state == Intake.State.OUT
+                }
                 .setReversed(true)
-                //.relocalize(robot)
+                .relocalize(robot)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
