@@ -40,16 +40,15 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var waitTime = 0.9
-        @JvmField var line = -44.0
-        @JvmField var coast = -56.0
-        @JvmField var intakeY = -56.0
-        @JvmField var stop = 51.0
+        @JvmField var coast = -56.5
+        @JvmField var intakeY = -56.5
+        @JvmField var stop = 52.0
         @JvmField var intakeDelay = 9.0
-        @JvmField var conjoiningPoint = 28.0
+        @JvmField var conjoiningPoint = 27.0
+        @JvmField var waitTime = 0.2
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
-        @JvmField var divConstant = 1.3
+        @JvmField var divConstant = 1.7
         @JvmField var depositingAngle = -60.0
     }
 
@@ -94,9 +93,6 @@ class CyclingRed : LinearOpMode() {
                 PathState.INTAKING -> {
                     relocalized = false
                     admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
-                    if (intake.state == Intake.State.IN && intake.containsBlock && Context.robotPose.x > 45) {
-                        // robot.nextSegment()
-                    }
                 }
                 PathState.DUMPING -> {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
@@ -126,11 +122,12 @@ class CyclingRed : LinearOpMode() {
                 //.carouselOff(carousel)
                 .splineTo(
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
-                    Math.toRadians(-15.0 - 20 * Math.random()).flip(blue)
+                    Math.toRadians(-0.0 - 10 * Math.random()).flip(blue)
                 )
-                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-30.0)))) {
+                .waitWhile(DriveSignal(Pose2d(10.0, 0.0, Math.toRadians(-50.0)))) {
                     intake.state == Intake.State.OUT
                 }
+                .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)
             trajectoryBuilder
