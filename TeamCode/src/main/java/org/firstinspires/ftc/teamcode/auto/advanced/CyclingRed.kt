@@ -40,13 +40,13 @@ class CyclingRed : LinearOpMode() {
         @JvmField var line = -44.0
         @JvmField var coast = -56.5
         @JvmField var intakeY = -56.5
-        @JvmField var stop = 51.0
+        @JvmField var stop = 52.0
         @JvmField var intakeDelay = 9.0
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.01
+        @JvmField var waitTime = 0.2
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
-        @JvmField var divConstant = 1.3
+        @JvmField var divConstant = 1.7
         @JvmField var depositingAngle = -60.0
     }
 
@@ -100,7 +100,7 @@ class CyclingRed : LinearOpMode() {
                 .increaseGains(Robot.GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .defaultGains()
-                .liftUp(deposit, Deposit.State.LEVEL3)
+                //.liftUp(deposit, Deposit.State.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(depositDistance, Math.toRadians(depositingAngle).flip(blue)),
                     allianceHub.center

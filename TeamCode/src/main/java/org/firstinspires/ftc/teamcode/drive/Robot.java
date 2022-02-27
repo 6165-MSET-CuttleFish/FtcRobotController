@@ -94,8 +94,8 @@ public class Robot extends ImprovedTankDrive {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 2.5;
-    public static double loweredVelo = 35;
+    public static double gainIncrease = 2.2;
+    public static double loweredVelo = 60;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -374,7 +374,7 @@ public class Robot extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 30;
+    public static double correctionTolerance = 20;
 
     public void correctPosition() {
         relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
@@ -423,9 +423,11 @@ public class Robot extends ImprovedTankDrive {
         double accel = (leftVelo - lastVelo) / loopTime.seconds();
         double pitchVelo = imu.getAngularVelocity().yRotationRate;
         Context.packet.put("PITCH VELOCITY", Math.toDegrees(pitchVelo));
-        if (Math.abs(accel) > MIN_ACCEL && getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 25) {
+        if (getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 14) {
             isOverPoles = true;
             poleTime.reset();
+        } else {
+            isOverPoles = false;
         }
         Context.packet.put("Left Velo", leftVelo);
         Context.packet.put("Left Accel", accel);
@@ -438,12 +440,12 @@ public class Robot extends ImprovedTankDrive {
         if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
-        if (isOverPoles && poleTime.seconds() < 0.1) {
-            carousel.setPower(1);
+        if (isOverPoles) {
+            //carousel.setPower(1);
             gainMode = GainMode.FORWARD;
-        } else if (poleTime.seconds() > 0.1){
+        } else {
             isOverPoles = false;
-            carousel.setPower(0);
+            //carousel.setPower(0);
             gainMode = GainMode.IDLE;
         }
         systemIsOverCurrent = current > MAX_CURRENT;
