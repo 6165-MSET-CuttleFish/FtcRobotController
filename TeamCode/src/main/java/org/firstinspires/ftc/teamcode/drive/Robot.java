@@ -89,7 +89,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double MID_POWER = 10;
     public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static Pose2d admissibleError = new Pose2d(1, 1, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
@@ -381,7 +381,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 20;
+    public static double correctionTolerance = 50;
 
     public void correctPosition() {
         relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
@@ -431,19 +431,6 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Left Power", leftMotors.get(0).getPower());
         Context.packet.put("Right Power", rightMotors.get(0).getPower());
 
-        double leftVelo = leftMotors.get(1).getVelocity();
-        double accel = (leftVelo - lastVelo) / loopTime.seconds();
-        double pitchVelo = imu.getAngularVelocity().yRotationRate;
-        Context.packet.put("PITCH VELOCITY", Math.toDegrees(pitchVelo));
-        if (getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 14) {
-            isOverPoles = true;
-            poleTime.reset();
-        } else {
-            isOverPoles = false;
-        }
-        Context.packet.put("Left Velo", leftVelo);
-        Context.packet.put("Left Accel", accel);
-        lastVelo = leftVelo;
         Canvas canvas = Context.packet.fieldOverlay();
         canvas.setStroke("#F04141");
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());

@@ -40,15 +40,15 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -56.5
-        @JvmField var intakeY = -56.5
-        @JvmField var stop = 52.0
+        @JvmField var coast = -55.0
+        @JvmField var intakeY = -55.0
+        @JvmField var stop = 55.0
         @JvmField var intakeDelay = 9.0
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.2
+        @JvmField var waitTime = 0.4
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 23.0
-        @JvmField var divConstant = 1.7
+        @JvmField var depositDistance = 22.0
+        @JvmField var divConstant = 1.2
         @JvmField var depositingAngle = -60.0
     }
 
@@ -92,10 +92,12 @@ class CyclingRed : LinearOpMode() {
             when (robot.pathState) {
                 PathState.INTAKING -> {
                     relocalized = false
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
+                    admissibleError = Pose2d(10.0, 10.0, Math.toRadians(20.0))
+                    Robot.admissibleTimeout = 0.8
                 }
                 PathState.DUMPING -> {
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
+                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(8.0))
+                    Robot.admissibleTimeout = 0.4
                     if (!relocalized) {
                         // robot.correctPosition()
                         relocalized = true
@@ -122,18 +124,18 @@ class CyclingRed : LinearOpMode() {
                 //.carouselOff(carousel)
                 .splineTo(
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
-                    Math.toRadians(-0.0 - 10 * Math.random()).flip(blue)
+                    Math.toRadians(-10.0 - 10 * Math.random()).flip(blue)
                 )
-                .waitWhile(DriveSignal(Pose2d(10.0, 0.0, Math.toRadians(-50.0)))) {
+                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-20.0)))) {
                     intake.state == Intake.State.OUT
                 }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)
+                .intakeOff(intake)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
-                .intakeOff(intake)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                 .increaseGains(Robot.GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)

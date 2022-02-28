@@ -68,7 +68,7 @@ class ImprovedRamsete @JvmOverloads constructor(
 
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
         lastVelocityError = currentRobotVel?.toMeters()?.let { Kinematics.calculateRobotPoseError(Pose2d(v, 0.0, omega).toInches(), it.toInches()) }
-        val alternative = calculate(currentPose.toFTCLibPose2d(), targetPose.toFTCLibPose2d(), targetRobotVel.x, targetRobotVel.heading)
+        // val alternative = calculate(currentPose.toFTCLibPose2d(), targetPose.toFTCLibPose2d(), targetRobotVel.x, targetRobotVel.heading)
         return DriveSignal(Pose2d(outV, 0.0, outOmega).toInches(), targetRobotAccel.toInches())
     }
         private fun calculate(
