@@ -386,8 +386,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public void correctPosition() {
         relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
         Pose2d newPose = relocalizer.getPoseEstimate();
-        Pose2d currPose = getPoseEstimate();
-        if (Math.abs(currPose.vec().distTo(newPose.vec())) < correctionTolerance) setPoseEstimate(newPose);
+        setPoseEstimate(newPose);
     }
 
     public void rawCorrectPosition() {

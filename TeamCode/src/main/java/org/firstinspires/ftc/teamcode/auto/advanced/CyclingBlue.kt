@@ -121,9 +121,9 @@ class CyclingBlue : LinearOpMode() {
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
                     Math.toRadians(-15.0 - 20 * Math.random()).flip(blue)
                 )
-                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
-                    intake.state == Intake.State.OUT
-                }
+//                .waitWhile(DriveSignal(Pose2d(30.0, 0.0, Math.toRadians(-5.0)))) {
+//                    intake.state == Intake.State.OUT
+//                }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)

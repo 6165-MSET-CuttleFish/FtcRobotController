@@ -29,7 +29,7 @@ public class Platform extends Module<Platform.State> {
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
     public static double inPosition = 0.99, higherInPosition = 0.85;
-    public static double lockPosition = 0.52;
+    public static double lockPosition = 0.5;
     public static double unlockPosition = 0.29;
     public static double blockDistanceTolerance = 14;
     public static double dumpServoPositionPerSecond = 1.7;
@@ -46,8 +46,8 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         HOLDING(0.1),
-        LOCKING(0.2),
-        DUMPING(0.3),
+        LOCKING(0.16),
+        DUMPING(0.2),
         OUT1,
         OUT2,
         OUT3;
