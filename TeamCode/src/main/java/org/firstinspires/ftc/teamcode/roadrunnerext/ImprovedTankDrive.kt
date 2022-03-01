@@ -9,10 +9,9 @@ import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.navigation.Position
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.localizers.ImprovedLocalizer
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 
@@ -35,7 +34,7 @@ abstract class ImprovedTankDrive constructor(
     class TankLocalizer @JvmOverloads constructor(
         private val drive: ImprovedTankDrive,
         private val useExternalHeading: Boolean = true
-    ) : Localizer {
+    ) : ImprovedLocalizer {
         private var _poseEstimate = Pose2d()
         override var poseEstimate: Pose2d
             get() = _poseEstimate
@@ -50,20 +49,14 @@ abstract class ImprovedTankDrive constructor(
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
         private val timer = ElapsedTime()
+        private var lastVel: Pose2d? = Pose2d()
+        override var poseAcceleration: Pose2d? = Pose2d()
 
         private fun odoPoseDelta(wheelPositions: List<Double>, extHeading: Double) : Pose2d {
             if (lastWheelPositions.isEmpty() || wheelPositions.isEmpty()) return Pose2d()
             val wheelDeltas = wheelPositions
                 .zip(lastWheelPositions)
                 .map { it.first - it.second }
-                .toMutableList()
-//            if (Robot.gainMode != Robot.GainMode.IDLE) {
-//                if (Context.alliance == Alliance.BLUE) {
-//                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
-//                } else {
-//                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
-//                }
-//            }
             val robotPoseDelta =
                 TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
             val finalHeadingDelta = if (useExternalHeading) {
@@ -96,6 +89,8 @@ abstract class ImprovedTankDrive constructor(
 
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
+            poseAcceleration = lastVel?.let { poseVelocity?.minus(it) }
+            lastVel = poseVelocity
             timer.reset()
         }
     }
@@ -169,11 +164,7 @@ abstract class ImprovedTankDrive constructor(
      */
     open fun getWheelVelocities(): List<Double>? = null
 
-    abstract fun getVelocity(): Velocity
-
     abstract fun getPitch(): Double
 
     abstract fun getTilt(): Double
-
-    abstract fun getPosition(): Position
 }

@@ -630,16 +630,4 @@ public class Robot<T> extends ImprovedTankDrive {
     public double getTilt() {
         return imu.getAngularOrientation().thirdAngle - tiltOffset;
     }
-
-    @NonNull
-    @Override
-    public Velocity getVelocity() {
-        return imu.getVelocity();
-    }
-
-    @NonNull
-    @Override
-    public Position getPosition() {
-        return imu.getPosition();
-    }
 }
