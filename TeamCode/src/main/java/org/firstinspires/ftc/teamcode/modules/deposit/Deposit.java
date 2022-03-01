@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.modules.vision.ShippingHubDetector;
 import org.firstinspires.ftc.teamcode.util.field.Freight;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor;
@@ -36,6 +37,7 @@ public class Deposit extends Module<Deposit.State> {
     public static boolean resetEncoder = false;
     public static double allowableDepositError = 1;
     public static double angle = Math.toRadians(30);
+    ShippingHubDetector hubDetector;
 
     private double getLevelHeight(State state) {
         switch (state) {

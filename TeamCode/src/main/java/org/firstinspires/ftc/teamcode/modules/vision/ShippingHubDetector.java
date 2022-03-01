@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
+
 import com.acmerobotics.dashboard.config.Config;
 
 import org.opencv.core.Core;
@@ -15,7 +16,6 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-
 @Config
 public class ShippingHubDetector extends OpenCvPipeline {
     public ShippingHubDetector(){
@@ -26,15 +26,15 @@ public class ShippingHubDetector extends OpenCvPipeline {
 
     private Mat mat;
     private Mat ret;
-    Scalar lowerOrange = new Scalar(16.0, 128.0, 128.0);
-    Scalar upperOrange = new Scalar(32.0, 128.0, 128.0);
+    Scalar lowerOrange = new Scalar(0.0, 128.0, 128.0); //
+    Scalar upperOrange = new Scalar(128.0, 128.0, 128.0);
     private double x;
     private double y;
     double width;
     double height;
     public static int CAMERA_WIDTH = 320;
     public static int HORIZON = (int)((100.0 / 320.0) * CAMERA_WIDTH);
-
+    public static boolean showOriginal;
     @Override
     public Mat processFrame(Mat input) {
         ret.release(); // releasing mat to release backing buffer
@@ -99,7 +99,7 @@ public class ShippingHubDetector extends OpenCvPipeline {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return ret;
+        return showOriginal ? input : ret;
     }
 
     public double getX(){
@@ -109,3 +109,5 @@ public class ShippingHubDetector extends OpenCvPipeline {
         return y;
     }
 }
+
+
