@@ -17,7 +17,7 @@ object FrequentPositions {
     val allianceHub: Circle
         get() = Circle(
             Vector2d(
-                -11.0,
+                -13.0,
                 -24.0
             ).flip(alliance == Alliance.BLUE), 10.0
         )

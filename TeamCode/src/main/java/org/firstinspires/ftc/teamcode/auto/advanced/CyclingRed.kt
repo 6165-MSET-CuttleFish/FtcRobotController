@@ -43,13 +43,13 @@ class CyclingRed : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.0
         @JvmField var intakeY = -55.0
-        @JvmField var stop = 48.0
+        @JvmField var stop = 50.0
         @JvmField var intakeDelay = 8.5
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.2
+        @JvmField var waitTime = 0.4
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 21.0
-        @JvmField var divConstant = 1.8
+        @JvmField var depositDistance = 21.4
+        @JvmField var divConstant = 1.4
         @JvmField var depositingAngle = -60.0
         @JvmField var intakingAngle = -20.0
     }
@@ -86,24 +86,18 @@ class CyclingRed : LinearOpMode() {
             TSEDetector.Location.RIGHT -> rightSequence
         }
         // robot.turnOffVision()
-        var relocalized = false
         robot.followTrajectorySequenceAsync(sequence)
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    relocalized = false
                     admissibleError = Pose2d(10.0, 10.0, Math.toRadians(20.0))
                     Robot.admissibleTimeout = 0.5
                 }
                 PathState.DUMPING -> {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(8.0))
                     Robot.admissibleTimeout = 0.2
-                    if (!relocalized) {
-                        // robot.correctPosition()
-                        relocalized = true
-                    }
                 }
                 else -> {
 
@@ -112,10 +106,10 @@ class CyclingRed : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(10.0, 0.0, sin(t)))
+        return DriveSignal(Pose2d(20.0, 0.0, -sin(3*t)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
-        for (i in 1..9) {
+        for (i in 1..6) {
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
@@ -131,9 +125,9 @@ class CyclingRed : LinearOpMode() {
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
                     Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
                 )
-                .waitWhile(::signalTurn) {
-                    intake.state == Intake.State.OUT
-                }
+//                .waitWhile(::signalTurn) {
+//                    intake.state == Intake.State.OUT
+//                }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)

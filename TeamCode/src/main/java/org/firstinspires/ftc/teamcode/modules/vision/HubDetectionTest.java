@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.modules.vision;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -14,9 +16,11 @@ public class HubDetectionTest extends ModuleTest {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     public OpenCvWebcam webcam;
     private ShippingHubDetector shippingHubDetector;
+    Robot robot;
 
     @Override
     public void initialize() {
+        robot = new Robot(this);
         int cameraMonitorViewId = this
                 .hardwareMap
                 .appContext
@@ -47,6 +51,13 @@ public class HubDetectionTest extends ModuleTest {
 
     @Override
     public void update() {
+        robot.setWeightedDrivePower(
+                new Pose2d(
+                        -gamepad1.left_stick_y,
+                        0,
+                        -gamepad1.right_stick_x
+                )
+        );
         telemetry.addData("X", shippingHubDetector.getX());
         telemetry.addData("Y", shippingHubDetector.getY());
     }

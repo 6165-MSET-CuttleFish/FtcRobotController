@@ -381,12 +381,12 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 50;
+    public static double correctionTolerance = 70;
 
     public void correctPosition() {
         relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
         Pose2d newPose = relocalizer.getPoseEstimate();
-        setPoseEstimate(newPose);
+        if (Math.abs(getPoseEstimate().vec().distTo(newPose.vec())) < correctionTolerance) setPoseEstimate(newPose);
     }
 
     public void rawCorrectPosition() {

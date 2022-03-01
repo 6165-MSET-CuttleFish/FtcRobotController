@@ -51,7 +51,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var div = 2.0
         @JvmField
-        var distanceTolerance = 15.0
+        var distanceTolerance = 14.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -108,7 +108,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        distanceFilter.a = if (state == State.OUT) 0.7 else smoothingCoeffecientDistance
+        distanceFilter.a = if (state == State.OUT) 0.75 else smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
         val unfilteredAlpha = blockSensor.normalizedColors.alpha.toDouble()
