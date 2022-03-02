@@ -86,8 +86,8 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 10;
-    public static double MAX_POWER = 25;
+    public static double MID_POWER = 8;
+    public static double MAX_POWER = 20;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(1, 1, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
@@ -95,7 +95,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double gainIncrease = 2.2;
-    public static double loweredVelo = 60;
+    public static double loweredVelo = 70;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -384,7 +384,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double correctionTolerance = 70;
 
     public void correctPosition() {
-        relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
+        // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
         Pose2d newPose = relocalizer.getPoseEstimate();
         if (Math.abs(getPoseEstimate().vec().distTo(newPose.vec())) < correctionTolerance) setPoseEstimate(newPose);
     }
@@ -426,10 +426,12 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
-
-        Context.packet.put("Left Power", leftMotors.get(0).getPower());
-        Context.packet.put("Right Power", rightMotors.get(0).getPower());
-
+        if (getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 14 && opModeType == OpModeType.AUTO) {
+            isOverPoles = true;
+            poleTime.reset();
+        } else {
+            isOverPoles = false;
+        }
         Canvas canvas = Context.packet.fieldOverlay();
         canvas.setStroke("#F04141");
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
@@ -439,8 +441,10 @@ public class Robot<T> extends ImprovedTankDrive {
             admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
         }
         if (isOverPoles) {
+            if (opModeType == OpModeType.AUTO) carousel.setPower(1);
             gainMode = GainMode.FORWARD;
         } else {
+            if (opModeType == OpModeType.AUTO) carousel.setPower(0);
             gainMode = GainMode.IDLE;
         }
         systemIsOverCurrent = current > MAX_CURRENT;

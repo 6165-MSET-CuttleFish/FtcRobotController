@@ -57,6 +57,14 @@ abstract class ImprovedTankDrive constructor(
             val wheelDeltas = wheelPositions
                 .zip(lastWheelPositions)
                 .map { it.first - it.second }
+                .toMutableList()
+            if (Robot.gainMode != Robot.GainMode.IDLE) {
+                if (Context.alliance == Alliance.RED) {
+                    wheelDeltas[0] = wheelDeltas[1]
+                } else {
+                    wheelDeltas[1] = wheelDeltas[0]
+                }
+            }
             val robotPoseDelta =
                 TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
             val finalHeadingDelta = if (useExternalHeading) {
@@ -126,7 +134,8 @@ abstract class ImprovedTankDrive constructor(
             kA * voltageMultiplier * Robot.gainIncrease,
             kStatic * voltageMultiplier * Robot.gainIncrease,
         ).toMutableList()
-        if (Robot.gainMode == Robot.GainMode.FORWARD) {
+        if (Robot.gainMode != Robot.GainMode.IDLE) {
+            // powers = gainedPowers
             if (Context.alliance == Alliance.BLUE) {
                 powers[1] = gainedPowers[1]
             } else {

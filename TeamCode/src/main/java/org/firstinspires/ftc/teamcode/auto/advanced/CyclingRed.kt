@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.Throws
 import kotlin.math.sin
@@ -43,10 +44,10 @@ class CyclingRed : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.0
         @JvmField var intakeY = -55.0
-        @JvmField var stop = 50.0
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 8.5
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.4
+        @JvmField var waitTime = 0.2
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 21.4
         @JvmField var divConstant = 1.4
@@ -79,6 +80,14 @@ class CyclingRed : LinearOpMode() {
             telemetry.update()
         }
         waitForStart()
+        Async.start {
+            while (opModeIsActive()) {
+                robot.relocalizer.updatePoseEstimate(
+                    Relocalizer.Sensor.FRONT_LEFT,
+                    Relocalizer.Sensor.RIGHT
+                )
+            }
+        }
         // robot.scan()
         val sequence = when (location) {
             TSEDetector.Location.LEFT -> leftSequence
@@ -92,8 +101,8 @@ class CyclingRed : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(10.0, 10.0, Math.toRadians(20.0))
-                    Robot.admissibleTimeout = 0.5
+                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(30.0))
+                    Robot.admissibleTimeout = 0.3
                 }
                 PathState.DUMPING -> {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(8.0))

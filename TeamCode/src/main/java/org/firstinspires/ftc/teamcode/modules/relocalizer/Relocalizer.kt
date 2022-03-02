@@ -29,13 +29,13 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         UltrasonicDistanceSensor(
             hardwareMap ,
             "leftFrontDS",
-            UltrasonicDistanceSensor.SensorType.ShortRange,
+            UltrasonicDistanceSensor.SensorType.LongRange,
             Pose2d(7.8, 7.5, Math.toRadians(0.0))
         )
     private val frontRightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightFrontDS",
-        UltrasonicDistanceSensor.SensorType.ShortRange,
+        UltrasonicDistanceSensor.SensorType.LongRange,
         Pose2d(7.5, -7.0, Math.toRadians(-0.0))
     )
     private val leftDistance = UltrasonicDistanceSensor(
@@ -85,10 +85,10 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         val rawYDist = ySensor.getDistance(DistanceUnit.INCH)
         val xDist = rawXDist * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
         val yDist = rawYDist * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
-        Context.packet.put("XDIST", xDist)
-        Context.packet.put("YDIST", yDist)
-        Context.packet.put("RAW_XDIST", xDist)
-        Context.packet.put("RAW_YDIST", yDist)
+//        Context.packet.put("XDIST", xDist)
+//        Context.packet.put("YDIST", yDist)
+//        Context.packet.put("RAW_XDIST", rawXDist)
+//        Context.packet.put("RAW_YDIST", rawYDist)
         val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
         val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)
         val xPoseEstimate =
@@ -102,12 +102,9 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
     }
 
-    override fun internalUpdate() =
-         if (alliance == Alliance.RED) {
-             updatePoseEstimate(Sensor.FRONT_LEFT, Sensor.RIGHT)
-         } else {
-             updatePoseEstimate(Sensor.FRONT_RIGHT, Sensor.LEFT)
-         }
+    override fun internalUpdate() {
+
+    }
 
     override fun isDoingInternalWork() = false
 

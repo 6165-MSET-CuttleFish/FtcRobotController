@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
+import org.firstinspires.ftc.teamcode.util.Async;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.Side;
@@ -16,15 +17,21 @@ public class RelocalizationTest extends LinearOpMode {
     public void initialize() {
         robot = new Robot(this);
         Context.side = Side.CYCLING;
-        Context.alliance = Alliance.RED;
+        Context.alliance = Alliance.BLUE;
     }
 
     @Override
     public void runOpMode() {
         initialize();
         waitForStart();
+        Async.start(() -> {
+            while (opModeIsActive()) {
+                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+            }
+        });
         while (opModeIsActive()) {
             robot.update();
+
             robot.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
@@ -32,7 +39,6 @@ public class RelocalizationTest extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
-            robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
             if (gamepad1.a) robot.rawCorrectPosition();
         }
     }
