@@ -6,11 +6,15 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /*
 * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -29,18 +33,27 @@ import org.firstinspires.ftc.teamcode.util.field.Context.alliance
 * is recommended that you use the FollowerPIDTuner opmode for further fine tuning.
 */
 @Config
-@Autonomous(group = "drive")
+@TeleOp(group = "drive")
 class PolesBackAndForth : LinearOpMode() {
     companion object {
         @JvmField var blue = false
         @JvmField var inGain = 29.0
         @JvmField var outGain = 34.0
-        @JvmField var waitTime = 1.0
+        @JvmField var waitTime = 0.3
     }
     override fun runOpMode() {
         val robot = Robot<Any>(this)
+        robot.polesDebug = true
         waitForStart()
         robot.poseEstimate = Pose2d(-16.1417 / 2, -55.0, Math.toRadians(0.0))
+        Async.start {
+            while (opModeIsActive()) {
+                robot.relocalizer.updatePoseEstimate(
+                    Relocalizer.Sensor.FRONT_LEFT,
+                    Relocalizer.Sensor.RIGHT
+                )
+            }
+        }
         while (opModeIsActive() && !isStopRequested) {
             alliance = if (blue) {
                 Alliance.BLUE

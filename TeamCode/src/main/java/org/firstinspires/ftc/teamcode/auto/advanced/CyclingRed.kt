@@ -42,17 +42,17 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.0
-        @JvmField var intakeY = -55.0
+        @JvmField var coast = -56.0
+        @JvmField var intakeY = -56.0
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 8.5
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.2
+        @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 21.4
+        @JvmField var depositDistance = 24.0
         @JvmField var divConstant = 1.4
         @JvmField var depositingAngle = -60.0
-        @JvmField var intakingAngle = -20.0
+        @JvmField var intakingAngle = -15.0
     }
 
     enum class PathState {
@@ -101,12 +101,12 @@ class CyclingRed : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(30.0))
+                    admissibleError = Pose2d(7.0, 7.0, Math.toRadians(30.0))
                     Robot.admissibleTimeout = 0.3
                 }
                 PathState.DUMPING -> {
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(8.0))
-                    Robot.admissibleTimeout = 0.2
+                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
+                    Robot.admissibleTimeout = 0.5
                 }
                 else -> {
 
@@ -134,9 +134,9 @@ class CyclingRed : LinearOpMode() {
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
                     Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
                 )
-//                .waitWhile(::signalTurn) {
-//                    intake.state == Intake.State.OUT
-//                }
+                .waitWhile(::signalTurn) {
+                    intake.state == Intake.State.OUT
+                }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)

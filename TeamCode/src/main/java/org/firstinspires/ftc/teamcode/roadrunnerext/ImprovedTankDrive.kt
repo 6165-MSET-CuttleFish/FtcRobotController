@@ -60,9 +60,9 @@ abstract class ImprovedTankDrive constructor(
                 .toMutableList()
             if (Robot.gainMode != Robot.GainMode.IDLE) {
                 if (Context.alliance == Alliance.RED) {
-                    wheelDeltas[0] = wheelDeltas[1]
+                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
                 } else {
-                    wheelDeltas[1] = wheelDeltas[0]
+                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
                 }
             }
             val robotPoseDelta =
@@ -120,7 +120,7 @@ abstract class ImprovedTankDrive constructor(
             Robot.GainMode.FORWARD -> 12 / voltage
             Robot.GainMode.BACKWARD -> 12 / voltage
         }
-        val powers = Kinematics.calculateMotorFeedforward(
+        var powers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
             kV * voltageMultiplier,
@@ -135,13 +135,7 @@ abstract class ImprovedTankDrive constructor(
             kStatic * voltageMultiplier * Robot.gainIncrease,
         ).toMutableList()
         if (Robot.gainMode != Robot.GainMode.IDLE) {
-            // powers = gainedPowers
-            if (Context.alliance == Alliance.BLUE) {
-                powers[1] = gainedPowers[1]
-            } else {
-                powers[0] = gainedPowers[0]
-            }
-        } else if (Robot.gainMode == Robot.GainMode.BACKWARD) {
+            if (Robot.fullSend) powers = gainedPowers
             if (Context.alliance == Alliance.BLUE) {
                 powers[1] = gainedPowers[1]
             } else {

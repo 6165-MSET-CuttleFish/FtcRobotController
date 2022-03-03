@@ -89,13 +89,13 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double MID_POWER = 8;
     public static double MAX_POWER = 20;
     public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(1, 1, Math.toRadians(5));
+    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 2.2;
-    public static double loweredVelo = 70;
+    public static double gainIncrease = 1.4;
+    public static double loweredVelo = 50;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -110,7 +110,8 @@ public class Robot<T> extends ImprovedTankDrive {
     private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
-    public static double slowFactor = 1;
+    public static double slowFactor = 1.1;
+    public static boolean gainSchedule = true;
 
     final HardwareMap hardwareMap;
 
@@ -398,8 +399,9 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean isOverPoles = false;
     public static double MIN_ACCEL = 7000;
     public static double minX = 14;
-    public static double maxX = 36;
-
+    public static double maxX = 38;
+    public static boolean fullSend = false;
+    public boolean polesDebug = false;
 
     public void update() {
         double current = 0;
@@ -426,7 +428,7 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
-        if (getPoseEstimate().getX() < 38 && getPoseEstimate().getX() > 14 && opModeType == OpModeType.AUTO) {
+        if (getPoseEstimate().getX() < maxX && getPoseEstimate().getX() > minX && (opModeType == OpModeType.AUTO || polesDebug) && gainSchedule) {
             isOverPoles = true;
             poleTime.reset();
         } else {
@@ -437,9 +439,9 @@ public class Robot<T> extends ImprovedTankDrive {
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
         currentIntegral += current * loopTime.seconds();
         loopTime.reset();
-        if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
-            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
-        }
+//        if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
+//            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
+//        }
         if (isOverPoles) {
             if (opModeType == OpModeType.AUTO) carousel.setPower(1);
             gainMode = GainMode.FORWARD;
