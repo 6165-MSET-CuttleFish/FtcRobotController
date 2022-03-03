@@ -86,7 +86,7 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 8;
+    public static double MID_POWER = 4;
     public static double MAX_POWER = 20;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
@@ -94,8 +94,8 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 1.4;
-    public static double loweredVelo = 50;
+    public static double gainIncrease = 3.0;
+    public static double loweredVelo = 35;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -234,7 +234,7 @@ public class Robot<T> extends ImprovedTankDrive {
         for (DcMotorEx motor : leftMotors) {
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        trajectorySequenceRunner = new TrajectorySequenceRunner<T>(follower, HEADING_PID);
+        trajectorySequenceRunner = new TrajectorySequenceRunner<>(follower, HEADING_PID);
         pitchOffset = getPitch();
         tiltOffset = getTilt();
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);

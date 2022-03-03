@@ -42,17 +42,17 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -56.0
-        @JvmField var intakeY = -56.0
+        @JvmField var coast = -55.0
+        @JvmField var intakeY = -55.0
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 8.5
         @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.1
+        @JvmField var waitTime = 0.2
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 24.0
+        @JvmField var depositDistance = 20.0
         @JvmField var divConstant = 1.4
         @JvmField var depositingAngle = -60.0
-        @JvmField var intakingAngle = -15.0
+        @JvmField var intakingAngle = -10.0
     }
 
     enum class PathState {
@@ -101,7 +101,7 @@ class CyclingRed : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(7.0, 7.0, Math.toRadians(30.0))
+                    admissibleError = Pose2d(15.0, 15.0, Math.toRadians(40.0))
                     Robot.admissibleTimeout = 0.3
                 }
                 PathState.DUMPING -> {
@@ -145,9 +145,9 @@ class CyclingRed : LinearOpMode() {
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                .increaseGains(Robot.GainMode.BACKWARD)
+                //.increaseGains(Robot.GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
-                .defaultGains()
+                //.defaultGains()
                 //.liftUp(deposit, Deposit.State.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(

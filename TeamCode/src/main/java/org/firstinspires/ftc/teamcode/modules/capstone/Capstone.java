@@ -72,7 +72,7 @@ public class Capstone extends Module<Capstone.State> {
         if (Math.abs(pwr) > verticalTolerance) verticalPos += servoIncrementVertical * pwr;
     }
     public void setTape(double pwr) {
-        if (pwr == 0) pwr = -0.07;
+        // if (pwr == 0) pwr = -0.07;
         tape.setPower(pwr);
     }
     public boolean isDoingInternalWork() {
