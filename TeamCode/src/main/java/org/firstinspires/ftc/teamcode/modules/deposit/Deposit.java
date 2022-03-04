@@ -30,7 +30,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static boolean farDeposit = true;
-    public static boolean allowLift = false;
+    public static boolean allowLift = true;
     public static double LEVEL3 = 12;
     public static double LEVEL2 = 6;
     public static double LEVEL1 = 0;

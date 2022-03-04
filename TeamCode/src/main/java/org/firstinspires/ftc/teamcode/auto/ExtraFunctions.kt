@@ -41,7 +41,7 @@ fun TrajectorySequenceBuilder<*>.intakeOn(intake: Intake): TrajectorySequenceBui
 }
 
 fun TrajectorySequenceBuilder<*>.intakeOff(intake: Intake): TrajectorySequenceBuilder<*> {
-    return UNSTABLE_addTemporalMarkerOffset(0.0) {
+    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
         intake.setPower(0.0)
     }
 }

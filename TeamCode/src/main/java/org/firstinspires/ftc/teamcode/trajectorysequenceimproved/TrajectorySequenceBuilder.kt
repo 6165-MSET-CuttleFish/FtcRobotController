@@ -585,14 +585,14 @@ class TrajectorySequenceBuilder<T>(
     }
 
     fun waitWhile(condition: () -> Boolean) : TrajectorySequenceBuilder<T> {
-        waitSeconds(0.01)
+        waitSeconds(0.1)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition))
         return this
     }
 
     fun waitWhile(driveSignal: (Double) -> DriveSignal, condition: () -> Boolean) : TrajectorySequenceBuilder<T> {
-        waitSeconds(0.01)
+        waitSeconds(0.1)
         pushPath()
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition, driveSignal))
         return this
@@ -759,7 +759,7 @@ class TrajectorySequenceBuilder<T>(
                     newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
                     newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
                     val thisSegment = segment
-                    newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers, DriveSignal())
+                    newSegment = WaitSegment(thisSegment.startPose, thisSegment.duration(), newMarkers, thisSegment.driveSignal)
                 }
                 is TurnSegment -> {
                     val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
@@ -786,6 +786,13 @@ class TrajectorySequenceBuilder<T>(
                         ),
                         segment.state
                     )
+                }
+                is ConditionalWait -> {
+                    val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+                    newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
+                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
+                    val thisSegment = segment
+                    newSegment = ConditionalWait(thisSegment.startPose, newMarkers, thisSegment.condition, thisSegment.driveSignal)
                 }
             }
             sequenceSegments[segmentIndex] = newSegment

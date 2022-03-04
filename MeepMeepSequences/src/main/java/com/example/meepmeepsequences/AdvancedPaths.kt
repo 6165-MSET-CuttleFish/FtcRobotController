@@ -90,16 +90,18 @@ class AdvancedPaths {
                     .build()
             }
     }
-    @JvmField var radiusOffset = 4.5
     @JvmField var line = -44.0
-    @JvmField var coast = -55.0
-    @JvmField var intakeY = -57.0
-    @JvmField var stop = 50.0
+    @JvmField var coast = -40.5
+    @JvmField var intakeY = -45.0
+    @JvmField var stop = 51.0
     @JvmField var intakeDelay = 9.0
-    @JvmField var conjoiningPoint = 30.0
-    @JvmField var waitTime = 0.1
-    @JvmField var gainsPoint = 33.0
-    @JvmField var depositDistance = 25.0
+    @JvmField var conjoiningPoint = 27.0
+    @JvmField var waitTime = 0.01
+    @JvmField var gainsPoint = 36.0
+    @JvmField var depositDistance = 23.0
+    @JvmField var divConstant = 1.3
+    @JvmField var depositingAngle = -40.0
+    @JvmField var intakingAngle = -60.0
     fun cyclingPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CYCLING
         alliance = if (blue) Alliance.BLUE else Alliance.RED
@@ -110,41 +112,60 @@ class AdvancedPaths {
                 val trajectoryBuilder =
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
-//                        .capstoneReady(capstone)
-//                        .splineToVectorOffset(barcode[1].vec().flip(blue), Pose2d(14.0, -8.0), (Math.PI / 2 + barcode[1].heading).flip(blue))
-//                        .capstonePickup(capstone)
-//                        .liftUp(deposit, Robot.getLevel(location))
-//                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                        .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
+                        .UNSTABLE_addDisplacementMarkerOffset(0.0) {
+                           // Deposit.allowLift = true
+                        }
+                        .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(
+                            depositingAngle).flip(blue)), allianceHub.center)
                         .setReversed(false)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                for (i in 1..8)
+                for (i in 1..6) {
                     trajectoryBuilder
-//                        .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
-//                            intake.setPower(1.0)
-//                        }
+                        .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
+                            intake.setPower(1.0)
+                        }
+                        //.setState(PathState.INTAKING)
                         .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                        .increaseGains()
+                        //.increaseGains(GainMode.FORWARD)
                         //.carouselOn(carousel)
                         .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                         .defaultGains()
                         //.carouselOff(carousel)
-                        .splineTo(Vector2d(stop, intakeY).flip(blue), Math.toRadians(-20.0 - 20 * Math.random()).flip(blue))
-                        .setReversed(true)
+                        .splineTo(
+                            Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
+                            Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
+                        )
+//                .waitWhile(::signalTurn) {
+//                    intake.state == Intake.State.OUT
+//                }
                         .waitSeconds(waitTime)
+                        .setReversed(true)
                         .relocalize(robot)
                         .intakeOff(intake)
-                        .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
-                        .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                        //.increaseGains()
-                        .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
-                        //.defaultGains()
-                        .liftUp(deposit, Deposit.State.LEVEL3)
-                        .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
-                        .dump(deposit)
-                        .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                        .setReversed(false)
+
+                trajectoryBuilder
+                    //.setState(PathState.DUMPING)
+                    .UNSTABLE_addDisplacementMarkerOffset(0.0) {
+                       // Deposit.allowLift = true
+                    }
+                    .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
+                    .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
+                    //.increaseGains(Robot.GainMode.BACKWARD)
+                    .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
+                    //.defaultGains()
+                    //.liftUp(deposit, Deposit.State.LEVEL3)
+                    .splineTo(
+                        allianceHub.center.polarAdd(
+                            depositDistance,
+                            Math.toRadians(depositingAngle).flip(blue)
+                        ),
+                        allianceHub.center
+                    )
+                    .dump(deposit)
+                    .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
+                    .setReversed(false)
+            }
                 trajectoryBuilder
                     .splineTo(Vector2d(20.0, -55.0).flip(blue), 0.0)
                     .splineToConstantHeading(Vector2d(39.0, -55.0).flip(blue), 0.0)

@@ -92,10 +92,10 @@ public class Robot<T> extends ImprovedTankDrive {
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
-    public static double admissibleTimeout = 0.5;
+    public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 2.5;
-    public static double loweredVelo = 35;
+    public static double gainIncrease = 1.8;
+    public static double loweredVelo = 30;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -110,7 +110,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
-    public static double slowFactor = 1.1;
+    public static double slowFactor = 1.15;
     public static boolean gainSchedule = true;
 
     final HardwareMap hardwareMap;
@@ -248,10 +248,6 @@ public class Robot<T> extends ImprovedTankDrive {
         return trajectorySequenceRunner.getState();
     }
 
-    public void nextSegment() {
-        trajectorySequenceRunner.nextSegment();
-    }
-
     public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
@@ -315,7 +311,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public TrajectorySequenceBuilder<T> trajectorySequenceBuilder(Pose2d startPose) {
-        return new TrajectorySequenceBuilder<T>(
+        return new TrajectorySequenceBuilder<>(
                 startPose,
                 VEL_CONSTRAINT, ACCEL_CONSTRAINT,
                 MAX_ANG_VEL, MAX_ANG_ACCEL
@@ -382,7 +378,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 70;
+    public static double correctionTolerance = 20;
 
     public void correctPosition() {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
@@ -398,8 +394,8 @@ public class Robot<T> extends ImprovedTankDrive {
     double lastVelo = 0;
     public boolean isOverPoles = false;
     public static double MIN_ACCEL = 7000;
-    public static double minX = 14;
-    public static double maxX = 38;
+    public static double minX = 10;
+    public static double maxX = 41;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
 
@@ -442,13 +438,13 @@ public class Robot<T> extends ImprovedTankDrive {
 //        if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
 //            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
 //        }
-        if (isOverPoles) {
-            if (opModeType == OpModeType.AUTO) carousel.setPower(1);
-            gainMode = GainMode.FORWARD;
-        } else {
-            if (opModeType == OpModeType.AUTO) carousel.setPower(0);
-            gainMode = GainMode.IDLE;
-        }
+//        if (isOverPoles) {
+//            if (opModeType == OpModeType.AUTO) carousel.setPower(1);
+//            gainMode = GainMode.FORWARD;
+//        } else {
+//            if (opModeType == OpModeType.AUTO) carousel.setPower(0);
+//            gainMode = GainMode.IDLE;
+//        }
         systemIsOverCurrent = current > MAX_CURRENT;
         robotSlowed = currentIntegral > MID_POWER;
         if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
