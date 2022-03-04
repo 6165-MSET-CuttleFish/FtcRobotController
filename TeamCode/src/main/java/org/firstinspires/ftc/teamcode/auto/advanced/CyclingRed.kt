@@ -131,7 +131,7 @@ class CyclingRed : LinearOpMode() {
 //        }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(20.0, 0.0, -0.8*sin(2*t)))
+        return DriveSignal(Pose2d(20.0, 0.0, -sin(3*t)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..6) {
@@ -150,9 +150,9 @@ class CyclingRed : LinearOpMode() {
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
                     Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
                 )
-                .waitWhile(::signalTurn) {
-                    intake.state == Intake.State.OUT
-                }
+//                .waitWhile(::signalTurn) {
+//                    intake.state == Intake.State.OUT
+//                }
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)

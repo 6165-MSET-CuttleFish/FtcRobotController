@@ -44,7 +44,7 @@ public class MB1242 extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Dist
         if(System.currentTimeMillis() > (lastRun + 20)) {
             lastReading = TypeConversion.byteArrayToShort(deviceClient.read( 2));
         }
-        return unit.fromCm(lastReading);
+        return unit.fromCm(lastReading) + 2;
     }
 
     public void setRunDelayMs(long runDelayMs) {

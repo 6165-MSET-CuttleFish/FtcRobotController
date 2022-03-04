@@ -12,12 +12,12 @@ public class DistanceSensorTest extends ModuleTest {
     @Override
     public void initialize() {
         frontDist = new MB1242(hardwareMap.i2cDeviceSynch.get("leftFrontDS"));
-        sideDist = new MB1643(hardwareMap, "leftDS");
+        sideDist = new MB1643(hardwareMap, "rightDS");
     }
 
     public void update() {
         telemetry.addData("Front Distance", frontDist.getDistance(DistanceUnit.INCH));
-        telemetry.addData("Left Distance", sideDist.getDistance(DistanceUnit.INCH));
+        telemetry.addData("Right Distance", sideDist.getDistance(DistanceUnit.INCH));
         telemetry.update();
     }
 }

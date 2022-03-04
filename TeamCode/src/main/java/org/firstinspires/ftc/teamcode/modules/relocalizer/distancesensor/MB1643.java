@@ -18,7 +18,7 @@ public class MB1643 implements DistanceSensor {
 
     @Override
     public double getDistance(DistanceUnit unit) {
-        double inches = 89.4897 * distanceSensor.getVoltage() - 12.9012;
+        double inches = 89.4897 * distanceSensor.getVoltage() - 12.9012 + .625;
         switch (unit) {
             case INCH: return inches;
             case CM: return inches * 2.54;

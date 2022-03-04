@@ -86,8 +86,8 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 4;
-    public static double MAX_POWER = 20;
+    public static double MID_POWER = 8;
+    public static double MAX_POWER = 25;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleDistance = admissibleError.getX();

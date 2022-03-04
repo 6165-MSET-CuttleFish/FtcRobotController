@@ -30,25 +30,25 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             hardwareMap ,
             "leftFrontDS",
             UltrasonicDistanceSensor.SensorType.LongRange,
-            Pose2d(7.8, 7.5, Math.toRadians(0.0))
+            Pose2d(7.6, 7.25, Math.toRadians(0.0))
         )
     private val frontRightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightFrontDS",
         UltrasonicDistanceSensor.SensorType.LongRange,
-        Pose2d(7.5, -7.0, Math.toRadians(-0.0))
+        Pose2d(7.6, -7.25, Math.toRadians(-0.0))
     )
     private val leftDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "leftDS",
         UltrasonicDistanceSensor.SensorType.ShortRange,
-        Pose2d(-3.9, 8.2, Math.toRadians(90.0))
+        Pose2d(-3.75, 8.2, Math.toRadians(90.0))
     )
     private val rightDistance = UltrasonicDistanceSensor(
         hardwareMap ,
         "rightDS",
         UltrasonicDistanceSensor.SensorType.ShortRange,
-        Pose2d(-3.9, -8.2, Math.toRadians(-90.0))
+        Pose2d(-3.75, -8.2, Math.toRadians(-90.0))
     )
     companion object {
         @JvmField
