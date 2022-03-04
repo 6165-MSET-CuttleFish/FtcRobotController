@@ -22,9 +22,9 @@ fun TrajectorySequenceBuilder<*>.increaseGains(gainMode: Robot.GainMode) : Traje
 
 fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
     resetConstraints()
-    UNSTABLE_addDisplacementMarkerOffset(0.0) {
-        Robot.gainMode = Robot.GainMode.IDLE
-    }
+//    UNSTABLE_addDisplacementMarkerOffset(0.0) {
+//        Robot.gainMode = Robot.GainMode.IDLE
+//    }
     return this
 }
 

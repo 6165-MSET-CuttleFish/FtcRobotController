@@ -94,7 +94,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.5;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 3.0;
+    public static double gainIncrease = 2.5;
     public static double loweredVelo = 35;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -396,7 +396,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     double lastVelo = 0;
-    boolean isOverPoles = false;
+    public boolean isOverPoles = false;
     public static double MIN_ACCEL = 7000;
     public static double minX = 14;
     public static double maxX = 38;

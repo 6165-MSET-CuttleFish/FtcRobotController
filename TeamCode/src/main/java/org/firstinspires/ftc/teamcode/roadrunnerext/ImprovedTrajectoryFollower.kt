@@ -48,8 +48,8 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
     /**
      * Follow the given [trajectory].
      */
-    @JvmOverloads open fun followTrajectory(trajectory: Trajectory, offset: Double = 0.0) {
-        this.startTimestamp = clock.seconds() - offset
+    open fun followTrajectory(trajectory: Trajectory) {
+        this.startTimestamp = clock.seconds()
         this.trajectory = trajectory
         this.admissible = false
 

@@ -29,7 +29,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 14.0
+        var intakeLimit = 12.0
         @JvmField
         var outPosition = 0.45
         @JvmField
@@ -51,7 +51,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var div = 2.0
         @JvmField
-        var distanceTolerance = 14.0
+        var distanceTolerance = 12.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,

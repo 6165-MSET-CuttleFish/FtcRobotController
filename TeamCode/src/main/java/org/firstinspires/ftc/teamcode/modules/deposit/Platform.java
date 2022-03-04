@@ -164,6 +164,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case DUMPING:
                 unlock();
+                // Deposit.allowLift = false;
                 if (getSecondsSpentInState() > getState().timeOut) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();

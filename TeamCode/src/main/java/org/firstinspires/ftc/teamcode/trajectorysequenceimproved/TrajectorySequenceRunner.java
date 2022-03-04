@@ -161,7 +161,7 @@ public class TrajectorySequenceRunner<T> {
 
                 if (isNewTransition) {
                     // TODO: Whether or not to offset needs to be particular to each trajectory
-                    follower.followTrajectory(currentTrajectory, lastSegmentRemainingTime);
+                    follower.followTrajectory(currentTrajectory);
                     lastSegmentRemainingTime = 0;
                 }
                 state = (T) ((TrajectorySegment) currentSegment).getState();
