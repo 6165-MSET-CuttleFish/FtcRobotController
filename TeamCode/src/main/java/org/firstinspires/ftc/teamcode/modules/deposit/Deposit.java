@@ -32,7 +32,7 @@ public class Deposit extends Module<Deposit.State> {
     public static boolean farDeposit = true;
     public static boolean allowLift = true;
     public static double LEVEL3 = 12;
-    public static double LEVEL2 = 6;
+    public static double LEVEL2 = 0;
     public static double LEVEL1 = 0;
     public static boolean resetEncoder = false;
     public static double allowableDepositError = 1;

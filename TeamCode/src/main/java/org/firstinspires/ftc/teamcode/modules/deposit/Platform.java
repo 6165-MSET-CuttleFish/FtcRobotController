@@ -23,19 +23,19 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.3;
+    public static double outPosition3 = 0.29;
     public static double outPosition2 = 0.0;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
-    public static double inPosition = 0.99, higherInPosition = 0.85;
+    public static double inPosition = 1, higherInPosition = 0.85;
     public static double lockPosition = 0.5;
     public static double unlockPosition = 0.29;
-    public static double blockDistanceTolerance = 12;
+    public static double blockDistanceTolerance = 7;
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
-    public static double tiltInPos = 0.85, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
+    public static double tiltInPos = 0.79, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.14, tiltOutPos1 = 0.1;
 
     @Override
     public boolean isTransitioningState() {

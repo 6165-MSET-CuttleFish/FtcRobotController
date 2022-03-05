@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.drive.Robot.GainMode
 import org.firstinspires.ftc.teamcode.drive.Robot.admissibleError
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
@@ -42,17 +43,18 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.0
-        @JvmField var intakeY = -55.0
-        @JvmField var stop = 50.0
-        @JvmField var intakeDelay = 8.5
-        @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.2
+        @JvmField var coast = -56.5
+        @JvmField var intakeY = -56.5
+        @JvmField var stop = 48.0
+        @JvmField var intakeDelay = 9.0
+        @JvmField var conjoiningPoint = 15.5
+        @JvmField var waitTime = 0.05
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 21.4
-        @JvmField var divConstant = 1.4
+        @JvmField var depositDistance = 23.0
+        @JvmField var divConstant = 1.7
         @JvmField var depositingAngle = -60.0
         @JvmField var intakingAngle = -20.0
+        @JvmField var depositingTimeout = 0.3
     }
 
     enum class PathState {
@@ -101,15 +103,29 @@ class CyclingBlue : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(30.0))
+                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(80.0))
                     Robot.admissibleTimeout = 0.3
+                    if (robot.isOverPoles) {
+                        carousel.setPower(1.0)
+                        Robot.gainMode = GainMode.FORWARD
+                    } else {
+                        carousel.setPower(0.0)
+                        Robot.gainMode = GainMode.IDLE
+                    }
                 }
                 PathState.DUMPING -> {
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(8.0))
-                    Robot.admissibleTimeout = 0.2
+                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
+                    Robot.admissibleTimeout = depositingTimeout
+                    if (robot.isOverPoles) {
+                        carousel.setPower(1.0)
+                        Robot.gainMode = GainMode.BACKWARD
+                    } else {
+                        carousel.setPower(0.0)
+                        Robot.gainMode = GainMode.IDLE
+                    }
                 }
                 else -> {
-
+                    Robot.gainMode = GainMode.IDLE
                 }
             }
         }
@@ -120,12 +136,12 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..6) {
             trajectoryBuilder
-                .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
-                    intake.setPower(1.0)
-                }
+//                .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
+//                    intake.setPower(1.0)
+//                }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                .increaseGains(Robot.GainMode.FORWARD)
+                .increaseGains(GainMode.FORWARD)
                 //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
@@ -140,12 +156,12 @@ class CyclingBlue : LinearOpMode() {
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)
-                .intakeOff(intake)
+                //.intakeOff(intake)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                .increaseGains(Robot.GainMode.BACKWARD)
+                .increaseGains(GainMode.BACKWARD)
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .defaultGains()
                 //.liftUp(deposit, Deposit.State.LEVEL3)

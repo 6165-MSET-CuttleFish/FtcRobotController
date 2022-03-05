@@ -37,11 +37,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.4
         @JvmField
-        var stallingSpeed = 0.4
+        var stallingSpeed = 0.5
         @JvmField
         var extensionPositionPerSecond = 0.6
         @JvmField
-        var dropPositionPerSecond = 2.1
+        var dropPositionPerSecond = 3.0
         @JvmField
         var alphaTolerance = 0.4
         @JvmField
@@ -206,11 +206,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private fun deploy() {
         Platform.isLoaded = false
         dropIntake()
-        if (flip.isTransitioning) {
-            extensionServos.lock()
-        } else {
-            slidesOut()
-        }
+        slidesOut()
+//        if (flip.isTransitioning) {
+//            extensionServos.lock()
+//        } else {
+//            slidesOut()
+//        }
     }
 
     private fun retract() {

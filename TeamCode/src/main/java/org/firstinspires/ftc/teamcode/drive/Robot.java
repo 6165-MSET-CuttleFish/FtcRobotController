@@ -94,8 +94,8 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 1.8;
-    public static double loweredVelo = 30;
+    public static double gainIncrease = 9;
+    public static double loweredVelo = 35;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -378,7 +378,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 20;
+    public static double correctionTolerance = 30;
 
     public void correctPosition() {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
@@ -394,8 +394,8 @@ public class Robot<T> extends ImprovedTankDrive {
     double lastVelo = 0;
     public boolean isOverPoles = false;
     public static double MIN_ACCEL = 7000;
-    public static double minX = 10;
-    public static double maxX = 41;
+    public static double minX = 14;
+    public static double maxX = 36;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
 
@@ -435,16 +435,6 @@ public class Robot<T> extends ImprovedTankDrive {
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
         currentIntegral += current * loopTime.seconds();
         loopTime.reset();
-//        if (admissibleDistance != admissibleError.getX() || admissibleHeading != Math.toDegrees(admissibleError.getHeading())) {
-//            admissibleError = new Pose2d(admissibleDistance, admissibleDistance, Math.toRadians(admissibleHeading));
-//        }
-//        if (isOverPoles) {
-//            if (opModeType == OpModeType.AUTO) carousel.setPower(1);
-//            gainMode = GainMode.FORWARD;
-//        } else {
-//            if (opModeType == OpModeType.AUTO) carousel.setPower(0);
-//            gainMode = GainMode.IDLE;
-//        }
         systemIsOverCurrent = current > MAX_CURRENT;
         robotSlowed = currentIntegral > MID_POWER;
         if (systemIsOverCurrent && currentIntegral > MAX_POWER) {

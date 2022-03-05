@@ -58,13 +58,13 @@ abstract class ImprovedTankDrive constructor(
                 .zip(lastWheelPositions)
                 .map { it.first - it.second }
                 .toMutableList()
-            if (Robot.gainMode != Robot.GainMode.IDLE) {
-                if (Context.alliance == Alliance.RED) {
-                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
-                } else {
-                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
-                }
-            }
+//            if (Robot.gainMode != Robot.GainMode.IDLE) {
+//                if (Context.alliance == Alliance.RED) {
+//                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
+//                } else {
+//                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
+//                }
+//            }
             val robotPoseDelta =
                 TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
             val finalHeadingDelta = if (useExternalHeading) {
@@ -88,13 +88,13 @@ abstract class ImprovedTankDrive constructor(
             val wheelVelocities = drive.getWheelVelocities()?.toMutableList()
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
-                if (Robot.gainMode != Robot.GainMode.IDLE) {
-                    if (Context.alliance == Alliance.RED) {
-                        wheelVelocities[0] = wheelVelocities[0] / Robot.slowFactor
-                    } else {
-                        wheelVelocities[1] = wheelVelocities[1] / Robot.slowFactor
-                    }
-                }
+//                if (Robot.gainMode != Robot.GainMode.IDLE) {
+//                    if (Context.alliance == Alliance.RED) {
+//                        wheelVelocities[0] = wheelVelocities[0] / Robot.slowFactor
+//                    } else {
+//                        wheelVelocities[1] = wheelVelocities[1] / Robot.slowFactor
+//                    }
+//                }
                 poseVelocity =
                     TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {
@@ -123,21 +123,22 @@ abstract class ImprovedTankDrive constructor(
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
         val voltageMultiplier = 12 / voltage
-        val powers = Kinematics.calculateMotorFeedforward(
+        var powers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
-            kV * voltageMultiplier,
-            kA * voltageMultiplier,
-            kStatic * voltageMultiplier
+            kV,
+            kA,
+            kStatic
         ).toMutableList()
         val gainedPowers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
-            kV * voltageMultiplier * Robot.gainIncrease,
-            kA * voltageMultiplier * Robot.gainIncrease,
-            kStatic * voltageMultiplier * Robot.gainIncrease,
+            kV,
+            kA,
+            kStatic * Robot.gainIncrease,
         ).toMutableList()
         if (Robot.gainMode == Robot.GainMode.FORWARD) {
+            if (Robot.fullSend) powers = gainedPowers
             if (Context.alliance == Alliance.BLUE) {
                 powers[1] = gainedPowers[1]
             } else {
@@ -150,7 +151,7 @@ abstract class ImprovedTankDrive constructor(
                 powers[0] = gainedPowers[0]
             }
         }
-        setMotorPowers(powers[0], powers[1])
+        setMotorPowers(powers[0] * voltageMultiplier, powers[1] * voltageMultiplier)
     }
 
     override fun setDrivePower(drivePower: Pose2d) {

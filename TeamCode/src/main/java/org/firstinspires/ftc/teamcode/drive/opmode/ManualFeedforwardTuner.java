@@ -49,7 +49,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 @TeleOp(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
-    public static double DISTANCE = 58; // in
+    public static double DISTANCE = 80; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -120,7 +120,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
                     MotionState motionState = activeProfile.get(profileTime);
                     final double voltageMultiplier =  12 / voltageSensor.getVoltage();
-                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV * voltageMultiplier, kA * voltageMultiplier, kStatic * voltageMultiplier);
+                    double targetPower = voltageMultiplier * Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
                     // if (targetPower < 0) targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier);
                     robot.setDrivePower(new Pose2d(targetPower, 0, 0));
                     robot.updatePoseEstimate();
