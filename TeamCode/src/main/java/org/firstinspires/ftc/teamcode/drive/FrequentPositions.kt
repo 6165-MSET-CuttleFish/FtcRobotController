@@ -21,7 +21,14 @@ object FrequentPositions {
                 -24.0
             ).flip(alliance == Alliance.BLUE), 10.0
         )
-
+    @JvmStatic
+    val carouselVec: Circle
+        get() = Circle(
+            Vector2d(
+                -70.5,
+                -70.5
+            ).flip(alliance == Alliance.BLUE), 20.0
+        )
     @JvmStatic
     fun startingPosition(): Pose2d {
         val regular = if (side == Side.CYCLING) Pose2d(8.4389765, -62.22915, Math.toRadians(-90.0)) else Pose2d(
