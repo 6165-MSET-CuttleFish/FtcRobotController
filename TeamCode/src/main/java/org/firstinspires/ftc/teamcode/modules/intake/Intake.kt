@@ -43,7 +43,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var alphaTolerance = 0.4
+        var alphaTolerance = 0.1
         @JvmField
         var smoothingCoeffecientDistance = 0.8
         @JvmField
@@ -86,7 +86,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         flip.init(raisedPosition)
         setActuators(flip, intake)
     }
-
+    private var shortInake = false
     fun setPower(power: Double) {
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
             if (power != 0.0 && !isDoingWork) {
@@ -95,6 +95,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 state = State.IN
             }
         }
+        shortInake = power > 1
         this.power = power
     }
 
@@ -111,7 +112,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         distanceFilter.a = if (state == State.OUT) 0.75 else smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
-        val unfilteredAlpha = blockSensor.normalizedColors.alpha.toDouble()
+        val unfilteredAlpha = blockSensor.normalizedColors.blue.toDouble()
         val alpha = colorFilter.update(unfilteredAlpha)
         val unfilteredDistance = distance
         val distance = distanceFilter.update(unfilteredDistance)
@@ -170,8 +171,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             Context.packet.put("containsBlock", containsBlock)
             Context.packet.put("Extension Real Position", extensionServos.realPosition)
             Context.packet.put("Drop Real Position", flip.realPosition)
-            Context.packet.put("Raw Alpha", unfilteredAlpha)
-            Context.packet.put("Filtered Alpha", alpha)
+            Context.packet.put("Raw Blue", unfilteredAlpha)
+            Context.packet.put("Filtered Blue", alpha)
             Context.packet.put("Filtered Block Distance", distance)
             Context.packet.put("Block Sensor Distance", unfilteredDistance)
             Context.packet.put("Extension Distance", extensionDistance.getDistance(DistanceUnit.CM))
@@ -206,12 +207,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private fun deploy() {
         Platform.isLoaded = false
         dropIntake()
-        slidesOut()
-//        if (flip.isTransitioning) {
-//            extensionServos.lock()
-//        } else {
-//            slidesOut()
-//        }
+        if (flip.isTransitioning && shortInake) {
+            extensionServos.lock()
+        } else {
+            slidesOut()
+        }
     }
 
     private fun retract() {

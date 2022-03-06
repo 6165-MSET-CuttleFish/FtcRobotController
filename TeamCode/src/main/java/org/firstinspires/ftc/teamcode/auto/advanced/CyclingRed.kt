@@ -43,18 +43,19 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.0
-        @JvmField var intakeY = -55.0
-        @JvmField var stop = 53.0
-        @JvmField var intakeDelay = 8.5
-        @JvmField var conjoiningPoint = 27.0
-        @JvmField var waitTime = 0.2
+        @JvmField var coast = -55.5
+        @JvmField var intakeY = -55.5
+        @JvmField var stop = 50.0
+        @JvmField var intakeDelay = 18.0
+        @JvmField var conjoiningPoint = 15.0
+        @JvmField var waitTime = 0.05
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 23.0
-        @JvmField var divConstant = 1.7
-        @JvmField var depositingAngle = -60.0
-        @JvmField var intakingAngle = -5.0
-        @JvmField var depositingTimeout = 0.3
+        @JvmField var depositDistance = 20.0
+        @JvmField var divConstant = 3.0
+        @JvmField var depositingAngle = -70.0
+        @JvmField var intakingAngle = -20.0
+        @JvmField var depositingTimeout = 0.5
+        @JvmField var intakeError = 9.0
     }
 
     enum class PathState {
@@ -103,8 +104,8 @@ class CyclingRed : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(8.0, 8.0, Math.toRadians(30.0))
-                    Robot.admissibleTimeout = 1.5
+                    admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(40.0))
+                    Robot.admissibleTimeout = 0.3
                     if (robot.isOverPoles) {
                         carousel.setPower(1.0)
                         Robot.gainMode = GainMode.FORWARD
@@ -125,7 +126,7 @@ class CyclingRed : LinearOpMode() {
                     }
                 }
                 else -> {
-
+                    Robot.gainMode = GainMode.IDLE
                 }
             }
         }
@@ -159,9 +160,6 @@ class CyclingRed : LinearOpMode() {
                 .intakeOff(intake)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
-                .UNSTABLE_addDisplacementMarkerOffset(0.0) {
-                    Deposit.allowLift = true
-                }
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                 .increaseGains()
@@ -188,14 +186,11 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .UNSTABLE_addDisplacementMarkerOffset(0.0) {
-                    Deposit.allowLift = true
-                }
                 .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(
                     depositingAngle).flip(blue)), allianceHub.center)
-                .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
+                .setReversed(false)
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun middleAuto() : TrajectorySequence {

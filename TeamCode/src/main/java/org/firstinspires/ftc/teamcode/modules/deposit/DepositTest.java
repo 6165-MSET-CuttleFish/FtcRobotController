@@ -42,7 +42,7 @@ public class DepositTest extends ModuleTest {
         packet.put("balance", balance);
         packet.put("LB", tippedAway.getState());
         packet.put("RB", tippedToward.getState());
-        intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+        intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
         if (gamepad1.b) {
             Platform.isLoaded = true;
             deposit.platform.prepPlatform(deposit.getDefaultState());

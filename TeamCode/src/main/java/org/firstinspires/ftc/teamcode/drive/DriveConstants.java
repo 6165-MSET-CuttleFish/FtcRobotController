@@ -86,10 +86,9 @@ public class DriveConstants {
      *
      * Maximum Angular Velocity is calculated as: maximum velocity / trackWidth * (180 / Math.PI) but capped at 360°/s.
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
-
      */
-    public static double MAX_VEL = 70;
-    public static double MAX_ACCEL = 85;
+    public static double MAX_VEL = 80;
+    public static double MAX_ACCEL = 90;
     public static double MAX_ANG_VEL = Math.toRadians(500.0);
     public static double MAX_ANG_ACCEL = Math.toRadians(500.0);
 

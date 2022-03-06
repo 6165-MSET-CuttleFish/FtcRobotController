@@ -148,7 +148,7 @@ public class DriverPractice extends LinearOpMode {
                 case LEVEL2:
                     defaultDepositState = Deposit.State.LEVEL3;
                     break;
-                case IDLE:
+                case LEVEL1:
                     defaultDepositState = Deposit.State.LEVEL2;
                     break;
             }

@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.35;
+    public static double outPosition3 = 0.36;
     public static double outPosition2 = 0.1;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
@@ -45,9 +45,8 @@ public class Platform extends Module<Platform.State> {
     public enum State implements StateBuilder {
         IN(0.5),
         CREATE_CLEARANCE,
-        HOLDING(0.1),
         LOCKING(0.16),
-        DUMPING(0.5),
+        DUMPING(0.2),
         OUT1,
         OUT2,
         OUT3;
@@ -139,13 +138,6 @@ public class Platform extends Module<Platform.State> {
                 lock();
                 if (getSecondsSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
                     prepPlatform(deposit.getDefaultState());
-                }
-                break;
-            case HOLDING:
-                holdingPosition();
-                if (!arm.isTransitioning() && deposit.getLastError() < Deposit.allowableDepositError) {
-                    if (isLoaded) setState(getNeededOutState(deposit.getDefaultState()));
-                    else setState(State.IN);
                 }
                 break;
             case OUT1:
@@ -252,13 +244,6 @@ public class Platform extends Module<Platform.State> {
         setState(getNeededOutState(state));
     }
 
-    /**
-     * Safety position for platform
-     */
-    public void safetyPosition() {
-        setState(State.HOLDING);
-    }
-
     private void tiltIn() {
         tilt.setPosition(tiltInPos);
     }
@@ -290,7 +275,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut(getState()) || (getState() == State.HOLDING && isLoaded);
+        return getState() == State.DUMPING || platformIsOut(getState());
     }
 
     public boolean platformIsOut(State state) {

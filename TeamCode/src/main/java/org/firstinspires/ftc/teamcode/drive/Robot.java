@@ -10,8 +10,6 @@ import com.acmerobotics.roadrunner.drive.DriveSignal;
 import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -32,6 +30,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -87,15 +86,14 @@ public class Robot<T> extends ImprovedTankDrive {
      */
     public static double MAX_CURRENT = 15;
     public static double MID_POWER = 8;
-    public static double MAX_POWER = 25;
+    public static double MAX_POWER = 20;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
-    public static double admissibleDistance = admissibleError.getX();
-    public static double admissibleHeading = Math.toDegrees(admissibleError.getHeading());
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double gainIncrease = 9;
-    public static double loweredVelo = 35;
+    public static double kStaticIncrease = 15;
+    public static double kvIncrease = 1.6;
+    public static double loweredVelo = 30;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -424,6 +422,8 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("MAX POWER", MAX_POWER);
         Context.packet.put("MID POWER", MID_POWER);
         Context.packet.put("MAX CURRENT", MAX_CURRENT);
+        Context.packet.put("Left Power", leftMotors.get(0).getPower());
+        Context.packet.put("Right Power", rightMotors.get(0).getPower());
         if (getPoseEstimate().getX() < maxX && getPoseEstimate().getX() > minX && (opModeType == OpModeType.AUTO || polesDebug) && gainSchedule) {
             isOverPoles = true;
             poleTime.reset();
@@ -569,6 +569,8 @@ public class Robot<T> extends ImprovedTankDrive {
     public static boolean is4md = false;
     @Override
     public void setMotorPowers(double v, double v1) {
+        v = Range.clip(v, -1, 1);
+        v1 = Range.clip(v1, -1, 1);
         for (int i = 0; i < leftMotors.size(); i++) {
             double pwr = (!robotSlowed) ? v : v * (MAX_POWER - currentIntegral) / MAX_POWER;
             if (is4md && i == 2) {

@@ -55,6 +55,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositingAngle = -60.0
         @JvmField var intakingAngle = -20.0
         @JvmField var depositingTimeout = 0.3
+        @JvmField var intakeError = 5.0
     }
 
     enum class PathState {
@@ -103,7 +104,7 @@ class CyclingBlue : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(80.0))
+                    admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(80.0))
                     Robot.admissibleTimeout = 0.3
                     if (robot.isOverPoles) {
                         carousel.setPower(1.0)
@@ -156,7 +157,7 @@ class CyclingBlue : LinearOpMode() {
                 .waitSeconds(waitTime)
                 .setReversed(true)
                 .relocalize(robot)
-                //.intakeOff(intake)
+                .intakeOff(intake)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)

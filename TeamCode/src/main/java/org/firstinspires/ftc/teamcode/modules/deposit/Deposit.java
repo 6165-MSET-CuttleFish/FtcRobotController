@@ -113,7 +113,7 @@ public class Deposit extends Module<Deposit.State> {
 
     @Override
     public boolean isTransitioningState() {
-        return getLastError() < allowableDepositError;
+        return Math.abs(getLastError()) > allowableDepositError;
     }
 
     private State defaultState = State.LEVEL3;
@@ -130,8 +130,6 @@ public class Deposit extends Module<Deposit.State> {
         if (state == defaultState) return;
         if (state == State.IDLE) defaultState = State.LEVEL1;
         else defaultState = state;
-        if (platform.platformIsOut(platform.getState()) && farDeposit)
-            platform.safetyPosition();
     }
 
     public void dump() {
@@ -149,9 +147,6 @@ public class Deposit extends Module<Deposit.State> {
             super.setState(State.IDLE);
         }
         State state = getState();
-        if (freight == Freight.BALL && state == State.LEVEL3 && opModeType != OpModeType.AUTO) {
-            state = State.LEVEL2;
-        }
         pidController.setTargetPosition(farDeposit ? getLevelHeight(state) : 0);
         double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() == State.IDLE && getSecondsSpentInState() < 2.7 && resetEncoder) {
@@ -161,6 +156,11 @@ public class Deposit extends Module<Deposit.State> {
                 power = 0.0;
             } else if (getSecondsSpentInState() <= 2.5) {
                 power = -1;
+            }
+        }
+        if (getState() != State.IDLE && !isTransitioningState()) {
+            if (freight == Freight.BALL && state == State.LEVEL3 && opModeType != OpModeType.AUTO) {
+                setState(State.LEVEL2);
             }
         }
         slides.setPower(power);

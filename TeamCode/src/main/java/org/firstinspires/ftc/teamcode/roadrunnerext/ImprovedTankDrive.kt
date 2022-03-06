@@ -133,9 +133,9 @@ abstract class ImprovedTankDrive constructor(
         val gainedPowers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
-            kV,
+            kV * Robot.kvIncrease,
             kA,
-            kStatic * Robot.gainIncrease,
+            kStatic * Robot.kStaticIncrease,
         ).toMutableList()
         if (Robot.gainMode == Robot.GainMode.FORWARD) {
             if (Robot.fullSend) powers = gainedPowers
