@@ -136,12 +136,12 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..6) {
             trajectoryBuilder
-//                .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
-//                    intake.setPower(1.0)
-//                }
+                .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
+                    intake.setPower(1.0)
+                }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                .increaseGains(GainMode.FORWARD)
+                .increaseGains()
                 //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
@@ -161,7 +161,7 @@ class CyclingBlue : LinearOpMode() {
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                .increaseGains(GainMode.BACKWARD)
+                .increaseGains()
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .defaultGains()
                 //.liftUp(deposit, Deposit.State.LEVEL3)
@@ -187,9 +187,9 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(true)
                 .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(
                     depositingAngle).flip(blue)), allianceHub.center)
-                .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
+                .setReversed(false)
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
     private fun middleAuto() : TrajectorySequence {

@@ -58,7 +58,6 @@ public class TrajectorySequenceRunner<T> {
 
     private final NanoClock clock;
     private double offset;
-    private double lastSegmentRemainingTime;
     private final ElapsedTime time = new ElapsedTime();
     private final ElapsedTime segmentDuration = new ElapsedTime();
     private T state;
@@ -160,9 +159,7 @@ public class TrajectorySequenceRunner<T> {
                 Trajectory currentTrajectory = ((TrajectorySegment) currentSegment).getTrajectory();
 
                 if (isNewTransition) {
-                    // TODO: Whether or not to offset needs to be particular to each trajectory
                     follower.followTrajectory(currentTrajectory);
-                    lastSegmentRemainingTime = 0;
                 }
                 state = (T) ((TrajectorySegment) currentSegment).getState();
 
@@ -367,7 +364,6 @@ public class TrajectorySequenceRunner<T> {
         if (currentSegment instanceof TrajectorySegment) {
             double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
             offset -= remaining;
-            // lastSegmentRemainingTime = remaining;
         }
         state = null;
         currentSegmentIndex++;

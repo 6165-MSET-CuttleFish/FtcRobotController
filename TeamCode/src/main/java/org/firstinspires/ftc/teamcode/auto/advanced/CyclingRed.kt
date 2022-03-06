@@ -141,7 +141,7 @@ class CyclingRed : LinearOpMode() {
                 }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                .increaseGains(GainMode.FORWARD)
+                .increaseGains()
                 //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
@@ -164,7 +164,7 @@ class CyclingRed : LinearOpMode() {
                 }
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                .increaseGains(GainMode.BACKWARD)
+                .increaseGains()
                 .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
                 .defaultGains()
                 //.liftUp(deposit, Deposit.State.LEVEL3)

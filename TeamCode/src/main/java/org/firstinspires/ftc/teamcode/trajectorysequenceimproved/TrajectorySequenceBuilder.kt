@@ -787,13 +787,13 @@ class TrajectorySequenceBuilder<T>(
                         segment.state
                     )
                 }
-                is ConditionalWait -> {
-                    val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
-                    newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
-                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
-                    val thisSegment = segment
-                    newSegment = ConditionalWait(thisSegment.startPose, newMarkers, thisSegment.condition, thisSegment.driveSignal)
-                }
+//                is ConditionalWait -> {
+//                    val newMarkers: MutableList<TrajectoryMarker> = ArrayList(segment.markers)
+//                    newMarkers.addAll(sequenceSegments[segmentIndex]!!.markers)
+//                    newMarkers.add(TrajectoryMarker(segmentOffsetTime, callback))
+//                    val thisSegment = segment
+//                    newSegment = ConditionalWait(thisSegment.startPose, newMarkers, thisSegment.condition, thisSegment.driveSignal)
+//                }
             }
             sequenceSegments[segmentIndex] = newSegment
         }

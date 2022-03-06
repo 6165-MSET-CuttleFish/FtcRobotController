@@ -64,7 +64,7 @@ class PolesBackAndForth : LinearOpMode() {
                 robot.trajectorySequenceBuilder(Pose2d(-16.1417 / 2, -55.0, Math.toRadians(0.0)).flip(blue))
                     .setReversed(false)
                     .splineTo(Vector2d(inGain, -55.0).flip(blue), Math.toRadians(0.0))
-                    .increaseGains(Robot.GainMode.FORWARD)
+                    .increaseGains()
                     .carouselOn(robot.carousel)
                     .splineToConstantHeading(Vector2d(outGain, -55.0).flip(blue), Math.toRadians(0.0))
                     .defaultGains()
