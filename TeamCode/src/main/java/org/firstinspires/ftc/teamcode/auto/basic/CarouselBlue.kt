@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import kotlin.Throws
 
 @Autonomous
@@ -54,38 +56,27 @@ class CarouselBlue : LinearOpMode() {
         robot.scan()
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
-                .setReversed(true)
-                .back(8.0)
-                .setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
-                .turn(Math.toRadians(90.0).flip(blue))
-                .splineTo(Vector2d(-56.5, -36.0).flip(blue), Math.toRadians(-270.0).flip(blue))
-                .setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
-                .turn(Math.toRadians(-90.0).flip(blue))
-                .waitWhile(capstone::isDoingWork)
-                .back(20.0)
-                .resetConstraints()
-                .liftUp(deposit, getLevel(location))
-                .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(Vector2d(-25.0, -33.0).flip(blue), Math.toRadians(40.0).flip(blue))
-                .setReversed(false)
+                .setVelConstraint(getVelocityConstraint(15.0, Math.PI,15.0))
+                .splineTo(FrequentPositions.allianceHub.center.polarAdd(20.0,Math.toRadians(-100.0).flip(blue)), FrequentPositions.allianceHub.center)
+                .waitSeconds(0.5)
+                .waitWhile(deposit::isDoingWork)
                 .dump(deposit)
-                .waitWhile(deposit::isDoingWork) // wait for platform to dump
-                .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                    admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
-                }
-                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
-                // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
-                // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
-                .UNSTABLE_addTemporalMarkerOffset(1.0) {
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
-                }
-                .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
-                .waitSeconds(3.0, DriveSignal(Pose2d(5.0)))
-                .carouselOff(carousel)// drop the ducky
                 .resetConstraints()
+                .setReversed(false)
+                .forward(7.0)
+                .turn(Math.toRadians(240.0))
+                .splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
                 .setReversed(true)
-                .splineTo(Vector2d(-61.0, -34.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
+                .splineTo(FrequentPositions.carouselVec.center.polarAdd(13.0, Math.toRadians(45.0).flip(blue)), FrequentPositions.carouselVec.center, Pose2d())
+                .UNSTABLE_addTemporalMarkerOffset(0.0){
+                    carousel.setPower(-0.4)
+                }
+                .waitSeconds(2.0)
+                .setReversed(false)
+                .carouselOff(carousel)
+                .resetConstraints()
+                .splineTo(Vector2d(-56.0, -24.0).flip(blue), Math.toRadians(90.0).flip(blue))
         val trajectorySequence = trajectoryBuilder
             .build()
         robot.turnOffVision()
