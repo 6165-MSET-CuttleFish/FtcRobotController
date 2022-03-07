@@ -64,7 +64,7 @@ class CarouselBlue : LinearOpMode() {
                 .resetConstraints()
                 .setReversed(false)
                 .forward(7.0)
-                .turn(Math.toRadians(240.0))
+                .turn(Math.toRadians(240.0).flip(blue))
                 .splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
                 .setReversed(true)
                 .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
