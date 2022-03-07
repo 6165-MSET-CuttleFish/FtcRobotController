@@ -91,9 +91,9 @@ public class Robot<T> extends ImprovedTankDrive {
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double kStaticIncrease = 15;
-    public static double kvIncrease = 1.6;
-    public static double loweredVelo = 30;
+    public static double kStaticIncrease = 19;
+    public static double kvIncrease = 4;
+    public static double loweredVelo = 27;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
