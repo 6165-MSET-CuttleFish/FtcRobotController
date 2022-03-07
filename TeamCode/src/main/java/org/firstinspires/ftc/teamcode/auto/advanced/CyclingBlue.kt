@@ -43,18 +43,18 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.5
-        @JvmField var intakeY = -55.5
+        @JvmField var coast = -55.0
+        @JvmField var intakeY = -55.0
         @JvmField var stop = 49.0
-        @JvmField var intakeDelay = 28.0
-        @JvmField var depositDelay = 15.0
+        @JvmField var intakeDelay = 27.0
+        @JvmField var depositDelay = 20.0
         @JvmField var conjoiningPoint = 14.0
-        @JvmField var waitTime = 0.05
+        @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 22.0
-        @JvmField var cyclingDistance = 17.5
+        @JvmField var depositDistance = 23.0
+        @JvmField var cyclingDistance = 18.0
         @JvmField var divConstant = 2.5
-        @JvmField var depositingAngle = -68.0
+        @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
         @JvmField var intakingAngle = -8.0
         @JvmField var depositingTimeout = 0.5
@@ -136,7 +136,7 @@ class CyclingBlue : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(20.0, 0.0, sin(3*t)))
+        return DriveSignal(Pose2d(10.0, 0.0, sin(3*t)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..6) {

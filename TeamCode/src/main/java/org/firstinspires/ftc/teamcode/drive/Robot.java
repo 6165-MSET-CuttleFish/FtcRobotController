@@ -93,7 +93,7 @@ public class Robot<T> extends ImprovedTankDrive {
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double kStaticIncrease = 19;
     public static double kvIncrease = 4;
-    public static double loweredVelo = 27;
+    public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
         IDLE,
@@ -376,7 +376,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 30;
+    public static double correctionTolerance = 20;
 
     public void correctPosition() {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
