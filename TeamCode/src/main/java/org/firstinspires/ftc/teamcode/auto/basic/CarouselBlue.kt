@@ -54,6 +54,7 @@ class CarouselBlue : LinearOpMode() {
             telemetry.addData("Location", location)
             telemetry.update()
         }
+        Deposit.allowLift = true
         waitForStart()
         robot.scan()
         val trajectoryBuilder =
@@ -67,11 +68,11 @@ class CarouselBlue : LinearOpMode() {
             .resetConstraints()
             .setReversed(false)
             .forward(7.0)
-            .turn(Math.toRadians(240.0))
-            .splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
+            .turn(Math.toRadians(-240.0).flip(blue))
             .setReversed(true)
-            .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
-            .splineTo(carouselVec.center.polarAdd(13.0, Math.toRadians(45.0).flip(blue)), carouselVec.center, Pose2d())
+            //.splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
+            .setVelConstraint(getVelocityConstraint(50.0, Math.PI,15.0))
+            .splineTo(carouselVec.center.polarAdd(13.0, Math.toRadians(55.0).flip(blue)), carouselVec.center, Pose2d())
             .UNSTABLE_addTemporalMarkerOffset(0.0){
                 carousel.setPower(-0.4)
             }
