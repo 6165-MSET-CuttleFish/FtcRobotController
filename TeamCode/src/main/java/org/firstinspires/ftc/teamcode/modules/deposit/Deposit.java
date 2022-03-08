@@ -198,6 +198,6 @@ public class Deposit extends Module<Deposit.State> {
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
     public boolean isDoingInternalWork() {
-        return platform.isDoingInternalWork();
+        return false;
     }
 }
