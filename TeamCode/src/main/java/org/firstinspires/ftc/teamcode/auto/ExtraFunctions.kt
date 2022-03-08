@@ -11,8 +11,8 @@ fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.
     robot.correctPosition()
 }
 
-fun TrajectorySequenceBuilder<*>.increaseGains() : TrajectorySequenceBuilder<*> {
-    setVelConstraint(Robot.getVelocityConstraint(Robot.loweredVelo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH))
+fun TrajectorySequenceBuilder<*>.increaseGains(velo: Double) : TrajectorySequenceBuilder<*> {
+    setVelConstraint(Robot.getVelocityConstraint(velo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH))
 //    UNSTABLE_addDisplacementMarkerOffset(0.0) {
 //        Robot.gainMode = gainMode
 //    }

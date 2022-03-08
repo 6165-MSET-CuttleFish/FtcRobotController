@@ -92,7 +92,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double kStaticIncrease = 19;
-    public static double kvIncrease = 4;
+    public static double kvIncrease = 20;
     public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -108,7 +108,6 @@ public class Robot<T> extends ImprovedTankDrive {
     private final TSEDetector TSEDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
-    public static double slowFactor = 1.15;
     public static boolean gainSchedule = true;
 
     final HardwareMap hardwareMap;

@@ -45,20 +45,23 @@ class CyclingBlue : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.0
         @JvmField var intakeY = -55.0
-        @JvmField var stop = 49.0
-        @JvmField var intakeDelay = 27.0
-        @JvmField var depositDelay = 20.0
+        @JvmField var stop = 48.5
+        @JvmField var intakeDelay = 24.0
+        @JvmField var depositDelay = 13.0
         @JvmField var conjoiningPoint = 14.0
+        @JvmField var conjoiningDeposit = 28.0
         @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 23.0
-        @JvmField var cyclingDistance = 18.0
+        @JvmField var depositDistance = 24.0
+        @JvmField var cyclingDistance = 21.0
         @JvmField var divConstant = 2.5
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
-        @JvmField var intakingAngle = -8.0
+        @JvmField var intakingAngle = -5.0
         @JvmField var depositingTimeout = 0.5
         @JvmField var intakeError = 10.0
+        @JvmField var intakeVelo = 33.0
+        @JvmField var depositVelo = 70.0
     }
 
     enum class PathState {
@@ -136,17 +139,17 @@ class CyclingBlue : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(10.0, 0.0, sin(3*t)))
+        return DriveSignal(Pose2d(15.0, 0.0, 1.5*sin(3*t)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
-        for (i in 1..6) {
+        for (i in 1..5) {
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
                 }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                .increaseGains()
+                .increaseGains(intakeVelo)
                 //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
@@ -169,8 +172,8 @@ class CyclingBlue : LinearOpMode() {
                 .UNSTABLE_addDisplacementMarkerOffset(depositDelay) {
                     Deposit.allowLift = true
                 }
-                .increaseGains()
-                .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
+                .increaseGains(depositVelo)
+                .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
                 .defaultGains()
                 //.liftUp(deposit, Deposit.State.LEVEL3)
                 .splineTo(

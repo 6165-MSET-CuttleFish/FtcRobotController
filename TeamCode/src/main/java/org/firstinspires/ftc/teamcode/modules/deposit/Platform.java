@@ -23,13 +23,13 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.36;
-    public static double outPosition2 = 0.1;
+    public static double outPosition3 = 0.42;
+    public static double outPosition2 = 0.13;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.015;
-    public static double inPosition = 1, higherInPosition = 0.85;
-    public static double lockPosition = 0.5;
+    public static double inPosition = 1, higherInPosition = 0.87;
+    public static double lockPosition = 0.54;
     public static double unlockPosition = 0.29;
     public static double blockDistanceTolerance = 7;
     public static double dumpServoPositionPerSecond = 1.7;
@@ -189,12 +189,14 @@ public class Platform extends Module<Platform.State> {
                 outPos = outPosition1;
                 break;
         }
-        switch (balance) {
-            case BALANCED:
-            case TOWARD:
-                return outPos;
-            case AWAY:
-                return outPos - tipDiff;
+        if (state != Deposit.State.LEVEL3) {
+            switch (balance) {
+                case BALANCED:
+                case TOWARD:
+                    return outPos - tipDiff;
+                case AWAY:
+                    return outPos + tipDiff;
+            }
         }
         return outPos;
     }
