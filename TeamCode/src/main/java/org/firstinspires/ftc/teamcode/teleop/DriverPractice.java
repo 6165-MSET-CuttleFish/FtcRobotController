@@ -100,7 +100,11 @@ public class DriverPractice extends LinearOpMode {
                 toggleMode = false;
             }
             if (mode == Mode.ENDGAME) {
-                drivePower = new Pose2d();
+                drivePower = new Pose2d(
+                        -gamepad2.left_stick_y,
+                        0,
+                        0
+                ).div(8);
                 setCapstone();
             }
             robot.setWeightedDrivePower(drivePower);

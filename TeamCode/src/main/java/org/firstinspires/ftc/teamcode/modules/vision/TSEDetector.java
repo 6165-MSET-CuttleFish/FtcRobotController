@@ -49,9 +49,9 @@ public class TSEDetector extends OpenCvPipeline {
     public static int sLow = 50;
     public static int vLow = 110;
 
-    public static int hHigh = 90;
-    public static int sHigh = 110;
-    public static int vHigh = 255;
+    public static int hHigh = 100;
+    public static int sHigh = 100;
+    public static int vHigh = 0;
 
     public static int visionThreshold = 10;
 

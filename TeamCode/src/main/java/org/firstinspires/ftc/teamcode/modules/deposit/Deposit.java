@@ -141,6 +141,9 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
+        if (platform.getPreviousState() == Platform.State.DUMPING && platform.isTransitioningState()) {
+            setState(State.LEVEL3);
+        }
         if (platform.isDoingWork() && (opModeType != OpModeType.AUTO || allowLift)) {
             super.setState(getDefaultState());
         } else {
