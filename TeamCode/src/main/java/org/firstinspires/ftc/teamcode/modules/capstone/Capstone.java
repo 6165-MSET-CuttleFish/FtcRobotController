@@ -27,6 +27,7 @@ public class Capstone extends Module<Capstone.State> {
     public enum State implements StateBuilder {
         IDLE,
         AUTORETRACT,
+        ACTIVE,
         ;
 
         @Override
@@ -50,12 +51,25 @@ public class Capstone extends Module<Capstone.State> {
         setActuators(horizontalTurret, verticalTurret);
     }
 
+    double power;
+
     @Override
     protected void internalUpdate() {
         verticalPos = Range.clip(verticalPos, 0, 1);
         horizontalPos = Range.clip(horizontalPos, 0, 1);
         verticalTurret.setPosition(verticalPos);
         horizontalTurret.setPosition(horizontalPos);
+        switch (getState()) {
+            case IDLE:
+                setTape(-0.08);
+                break;
+            case ACTIVE:
+                setTape(power);
+                break;
+            case AUTORETRACT:
+                setTape(-1);
+                break;
+        }
     }
 
     public void setHorizontalTurret(double pwr) {
@@ -72,10 +86,21 @@ public class Capstone extends Module<Capstone.State> {
         if (Math.abs(pwr) > verticalTolerance) verticalPos += servoIncrementVertical * pwr;
     }
     public void setTape(double pwr) {
-        // if (pwr == 0) pwr = -0.07;
-        tape.setPower(pwr);
+        power = pwr;
     }
     public boolean isDoingInternalWork() {
         return false;
+    }
+
+    public void retract() {
+        setState(State.AUTORETRACT);
+    }
+
+    public void idle() {
+        setState(State.IDLE);
+    }
+
+    public void active() {
+        setState(State.ACTIVE);
     }
 }

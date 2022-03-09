@@ -40,7 +40,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract;
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -68,6 +68,7 @@ public class DriverPractice extends LinearOpMode {
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                capRetract = new ButtonReader(primary, GamepadKeys.Button.X)
         };
         Deposit.farDeposit = true;
         waitForStart();
@@ -90,14 +91,23 @@ public class DriverPractice extends LinearOpMode {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
                         capstone.setTape(0);
+                        capstone.active();
                         mode = Mode.ENDGAME;
                     } else {
+                        capstone.retract();
                         mode = Mode.DRIVING;
                     }
                 }
                 toggleMode = true;
             } else {
                 toggleMode = false;
+            }
+            if (capRetract.wasJustPressed()) {
+                if (capstone.getState() == Capstone.State.ACTIVE) {
+                    capstone.retract();
+                } else {
+                    capstone.idle();
+                }
             }
             if (mode == Mode.ENDGAME) {
                 drivePower = new Pose2d(
