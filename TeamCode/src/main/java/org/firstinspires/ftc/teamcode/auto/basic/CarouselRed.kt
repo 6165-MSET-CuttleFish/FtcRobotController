@@ -54,6 +54,7 @@ class CarouselRed : LinearOpMode() {
             telemetry.addData("Location", location)
             telemetry.update()
         }
+        Deposit.allowLift = true
         waitForStart()
         robot.scan()
         val trajectoryBuilder =
