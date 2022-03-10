@@ -86,6 +86,7 @@ public class DriverPractice extends LinearOpMode {
                 gamepad1.rumble(500);
                 gamepad2.rumble(500);
             }
+
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
@@ -106,7 +107,7 @@ public class DriverPractice extends LinearOpMode {
                 if (capstone.getState() == Capstone.State.ACTIVE) {
                     capstone.retract();
                 } else {
-                    capstone.idle();
+                     capstone.idle();
                 }
             }
             if (mode == Mode.ENDGAME) {
@@ -116,6 +117,8 @@ public class DriverPractice extends LinearOpMode {
                         0
                 ).div(8);
                 setCapstone();
+            } else {
+                capstone.setTape(-Math.abs(gamepad2.left_stick_y));
             }
             robot.setWeightedDrivePower(drivePower);
             setIntake();

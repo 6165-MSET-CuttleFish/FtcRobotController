@@ -43,24 +43,24 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.3
-        @JvmField var intakeY = -55.3
-        @JvmField var stop = 49.0
-        @JvmField var intakeDelay = 20.0
-        @JvmField var depositDelay = 11.0
+        @JvmField var coast = -56.0
+        @JvmField var intakeY = -56.0
+        @JvmField var stop = 48.0
+        @JvmField var intakeDelay = 10.0
+        @JvmField var depositDelay = 23.0
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 28.0
-        @JvmField var waitTime = 0.2
+        @JvmField var waitTime = 0.4
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 24.0
-        @JvmField var cyclingDistance = 20.2
-        @JvmField var divConstant = 3.0
+        @JvmField var cyclingDistance = 21.0
+        @JvmField var divConstant = 5.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
-        @JvmField var intakingAngle = -0.0
+        @JvmField var intakingAngle = 8.0
         @JvmField var depositingTimeout = 0.5
         @JvmField var intakeError = 10.0
-        @JvmField var intakeVelo = 25.0
+        @JvmField var intakeVelo = 30.0
         @JvmField var depositVelo = 70.0
     }
 
@@ -109,6 +109,9 @@ class CyclingBlue : LinearOpMode() {
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
             robot.update()
+            if (runtime < 0.3) {
+
+            }
             when (robot.pathState) {
                 PathState.INTAKING -> {
                     admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(40.0))
@@ -139,7 +142,7 @@ class CyclingBlue : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(15.0, 0.0, 1.5*sin(3*t)))
+        return DriveSignal(Pose2d(10.0, 0.0, Math.toRadians(40.0)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..5) {
@@ -165,6 +168,7 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(true)
                 .relocalize(robot)
                 .intakeOff(intake)
+                .liftUp(deposit, Deposit.State.LEVEL3)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -175,7 +179,6 @@ class CyclingBlue : LinearOpMode() {
                 .increaseGains(depositVelo)
                 .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
                 .defaultGains()
-                //.liftUp(deposit, Deposit.State.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(
                         cyclingDistance,

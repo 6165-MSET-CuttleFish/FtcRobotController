@@ -90,7 +90,7 @@ public class TrajectorySequenceRunner<T> {
     }
 
     public T getState() {
-        if (!(currentTrajectorySequence.get(currentSegmentIndex) instanceof TrajectorySegment)) {
+        if (currentTrajectorySequence != null && currentSegmentIndex >= currentTrajectorySequence.size() || !(currentTrajectorySequence.get(currentSegmentIndex) instanceof TrajectorySegment)) {
             return null;
         }
         return state;

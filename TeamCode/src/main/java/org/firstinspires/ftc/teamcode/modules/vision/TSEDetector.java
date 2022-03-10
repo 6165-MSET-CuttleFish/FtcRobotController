@@ -25,12 +25,8 @@ public class TSEDetector extends OpenCvPipeline {
     }
     private Location location = Location.MIDDLE;
     // find and set the three regions of interest
-    public static  Rect POS_1 = new Rect(
-            new Point(0, 80),
-            new Point(90, 210)); // x = 50
-    public static  Rect POS_2 = new Rect(
-            new Point(180, 80),
-            new Point(270, 210)); // x = 220
+    public static  Rect POS_1 = new Rect(20, 140, 60, 40);
+    public static  Rect POS_2 = new Rect(180, 140, 60, 40);
 
     public static Rect POS_1_BLUE = new Rect(
             new Point(50, 80),

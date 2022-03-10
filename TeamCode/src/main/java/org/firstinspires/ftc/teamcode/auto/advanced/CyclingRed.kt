@@ -43,24 +43,26 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.0
-        @JvmField var intakeY = -55.0
-        @JvmField var stop = 49.0
-        @JvmField var intakeDelay = 27.0
+        @JvmField var coast = -55.1
+        @JvmField var intakeY = -55.1
+        @JvmField var stop = 50.0
+        @JvmField var intakeDelay = 10.0
         @JvmField var depositDelay = 20.0
+        @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
-        @JvmField var waitTime = 0.1
+        @JvmField var conjoiningDeposit = 28.0
+        @JvmField var waitTime = 0.05
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
-        @JvmField var cyclingDistance = 18.0
-        @JvmField var divConstant = 2.5
+        @JvmField var cyclingDistance = 22.0
+        @JvmField var divConstant = 5.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
-        @JvmField var intakingAngle = -8.0
+        @JvmField var intakingAngle = 8.0
         @JvmField var depositingTimeout = 0.5
         @JvmField var intakeError = 10.0
         @JvmField var intakeVelo = 33.0
-        @JvmField var depositVelo = 50.0
+        @JvmField var depositVelo = 70.0
     }
 
     enum class PathState {
@@ -108,15 +110,18 @@ class CyclingRed : LinearOpMode() {
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
             robot.update()
+            if (runtime < 0.3) {
+
+            }
             when (robot.pathState) {
                 PathState.INTAKING -> {
                     admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(40.0))
                     Robot.admissibleTimeout = 0.3
                     if (robot.isOverPoles) {
-                        carousel.setPower(1.0)
+                        //carousel.setPower(1.0)
                         Robot.gainMode = GainMode.FORWARD
                     } else {
-                        carousel.setPower(0.0)
+                        //carousel.setPower(0.0)
                         Robot.gainMode = GainMode.IDLE
                     }
                 }
@@ -124,10 +129,10 @@ class CyclingRed : LinearOpMode() {
                     admissibleError = Pose2d(4.0, 4.0, Math.toRadians(10.0))
                     Robot.admissibleTimeout = depositingTimeout
                     if (robot.isOverPoles) {
-                        carousel.setPower(1.0)
+                        //carousel.setPower(1.0)
                         Robot.gainMode = GainMode.BACKWARD
                     } else {
-                        carousel.setPower(0.0)
+                        //carousel.setPower(0.0)
                         Robot.gainMode = GainMode.IDLE
                     }
                 }
@@ -138,10 +143,10 @@ class CyclingRed : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(10.0, 0.0, sin(3*t)))
+        return DriveSignal(Pose2d(20.0, 0.0, Math.toRadians(-70.0)))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
-        for (i in 1..6) {
+        for (i in 1..5) {
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
@@ -164,6 +169,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(true)
                 .relocalize(robot)
                 .intakeOff(intake)
+                .liftUp(deposit, Deposit.State.LEVEL3)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -172,9 +178,8 @@ class CyclingRed : LinearOpMode() {
                     Deposit.allowLift = true
                 }
                 .increaseGains(depositVelo)
-                .splineToConstantHeading(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI)
+                .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
                 .defaultGains()
-                //.liftUp(deposit, Deposit.State.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(
                         cyclingDistance,
@@ -182,6 +187,7 @@ class CyclingRed : LinearOpMode() {
                     ),
                     allianceHub.center
                 )
+                .waitSeconds(depositWaitTime)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)

@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
+import org.firstinspires.ftc.teamcode.util.field.Context;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
@@ -16,8 +18,10 @@ public class Capstone extends Module<Capstone.State> {
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;
+    public static double passivePower = 0;
     private CRServo tape;
     private ControllableServos verticalTurret, horizontalTurret;
+    public static double verticalPosDef = 0.45;
 
     @Override
     public boolean isTransitioningState() {
@@ -57,17 +61,19 @@ public class Capstone extends Module<Capstone.State> {
     protected void internalUpdate() {
         verticalPos = Range.clip(verticalPos, 0, 1);
         horizontalPos = Range.clip(horizontalPos, 0, 1);
-        verticalTurret.setPosition(verticalPos);
-        horizontalTurret.setPosition(horizontalPos);
+
         switch (getState()) {
             case IDLE:
-                setTape(-0.08);
+                tape.setPower(passivePower);
+                verticalTurret.setPosition(verticalPosDef);
                 break;
             case ACTIVE:
-                setTape(power);
+                tape.setPower(power);
+                verticalTurret.setPosition(verticalPos);
+                horizontalTurret.setPosition(horizontalPos);
                 break;
             case AUTORETRACT:
-                setTape(-1);
+                tape.setPower(-1);
                 break;
         }
     }

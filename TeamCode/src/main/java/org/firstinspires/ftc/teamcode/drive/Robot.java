@@ -435,8 +435,8 @@ public class Robot<T> extends ImprovedTankDrive {
         currentIntegral += current * loopTime.seconds();
         loopTime.reset();
         systemIsOverCurrent = current > MAX_CURRENT;
-        robotSlowed = currentIntegral > MID_POWER;
-        if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
+        robotSlowed = currentIntegral > MID_POWER && opModeType != OpModeType.AUTO;
+        if (systemIsOverCurrent && currentIntegral > MAX_POWER && opModeType != OpModeType.AUTO) {
             robotDisabled = true;
             currentTimer.reset();
         } else {
