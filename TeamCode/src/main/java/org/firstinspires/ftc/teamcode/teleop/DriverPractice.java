@@ -40,7 +40,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract;
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -68,6 +68,7 @@ public class DriverPractice extends LinearOpMode {
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                capRetract = new ButtonReader(primary, GamepadKeys.Button.X)
         };
         Deposit.farDeposit = true;
         waitForStart();
@@ -85,19 +86,29 @@ public class DriverPractice extends LinearOpMode {
                 gamepad1.rumble(500);
                 gamepad2.rumble(500);
             }
+
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
                         capstone.setTape(0);
+                        capstone.active();
                         mode = Mode.ENDGAME;
                     } else {
+                        capstone.retract();
                         mode = Mode.DRIVING;
                     }
                 }
                 toggleMode = true;
             } else {
                 toggleMode = false;
+            }
+            if (capRetract.wasJustPressed()) {
+                if (capstone.getState() == Capstone.State.ACTIVE) {
+                    capstone.retract();
+                } else {
+                     capstone.idle();
+                }
             }
             if (mode == Mode.ENDGAME) {
                 drivePower = new Pose2d(
@@ -106,6 +117,8 @@ public class DriverPractice extends LinearOpMode {
                         0
                 ).div(8);
                 setCapstone();
+            } else {
+                capstone.setTape(-Math.abs(gamepad2.left_stick_y));
             }
             robot.setWeightedDrivePower(drivePower);
             setIntake();

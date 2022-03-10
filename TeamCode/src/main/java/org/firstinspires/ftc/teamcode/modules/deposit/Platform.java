@@ -31,11 +31,11 @@ public class Platform extends Module<Platform.State> {
     public static double inPosition = 1, higherInPosition = 0.87;
     public static double lockPosition = 0.54;
     public static double unlockPosition = 0.29;
-    public static double blockDistanceTolerance = 7;
+    public static double blockDistanceTolerance = 13;
     public static double dumpServoPositionPerSecond = 1.7;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
-    public static double tiltInPos = 0.79, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.1, tiltOutPos1 = 0.1;
+    public static double tiltInPos = 0.75, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.1, tiltOutPos1 = 0.1;
 
     @Override
     public boolean isTransitioningState() {
@@ -157,7 +157,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 if (getSecondsSpentInState() > getState().timeOut) {
-                    Deposit.allowLift = false;
+                     Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }

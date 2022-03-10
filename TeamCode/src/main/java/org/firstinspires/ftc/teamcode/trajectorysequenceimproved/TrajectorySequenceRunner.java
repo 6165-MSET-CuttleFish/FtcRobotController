@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.Nullable;
 
@@ -90,7 +91,7 @@ public class TrajectorySequenceRunner<T> {
     }
 
     public T getState() {
-        if (!(currentTrajectorySequence.get(currentSegmentIndex) instanceof TrajectorySegment)) {
+        if (currentTrajectorySequence == null || currentSegmentIndex >= currentTrajectorySequence.size() || !(Objects.requireNonNull(currentTrajectorySequence).get(currentSegmentIndex) instanceof TrajectorySegment)) {
             return null;
         }
         return state;

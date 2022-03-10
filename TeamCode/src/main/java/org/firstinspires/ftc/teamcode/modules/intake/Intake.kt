@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
+import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /**
  * Frontal mechanism for collecting freight
@@ -29,7 +31,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 12.0
+        var intakeLimit = 9.0
         @JvmField
         var outPosition = 0.45
         @JvmField
@@ -201,7 +203,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun retractIntake() {
-        state = State.IN
+        if (opModeType != OpModeType.AUTO) state = State.IN
     }
 
     private fun deploy() {

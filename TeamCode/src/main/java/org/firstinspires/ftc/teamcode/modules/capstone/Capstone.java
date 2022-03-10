@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
+import org.firstinspires.ftc.teamcode.util.field.Context;
+import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
@@ -16,8 +18,10 @@ public class Capstone extends Module<Capstone.State> {
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;
+    public static double passivePower = 0;
     private CRServo tape;
     private ControllableServos verticalTurret, horizontalTurret;
+    public static double verticalPosDef = 0.45;
 
     @Override
     public boolean isTransitioningState() {
@@ -27,6 +31,7 @@ public class Capstone extends Module<Capstone.State> {
     public enum State implements StateBuilder {
         IDLE,
         AUTORETRACT,
+        ACTIVE,
         ;
 
         @Override
@@ -50,12 +55,27 @@ public class Capstone extends Module<Capstone.State> {
         setActuators(horizontalTurret, verticalTurret);
     }
 
+    double power;
+
     @Override
     protected void internalUpdate() {
         verticalPos = Range.clip(verticalPos, 0, 1);
         horizontalPos = Range.clip(horizontalPos, 0, 1);
-        verticalTurret.setPosition(verticalPos);
-        horizontalTurret.setPosition(horizontalPos);
+
+        switch (getState()) {
+            case IDLE:
+                tape.setPower(passivePower);
+                verticalTurret.setPosition(verticalPosDef);
+                break;
+            case ACTIVE:
+                tape.setPower(power);
+                verticalTurret.setPosition(verticalPos);
+                horizontalTurret.setPosition(horizontalPos);
+                break;
+            case AUTORETRACT:
+                tape.setPower(-1);
+                break;
+        }
     }
 
     public void setHorizontalTurret(double pwr) {
@@ -72,10 +92,21 @@ public class Capstone extends Module<Capstone.State> {
         if (Math.abs(pwr) > verticalTolerance) verticalPos += servoIncrementVertical * pwr;
     }
     public void setTape(double pwr) {
-        // if (pwr == 0) pwr = -0.07;
-        tape.setPower(pwr);
+        power = pwr;
     }
     public boolean isDoingInternalWork() {
         return false;
+    }
+
+    public void retract() {
+        setState(State.AUTORETRACT);
+    }
+
+    public void idle() {
+        setState(State.IDLE);
+    }
+
+    public void active() {
+        setState(State.ACTIVE);
     }
 }
