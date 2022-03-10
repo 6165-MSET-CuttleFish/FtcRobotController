@@ -45,18 +45,18 @@ class CyclingRed : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.1
         @JvmField var intakeY = -55.1
-        @JvmField var stop = 50.0
+        @JvmField var stop = 52.0
         @JvmField var intakeDelay = 14.0
-        @JvmField var depositDelay = 19.0
-        @JvmField var depositWaitTime = 0.05
+        @JvmField var depositDelay = 27.0
+        @JvmField var depositWaitTime = 0.0
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 28.0
         @JvmField var waitTime = 0.05
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 23.0
         @JvmField var cyclingDistance = 22.0
-        @JvmField var divConstant = 5.0
-        @JvmField var depositingAngle = -60.0
+        @JvmField var divConstant = 2.0
+        @JvmField var depositingAngle = -50.0
         @JvmField var cyclingAngle = -60.0
         @JvmField var intakingAngle = -8.0
         @JvmField var depositingTimeout = 0.3

@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State.IN, Pose2d(7.7)) {
     companion object {
         @JvmField
-        var raisedPosition = 0.2
+        var raisedPosition = 0.1
         @JvmField
         var loweredPosition = 1.0
         @JvmField
