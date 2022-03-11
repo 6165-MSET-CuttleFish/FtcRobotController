@@ -69,18 +69,20 @@ class CarouselRed : LinearOpMode() {
             .setReversed(false)
             .forward(7.0)
             .turn(Math.toRadians(240.0))
-            .splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
+            .splineTo(Vector2d(-53.0,-42.0).flip(blue),Math.toRadians(175.0).flip(blue))
             .setReversed(true)
+            .turn(Math.toRadians(-100.0))
             .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
-            .splineTo(carouselVec.center.polarAdd(10.0, Math.toRadians(55.0).flip(blue)), carouselVec.center, Pose2d())
+            .back(15.0)
             .UNSTABLE_addTemporalMarkerOffset(0.0){
                 carousel.setPower(-0.2)
             }
-            .waitSeconds(2.0)
+            .back(1.0)
+            .waitSeconds(5.0)
             .setReversed(false)
             .carouselOff(carousel)
             .resetConstraints()
-            .splineTo(Vector2d(-56.0, -28.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-65.0, -28.0).flip(blue), Math.toRadians(90.0).flip(blue))
 
         val trajectorySequence = trajectoryBuilder
             .build()
