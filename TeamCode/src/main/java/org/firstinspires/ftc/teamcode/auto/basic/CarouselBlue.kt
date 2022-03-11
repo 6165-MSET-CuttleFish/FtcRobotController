@@ -60,7 +60,7 @@ class CarouselBlue : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition()).setReversed(true)
         trajectoryBuilder
-            .setVelConstraint(getVelocityConstraint(15.0, Math.PI,15.0))
+            .setVelConstraint(getVelocityConstraint(50.0, Math.PI,15.0))
             .splineTo(allianceHub.center.polarAdd(20.0,Math.toRadians(-100.0).flip(blue)), allianceHub.center)
             .waitSeconds(0.5)
             .waitWhile(deposit::isDoingWork)
