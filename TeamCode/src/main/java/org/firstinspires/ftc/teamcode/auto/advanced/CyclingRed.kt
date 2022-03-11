@@ -43,26 +43,27 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.1
-        @JvmField var intakeY = -55.1
-        @JvmField var stop = 52.0
+        @JvmField var coast = -56.0
+        @JvmField var intakeY = -56.0
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 14.0
-        @JvmField var depositDelay = 27.0
-        @JvmField var depositWaitTime = 0.0
+        @JvmField var depositDelay = 25.0
+        @JvmField var closeDist = 20.5
+        @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
-        @JvmField var conjoiningDeposit = 28.0
-        @JvmField var waitTime = 0.05
+        @JvmField var conjoiningDeposit = 30.0
+        @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 23.0
+        @JvmField var depositDistance = 24.0
         @JvmField var cyclingDistance = 22.0
-        @JvmField var divConstant = 2.0
-        @JvmField var depositingAngle = -50.0
+        @JvmField var divConstant = 3.0
+        @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
         @JvmField var intakingAngle = -8.0
         @JvmField var depositingTimeout = 0.3
         @JvmField var intakeError = 10.0
-        @JvmField var intakeVelo = 33.0
-        @JvmField var depositVelo = 70.0
+        @JvmField var intakeVelo = 28.0
+        @JvmField var depositVelo = 60.0
     }
 
     enum class PathState {
@@ -105,12 +106,13 @@ class CyclingRed : LinearOpMode() {
             TSEDetector.Location.MIDDLE -> middleSequence
             TSEDetector.Location.RIGHT -> rightSequence
         }
+        deposit.setState(Robot.getLevel(location))
         // robot.turnOffVision()
         robot.followTrajectorySequenceAsync(sequence)
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
             robot.update()
-            if (runtime < 0.3) {
+            if (runtime > 25) {
 
             }
             when (robot.pathState) {
@@ -162,12 +164,12 @@ class CyclingRed : LinearOpMode() {
                     Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
                     Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
                 )
-                .waitWhile(::signalTurn) {
-                    intake.state == Intake.State.OUT
-                }
+//                .waitWhile(::signalTurn) {
+//                    intake.state == Intake.State.OUT
+//                }
                 .waitSeconds(waitTime)
-                .setReversed(true)
                 .relocalize(robot)
+                .setReversed(true)
                 .intakeOff(intake)
                 .liftUp(deposit, Deposit.State.LEVEL3)
             trajectoryBuilder
@@ -187,7 +189,7 @@ class CyclingRed : LinearOpMode() {
                     ),
                     allianceHub.center
                 )
-                .waitSeconds(depositWaitTime)
+                .waitWhile(deposit.platform::isTransitioningState)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
@@ -201,7 +203,10 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(
+                .waitSeconds(0.2)
+                .liftUp(deposit, Deposit.State.LEVEL1)
+                .splineTo(allianceHub.center.polarAdd(
+                    closeDist, Math.toRadians(
                     depositingAngle).flip(blue)), allianceHub.center)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -212,12 +217,9 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-//                        .capstoneReady(capstone)
-//                        .splineToVectorOffset(barcode[1].vec().flip(blue), Pose2d(14.0, -8.0), (Math.PI / 2 + barcode[1].heading).flip(blue))
-//                        .capstonePickup(capstone)
-//                        .liftUp(deposit, Robot.getLevel(location))
-//                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
+                .liftUp(deposit, Deposit.State.LEVEL2)
+                .waitSeconds(0.1)
+                .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
@@ -227,12 +229,8 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-//                        .capstoneReady(capstone)
-//                        .splineToVectorOffset(barcode[1].vec().flip(blue), Pose2d(14.0, -8.0), (Math.PI / 2 + barcode[1].heading).flip(blue))
-//                        .capstonePickup(capstone)
-//                        .liftUp(deposit, Robot.getLevel(location))
-//                        .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineTo(allianceHub.center.polarAdd(allianceHub.radius, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
+                .liftUp(deposit, Deposit.State.LEVEL3)
+                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
