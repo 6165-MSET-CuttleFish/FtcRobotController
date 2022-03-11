@@ -32,7 +32,7 @@ public class Platform extends Module<Platform.State> {
     public static double lockPosition = 0.54;
     public static double unlockPosition = 0.29;
     public static double blockDistanceTolerance = 13;
-    public static double dumpServoPositionPerSecond = 1.7;
+    public static double dumpServoPositionPerSecond = 0.9;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public static double tiltInPos = 0.75, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.1, tiltOutPos1 = 0.1;
@@ -46,7 +46,7 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         LOCKING(0.16),
-        DUMPING(0.3),
+        DUMPING(0.2),
         OUT1,
         OUT2,
         OUT3;
