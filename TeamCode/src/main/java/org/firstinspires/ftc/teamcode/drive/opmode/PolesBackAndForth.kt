@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.util.field.OpModeType
 */
 @Config
 @TeleOp(group = "drive")
+@Disabled
 class PolesBackAndForth : LinearOpMode() {
     companion object {
         @JvmField var blue = false

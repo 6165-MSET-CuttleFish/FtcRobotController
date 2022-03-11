@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.advanced
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.flip
 import kotlin.Throws
 
 @Autonomous
+@Disabled
 class AdvancedCarouselBlue : LinearOpMode() {
     lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit

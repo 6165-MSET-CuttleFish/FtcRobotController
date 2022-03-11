@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
@@ -13,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.packet;
 
 @TeleOp
+@Disabled
 public class DepositTest extends ModuleTest {
     Intake intake;
     Deposit deposit;

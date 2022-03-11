@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.modules.carousel;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
+@Disabled
 public class CarouselTest extends ModuleTest {
     Carousel carousel;
 

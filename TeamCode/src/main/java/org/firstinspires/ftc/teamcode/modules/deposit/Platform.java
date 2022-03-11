@@ -31,7 +31,7 @@ public class Platform extends Module<Platform.State> {
     public static double inPosition = 1, higherInPosition = 0.87;
     public static double lockPosition = 0.54;
     public static double unlockPosition = 0.29;
-    public static double blockDistanceTolerance = 13;
+    public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 0.9;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;

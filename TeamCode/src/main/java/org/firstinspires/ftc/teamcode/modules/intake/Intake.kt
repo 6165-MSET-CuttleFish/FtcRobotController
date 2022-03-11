@@ -203,7 +203,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun retractIntake() {
-        if (opModeType != OpModeType.AUTO) state = State.IN
+        state = State.IN
     }
 
     private fun deploy() {
