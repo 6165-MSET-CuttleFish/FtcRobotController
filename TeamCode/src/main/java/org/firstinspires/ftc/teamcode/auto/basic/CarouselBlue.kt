@@ -7,10 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
-import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.carouselVec
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.drive.Robot.*
@@ -18,14 +15,15 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.flip
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 import kotlin.Throws
 
 @Autonomous
@@ -35,6 +33,7 @@ class CarouselBlue : LinearOpMode() {
     lateinit var intake: Intake
     lateinit var capstone: Capstone
     lateinit var carousel: Carousel
+    val blue = true
     enum class PathState {
         INTAKING,
         DUMPING,
@@ -47,7 +46,6 @@ class CarouselBlue : LinearOpMode() {
         capstone = robot.capstone
         deposit = robot.deposit
         carousel = robot.carousel
-        val blue = true
         side = Side.CAROUSEL
         robot.visionInit()
         while (!opModeIsActive() && !isStopRequested) {
@@ -56,38 +54,123 @@ class CarouselBlue : LinearOpMode() {
             telemetry.update()
         }
         Deposit.allowLift = false
-        val trajectorySequence =
-            robot.trajectorySequenceBuilder(startingPosition())
+        val left = leftAuto()
+        val right = leftAuto()
+        val mid = leftAuto()
+        waitForStart()
+        robot.scan()
+        robot.turnOffVision()
+        val trajectorySequence = when (location) {
+            TSEDetector.Location.LEFT -> left
+            TSEDetector.Location.MIDDLE -> mid
+            TSEDetector.Location.RIGHT -> right
+        }
+        robot.followTrajectorySequence(trajectorySequence)
+    }
+
+    fun leftAuto() : TrajectorySequence {
+        val traj = robot.trajectorySequenceBuilder(startingPosition())
                 .back(7.0)
                 .turn(Math.toRadians(90.0).flip(blue))
                 .setReversed(true)
                 .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
-                .splineTo(Vector2d(-55.0, -53.0).flip(blue), Math.toRadians(250.0).flip(blue))
+                .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(180.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                    carousel.setPower(0.9)
+                    carousel.setPower(0.4)
                 }
-                .waitSeconds(2.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
+                .waitSeconds(5.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     carousel.setPower(-0.0)
                 }
                 .resetConstraints()
                 .setReversed(false)
+                .turn(Math.toRadians(90.0).flip(blue))
                 .setVelConstraint(getVelocityConstraint(40.0, Math.PI,15.0))
                 .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
-                .splineTo(Vector2d(-39.0, -8.0).flip(blue), Math.toRadians(120.0).flip(blue))
+                .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
+                .turn(Math.toRadians(90.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     Deposit.allowLift = true
                 }
                 .setReversed(true)
-                .splineTo(allianceHub.center.polarAdd(20.0, Math.toRadians(160.0).flip(blue)), allianceHub.center)
+                .splineTo(allianceHub.center.polarAdd(24.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
+                .dump(deposit)
+                .waitWhile(deposit::isDoingWork)
                 .setReversed(false)
                 .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
                 .turn(Math.toRadians(90.0).flip(blue))
-                .splineTo(Vector2d(-58.0, -35.0).flip(blue), Math.toRadians(-90.0).flip(blue))
+                .splineTo(Vector2d(-58.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
                 .build()
-        waitForStart()
-        robot.scan()
-        robot.turnOffVision()
-        robot.followTrajectorySequence(trajectorySequence)
+        return traj
+    }
+    fun midAuto() : TrajectorySequence {
+        val traj = robot.trajectorySequenceBuilder(startingPosition())
+            .back(7.0)
+            .turn(Math.toRadians(90.0).flip(blue))
+            .setReversed(true)
+            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+            .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                carousel.setPower(0.4)
+            }
+            .waitSeconds(5.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                carousel.setPower(-0.0)
+            }
+            .resetConstraints()
+            .setReversed(false)
+            .turn(Math.toRadians(90.0).flip(blue))
+            .setVelConstraint(getVelocityConstraint(40.0, Math.PI,15.0))
+            .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .turn(Math.toRadians(90.0).flip(blue))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                Deposit.allowLift = true
+            }
+            .setReversed(true)
+            .splineTo(allianceHub.center.polarAdd(24.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
+            .dump(deposit)
+            .waitWhile(deposit::isDoingWork)
+            .setReversed(false)
+            .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
+            .turn(Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-58.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
+            .build()
+        return traj
+    }
+    fun rightAuto() : TrajectorySequence {
+        val traj = robot.trajectorySequenceBuilder(startingPosition())
+            .back(7.0)
+            .turn(Math.toRadians(90.0).flip(blue))
+            .setReversed(true)
+            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+            .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                carousel.setPower(0.4)
+            }
+            .waitSeconds(5.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                carousel.setPower(-0.0)
+            }
+            .resetConstraints()
+            .setReversed(false)
+            .turn(Math.toRadians(90.0).flip(blue))
+            .setVelConstraint(getVelocityConstraint(40.0, Math.PI,15.0))
+            .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .turn(Math.toRadians(90.0).flip(blue))
+            .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                Deposit.allowLift = true
+            }
+            .setReversed(true)
+            .splineTo(allianceHub.center.polarAdd(24.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
+            .dump(deposit)
+            .waitWhile(deposit::isDoingWork)
+            .setReversed(false)
+            .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
+            .turn(Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-58.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
+            .build()
+        return traj
     }
 }
