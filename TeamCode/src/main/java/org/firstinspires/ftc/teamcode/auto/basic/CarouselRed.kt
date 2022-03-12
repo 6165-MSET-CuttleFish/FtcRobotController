@@ -70,7 +70,7 @@ class CarouselRed : LinearOpMode() {
             .setReversed(false)
             .forward(7.0)
             .turn(Math.toRadians(240.0))
-            .splineTo(Vector2d(-53.0,-42.0).flip(blue),Math.toRadians(175.0).flip(blue))
+            .splineTo(Vector2d(-55.0,-42.0).flip(blue),Math.toRadians(175.0).flip(blue))
             .setReversed(true)
             .turn(Math.toRadians(-100.0))
             .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
@@ -82,7 +82,7 @@ class CarouselRed : LinearOpMode() {
             .setReversed(false)
             .carouselOff(carousel)
             .resetConstraints()
-            .splineTo(Vector2d(-65.0, -28.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-65.0, -25.0).flip(blue), Math.toRadians(90.0).flip(blue))
 
         val trajectorySequence = trajectoryBuilder
             .build()
