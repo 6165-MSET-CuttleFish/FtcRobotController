@@ -145,7 +145,16 @@ class CyclingBlue : LinearOpMode() {
                     }
                     if (timer.seconds() > 29) {
                         Deposit.allowLift = false
-                        robot.followTrajectorySequence(parkEmergency)
+                        robot.followTrajectorySequenceAsync(parkEmergency)
+                        while (robot.isBusy) {
+                            if (robot.isOverPoles) {
+                                //carousel.setPower(1.0)
+                                Robot.gainMode = GainMode.FORWARD
+                            } else {
+                                //carousel.setPower(0.0)
+                                Robot.gainMode = GainMode.IDLE
+                            }
+                        }
                         break
                     }
                 }
