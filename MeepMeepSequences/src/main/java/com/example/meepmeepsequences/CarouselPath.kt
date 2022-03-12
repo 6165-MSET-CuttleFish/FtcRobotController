@@ -7,9 +7,7 @@ import com.example.meepmeepsequences.util.*
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
-import com.example.meepmeepsequences.util.FrequentPositions.allianceHub
-import com.example.meepmeepsequences.util.FrequentPositions.barcode
-import com.example.meepmeepsequences.util.FrequentPositions.carouselVec
+import com.example.meepmeepsequences.util.FrequentPositions
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.geometry.Line
 import com.example.meepmeepsequences.util.geometry.flip
@@ -37,22 +35,21 @@ class CarouselPath {
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
                 trajectoryBuilder
-                    .splineToCircle(allianceHub, Line.yAxis(-45.0).flip(blue), Vector2d(-14.0, -43.0).flip(blue))
+                    .splineTo(FrequentPositions.allianceHub.center.polarAdd(20.0,Math.toRadians(-100.0).flip(blue)), FrequentPositions.allianceHub.center)
+                    .waitSeconds(0.5)
                     .waitWhile(deposit::isDoingWork)
                     .setReversed(false)
-                    .splineTo(Vector2d(-47.0,-47.0).flip(blue),Math.toRadians(90.0).flip(blue))
+                    .forward(7.0)
+                    .turn(Math.toRadians(240.0).flip(blue))
+                    .splineTo(Vector2d(-50.0,-46.0).flip(blue),Math.toRadians(175.0).flip(blue))
                     .setReversed(true)
-                    .splineTo(carouselVec.center.polarAdd(carouselVec.radius, Math.toRadians(40.0).flip(blue)), carouselVec.center)
-                    .waitWhile(carousel::isDoingWork)
+                    .splineTo(FrequentPositions.carouselVec.center.polarAdd(13.0, Math.toRadians(45.0).flip(blue)), FrequentPositions.carouselVec.center)
+                    .waitSeconds(2.0)
                     .setReversed(false)
-                    .splineTo(Vector2d(-59.0, -35.0).flip(blue), Math.toRadians(90.0).flip(blue))
+                    .carouselOff(carousel)
+                    .resetConstraints()
+                    .splineTo(Vector2d(-56.0, -24.0).flip(blue), Math.toRadians(90.0).flip(blue))
                     .build()
             }
     }
 }
-/*
-        .setReversed(true)
-                    .splineTo(Vector2d(-53.0, -50.0).flip(blue), Math.toRadians(0.0).flip(blue))
-                    .splineTo(Vector2d(-30.0, -57.0).flip(blue), Math.toRadians(0.0).flip(blue))
-                    .splineToConstantHeading(Vector2d(39.0, -57.0).flip(blue), 0.0)
-                    */
