@@ -27,12 +27,12 @@ public class Platform extends Module<Platform.State> {
     public static double outPosition2 = 0.13;
     public static double outPosition1 = 0.0;
     public static double holdingPosition = 0.7;
-    public static double tipDiff = 0.015;
+    public static double tipDiff = 0.04;
     public static double inPosition = 1, higherInPosition = 0.87;
     public static double lockPosition = 0.54;
     public static double unlockPosition = 0.29;
     public static double blockDistanceTolerance = 9;
-    public static double dumpServoPositionPerSecond = 0.9;
+    public static double dumpServoPositionPerSecond = 1.0;
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public static double tiltInPos = 0.75, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.1, tiltOutPos1 = 0.1;
@@ -150,6 +150,11 @@ public class Platform extends Module<Platform.State> {
                 }
                 intakeCleared = false;
                 setState(getNeededOutState(deposit.getDefaultState()));
+                if (!Deposit.allowLift) {
+                    tiltIn();
+                    flipIn();
+                    setState(State.IN);
+                }
                 lock();
                 flipOut(deposit.getDefaultState());
                 tiltOut();

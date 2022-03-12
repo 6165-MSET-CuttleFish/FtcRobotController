@@ -41,7 +41,7 @@ public class DriverPractice extends LinearOpMode {
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
     ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract;
-    ToggleButtonReader carouselButton;
+    ToggleButtonReader depositLift;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
 
@@ -61,12 +61,12 @@ public class DriverPractice extends LinearOpMode {
                 capVerticalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 intakeButton = new TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER),
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
-                levelIncrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_UP),
-                levelDecrement = new ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN),
+                levelIncrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
+                levelDecrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 liftButton = new TriggerReader(secondary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
-                carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
+                depositLift = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
                 capRetract = new ButtonReader(primary, GamepadKeys.Button.X)
         };
@@ -85,6 +85,9 @@ public class DriverPractice extends LinearOpMode {
             if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
                 gamepad1.rumble(500);
                 gamepad2.rumble(500);
+            }
+            if (depositLift.wasJustPressed()) {
+                Deposit.allowLift = !Deposit.allowLift;
             }
 
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
@@ -152,11 +155,7 @@ public class DriverPractice extends LinearOpMode {
     }
 
     void setIntake() {
-        if (intakeButton.isDown()) {
-            intake.setPower(1);
-        } else {
-            intake.setPower(0);
-        }
+        intake.setPower(gamepad2.right_trigger + gamepad2.left_trigger);
     }
 
     void setDeposit() {

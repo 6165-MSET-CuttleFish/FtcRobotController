@@ -41,13 +41,21 @@ public class TSEDetector extends OpenCvPipeline {
 //            new Point(10, 10),
 //            new Point(50, 50));
 
-    public static int hLow = 50;
-    public static int sLow = 50;
-    public static int vLow = 110;
+    public static int redHLow = 0;
+    public static int redSLow = 50;
+    public static int redVLow = 110;
 
-    public static int hHigh = 100;
-    public static int sHigh = 100;
-    public static int vHigh = 0;
+    public static int redHHigh = 30;
+    public static int redSHigh = 255;
+    public static int redVHigh = 255;
+
+    public static int blueHLow = 0;
+    public static int blueSLow = 50;
+    public static int blueVLow = 110;
+
+    public static int blueHHigh = 180;
+    public static int blueSHigh = 255;
+    public static int blueVHigh = 255;
 
     public static int visionThreshold = 10;
 
@@ -58,10 +66,18 @@ public class TSEDetector extends OpenCvPipeline {
         Mat mat = new Mat();
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        Scalar lowHSV = new Scalar(hLow, sLow, vLow);
-        Scalar highHSV = new Scalar(hHigh, sHigh, vHigh);
 
+        Scalar lowHSV;
+        Scalar highHSV;
+        if (alliance == Alliance.BLUE) {
+            lowHSV = new Scalar(blueHLow, blueSLow, blueVLow);
+            highHSV = new Scalar(blueHHigh, blueSHigh, blueVHigh);
+        } else {
+            lowHSV = new Scalar(redHLow, redSLow, redVLow);
+            highHSV = new Scalar(redHHigh, redSHigh, redVHigh);
+        }
         Core.inRange(mat, lowHSV, highHSV, mat);
+
 
         Mat pos_1 = mat.submat(alliance == Alliance.BLUE ? POS_1_BLUE : POS_1);
         Mat pos_2 = mat.submat(alliance == Alliance.BLUE ? POS_2_BLUE : POS_2);
@@ -83,7 +99,7 @@ public class TSEDetector extends OpenCvPipeline {
         double pos_1_percent = Math.round(pos_1_val*100);
         double pos_2_percent = Math.round(pos_2_val*100);
 
-        assert telemetry != null;
+        if (telemetry != null)
 //        telemetry.addData("Position 1 raw", (int) Core.sumElems(pos_1).val[0]);
 //        telemetry.addData("Position 2 raw", (int) Core.sumElems(pos_2).val[0]);
         //telemetry.addData("Position 3 raw", (int) Core.sumElems(pos_3).val[0]);

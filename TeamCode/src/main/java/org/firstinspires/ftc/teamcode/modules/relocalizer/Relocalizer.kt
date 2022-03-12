@@ -99,7 +99,7 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
             Pose2d(Context.robotPose.x, y, heading)
                 .polarAdd(-ySensor.poseOffset.x)
                 .polarAdd(-ySensor.poseOffset.y, Math.toRadians(90.0))
-        poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
+        if (rawXDist > 1.0 && rawYDist >= 1.0) poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
     }
 
     override fun internalUpdate() {

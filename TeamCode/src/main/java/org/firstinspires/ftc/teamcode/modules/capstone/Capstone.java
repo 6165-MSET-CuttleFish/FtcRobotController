@@ -18,7 +18,7 @@ public class Capstone extends Module<Capstone.State> {
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;
-    public static double passivePower = 0;
+    public static double passivePower = -0.01;
     private CRServo tape;
     private ControllableServos verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.45;
@@ -64,6 +64,7 @@ public class Capstone extends Module<Capstone.State> {
 
         switch (getState()) {
             case IDLE:
+                passivePower = -passivePower;
                 tape.setPower(passivePower);
                 verticalTurret.setPosition(verticalPosDef);
                 break;

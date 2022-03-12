@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
 import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
+import java.lang.Exception
 
 /**
  * Frontal mechanism for collecting freight
@@ -45,7 +46,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var alphaTolerance = 0.1
+        var alphaTolerance = 0.05
         @JvmField
         var smoothingCoeffecientDistance = 0.8
         @JvmField
@@ -184,7 +185,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private val distance: Double
-        get() = blockSensor.getDistance(DistanceUnit.CM)
+        get() = try {
+                blockSensor.getDistance(DistanceUnit.CM)
+            } catch (e: Exception) {
+                0.0
+            }
 
     private fun dropIntake() {
         flip.position = loweredPosition

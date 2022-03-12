@@ -17,7 +17,7 @@ public class RelocalizationTest extends LinearOpMode {
     public void initialize() {
         robot = new Robot(this);
         Context.side = Side.CYCLING;
-        Context.alliance = Alliance.BLUE;
+        Context.alliance = Alliance.RED;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class RelocalizationTest extends LinearOpMode {
         waitForStart();
         Async.start(() -> {
             while (opModeIsActive()) {
-                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
             }
         });
         while (opModeIsActive()) {
