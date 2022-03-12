@@ -48,6 +48,7 @@ public class DriverPractice extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
+        Deposit.allowLift = true;
         intake = robot.intake;
         deposit = robot.deposit;
         carousel = robot.carousel;

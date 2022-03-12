@@ -162,7 +162,7 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
                 unlock();
                 if (getSecondsSpentInState() > getState().timeOut) {
-                     Deposit.allowLift = false;
+                    if (opModeType == OpModeType.AUTO) Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }
