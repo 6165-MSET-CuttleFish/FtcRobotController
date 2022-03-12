@@ -79,10 +79,10 @@ class CarouselBlue : LinearOpMode() {
             // below, the 2nd argument 'DriveSignal'
             // details the passive power added to the drivetrain
             // while against the carousel.
-            .waitSeconds(2.0, DriveSignal(Pose2d(-3.0, 0.0, Math.toRadians(-3.0))))
+            .resetConstraints()
+            .waitSeconds(3.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
             .setReversed(false)
             .carouselOff(carousel)
-            .resetConstraints()
             .splineTo(Vector2d(-62.0, -30.0).flip(blue), Math.toRadians(90.0).flip(blue))
 
         val trajectorySequence = trajectoryBuilder

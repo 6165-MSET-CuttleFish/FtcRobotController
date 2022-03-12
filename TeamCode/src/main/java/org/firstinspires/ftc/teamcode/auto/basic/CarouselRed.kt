@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto.basic
 
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -77,8 +78,7 @@ class CarouselRed : LinearOpMode() {
             .UNSTABLE_addTemporalMarkerOffset(0.0){
                 carousel.setPower(-0.2)
             }
-            .back(1.0)
-            .waitSeconds(5.0)
+            .waitSeconds(3.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
             .setReversed(false)
             .carouselOff(carousel)
             .resetConstraints()
