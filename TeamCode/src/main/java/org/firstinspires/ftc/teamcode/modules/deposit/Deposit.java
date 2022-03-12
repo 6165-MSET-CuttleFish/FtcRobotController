@@ -141,7 +141,7 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
-        if (platform.isDoingWork() && (opModeType != OpModeType.AUTO || allowLift)) {
+        if (platform.isDoingWork() && allowLift) {
             super.setState(getDefaultState());
         } else {
             super.setState(State.IDLE);

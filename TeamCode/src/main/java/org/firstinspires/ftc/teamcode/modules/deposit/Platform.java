@@ -136,7 +136,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case LOCKING:
                 lock();
-                if (getSecondsSpentInState() > getState().timeOut && (opModeType != OpModeType.AUTO || Deposit.allowLift)) {
+                if (getSecondsSpentInState() > getState().timeOut && Deposit.allowLift) {
                     prepPlatform(deposit.getDefaultState());
                 }
                 break;
