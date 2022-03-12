@@ -124,7 +124,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private final VoltageSensor batteryVoltageSensor;
     private final List<LynxModule> allHubs;
 
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(19,0,0.6);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8,0,0.3);
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 2;
