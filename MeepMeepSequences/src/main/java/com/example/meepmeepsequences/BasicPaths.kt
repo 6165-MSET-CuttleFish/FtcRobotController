@@ -1,13 +1,17 @@
 package com.example.meepmeepsequences
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.example.meepmeepsequences.util.*
 import com.example.meepmeepsequences.util.Context.alliance
 import com.example.meepmeepsequences.util.Context.location
 import com.example.meepmeepsequences.util.Context.side
+import com.example.meepmeepsequences.util.FrequentPositions.allianceHub
 import com.example.meepmeepsequences.util.FrequentPositions.startingPosition
 import com.example.meepmeepsequences.util.Robot.getLevel
 import com.example.meepmeepsequences.util.geometry.flip
+import com.example.meepmeepsequences.util.geometry.polarAdd
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
@@ -28,44 +32,24 @@ class BasicPaths {
             .setColorScheme(colorSchemeVariable()) // Set theme
             .configure() // configure robot
                 .followTrajectorySequence { robot ->
-                    val trajectoryBuilder =
                         robot.trajectorySequenceBuilder(startingPosition())
-                            .setReversed(true)
-                            .back(8.0)
-                            //.setConstraints(getVelocityConstraint(40.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(40.0))
+                            .back(7.0)
                             .turn(Math.toRadians(90.0).flip(blue))
-                            .splineTo(Vector2d(-55.0, -24.8).flip(blue), Math.toRadians(-270.0).flip(blue))
-                            //.setConstraints(getVelocityConstraint(15.0, DriveConstants.MAX_ANG_VEL, TRACK_WIDTH), getAccelerationConstraint(15.0))
-                            .turn(Math.toRadians(-90.0).flip(blue))
-                            .capstoneReady(capstone)
-                            .waitWhile { capstone.isDoingWork() }
-                            .back(20.0)
-                            .resetConstraints()
-                            .capstonePickup(capstone)
-                            .liftUp(deposit, getLevel(location))
-                            .waitWhile(capstone::isDoingWork) // capstone loaded
-                            .splineTo(Vector2d(-30.0, -25.0).flip(blue), Math.toRadians(0.0).flip(blue))
-                            .setReversed(false)
-                            .dump(deposit)
-                            .waitWhile(deposit::isDoingWork) // wait for platform to dump
-//                            .UNSTABLE_addTemporalMarkerOffset(0.0) {
-//                                admissibleError = Pose2d(5.0, 5.0, Math.toRadians(20.0))
-//                            }
-                            .setVelConstraint(getVelocityConstraint(10.0, Math.PI,15.0))
-                            // .splineTo(Vector2d(-45.5, -45.5).flip(blue), Math.toRadians(215.0).flip(blue))
-                            // .setVelConstraint(getVelocityConstraint(5.0, Math.PI,15.0))
-//                            .UNSTABLE_addTemporalMarkerOffset(1.0) {
-//                                admissibleError = Pose2d(2.0, 2.0, Math.toRadians(5.0))
-//                            }
-                            .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(203.0).flip(blue))
-                            .UNSTABLE_addTemporalMarkerOffset(-0.5, carousel::on)
-                            .waitSeconds(3.0)
-                            .carouselOff(carousel)// drop the ducky
-                            .resetConstraints()
                             .setReversed(true)
-                            .splineTo(Vector2d(-61.0, -34.0).flip(blue), Math.toRadians(180.0).flip(blue))
-                   trajectoryBuilder
-                        .build()
+                            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+                            .splineTo(Vector2d(-58.0, -53.0).flip(blue), Math.toRadians(220.0).flip(blue))
+                            .waitSeconds(2.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
+                            .resetConstraints()
+                            .setReversed(false)
+                            .splineTo(Vector2d(-58.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+                            .splineTo(Vector2d(-39.0, -8.0).flip(blue), Math.toRadians(120.0).flip(blue))
+                            .setReversed(true)
+                            .splineTo(allianceHub.center.polarAdd(20.0, Math.toRadians(160.0).flip(blue)), allianceHub.center)
+                            .setReversed(false)
+                            .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                            .turn(Math.toRadians(90.0))
+                            .splineTo(Vector2d(-58.0, -35.0).flip(blue), Math.toRadians(-90.0).flip(blue))
+                            .build()
                 }
         }
 }

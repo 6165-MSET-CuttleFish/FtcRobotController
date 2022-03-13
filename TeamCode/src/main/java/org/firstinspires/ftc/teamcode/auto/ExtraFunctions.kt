@@ -29,7 +29,7 @@ fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
 }
 
 fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder<*> {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
+    return UNSTABLE_addTemporalMarkerOffset(0.0) {
         // Platform.isLoaded = true
         deposit.setState(level)
     }
