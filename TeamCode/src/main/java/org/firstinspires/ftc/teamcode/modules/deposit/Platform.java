@@ -36,7 +36,7 @@ public class Platform extends Module<Platform.State> {
     public static double flipServoPositionPerSecond = 2;
     public static boolean isLoaded;
     public static double tiltInPos = 0.75, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.15, tiltOutPos1 = 0.1;
-
+    public static boolean shouldCounterBalance = true;
     @Override
     public boolean isTransitioningState() {
         return tilt.isTransitioning() || arm.isTransitioning();
@@ -148,7 +148,7 @@ public class Platform extends Module<Platform.State> {
             case OUT1:
             case OUT2:
             case OUT3:
-                if (getState() == State.OUT1) {
+                if (getState() == State.OUT1 || !shouldCounterBalance) {
                     intake.retractIntake();
                 } else {
                     intake.counterBalance();

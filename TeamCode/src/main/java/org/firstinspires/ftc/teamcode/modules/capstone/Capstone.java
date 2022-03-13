@@ -75,6 +75,7 @@ public class Capstone extends Module<Capstone.State> {
                 break;
             case AUTORETRACT:
                 tape.setPower(-1);
+                verticalTurret.setPosition(verticalPosDef);
                 break;
         }
     }
