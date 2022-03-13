@@ -37,8 +37,8 @@ class CarouselRed : LinearOpMode() {
     lateinit var carousel: Carousel
     val blue = false
     companion object {
-        @JvmField var carouselPower = 0.2
-        @JvmField var closeDist = 20.5
+        @JvmField var carouselPower = -0.2
+        @JvmField var closeDist = 21.4
     }
     enum class PathState {
         INTAKING,
@@ -80,7 +80,11 @@ class CarouselRed : LinearOpMode() {
             .turn(Math.toRadians(90.0).flip(blue))
             .setReversed(true)
             .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
-            .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(-160.0).flip(blue))
+            .splineTo(Vector2d(-53.0,-42.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .setReversed(true)
+            .turn(Math.toRadians(85.0))
+            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+            .back(14.0)
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 carousel.setPower(carouselPower)
             }
@@ -90,16 +94,16 @@ class CarouselRed : LinearOpMode() {
             }
             .resetConstraints()
             .setReversed(false)
-            .turn(Math.toRadians(90.0).flip(blue))
+            //.turn(Math.toRadians(90.0).flip(blue))
             .setVelConstraint(getVelocityConstraint(30.0, Math.PI,15.0))
-            .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
-            .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-56.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-56.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(90.0).flip(blue))
             .liftUp(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 Deposit.allowLift = true
             }
-            .waitSeconds(0.3)
+            .waitSeconds(0.5)
             .setReversed(true)
             .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(150.0).flip(blue)), allianceHub.center)
             .dump(deposit)
@@ -117,7 +121,11 @@ class CarouselRed : LinearOpMode() {
             .turn(Math.toRadians(90.0).flip(blue))
             .setReversed(true)
             .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
-            .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .splineTo(Vector2d(-53.0,-42.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .setReversed(true)
+            .turn(Math.toRadians(85.0))
+            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+            .back(14.0)
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 carousel.setPower(carouselPower)
             }
@@ -127,16 +135,16 @@ class CarouselRed : LinearOpMode() {
             }
             .resetConstraints()
             .setReversed(false)
-            .turn(Math.toRadians(90.0).flip(blue))
+            //.turn(Math.toRadians(90.0).flip(blue))
             .setVelConstraint(getVelocityConstraint(30.0, Math.PI,15.0))
-            .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
-            .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-56.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-56.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(90.0).flip(blue))
             .liftUp(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 Deposit.allowLift = true
             }
-            .waitSeconds(0.3)
+            .waitSeconds(0.5)
             .setReversed(true)
             .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(150.0).flip(blue)), allianceHub.center)
             .dump(deposit)
@@ -154,26 +162,32 @@ class CarouselRed : LinearOpMode() {
             .turn(Math.toRadians(90.0).flip(blue))
             .setReversed(true)
             .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
-            .splineTo(Vector2d(-51.0,-49.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .splineTo(Vector2d(-53.0,-42.0).flip(blue),Math.toRadians(180.0).flip(blue))
+            .setReversed(true)
+            .turn(Math.toRadians(85.0))
+            .setVelConstraint(getVelocityConstraint(20.0, Math.PI,15.0))
+            .back(14.0)
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 carousel.setPower(carouselPower)
             }
-            .waitSeconds(5.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
+            .waitSeconds(4.0, DriveSignal(Pose2d(-5.0, 0.0, Math.toRadians(0.0))))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 carousel.setPower(-0.0)
             }
             .resetConstraints()
             .setReversed(false)
+            //.turn(Math.toRadians(90.0).flip(blue))
+            .setVelConstraint(getVelocityConstraint(30.0, Math.PI,15.0))
+            .splineTo(Vector2d(-56.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+            .splineTo(Vector2d(-56.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(90.0).flip(blue))
-            .setVelConstraint(getVelocityConstraint(40.0, Math.PI,15.0))
-            .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
-            .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
-            .turn(Math.toRadians(90.0).flip(blue))
+            .liftUp(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 Deposit.allowLift = true
             }
+            .waitSeconds(0.5)
             .setReversed(true)
-            .splineTo(allianceHub.center.polarAdd(25.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
+            .splineTo(allianceHub.center.polarAdd(24.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
             .dump(deposit)
             .waitWhile(deposit::isDoingWork)
             .setReversed(false)
