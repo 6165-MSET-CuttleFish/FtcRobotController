@@ -41,7 +41,7 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract, intakeCounterBalance;
     ToggleButtonReader depositLift;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -70,7 +70,8 @@ public class DriverPractice extends LinearOpMode {
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 depositLift = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
-                capRetract = new ButtonReader(primary, GamepadKeys.Button.X)
+                capRetract = new ButtonReader(primary, GamepadKeys.Button.X),
+                intakeCounterBalance = new ButtonReader(secondary, GamepadKeys.Button.A)
         };
         Deposit.farDeposit = true;
         waitForStart();
@@ -91,7 +92,9 @@ public class DriverPractice extends LinearOpMode {
             if (depositLift.wasJustPressed()) {
                 Deposit.allowLift = !Deposit.allowLift;
             }
-
+            if (intakeCounterBalance.wasJustPressed()) {
+                Platform.shouldCounterBalance = !Platform.shouldCounterBalance;
+            }
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
