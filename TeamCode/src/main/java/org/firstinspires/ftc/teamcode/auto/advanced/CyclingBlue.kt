@@ -103,10 +103,14 @@ class CyclingBlue : LinearOpMode() {
         Async.start {
             while (opModeIsActive()) {
                 if (robot.pathState == PathState.INTAKING) {
-                    robot.relocalizer.updatePoseEstimate(
-                        Relocalizer.Sensor.FRONT_RIGHT,
-                        Relocalizer.Sensor.LEFT
-                    )
+                    try {
+                        robot.relocalizer.updatePoseEstimate(
+                            Relocalizer.Sensor.FRONT_RIGHT,
+                            Relocalizer.Sensor.LEFT
+                        )
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
         }

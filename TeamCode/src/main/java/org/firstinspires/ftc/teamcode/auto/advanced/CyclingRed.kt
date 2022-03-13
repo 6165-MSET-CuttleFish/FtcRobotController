@@ -103,10 +103,14 @@ class CyclingRed : LinearOpMode() {
         Async.start {
             while (opModeIsActive()) {
                 if (robot.pathState == PathState.INTAKING) {
-                    robot.relocalizer.updatePoseEstimate(
-                        Relocalizer.Sensor.FRONT_LEFT,
-                        Relocalizer.Sensor.RIGHT
-                    )
+                    try {
+                        robot.relocalizer.updatePoseEstimate(
+                            Relocalizer.Sensor.FRONT_LEFT,
+                            Relocalizer.Sensor.RIGHT
+                        )
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
@@ -183,7 +184,11 @@ public class DriverPractice extends LinearOpMode {
         }
 
         if (dumpButton.wasJustPressed()) {
-            deposit.dump();
+            if (Platform.isLoaded) {
+                deposit.dump();
+            } else {
+                Platform.isLoaded = true;
+            }
         }
     }
 
