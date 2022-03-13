@@ -276,7 +276,9 @@ public class Robot<T> extends ImprovedTankDrive {
 
     public void turnOffVision() {
         dashboard.stopCameraStream();
-        webcam.closeCameraDevice();
+        webcam.closeCameraDeviceAsync(() -> {
+
+        });
     }
 
     public void scan() {
@@ -285,7 +287,7 @@ public class Robot<T> extends ImprovedTankDrive {
 
     public static Deposit.State getLevel(TSEDetector.Location location) {
         switch (location) {
-            case LEFT: return Deposit.State.IDLE;
+            case LEFT: return Deposit.State.LEVEL1;
             case MIDDLE: return Deposit.State.LEVEL2;
             case RIGHT: return Deposit.State.LEVEL3;
         }

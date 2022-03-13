@@ -45,11 +45,11 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.3
-        @JvmField var intakeY = -55.3
-        @JvmField var stop = 51.5
-        @JvmField var intakeDelay = 18.0
-        @JvmField var depositDelay = 20.0
+        @JvmField var coast = -55.0
+        @JvmField var intakeY = -55.0
+        @JvmField var stop = 50.8
+        @JvmField var intakeDelay = 16.0
+        @JvmField var depositDelay = 16.0
         @JvmField var closeDist = 21.9
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
@@ -57,7 +57,7 @@ class CyclingRed : LinearOpMode() {
         @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 24.0
-        @JvmField var cyclingDistance = 22.5
+        @JvmField var cyclingDistance = 22.2
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
@@ -66,6 +66,7 @@ class CyclingRed : LinearOpMode() {
         @JvmField var intakeError = 10.0
         @JvmField var intakeVelo = 26.0
         @JvmField var depositVelo = 60.0
+        @JvmField var angleOffset = -4.0
     }
 
     enum class PathState {
@@ -83,7 +84,7 @@ class CyclingRed : LinearOpMode() {
         deposit = robot.deposit
         carousel = robot.carousel
         relocalizer = robot.relocalizer
-//        robot.visionInit()
+        robot.visionInit()
         val leftSequence = leftAuto()
         val middleSequence = middleAuto()
         val rightSequence = rightAuto()
@@ -93,7 +94,7 @@ class CyclingRed : LinearOpMode() {
             .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
             .build()
         while (!opModeIsActive() && !isStopRequested) {
-            // robot.scan()
+            robot.scan()
             telemetry.addData("Position", location)
             telemetry.update()
         }
@@ -101,22 +102,24 @@ class CyclingRed : LinearOpMode() {
         waitForStart()
         Async.start {
             while (opModeIsActive()) {
-                robot.relocalizer.updatePoseEstimate(
-                    Relocalizer.Sensor.FRONT_LEFT,
-                    Relocalizer.Sensor.RIGHT
-                )
+                if (robot.pathState == PathState.INTAKING) {
+                    robot.relocalizer.updatePoseEstimate(
+                        Relocalizer.Sensor.FRONT_LEFT,
+                        Relocalizer.Sensor.RIGHT
+                    )
+                }
             }
         }
         val timer = ElapsedTime()
         timer.reset()
-        // robot.scan()
+        robot.scan()
         val sequence = when (location) {
             TSEDetector.Location.LEFT -> leftSequence
             TSEDetector.Location.MIDDLE -> middleSequence
             TSEDetector.Location.RIGHT -> rightSequence
         }
         deposit.setState(Robot.getLevel(location))
-        // robot.turnOffVision()
+        robot.turnOffVision()
         robot.followTrajectorySequenceAsync(sequence)
         while (robot.isBusy && opModeIsActive()) {
             Context.packet.put("Path State", robot.pathState)
@@ -145,7 +148,17 @@ class CyclingRed : LinearOpMode() {
                     }
                     if (timer.seconds() > 29) {
                         Deposit.allowLift = false
-                        robot.followTrajectorySequence(parkEmergency)
+                        robot.followTrajectorySequenceAsync(parkEmergency)
+                        while (robot.isBusy && opModeIsActive()) {
+                            robot.update()
+                            if (robot.isOverPoles) {
+                                //carousel.setPower(1.0)
+                                Robot.gainMode = GainMode.FORWARD
+                            } else {
+                                //carousel.setPower(0.0)
+                                Robot.gainMode = GainMode.IDLE
+                            }
+                        }
                         break
                     }
                 }
@@ -168,13 +181,10 @@ class CyclingRed : LinearOpMode() {
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .increaseGains(intakeVelo)
                 //.carouselOn(carousel)
-                .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
+                .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
                 .defaultGains()
                 //.carouselOff(carousel)
-                .splineTo(
-                    Vector2d(stop + i / divConstant, intakeY - i / 2).flip(blue),
-                    Math.toRadians(intakingAngle - 20 * Math.random()).flip(blue)
-                )
+                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue),0.0)
 //                .waitWhile(::signalTurn) {
 //                    intake.state == Intake.State.OUT
 //                }
@@ -198,7 +208,8 @@ class CyclingRed : LinearOpMode() {
                         cyclingDistance,
                         Math.toRadians(cyclingAngle).flip(blue)
                     ),
-                    allianceHub.center
+                    allianceHub.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
                 .waitWhile(deposit.platform::isTransitioningState)
                 .dump(deposit)
@@ -206,6 +217,7 @@ class CyclingRed : LinearOpMode() {
                 .setReversed(false)
         }
         return trajectoryBuilder
+            .setState(PathState.IDLE)
             .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
             .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
             .build()
@@ -218,7 +230,7 @@ class CyclingRed : LinearOpMode() {
                 .liftUp(deposit, Deposit.State.LEVEL1)
                 .splineTo(allianceHub.center.polarAdd(
                     closeDist, Math.toRadians(
-                    depositingAngle).flip(blue)), allianceHub.center)
+                        depositingAngle).flip(blue)), allianceHub.center)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)

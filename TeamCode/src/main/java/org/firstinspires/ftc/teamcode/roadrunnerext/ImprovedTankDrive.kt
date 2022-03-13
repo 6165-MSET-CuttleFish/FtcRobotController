@@ -24,7 +24,6 @@ abstract class ImprovedTankDrive constructor(
     private val trackWidth: Double,
     private val voltageSensor: VoltageSensor,
 ) : Drive() {
-
     /**
      * Default localizer for tank drives based on the drive encoders and (optionally) a heading sensor.
      *

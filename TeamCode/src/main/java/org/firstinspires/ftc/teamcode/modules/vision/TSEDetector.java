@@ -25,15 +25,11 @@ public class TSEDetector extends OpenCvPipeline {
     }
     private Location location = Location.MIDDLE;
     // find and set the three regions of interest
-    public static  Rect POS_1 = new Rect(20, 140, 60, 40);
-    public static  Rect POS_2 = new Rect(180, 140, 60, 40);
+    public static  Rect POS_1 = new Rect(30, 150, 80, 50);
+    public static  Rect POS_2 = new Rect(160, 160, 80, 50);
 
-    public static Rect POS_1_BLUE = new Rect(
-            new Point(50, 80),
-            new Point(90, 150));
-    public static  Rect POS_2_BLUE = new Rect(
-            new Point(40, 80),
-            new Point(270, 210));
+    public static Rect POS_1_BLUE = new Rect(80, 150, 80, 50);
+    public static  Rect POS_2_BLUE = new Rect(200, 160, 80, 50);
 //    public static  Rect POS_3 = new Rect(
 //            new Point(230, 130),
 //            new Point(280, 210));
@@ -43,7 +39,7 @@ public class TSEDetector extends OpenCvPipeline {
 
     public static int redHLow = 0;
     public static int redSLow = 50;
-    public static int redVLow = 110;
+    public static int redVLow = 160;
 
     public static int redHHigh = 180;
     public static int redSHigh = 255;
@@ -57,7 +53,8 @@ public class TSEDetector extends OpenCvPipeline {
     public static int blueSHigh = 255;
     public static int blueVHigh = 255;
 
-    public static int visionThreshold = 10;
+    public static int visionMax = 100;
+    public static int visionMin = 12;
 
     public static boolean returnBlack = true;
 
@@ -111,13 +108,17 @@ public class TSEDetector extends OpenCvPipeline {
         pos_2.release();
         //pos_3.release();
         if (alliance == Alliance.RED) {
-            if (pos_1_percent > visionThreshold) location = Location.LEFT;
-            else if (pos_2_percent > visionThreshold) location = Location.MIDDLE;
-            else location = Location.RIGHT;
-        } else {
-            if (pos_1_percent > visionThreshold) location = Location.MIDDLE;
-            else if (pos_2_percent > visionThreshold) location = Location.RIGHT;
+            boolean leftFull = pos_1_percent > visionMin && pos_1_percent < visionMax;
+            boolean midFull = pos_2_percent > visionMin && pos_2_percent < visionMax;
+            if (leftFull && midFull) location = Location.RIGHT;
+            else if (leftFull) location = Location.MIDDLE;
             else location = Location.LEFT;
+        } else {
+            boolean rightFull = pos_2_percent > visionMin && pos_2_percent < visionMax;
+            boolean midFull = pos_1_percent > visionMin && pos_1_percent < visionMax;
+            if (rightFull && midFull) location = Location.LEFT;
+            else if (rightFull) location = Location.MIDDLE;
+            else location = Location.RIGHT;
         }
 
 
