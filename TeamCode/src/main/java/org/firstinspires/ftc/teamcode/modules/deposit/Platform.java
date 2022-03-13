@@ -107,13 +107,18 @@ public class Platform extends Module<Platform.State> {
     protected void internalUpdate() {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
         tilt.setPositionPerSecond(flipServoPositionPerSecond);
-        double distance = blockDetector.getDistance(DistanceUnit.CM);
+        double distance;
+        try {
+            distance = blockDetector.getDistance(DistanceUnit.CM);
+        } catch (Exception e) {
+            distance = 10000;
+        }
         if (intake.getState() == Intake.State.TRANSFER && distance < blockDistanceTolerance) {
             isLoaded = true;
         }
         switch (getState()) {
             case IN:
-                unlock();
+                if (!Platform.isLoaded) unlock();
                 tiltIn();
                 flipIn();
                 if (isLoaded) {

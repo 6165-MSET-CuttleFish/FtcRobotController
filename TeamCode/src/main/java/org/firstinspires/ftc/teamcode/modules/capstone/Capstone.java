@@ -64,10 +64,6 @@ public class Capstone extends Module<Capstone.State> {
 
         switch (getState()) {
             case IDLE:
-                passivePower = -passivePower;
-                tape.setPower(passivePower);
-                verticalTurret.setPosition(verticalPosDef);
-                break;
             case ACTIVE:
                 tape.setPower(power);
                 verticalTurret.setPosition(verticalPos);

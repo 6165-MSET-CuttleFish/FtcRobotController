@@ -49,7 +49,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakeY = -55.3
         @JvmField var stop = 50.8
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 20.0
+        @JvmField var depositDelay = 16.0
         @JvmField var closeDist = 21.9
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
@@ -57,7 +57,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 24.0
-        @JvmField var cyclingDistance = 22.5
+        @JvmField var cyclingDistance = 22.8
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
@@ -101,10 +101,12 @@ class CyclingBlue : LinearOpMode() {
         waitForStart()
         Async.start {
             while (opModeIsActive()) {
-                robot.relocalizer.updatePoseEstimate(
-                    Relocalizer.Sensor.FRONT_RIGHT,
-                    Relocalizer.Sensor.LEFT
-                )
+                if (robot.pathState == PathState.INTAKING) {
+                    robot.relocalizer.updatePoseEstimate(
+                        Relocalizer.Sensor.FRONT_RIGHT,
+                        Relocalizer.Sensor.LEFT
+                    )
+                }
             }
         }
         val timer = ElapsedTime()
@@ -143,10 +145,10 @@ class CyclingBlue : LinearOpMode() {
                         //carousel.setPower(0.0)
                         Robot.gainMode = GainMode.IDLE
                     }
-                    if (timer.seconds() > 29) {
+                    if (timer.seconds() > 28.2) {
                         Deposit.allowLift = false
                         robot.followTrajectorySequenceAsync(parkEmergency)
-                        while (robot.isBusy) {
+                        while (robot.isBusy && opModeIsActive()) {
                             if (robot.isOverPoles) {
                                 //carousel.setPower(1.0)
                                 Robot.gainMode = GainMode.FORWARD
@@ -215,6 +217,7 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(false)
         }
         return trajectoryBuilder
+            .setState(PathState.IDLE)
             .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
             .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
             .build()
