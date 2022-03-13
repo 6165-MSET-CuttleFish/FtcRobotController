@@ -30,9 +30,9 @@ public class TSEDetector extends OpenCvPipeline {
 
     public static Rect POS_1_BLUE = new Rect(
             new Point(50, 80),
-            new Point(90, 210));
+            new Point(90, 150));
     public static  Rect POS_2_BLUE = new Rect(
-            new Point(220, 80),
+            new Point(40, 80),
             new Point(270, 210));
 //    public static  Rect POS_3 = new Rect(
 //            new Point(230, 130),
@@ -45,15 +45,15 @@ public class TSEDetector extends OpenCvPipeline {
     public static int redSLow = 50;
     public static int redVLow = 110;
 
-    public static int redHHigh = 30;
+    public static int redHHigh = 180;
     public static int redSHigh = 255;
     public static int redVHigh = 255;
 
-    public static int blueHLow = 0;
+    public static int blueHLow = 100;
     public static int blueSLow = 50;
     public static int blueVLow = 110;
 
-    public static int blueHHigh = 180;
+    public static int blueHHigh = 130;
     public static int blueSHigh = 255;
     public static int blueVHigh = 255;
 
