@@ -50,7 +50,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var stop = 50.8
         @JvmField var intakeDelay = 16.0
         @JvmField var depositDelay = 16.0
-        @JvmField var closeDist = 21.9
+        @JvmField var closeDist = 21.6
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 30.0
