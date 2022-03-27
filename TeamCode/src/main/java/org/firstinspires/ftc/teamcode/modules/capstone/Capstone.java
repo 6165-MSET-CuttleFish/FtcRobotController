@@ -48,11 +48,11 @@ public class Capstone extends Module<Capstone.State> {
     }
 
     public void internalInit() {
-        tape = hardwareMap.crservo.get("tape");
-        tape.setDirection(DcMotorSimple.Direction.REVERSE);
-        horizontalTurret = new ControllableServos(hardwareMap.servo.get("hTurret"));
-        verticalTurret = new ControllableServos(hardwareMap.servo.get("vTurret"));
-        setActuators(horizontalTurret, verticalTurret);
+//        tape = hardwareMap.crservo.get("tape");
+//        tape.setDirection(DcMotorSimple.Direction.REVERSE);
+//        horizontalTurret = new ControllableServos(hardwareMap.servo.get("hTurret"));
+//        verticalTurret = new ControllableServos(hardwareMap.servo.get("vTurret"));
+//        setActuators(horizontalTurret, verticalTurret);
     }
 
     double power;
@@ -62,22 +62,22 @@ public class Capstone extends Module<Capstone.State> {
         verticalPos = Range.clip(verticalPos, 0, 1);
         horizontalPos = Range.clip(horizontalPos, 0, 1);
 
-        switch (getState()) {
-            case IDLE:
-                tape.setPower(passivePower);
-                verticalTurret.setPosition(verticalPosDef);
-                horizontalTurret.setPosition(horizontalPosDef);
-                break;
-            case ACTIVE:
-                tape.setPower(power);
-                verticalTurret.setPosition(verticalPos);
-                horizontalTurret.setPosition(horizontalPos);
-                break;
-            case AUTORETRACT:
-                tape.setPower(-1);
-                verticalTurret.setPosition(verticalPosDef);
-                break;
-        }
+//        switch (getState()) {
+//            case IDLE:
+//                tape.setPower(passivePower);
+//                verticalTurret.setPosition(verticalPosDef);
+//                horizontalTurret.setPosition(horizontalPosDef);
+//                break;
+//            case ACTIVE:
+//                tape.setPower(power);
+//                verticalTurret.setPosition(verticalPos);
+//                horizontalTurret.setPosition(horizontalPos);
+//                break;
+//            case AUTORETRACT:
+//                tape.setPower(-1);
+//                verticalTurret.setPosition(verticalPosDef);
+//                break;
+//        }
     }
 
     public void setHorizontalTurret(double pwr) {

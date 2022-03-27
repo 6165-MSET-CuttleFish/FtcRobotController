@@ -140,9 +140,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                             Freight.CUBE
                         }
                     } else {
-                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
-                            state = State.TRANSFER
-                        }
+                        state = State.TRANSFER
+//                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
+//
+//                        }
                     }
                 }
                 if (isTransitioningState()) {

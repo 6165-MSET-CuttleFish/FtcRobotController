@@ -23,23 +23,24 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.34;
-    public static double outPosition2 = 0.13;
-    public static double outPosition1 = 0.0;
+    public static double outPosition3 = 0.8;
+    public static double outPosition2 = 0.8;
+    public static double outPosition1 = 0.8;
+    public static double extendIn = 0.51, extendOut = 0.18;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.04;
-    public static double inPosition = 1, higherInPosition = 0.87;
-    public static double lockPosition = 0.54;
-    public static double unlockPosition = 0.29;
+    public static double inPosition = 0.04, higherInPosition = 0.1;
+    public static double lockPosition = 0.77;
+    public static double unlockPosition = 0.68;
+    public static double kickPosition = 1.0;
     public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 1.0;
-    public static double flipServoPositionPerSecond = 2;
+    public static double extensionServoPositionPerSecond = 3;
     public static boolean isLoaded;
-    public static double tiltInPos = 0.75, tiltOutPos = 0, furtherInPosition = 0.9, tiltOutPos2 = 0.15, tiltOutPos1 = 0.1;
     public static boolean shouldCounterBalance = true;
     @Override
     public boolean isTransitioningState() {
-        return tilt.isTransitioning() || arm.isTransitioning();
+        return extension.isTransitioning() || arm.isTransitioning();
     }
 
     public enum State implements StateBuilder {
@@ -62,7 +63,7 @@ public class Platform extends Module<Platform.State> {
             this.timeOut = null;
         }
     }
-    private ControllableServos arm, tilt, lock;
+    private ControllableServos arm, tilt, lock, extension;
     private final Intake intake;
     private final Deposit deposit;
     private ColorRangeSensor blockDetector;
@@ -86,18 +87,23 @@ public class Platform extends Module<Platform.State> {
     @Override
     public void internalInit() {
         Servo
-                dumpLeft = hardwareMap.servo.get("depositDumpL"),
-                dumpRight = hardwareMap.servo.get("depositDumpR");
-        dumpRight.setDirection(Servo.Direction.REVERSE);
-        arm = new ControllableServos(dumpLeft, dumpRight);
-        tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
+                dumpLeft = hardwareMap.servo.get("depositDumpL");
+                //dumpRight = hardwareMap.servo.get("depositDumpR");
+        //dumpRight.setDirection(Servo.Direction.REVERSE);
+        arm = new ControllableServos(dumpLeft);
+        Servo
+                extL = hardwareMap.servo.get("extL"),
+                extR = hardwareMap.servo.get("extR");
+        extR.setDirection(Servo.Direction.REVERSE);
+        extension = new ControllableServos(extL, extR);
+        //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
         blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         tiltIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
-        setActuators(arm, tilt, lock);
+        setActuators(arm, extension, lock);
     }
 
     /**
@@ -106,12 +112,12 @@ public class Platform extends Module<Platform.State> {
     @Override
     protected void internalUpdate() {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
-        tilt.setPositionPerSecond(flipServoPositionPerSecond);
+        extension.setPositionPerSecond(extensionServoPositionPerSecond);
         double distance;
         try {
-            distance = blockDetector.getDistance(DistanceUnit.CM);
+            distance = 1;
         } catch (Exception e) {
-            distance = 10000;
+            distance = 1;
         }
         if (intake.getState() == Intake.State.TRANSFER && distance < blockDistanceTolerance) {
             isLoaded = true;
@@ -119,7 +125,6 @@ public class Platform extends Module<Platform.State> {
         switch (getState()) {
             case IN:
                 if (!Platform.isLoaded) unlock();
-                tiltIn();
                 flipIn();
                 if (isLoaded) {
                     setState(State.LOCKING);
@@ -134,7 +139,7 @@ public class Platform extends Module<Platform.State> {
                 break;
             case CREATE_CLEARANCE:
                 arm.setPosition(higherInPosition);
-                tilt.setPosition(furtherInPosition);
+                //tilt.setPosition(furtherInPosition);
                 if (intake.getState() != Intake.State.OUT) {
                     setState(State.IN);
                 }
@@ -165,7 +170,8 @@ public class Platform extends Module<Platform.State> {
                 tiltOut();
                 break;
             case DUMPING:
-                unlock();
+                //unlock();
+                lock.setPosition(kickPosition);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
@@ -186,6 +192,7 @@ public class Platform extends Module<Platform.State> {
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Position", arm.getRealPosition());
             Context.packet.put("Platform DS Distance", distance);
+            Context.packet.put("Extension Real Position", extension.getRealPosition());
         }
     }
 
@@ -223,6 +230,7 @@ public class Platform extends Module<Platform.State> {
     private void flipOut(Deposit.State state) {
         double position = outPosition(state);
         arm.setPosition(position);
+        extension.setPosition(extendOut);
     }
 
     private void holdingPosition() {
@@ -235,7 +243,8 @@ public class Platform extends Module<Platform.State> {
      */
     private void flipIn() {
         double position = inPosition;
-        arm.setPosition(position);
+        extension.setPosition(extendIn);
+        if (!extension.isTransitioning()) arm.setPosition(position);
     }
 
     /**
@@ -263,19 +272,19 @@ public class Platform extends Module<Platform.State> {
     }
 
     private void tiltIn() {
-        tilt.setPosition(tiltInPos);
+        //tilt.setPosition(tiltInPos);
     }
 
     private void tiltOut() {
         switch (deposit.getDefaultState()) {
             case LEVEL3:
-                tilt.setPosition(tiltOutPos);
+               // tilt.setPosition(tiltOutPos);
                 break;
             case LEVEL2:
-                tilt.setPosition(tiltOutPos2);
+               // tilt.setPosition(tiltOutPos2);
                 break;
             case LEVEL1:
-                tilt.setPosition(tiltOutPos1);
+               // tilt.setPosition(tiltOutPos1);
         }
         //tilt.setPosition(tiltOutPos);
     }
