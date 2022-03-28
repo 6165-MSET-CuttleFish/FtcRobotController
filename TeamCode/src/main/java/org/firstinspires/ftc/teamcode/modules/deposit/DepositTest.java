@@ -14,7 +14,6 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.packet;
 
 @TeleOp
-@Disabled
 public class DepositTest extends ModuleTest {
     Intake intake;
     Deposit deposit;
