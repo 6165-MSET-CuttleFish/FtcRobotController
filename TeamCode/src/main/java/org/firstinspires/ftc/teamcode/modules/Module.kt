@@ -16,16 +16,10 @@ import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T>
-/**
- * @param poseOffset offset from the center of the robot
- * @param mass mass of the module in Kilograms
- */
-@JvmOverloads constructor(
+abstract class Module<T> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
     var poseOffset: Pose2d = Pose2d(),
-    var mass: Double = 0.0,
 ) {
     /// State related fields
     private val elapsedTime = ElapsedTime()
