@@ -10,6 +10,7 @@ class ControllableServos(vararg servos: Servo) :
     private var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0
+    var servoRotation = Math.toRadians(270.0)
     var positionPerSecond = 0.7
     private var incrementingPosition = true
     private var initted = false
@@ -23,7 +24,10 @@ class ControllableServos(vararg servos: Servo) :
             position,
             previousPosition
         )) * 1000) / 1000
-
+    val angle: Double
+        get() = position * servoRotation
+    val realAngle: Double
+        get() = realPosition * servoRotation
     fun lock() {
         val realPosition = realPosition
         for (servo in servos) {
