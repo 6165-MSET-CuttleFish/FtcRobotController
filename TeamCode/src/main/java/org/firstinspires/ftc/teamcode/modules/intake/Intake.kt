@@ -55,6 +55,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var div = 2.0
         @JvmField
         var distanceTolerance = 12.0
+        @JvmField
+        var transferTolerance = 12.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -152,6 +154,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
+                if (unfilteredDistance > transferTolerance) {
+                    Platform.isLoaded = true
+                }
                 if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0

@@ -85,8 +85,8 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 12;
-    public static double MAX_POWER = 20;
+    public static double MID_POWER = 8;
+    public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleTimeout = 0.3;
@@ -435,11 +435,12 @@ public class Robot<T> extends ImprovedTankDrive {
         Canvas canvas = Context.packet.fieldOverlay();
         canvas.setStroke("#F04141");
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
-        currentIntegral += current * loopTime.seconds();
+        currentIntegral += (current - MAX_CURRENT) * loopTime.seconds();
+        currentIntegral = Range.clip(currentIntegral, 0, Double.POSITIVE_INFINITY);
         loopTime.reset();
         systemIsOverCurrent = current > MAX_CURRENT;
-        robotSlowed = currentIntegral > MID_POWER && opModeType != OpModeType.AUTO;
-        if (systemIsOverCurrent && currentIntegral > MAX_POWER && opModeType != OpModeType.AUTO) {
+        robotSlowed = currentIntegral > MID_POWER;
+        if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
             robotDisabled = true;
             currentTimer.reset();
         } else {
@@ -448,7 +449,7 @@ public class Robot<T> extends ImprovedTankDrive {
                 currentTimer.reset();
             }
             if (!systemIsOverCurrent) {
-                currentIntegral = 0;
+                // currentIntegral = 0;
             }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -555,6 +556,17 @@ public class Robot<T> extends ImprovedTankDrive {
         }
         double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
+    }
+
+    public List<Double> getMotorCurrent(CurrentUnit currentUnit) {
+        double leftSum = 0, rightSum = 0;
+        for (DcMotorEx leftMotor : leftMotors) {
+            leftSum += leftMotor.getCurrent(currentUnit);
+        }
+        for (DcMotorEx rightMotor : rightMotors) {
+            rightSum += rightMotor.getCurrent(currentUnit);
+        }
+        return Arrays.asList(leftSum, rightSum);
     }
 
     public List<Double> getWheelVelocities() {
