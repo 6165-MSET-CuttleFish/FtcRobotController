@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.modules.wrappers.Linkage;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
@@ -61,7 +62,8 @@ public class Platform extends Module<Platform.State> {
             this.timeOut = null;
         }
     }
-    private ControllableServos arm, lock, extension;
+    private ControllableServos arm, lock;
+    private Linkage extension;
     private final Intake intake;
     private final Deposit deposit;
     boolean intakeCleared;
@@ -92,7 +94,7 @@ public class Platform extends Module<Platform.State> {
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
-        extension = new ControllableServos(extL, extR);
+        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
         //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
         //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
@@ -100,7 +102,7 @@ public class Platform extends Module<Platform.State> {
         tiltIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
-        setActuators(arm, extension, lock);
+        setActuators(arm, lock);
     }
 
     /**
@@ -109,7 +111,7 @@ public class Platform extends Module<Platform.State> {
     @Override
     protected void internalUpdate() {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
-        extension.setPositionPerSecond(extensionServoPositionPerSecond);
+        extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         double distance;
         try {
             distance = blockDistanceTolerance + 1;
@@ -167,7 +169,6 @@ public class Platform extends Module<Platform.State> {
                 tiltOut();
                 break;
             case DUMPING:
-                //unlock();
                 lock.setPosition(kickPosition);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
