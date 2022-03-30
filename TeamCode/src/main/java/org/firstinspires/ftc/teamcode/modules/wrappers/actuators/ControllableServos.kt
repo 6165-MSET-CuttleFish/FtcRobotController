@@ -11,6 +11,7 @@ class ControllableServos(vararg servos: Servo) :
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0
     var servoRotation = Math.toRadians(270.0)
+    var angleOffset = 0.0
     var positionPerSecond = 0.7
     private var incrementingPosition = true
     private var initted = false
@@ -24,7 +25,10 @@ class ControllableServos(vararg servos: Servo) :
             position,
             previousPosition
         )) * 1000) / 1000
-    val angle: Double
+    var angle: Double
+        set(value) {
+            position = (value - angleOffset) / servoRotation
+        }
         get() = position * servoRotation
     val realAngle: Double
         get() = realPosition * servoRotation
