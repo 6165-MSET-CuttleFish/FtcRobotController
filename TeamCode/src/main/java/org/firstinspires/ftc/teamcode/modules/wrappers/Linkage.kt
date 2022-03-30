@@ -19,7 +19,7 @@ class Linkage @JvmOverloads constructor(
     val displacement: Double
         get() = -displacement(servos.angle) + displacement(initialAngle)
     private fun displacement(theta: Double): Double =
-        a * cos(theta) - sqrt(b.pow(2) - (a* sin(theta) * heightConstraint).pow(2))
+        a * cos(theta) - sqrt(b.pow(2) - (a * sin(theta) * heightConstraint).pow(2))
     var position: Double
         get() = servos.position
         set(value) {
