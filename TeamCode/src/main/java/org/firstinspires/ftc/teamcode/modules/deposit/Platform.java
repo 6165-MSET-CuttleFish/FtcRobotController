@@ -29,9 +29,9 @@ public class Platform extends Module<Platform.State> {
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.04;
     public static double inPosition = 0.04, higherInPosition = 0.1;
-    public static double lockPosition = 0.8;
+    public static double lockPosition = 0.74;
     public static double unlockPosition = 0.68;
-    public static double kickPosition = 1.0;
+    public static double kickPosition = 0.9;
     public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 1.0;
     public static double extensionServoPositionPerSecond = 1.3;
