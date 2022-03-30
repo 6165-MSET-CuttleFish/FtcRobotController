@@ -144,7 +144,7 @@ public class DriverPractice extends LinearOpMode {
 
     void setCapstone() {
         capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
-        capstone.setVerticalTurret(gamepad1.left_stick_y);
+        capstone.setVerticalTurret(gamepad1.right_stick_y);
         capstone.setHorizontalTurret(gamepad1.right_stick_x);
         carousel.setPower(gamepad2.right_stick_y);
         if (capHorizontalInc.wasJustPressed()) {
