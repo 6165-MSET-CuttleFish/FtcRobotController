@@ -5,11 +5,13 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Linkage(private val a: Double,
-              private val b: Double,
-              private val heightConstraint: Double,
-              val servos: ControllableServos
-              ) {
+class Linkage @JvmOverloads constructor(
+    private val a: Double,
+    private val b: Double,
+    private val heightConstraint: Double,
+    val servos: ControllableServos,
+    val initialAngle: Double = 0.0,
+) {
     var displacement: Double
         set(value) {
             servos.position = value
