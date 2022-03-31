@@ -15,6 +15,8 @@ class ControllableServos(vararg servos: Servo) :
     var positionPerSecond = 0.7
     private var incrementingPosition = true
     private var initted = false
+    var lowerLimit = 0.0
+    var upperLimit = 1.0
     val realPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
             previousPosition + timer.seconds() * positionPerSecond,
@@ -43,13 +45,13 @@ class ControllableServos(vararg servos: Servo) :
         get() = servos[0].position
         set(var1) {
             if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000 && initted) {
-                servos.forEach { it.position = round(var1 * 1000) / 1000 }
+                servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
                 return
             }
             initted = true
             incrementingPosition = realPosition < var1
             previousPosition = realPosition
-            servos.forEach { it.position = round(var1 * 1000) / 1000 }
+            servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
             timer.reset()
         }
 
