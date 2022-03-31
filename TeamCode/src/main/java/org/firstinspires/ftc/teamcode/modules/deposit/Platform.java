@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
@@ -21,22 +22,22 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.7;
-    public static double outPosition2 = 0.85;
-    public static double outPosition1 = 0.8;
+    public static double outPosition3 = 0.46;
+    public static double outPosition2 = 0.41;
+    public static double outPosition1 = 0.41;
     public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.7;
-    public static double tipDiff = 0.04;
-    public static double inPosition = 0.04, higherInPosition = 0.1;
-    public static double lockPosition = 0.74;
-    public static double unlockPosition = 0.68;
-    public static double kickPosition = 0.84;
+    public static double tipDiff = 0.004;
+    public static double inPosition = 0.663, higherInPosition = 0.64;
+    public static double lockPosition = 0.67;
+    public static double unlockPosition = 0.57;
+    public static double kickPosition = 0.85;
     public static double blockDistanceTolerance = 9;
-    public static double dumpServoPositionPerSecond = 1.0;
-    public static double extensionServoPositionPerSecond = 0.7;
+    public static double dumpServoPositionPerSecond = 0.5;
+    public static double extensionServoPositionPerSecond = 0.6;
     public static boolean isLoaded;
     public static boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.2;
+    public static double dumpTimeOut = 0.13;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning();
@@ -124,7 +125,7 @@ public class Platform extends Module<Platform.State> {
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
-                if (!intakeCleared && !arm.isTransitioning()) {
+                if (!intakeCleared && !isTransitioningState()) {
                     if (intake.getState() != Intake.State.OUT) intake.retractIntake();
                     intakeCleared = true;
                 }
@@ -164,7 +165,8 @@ public class Platform extends Module<Platform.State> {
                 tiltOut();
                 break;
             case DUMPING:
-                lock.setPosition(kickPosition * getSecondsSpentInState() / dumpTimeOut);
+                double diff = kickPosition - lockPosition;
+                lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
