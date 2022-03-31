@@ -87,16 +87,13 @@ public class Platform extends Module<Platform.State> {
         Servo
                 dumpLeft = hardwareMap.servo.get("depositDumpL");
                 //dumpRight = hardwareMap.servo.get("depositDumpR");
-        //dumpRight.setDirection(Servo.Direction.REVERSE);
         arm = new ControllableServos(dumpLeft);
         Servo
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
         extension = new ControllableServos(extL, extR);
-        //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         tiltIn();
         unlock();
@@ -137,7 +134,6 @@ public class Platform extends Module<Platform.State> {
                 break;
             case CREATE_CLEARANCE:
                 arm.setPosition(higherInPosition);
-                //tilt.setPosition(furtherInPosition);
                 if (intake.getState() != Intake.State.OUT) {
                     setState(State.IN);
                 }
@@ -168,8 +164,7 @@ public class Platform extends Module<Platform.State> {
                 tiltOut();
                 break;
             case DUMPING:
-                //unlock();
-                lock.setPosition(kickPosition);
+                lock.setPosition(kickPosition * getSecondsSpentInState() / dumpTimeOut);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
