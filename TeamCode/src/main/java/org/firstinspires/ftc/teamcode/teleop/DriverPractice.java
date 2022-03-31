@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
@@ -73,7 +72,7 @@ public class DriverPractice extends LinearOpMode {
                 capRetract = new ButtonReader(primary, GamepadKeys.Button.X),
                 intakeCounterBalance = new ButtonReader(secondary, GamepadKeys.Button.A)
         };
-        Deposit.farDeposit = true;
+        Deposit.allowLift = false;
         waitForStart();
         while (opModeIsActive()) {
             robot.update();
@@ -144,8 +143,8 @@ public class DriverPractice extends LinearOpMode {
 
     void setCapstone() {
         capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
-        capstone.setVerticalTurret(gamepad1.right_stick_y);
-        capstone.setHorizontalTurret(gamepad1.right_stick_x);
+        capstone.setVerticalTurret(gamepad1.left_stick_y);
+        capstone.setHorizontalTurret(gamepad1.left_stick_x);
         carousel.setPower(gamepad2.right_stick_y);
         if (capHorizontalInc.wasJustPressed()) {
             capstone.incrementHorizontal(1);

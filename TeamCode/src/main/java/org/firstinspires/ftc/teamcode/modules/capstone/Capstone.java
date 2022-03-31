@@ -9,13 +9,12 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
-import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
-    public static double servoIncrementHorizontal = 0.007, servoIncrementVertical = -0.01;
+    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00008;
     public static double horizontalTolerance = 0, verticalTolerance = 0;
-    public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
+    public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.03;
     private double horizontalPos = 0.5, verticalPos = 0.45;
     public static double passivePower = 0.0;
     private CRServo tape;
@@ -23,6 +22,8 @@ public class Capstone extends Module<Capstone.State> {
     public static double verticalPosDef = 0.38, horizontalPosDef = 0.0;
     private double lastTimeStamp = System.currentTimeMillis();
     private double verticalInc, horizontalInc;
+    public static double vUpperLimit = 0.8, vLowerLimit = 0.1;
+    public static double hUpperLimit = 0.8, hLowerLimit = 0.0;
 
     @Override
     public boolean isTransitioningState() {
@@ -61,8 +62,8 @@ public class Capstone extends Module<Capstone.State> {
     @Override
     protected void internalUpdate() {
         double millisSinceLastUpdate = System.currentTimeMillis() - lastTimeStamp;
-        verticalPos = Range.clip(verticalPos + (verticalInc * millisSinceLastUpdate), 0, 1);
-        horizontalPos = Range.clip(horizontalPos + (horizontalInc * millisSinceLastUpdate), 0, 1);
+        verticalPos = Range.clip(verticalPos + (verticalInc * millisSinceLastUpdate), vLowerLimit, vUpperLimit);
+        horizontalPos = Range.clip(horizontalPos + (horizontalInc * millisSinceLastUpdate), hLowerLimit, hUpperLimit);
         switch (getState()) {
             case IDLE:
                 tape.setPower(passivePower);
@@ -77,7 +78,7 @@ public class Capstone extends Module<Capstone.State> {
             case AUTORETRACT:
                 tape.setPower(-1);
                 verticalTurret.setPosition(verticalPosDef);
-                if (getSecondsSpentInState() > 4) {
+                if (getSecondsSpentInState() > 2.5) {
                     horizontalTurret.setPosition(horizontalPosDef);
                 }
                 break;
