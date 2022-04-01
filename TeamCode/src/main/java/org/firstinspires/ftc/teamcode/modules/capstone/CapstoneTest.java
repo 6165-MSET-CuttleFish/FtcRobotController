@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.modules.capstone;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 
 @TeleOp
-@Disabled
 public class CapstoneTest extends ModuleTest {
     Capstone capstone;
     Carousel carousel;

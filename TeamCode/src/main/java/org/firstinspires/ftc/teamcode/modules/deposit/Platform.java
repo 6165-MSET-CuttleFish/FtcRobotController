@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
@@ -22,22 +23,22 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.7;
-    public static double outPosition2 = 0.85;
-    public static double outPosition1 = 0.8;
+    public static double outPosition3 = 0.47;
+    public static double outPosition2 = 0.41;
+    public static double outPosition1 = 0.41;
     public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.7;
-    public static double tipDiff = 0.04;
-    public static double inPosition = 0.04, higherInPosition = 0.1;
-    public static double lockPosition = 0.74;
-    public static double unlockPosition = 0.68;
-    public static double kickPosition = 0.84;
+    public static double tipDiff = 0.004;
+    public static double inPosition = 0.663, higherInPosition = 0.64;
+    public static double lockPosition = 0.67;
+    public static double unlockPosition = 0.57;
+    public static double kickPosition = 0.95;
     public static double blockDistanceTolerance = 9;
-    public static double dumpServoPositionPerSecond = 1.0;
-    public static double extensionServoPositionPerSecond = 0.7;
+    public static double dumpServoPositionPerSecond = 0.5;
+    public static double extensionServoPositionPerSecond = 0.6;
     public static boolean isLoaded;
     public static boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.2;
+    public static double dumpTimeOut = 0.13;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning();
@@ -48,6 +49,7 @@ public class Platform extends Module<Platform.State> {
         CREATE_CLEARANCE,
         LOCKING(0.16),
         DUMPING(0.2),
+        SOFT_DUMP,
         OUT1,
         OUT2,
         OUT3;
@@ -89,7 +91,6 @@ public class Platform extends Module<Platform.State> {
         Servo
                 dumpLeft = hardwareMap.servo.get("depositDumpL");
                 //dumpRight = hardwareMap.servo.get("depositDumpR");
-        //dumpRight.setDirection(Servo.Direction.REVERSE);
         arm = new ControllableServos(dumpLeft);
         Servo
                 extL = hardwareMap.servo.get("extL"),
@@ -98,9 +99,8 @@ public class Platform extends Module<Platform.State> {
         extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
         //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
-        tiltIn();
+        flipIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
         setActuators(arm, lock);
@@ -129,7 +129,7 @@ public class Platform extends Module<Platform.State> {
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
-                if (!intakeCleared && !arm.isTransitioning()) {
+                if (!intakeCleared && !isTransitioningState()) {
                     if (intake.getState() != Intake.State.OUT) intake.retractIntake();
                     intakeCleared = true;
                 }
@@ -139,7 +139,6 @@ public class Platform extends Module<Platform.State> {
                 break;
             case CREATE_CLEARANCE:
                 arm.setPosition(higherInPosition);
-                //tilt.setPosition(furtherInPosition);
                 if (intake.getState() != Intake.State.OUT) {
                     setState(State.IN);
                 }
@@ -161,16 +160,17 @@ public class Platform extends Module<Platform.State> {
                 intakeCleared = false;
                 setState(getNeededOutState(deposit.getDefaultState()));
                 if (!Deposit.allowLift) {
-                    tiltIn();
                     flipIn();
                     setState(State.IN);
                 }
                 lock();
                 flipOut(deposit.getDefaultState());
-                tiltOut();
                 break;
             case DUMPING:
-                lock.setPosition(kickPosition);
+            case SOFT_DUMP:
+                double diff = kickPosition - lockPosition;
+                if (getState() == State.DUMPING) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                else
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
@@ -178,7 +178,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.IN);
                 }
                 if (getSecondsSpentInState() > dumpTimeOut) {
-                    if (opModeType == OpModeType.AUTO) Deposit.allowLift = false;
+                    Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }
@@ -254,6 +254,14 @@ public class Platform extends Module<Platform.State> {
             setState(State.DUMPING);
     }
 
+    /**
+     * Dumps the loaded element onto hub
+     */
+    public void softDump() {
+        if (getState() == State.OUT3 || getState() == State.OUT2 || getState() == State.OUT1)
+            setState(State.SOFT_DUMP);
+    }
+
     private State getNeededOutState(Deposit.State state) {
         switch (state) {
             case LEVEL3: return State.OUT3;
@@ -268,24 +276,6 @@ public class Platform extends Module<Platform.State> {
      */
     public void prepPlatform(Deposit.State state) {
         setState(getNeededOutState(state));
-    }
-
-    private void tiltIn() {
-        //tilt.setPosition(tiltInPos);
-    }
-
-    private void tiltOut() {
-        switch (deposit.getDefaultState()) {
-            case LEVEL3:
-               // tilt.setPosition(tiltOutPos);
-                break;
-            case LEVEL2:
-               // tilt.setPosition(tiltOutPos2);
-                break;
-            case LEVEL1:
-               // tilt.setPosition(tiltOutPos1);
-        }
-        //tilt.setPosition(tiltOutPos);
     }
 
     private void lock() {

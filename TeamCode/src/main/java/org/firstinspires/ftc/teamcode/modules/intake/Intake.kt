@@ -170,7 +170,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
             }
             State.COUNTER_BALANCE -> {
-                extensionServos.position = midPosition
+                // extensionServos.position = midPosition
+                flip.position = 0.5
             }
         }
         poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
