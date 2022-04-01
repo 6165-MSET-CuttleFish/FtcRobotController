@@ -2,14 +2,13 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.modules.wrappers.Linkage;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
@@ -23,21 +22,22 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.8;
-    public static double outPosition2 = 0.8;
+    public static double outPosition3 = 0.7;
+    public static double outPosition2 = 0.85;
     public static double outPosition1 = 0.8;
-    public static double extendIn = 0.51, extendOut = 0.18;
+    public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.04;
     public static double inPosition = 0.04, higherInPosition = 0.1;
-    public static double lockPosition = 0.77;
+    public static double lockPosition = 0.74;
     public static double unlockPosition = 0.68;
-    public static double kickPosition = 1.0;
+    public static double kickPosition = 0.84;
     public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 1.0;
-    public static double extensionServoPositionPerSecond = 3;
+    public static double extensionServoPositionPerSecond = 0.7;
     public static boolean isLoaded;
     public static boolean shouldCounterBalance = true;
+    public static double dumpTimeOut = 0.2;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning();
@@ -63,10 +63,10 @@ public class Platform extends Module<Platform.State> {
             this.timeOut = null;
         }
     }
-    private ControllableServos arm, tilt, lock, extension;
+    private ControllableServos arm, lock;
+    private Linkage extension;
     private final Intake intake;
     private final Deposit deposit;
-    private ColorRangeSensor blockDetector;
     boolean intakeCleared;
 
 
@@ -95,15 +95,15 @@ public class Platform extends Module<Platform.State> {
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
-        extension = new ControllableServos(extL, extR);
+        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
         //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
+        //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         tiltIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
-        setActuators(arm, extension, lock);
+        setActuators(arm, lock);
     }
 
     /**
@@ -112,10 +112,10 @@ public class Platform extends Module<Platform.State> {
     @Override
     protected void internalUpdate() {
         arm.setPositionPerSecond(dumpServoPositionPerSecond);
-        extension.setPositionPerSecond(extensionServoPositionPerSecond);
+        extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         double distance;
         try {
-            distance = 1;
+            distance = blockDistanceTolerance + 1;
         } catch (Exception e) {
             distance = 1;
         }
@@ -170,7 +170,6 @@ public class Platform extends Module<Platform.State> {
                 tiltOut();
                 break;
             case DUMPING:
-                //unlock();
                 lock.setPosition(kickPosition);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
@@ -178,7 +177,7 @@ public class Platform extends Module<Platform.State> {
                     }
                     setState(State.IN);
                 }
-                if (getSecondsSpentInState() > getState().timeOut) {
+                if (getSecondsSpentInState() > dumpTimeOut) {
                     if (opModeType == OpModeType.AUTO) Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
