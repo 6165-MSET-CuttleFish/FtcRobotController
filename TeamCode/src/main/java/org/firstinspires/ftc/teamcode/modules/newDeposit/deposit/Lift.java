@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.newDeposit.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -33,7 +34,6 @@ public class Lift extends Module<Lift.Level> {
     public static boolean resetEncoder = false;
     public static double allowableDepositError = 1;
     public static double angle = Math.toRadians(30);
-    ShippingHubDetector hubDetector;
 
     private double getLevelHeight(Level state) {
         switch (state) {
@@ -45,22 +45,10 @@ public class Lift extends Module<Lift.Level> {
     }
 
     public enum Level implements StateBuilder {
-        LEVEL3(12),
-        LEVEL2(6),
-        LEVEL1(0),
-        IDLE(0);
-        private final double dist;
-        Level(double dist) {
-            this.dist = dist;
-        }
-        public double getDist() {
-            switch (balance) {
-                case BALANCED: return dist;
-                case AWAY: return dist + 2;
-                case TOWARD: return dist - 1;
-            }
-            return dist;
-        }
+        LEVEL3,
+        LEVEL2,
+        LEVEL1,
+        IDLE;
         @Override
         public Double getTimeOut() {
             return null;
@@ -120,7 +108,7 @@ public class Lift extends Module<Lift.Level> {
     public void internalUpdate() {
         Level state = getState();
         pidController.setTargetPosition(getLevelHeight(state));
-        double power =  pidController.update(ticksToInches(slides.getCurrentPosition()));
+        double power =  pidController.update(getDisplacement());
         if (getState() == Level.IDLE && getSecondsSpentInState() < 2.7 && resetEncoder) {
             if (getSecondsSpentInState() > 2.5) { // anti-stall code
                 slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -143,10 +131,18 @@ public class Lift extends Module<Lift.Level> {
         }
         if (isDebugMode()) {
             Context.packet.put("Target Height", pidController.getTargetPosition());
-            Context.packet.put("Actual Height", ticksToInches(slides.getCurrentPosition()));
+            Context.packet.put("Actual Height", getDisplacement());
             Context.packet.put("Deposit Motor Power", power);
             Context.packet.put("Lift Error", getLastError());
         }
+    }
+
+    public Vector2d getModuleVector() {
+        return new Vector2d(getDisplacement() * Math.cos(angle), getDisplacement() * Math.sin(angle));
+    }
+
+    private double getDisplacement() {
+        return ticksToInches(slides.getCurrentPosition());
     }
 
     public double getLastError() {

@@ -38,12 +38,8 @@ public abstract class ModuleTest extends LinearOpMode {
 
     @Override
     public final void runOpMode() throws InterruptedException {
+        Context.reset();
         Context.telemetry = telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        Context.opModeType = OpModeType.NONE;
-        Context.side = Side.NONE;
-        Context.robotPose = new Pose2d();
-        Context.alliance = Alliance.NONE;
-        Context.balance = Balance.BALANCED;
         initialize();
         for (Module module : modules) {
             module.init();

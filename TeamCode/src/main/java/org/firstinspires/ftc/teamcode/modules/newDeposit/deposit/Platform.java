@@ -2,13 +2,15 @@ package org.firstinspires.ftc.teamcode.modules.newDeposit.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
+import org.firstinspires.ftc.teamcode.modules.wrappers.Linkage;
+import org.firstinspires.ftc.teamcode.modules.wrappers.V4B;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
@@ -22,21 +24,22 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.8;
-    public static double outPosition2 = 0.8;
+    public static double outPosition3 = 0.7;
+    public static double outPosition2 = 0.85;
     public static double outPosition1 = 0.8;
-    public static double extendIn = 0.51, extendOut = 0.18;
+    public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.04;
     public static double inPosition = 0.04, higherInPosition = 0.1;
-    public static double lockPosition = 0.77;
+    public static double lockPosition = 0.74;
     public static double unlockPosition = 0.68;
-    public static double kickPosition = 1.0;
+    public static double kickPosition = 0.84;
     public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 1.0;
-    public static double extensionServoPositionPerSecond = 3;
+    public static double extensionServoPositionPerSecond = 0.7;
     public static boolean isLoaded;
-    public static boolean shouldCounterBalance = true;
+    public boolean shouldCounterBalance = true;
+    public static double dumpTimeOut = 0.2;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning();
@@ -62,10 +65,11 @@ public class Platform extends Module<Platform.State> {
             this.timeOut = null;
         }
     }
-    private ControllableServos arm, tilt, lock, extension;
+    private ControllableServos lock;
+    private Linkage extension;
+    private V4B arm;
     private final Intake intake;
     private final Deposit deposit;
-    private ColorRangeSensor blockDetector;
     boolean intakeCleared;
 
 
@@ -87,22 +91,21 @@ public class Platform extends Module<Platform.State> {
     public void internalInit() {
         Servo
                 dumpLeft = hardwareMap.servo.get("depositDumpL");
-                //dumpRight = hardwareMap.servo.get("depositDumpR");
+        //dumpRight = hardwareMap.servo.get("depositDumpR");
         //dumpRight.setDirection(Servo.Direction.REVERSE);
-        arm = new ControllableServos(dumpLeft);
+        arm = new V4B(6.88976, new ControllableServos(dumpLeft));
         Servo
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
-        extension = new ControllableServos(extL, extR);
+        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
         //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
+        //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
-        tiltIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
-        setActuators(arm, extension, lock);
+        setActuators(lock);
     }
 
     /**
@@ -110,11 +113,11 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     protected void internalUpdate() {
-        arm.setPositionPerSecond(dumpServoPositionPerSecond);
-        extension.setPositionPerSecond(extensionServoPositionPerSecond);
+        arm.getServos().setPositionPerSecond(dumpServoPositionPerSecond);
+        extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         double distance;
         try {
-            distance = 1;
+            distance = blockDistanceTolerance + 1;
         } catch (Exception e) {
             distance = 1;
         }
@@ -145,9 +148,9 @@ public class Platform extends Module<Platform.State> {
                 break;
             case LOCKING:
                 lock();
-                if (getSecondsSpentInState() > getState().timeOut && Deposit.allowLift) {
-                    prepPlatform(deposit.getDefaultState());
-                }
+//                if (getSecondsSpentInState() > getState().timeOut && Deposit.allowLift) {
+//                    prepPlatform(deposit.getDefaultState());
+//                }
                 break;
             case OUT1:
             case OUT2:
@@ -158,18 +161,14 @@ public class Platform extends Module<Platform.State> {
                     intake.counterBalance();
                 }
                 intakeCleared = false;
-                setState(getNeededOutState(deposit.getDefaultState()));
+                //setState(getNeededOutState(deposit.getDefaultState()));
                 if (!Deposit.allowLift) {
-                    tiltIn();
                     flipIn();
                     setState(State.IN);
                 }
                 lock();
-                flipOut(deposit.getDefaultState());
-                tiltOut();
                 break;
             case DUMPING:
-                //unlock();
                 lock.setPosition(kickPosition);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
@@ -177,7 +176,7 @@ public class Platform extends Module<Platform.State> {
                     }
                     setState(State.IN);
                 }
-                if (getSecondsSpentInState() > getState().timeOut) {
+                if (getSecondsSpentInState() > dumpTimeOut) {
                     if (opModeType == OpModeType.AUTO) Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
@@ -192,13 +191,16 @@ public class Platform extends Module<Platform.State> {
             Context.packet.put("Arm Real Position", arm.getRealPosition());
             Context.packet.put("Platform DS Distance", distance);
             Context.packet.put("Extension Real Position", extension.getRealPosition());
+            Context.packet.put("Extension Distance", extension.getRealDisplacement());
+            Context.packet.put("Platform X", getModuleVector().getX());
+            Context.packet.put("Platform Y", getModuleVector().getY());
         }
     }
 
     /**
      * @return servo position based on balance of hub
      */
-    private double outPosition(Deposit.State state) {
+    private double outPosition(Lift.Level state) {
         double outPos = outPosition3;
         switch (state) {
             case LEVEL3:
@@ -211,7 +213,7 @@ public class Platform extends Module<Platform.State> {
                 outPos = outPosition1;
                 break;
         }
-        if (state != Deposit.State.LEVEL3) {
+        if (state != Lift.Level.LEVEL3) {
             switch (balance) {
                 case BALANCED:
                 case TOWARD:
@@ -226,7 +228,7 @@ public class Platform extends Module<Platform.State> {
     /**
      * Extends the platform out
      */
-    private void flipOut(Deposit.State state) {
+    private void flipOut(Lift.Level state) {
         double position = outPosition(state);
         arm.setPosition(position);
         extension.setPosition(extendOut);
@@ -254,38 +256,9 @@ public class Platform extends Module<Platform.State> {
             setState(State.DUMPING);
     }
 
-    private State getNeededOutState(Deposit.State state) {
-        switch (state) {
-            case LEVEL3: return State.OUT3;
-            case LEVEL2: return State.OUT2;
-            case LEVEL1: return State.OUT1;
-        }
-        return State.OUT3;
-    }
-
-    /**
-     * Puts platform into the prepped position
-     */
-    public void prepPlatform(Deposit.State state) {
-        setState(getNeededOutState(state));
-    }
-
-    private void tiltIn() {
-        //tilt.setPosition(tiltInPos);
-    }
-
-    private void tiltOut() {
-        switch (deposit.getDefaultState()) {
-            case LEVEL3:
-               // tilt.setPosition(tiltOutPos);
-                break;
-            case LEVEL2:
-               // tilt.setPosition(tiltOutPos2);
-                break;
-            case LEVEL1:
-               // tilt.setPosition(tiltOutPos1);
-        }
-        //tilt.setPosition(tiltOutPos);
+    public Vector2d getModuleVector() {
+        double baseX = extension.getDisplacement();
+        return new Vector2d(baseX).plus(arm.getVector());
     }
 
     private void lock() {
@@ -295,7 +268,7 @@ public class Platform extends Module<Platform.State> {
     private void unlock() {
         lock.setPosition(unlockPosition);
     }
-  
+
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */

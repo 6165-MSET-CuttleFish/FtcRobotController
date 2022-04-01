@@ -1,21 +1,28 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
+import kotlin.math.acos
+import kotlin.math.asin
 import kotlin.math.cos
-import kotlin.math.hypot
 import kotlin.math.sin
 
-class V4B(private val armLength: Double, private val servos: ControllableServos) {
-    var displacement: Pose2d
+class V4B(private val armLength: Double, val servos: ControllableServos) {
+    val vector: Vector2d
+        get() = Vector2d(armLength * cos(servos.angle), armLength * sin(servos.angle))
+    var position: Double
         set(value) {
-            servos.position = value.x
+            servos.position = value
         }
-        get() = Pose2d(armLength * cos(servos.angle), armLength * sin(servos.angle))
-    val position: Double
         get() = servos.position
     val realPosition: Double
         get() = servos.realPosition
     val isTransitioning: Boolean
         get() = servos.isTransitioning
+    fun setY(height: Double) {
+        servos.angle = asin(height / armLength)
+    }
+    fun setX(length: Double) {
+        servos.angle = acos(length / armLength)
+    }
 }

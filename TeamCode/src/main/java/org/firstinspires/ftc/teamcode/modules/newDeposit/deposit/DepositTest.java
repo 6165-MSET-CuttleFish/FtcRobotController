@@ -17,7 +17,7 @@ public class DepositTest extends ModuleTest {
     Intake intake;
     Deposit deposit;
     GamepadEx primary;
-    Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+    Lift.Level defaultDepositState = Lift.Level.LEVEL3;
     ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement, farDeposit;
 
     @Override
@@ -45,7 +45,7 @@ public class DepositTest extends ModuleTest {
         intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
         if (gamepad1.b) {
             Platform.isLoaded = true;
-            deposit.platform.prepPlatform(deposit.getDefaultState());
+            //deposit.platform.prepPlatform(deposit.getDefaultState());
         }
         if (farDeposit.wasJustPressed()) {
             Deposit.farDeposit = !Deposit.farDeposit;
@@ -83,7 +83,7 @@ public class DepositTest extends ModuleTest {
                     defaultDepositState = Deposit.State.LEVEL1;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setDefaultLevel(defaultDepositState);
         }
     }
 }

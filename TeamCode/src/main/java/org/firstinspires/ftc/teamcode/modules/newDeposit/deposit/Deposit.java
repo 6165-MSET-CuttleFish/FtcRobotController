@@ -1,31 +1,17 @@
 package org.firstinspires.ftc.teamcode.modules.newDeposit.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.modules.vision.ShippingHubDetector;
-import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor;
-import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
-import org.firstinspires.ftc.teamcode.util.field.Freight;
-import org.firstinspires.ftc.teamcode.util.field.OpModeType;
-
-import androidx.annotation.NonNull;
-
-import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
-import static org.firstinspires.ftc.teamcode.util.field.Context.freight;
-import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
- * Slides that go up to the level for depositing freight
+ * Deposit Module Wrapper
  * @author Ayush Raman
  */
 @Config
@@ -103,6 +89,8 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public void internalUpdate() {
+        Vector2d moduleVec = lift.getModuleVector().plus(platform.getModuleVector());
+        Vector2d moduleVecFactoringPitch = moduleVec.rotated(Context.pitch);
         if (platform.isDoingWork() && allowLift) {
             lift.setState(getDefaultState());
         } else {
@@ -115,6 +103,10 @@ public class Deposit extends Module<Deposit.State> {
             case IN:
             case OUT:
                 lift.setState(getDefaultState());
+        }
+        if (isDebugMode()) {
+            Context.packet.put("Deposit X", moduleVec.getX());
+            Context.packet.put("Deposit Y", moduleVec.getY());
         }
     }
       

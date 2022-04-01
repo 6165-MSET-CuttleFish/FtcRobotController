@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers
 
-import com.arcrobotics.ftclib.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
 import kotlin.math.cos
 import kotlin.math.pow
@@ -15,7 +14,7 @@ class Linkage @JvmOverloads constructor(
     private val initialAngle: Double = 0.0,
 ) {
     val realDisplacement: Double
-        get() = - displacement(servos.realAngle) + displacement(initialAngle)
+        get() = -displacement(servos.realAngle) + displacement(initialAngle)
     val displacement: Double
         get() = -displacement(servos.angle) + displacement(initialAngle)
     private fun displacement(theta: Double): Double =

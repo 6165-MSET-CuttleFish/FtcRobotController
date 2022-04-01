@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.util.controllers.TuningController;
 @Disabled
 public class LiftTest extends ModuleTest {
     Deposit deposit;
-    TuningController<Deposit.State> tuningController = new TuningController<>(Deposit.State.values(), 2);
+    TuningController<Lift.Level> tuningController = new TuningController<>(Lift.Level.values(), 2);
     @Override
     public void initialize() {
         deposit = new Deposit(hardwareMap, new Intake(hardwareMap));
@@ -25,6 +25,6 @@ public class LiftTest extends ModuleTest {
 
     @Override
     public void update() {
-        deposit.setState(tuningController.update());
+        deposit.setDefaultLevel(tuningController.update());
     }
 }

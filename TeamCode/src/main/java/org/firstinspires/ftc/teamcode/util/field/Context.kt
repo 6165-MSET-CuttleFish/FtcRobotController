@@ -40,4 +40,19 @@ object Context {
     var pitch = 0.0
     @JvmField
     var tilt = 0.0
+    @JvmStatic
+    fun reset() {
+        robotPose = Pose2d()
+        poseVelocity = Pose2d()
+        alliance = Alliance.NONE
+        side = Side.NONE
+        opModeType = OpModeType.NONE
+        packet = TelemetryPacket()
+        telemetry = null
+        balance = Balance.BALANCED
+        location = TSEDetector.Location.LEFT
+        freight = Freight.NONE
+        pitch = 0.0
+        tilt = 0.0
+    }
 }
