@@ -23,7 +23,7 @@ public class Capstone extends Module<Capstone.State> {
     private double lastTimeStamp = System.currentTimeMillis();
     private double verticalInc, horizontalInc;
     public static double vUpperLimit = 0.8, vLowerLimit = 0.1;
-    public static double hUpperLimit = 0.8, hLowerLimit = 0.0;
+    public static double hUpperLimit = 1.0, hLowerLimit = 0.0;
 
     @Override
     public boolean isTransitioningState() {

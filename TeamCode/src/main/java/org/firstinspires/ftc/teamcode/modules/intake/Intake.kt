@@ -214,7 +214,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun retractIntake() {
-        state = State.IN
+        if (state != State.TRANSFER) state = State.IN
     }
 
     private fun deploy() {
