@@ -23,15 +23,15 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
  */
 @Config
 public class Platform extends Module<Platform.State> {
-    public static double outPosition3 = 0.47;
-    public static double outPosition2 = 0.41;
-    public static double outPosition1 = 0.41;
+    public static double outPosition3 = 0.30;
+    public static double outPosition2 = 0.28;
+    public static double outPosition1 = 0.31;
     public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.7;
     public static double tipDiff = 0.004;
-    public static double inPosition = 0.663, higherInPosition = 0.64;
-    public static double lockPosition = 0.67;
-    public static double unlockPosition = 0.57;
+    public static double inPosition = 0.515, higherInPosition = 0.47;
+    public static double lockPosition = 0.75;
+    public static double unlockPosition = 0.64;
     public static double kickPosition = 0.95;
     public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 0.5;
@@ -48,8 +48,8 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         LOCKING(0.16),
-        DUMPING(0.2),
-        SOFT_DUMP,
+        DUMPING(0.15),
+        SOFT_DUMP(0.1),
         OUT1,
         OUT2,
         OUT3;
@@ -130,7 +130,7 @@ public class Platform extends Module<Platform.State> {
                     setState(State.LOCKING);
                 }
                 if (!intakeCleared && !isTransitioningState()) {
-                    if (intake.getState() != Intake.State.OUT) intake.retractIntake();
+                    if (intake.getState() != Intake.State.OUT && intake.getState() != Intake.State.TRANSFER) intake.retractIntake();
                     intakeCleared = true;
                 }
                 if (intake.getState() == Intake.State.OUT && intake.isTransitioningState()) {
@@ -169,14 +169,15 @@ public class Platform extends Module<Platform.State> {
             case DUMPING:
             case SOFT_DUMP:
                 double diff = kickPosition - lockPosition;
-                if (getState() == State.DUMPING) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                if (getState() == State.SOFT_DUMP) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                else lock.setPosition(kickPosition);
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }
                     setState(State.IN);
                 }
-                if (getSecondsSpentInState() > dumpTimeOut) {
+                if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
                     Deposit.allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
@@ -290,7 +291,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut(getState());
+        return getState() == State.DUMPING || platformIsOut(getState()) || getState() == State.SOFT_DUMP;
     }
 
     public boolean platformIsOut(State state) {

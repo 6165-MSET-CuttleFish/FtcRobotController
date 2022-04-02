@@ -39,8 +39,9 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
-    TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract, intakeCounterBalance;
+    TriggerReader intakeButton, ninjaMode, liftButton, softDump;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc,
+            capVerticalInc, capHorizontalDec, capVerticalDec, capRetract, intakeCounterBalance;
     ToggleButtonReader depositLift;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -70,7 +71,8 @@ public class DriverPractice extends LinearOpMode {
                 depositLift = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
                 capRetract = new ButtonReader(primary, GamepadKeys.Button.X),
-                intakeCounterBalance = new ButtonReader(secondary, GamepadKeys.Button.A)
+                intakeCounterBalance = new ButtonReader(secondary, GamepadKeys.Button.A),
+                softDump = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER)
         };
         Deposit.allowLift = false;
         waitForStart();
@@ -191,6 +193,9 @@ public class DriverPractice extends LinearOpMode {
             } else {
                 Platform.isLoaded = true;
             }
+        }
+        if (gamepad1.right_trigger > 0.5) {
+            deposit.softDump();
         }
     }
 

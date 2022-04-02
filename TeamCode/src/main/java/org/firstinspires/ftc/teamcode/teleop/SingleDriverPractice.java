@@ -30,8 +30,8 @@ public class SingleDriverPractice extends LinearOpMode {
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
-    TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec;
+    TriggerReader intakeButton, ninjaMode;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, liftButton, softDump;
     ToggleButtonReader carouselButton;
 
     Deposit.State defaultDepositState = Deposit.State.LEVEL3;
@@ -49,15 +49,17 @@ public class SingleDriverPractice extends LinearOpMode {
                 ninjaMode = new TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER),
                 levelIncrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
-                liftButton = new TriggerReader(secondary, GamepadKeys.Trigger.LEFT_TRIGGER),
+                liftButton = new ButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.A),
+
         };
         Deposit.farDeposit = true;
         waitForStart();
         while (opModeIsActive()) {
+
             robot.update();
             for (KeyReader reader : keyReaders) {
                 reader.readValue();
@@ -81,6 +83,9 @@ public class SingleDriverPractice extends LinearOpMode {
                 balance = Balance.AWAY;
             } else if (tippedToward.isDown()) {
                 balance = Balance.TOWARD;
+            }
+            if (liftButton.wasJustPressed()) {
+                Deposit.allowLift = true;
             }
         }
     }

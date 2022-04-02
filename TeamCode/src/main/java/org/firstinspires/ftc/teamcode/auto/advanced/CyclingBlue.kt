@@ -49,15 +49,15 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakeY = -55.0
         @JvmField var stop = 50.8
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 16.0
+        @JvmField var depositDelay = 20.0
         @JvmField var closeDist = 25.0
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.05
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 26.0
-        @JvmField var cyclingDistance = 26.0
+        @JvmField var depositDistance = 30.0
+        @JvmField var cyclingDistance = 30.0
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -60.0
@@ -65,8 +65,8 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositingTimeout = 0.3
         @JvmField var intakeError = 10.0
         @JvmField var intakeVelo = 30.0
-        @JvmField var depositVelo = 55.0
-        @JvmField var angleOffset = -6.0
+        @JvmField var depositVelo = 60.0
+        @JvmField var angleOffset = -12.0
     }
 
     enum class PathState {
