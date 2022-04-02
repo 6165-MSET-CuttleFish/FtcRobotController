@@ -16,24 +16,9 @@ import org.firstinspires.ftc.teamcode.util.field.Context;
  */
 @Config
 public class Deposit extends Module<Deposit.State> {
-    public static boolean farDeposit = true;
-    public static boolean allowLift = true;
-    public static double LEVEL3 = 11.8;
-    public static double LEVEL2 = 0;
-    public static double LEVEL1 = 0;
-
-    private double getLevelHeight(Lift.Level state) {
-        switch (state) {
-            case LEVEL3: return LEVEL3;
-            case LEVEL2: return LEVEL2;
-            case LEVEL1: return LEVEL1;
-        }
-        return 0;
-    }
-
     @Override
     public boolean isTransitioningState() {
-        return false;
+        return platform.isTransitioningState() || lift.isTransitioningState();
     }
 
     public enum State implements StateBuilder {
@@ -59,7 +44,7 @@ public class Deposit extends Module<Deposit.State> {
         super(hardwareMap, State.IN, new Pose2d());
         this.intake = intake;
         lift = new Lift(hardwareMap);
-        platform = new Platform(hardwareMap, intake, this);
+        platform = new Platform(hardwareMap);
         setNestedModules(platform, lift);
     }
 
@@ -91,18 +76,14 @@ public class Deposit extends Module<Deposit.State> {
     public void internalUpdate() {
         Vector2d moduleVec = lift.getModuleVector().plus(platform.getModuleVector());
         Vector2d moduleVecFactoringPitch = moduleVec.rotated(Context.pitch);
-        if (platform.isDoingWork() && allowLift) {
-            lift.setState(getDefaultState());
-        } else {
-            lift.setState(Lift.Level.LEVEL1);
-        }
         switch (getState()) {
-            case HOLDING:
-                //platform.hold();
-                break;
             case IN:
+                lift.setState(Lift.Level.LEVEL1);
+                break;
+            case HOLDING:
             case OUT:
                 lift.setState(getDefaultState());
+                break;
         }
         if (isDebugMode()) {
             Context.packet.put("Deposit X", moduleVec.getX());

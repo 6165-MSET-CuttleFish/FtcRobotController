@@ -5,10 +5,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
-import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.modules.wrappers.Linkage;
 import org.firstinspires.ftc.teamcode.modules.wrappers.V4B;
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
@@ -34,11 +34,9 @@ public class Platform extends Module<Platform.State> {
     public static double lockPosition = 0.74;
     public static double unlockPosition = 0.68;
     public static double kickPosition = 0.84;
-    public static double blockDistanceTolerance = 9;
     public static double dumpServoPositionPerSecond = 1.0;
     public static double extensionServoPositionPerSecond = 0.7;
     public static boolean isLoaded;
-    public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.2;
     @Override
     public boolean isTransitioningState() {
@@ -49,7 +47,8 @@ public class Platform extends Module<Platform.State> {
         IN(0.5),
         CREATE_CLEARANCE,
         LOCKING(0.16),
-        DUMPING(0.2),
+        DUMP(0.05),
+        SOFT_DUMP(0.05),
         OUT1,
         OUT2,
         OUT3;
@@ -68,9 +67,6 @@ public class Platform extends Module<Platform.State> {
     private ControllableServos lock;
     private Linkage extension;
     private V4B arm;
-    private final Intake intake;
-    private final Deposit deposit;
-    boolean intakeCleared;
 
 
     /**
@@ -78,10 +74,8 @@ public class Platform extends Module<Platform.State> {
      *
      * @param hardwareMap instance of the hardware map provided by the OpMode
      */
-    public Platform(HardwareMap hardwareMap, Intake intake, Deposit deposit) {
+    public Platform(HardwareMap hardwareMap) {
         super(hardwareMap, opModeType == OpModeType.AUTO ? State.LOCKING : State.IN, new Pose2d());
-        this.intake = intake;
-        this.deposit = deposit;
     }
 
     /**
@@ -91,17 +85,19 @@ public class Platform extends Module<Platform.State> {
     public void internalInit() {
         Servo
                 dumpLeft = hardwareMap.servo.get("depositDumpL");
-        //dumpRight = hardwareMap.servo.get("depositDumpR");
-        //dumpRight.setDirection(Servo.Direction.REVERSE);
         arm = new V4B(6.88976, new ControllableServos(dumpLeft));
         Servo
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
-        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
-        //tilt = new ControllableServos(hardwareMap.servo.get("platformTilt"));
+        extension = new Linkage(
+                9.961,
+                4.40945,
+                6.2795276,
+                new ControllableServos(extL, extR),
+                Math.toRadians(51.0)
+        );
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        //blockDetector = hardwareMap.get(ColorRangeSensor.class, "platformBlock");
         flipIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
@@ -115,15 +111,6 @@ public class Platform extends Module<Platform.State> {
     protected void internalUpdate() {
         arm.getServos().setPositionPerSecond(dumpServoPositionPerSecond);
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
-        double distance;
-        try {
-            distance = blockDistanceTolerance + 1;
-        } catch (Exception e) {
-            distance = 1;
-        }
-        if (intake.getState() == Intake.State.TRANSFER && distance < blockDistanceTolerance) {
-            isLoaded = true;
-        }
         switch (getState()) {
             case IN:
                 if (!Platform.isLoaded) unlock();
@@ -131,56 +118,29 @@ public class Platform extends Module<Platform.State> {
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
-                if (!intakeCleared && !arm.isTransitioning()) {
-                    if (intake.getState() != Intake.State.OUT) intake.retractIntake();
-                    intakeCleared = true;
-                }
-                if (intake.getState() == Intake.State.OUT && intake.isTransitioningState()) {
-                    setState(State.CREATE_CLEARANCE);
-                }
                 break;
             case CREATE_CLEARANCE:
                 arm.setPosition(higherInPosition);
-                //tilt.setPosition(furtherInPosition);
-                if (intake.getState() != Intake.State.OUT) {
-                    setState(State.IN);
-                }
                 break;
             case LOCKING:
                 lock();
-//                if (getSecondsSpentInState() > getState().timeOut && Deposit.allowLift) {
-//                    prepPlatform(deposit.getDefaultState());
-//                }
                 break;
             case OUT1:
             case OUT2:
             case OUT3:
-                if (getState() == State.OUT1 || !shouldCounterBalance) {
-                    intake.retractIntake();
-                } else {
-                    intake.counterBalance();
-                }
-                intakeCleared = false;
-                //setState(getNeededOutState(deposit.getDefaultState()));
-                if (!Deposit.allowLift) {
-                    flipIn();
-                    setState(State.IN);
-                }
+                flipOut();
                 lock();
                 break;
-            case DUMPING:
-                lock.setPosition(kickPosition);
-                if (!Deposit.allowLift) {
-                    if (getPreviousState() == State.OUT1) {
-                        intake.createClearance();
-                    }
-                    setState(State.IN);
-                }
-                if (getSecondsSpentInState() > dumpTimeOut) {
+            case DUMP:
+            case SOFT_DUMP:
+                double diff = kickPosition - lockPosition;
+                if (getState() == State.SOFT_DUMP) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                else lock.setPosition(kickPosition);
+                double timeOut;
+                if (getState().getTimeOut() == null) timeOut = 0.0;
+                else timeOut = getState().getTimeOut();
+                if (getSecondsSpentInState() > dumpTimeOut + timeOut) {
                     if (opModeType == OpModeType.AUTO) Deposit.allowLift = false;
-                    if (getPreviousState() == State.OUT1) {
-                        intake.createClearance();
-                    }
                     setState(State.IN);
                     isLoaded = false;
                 }
@@ -189,7 +149,6 @@ public class Platform extends Module<Platform.State> {
         if (isDebugMode()) {
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Position", arm.getRealPosition());
-            Context.packet.put("Platform DS Distance", distance);
             Context.packet.put("Extension Real Position", extension.getRealPosition());
             Context.packet.put("Extension Distance", extension.getRealDisplacement());
             Context.packet.put("Platform X", getModuleVector().getX());
@@ -253,7 +212,7 @@ public class Platform extends Module<Platform.State> {
      */
     public void dump() {
         if (getState() == State.OUT3 || getState() == State.OUT2 || getState() == State.OUT1)
-            setState(State.DUMPING);
+            setState(State.DUMP);
     }
 
     public Vector2d getModuleVector() {
@@ -274,7 +233,7 @@ public class Platform extends Module<Platform.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut(getState());
+        return getState() == State.DUMP || platformIsOut(getState());
     }
 
     public boolean platformIsOut(State state) {

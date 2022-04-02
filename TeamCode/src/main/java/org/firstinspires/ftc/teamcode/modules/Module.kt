@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
  * @param <T> The state type of the module
  * @author Ayush Raman
 </T> */
-abstract class Module<T> @JvmOverloads constructor(
+abstract class Module<T : StateBuilder> @JvmOverloads constructor(
     @JvmField var hardwareMap: HardwareMap,
     private var _state: T,
     var poseOffset: Pose2d = Pose2d(),
@@ -56,6 +56,9 @@ abstract class Module<T> @JvmOverloads constructor(
      */
     protected val millisecondsSpentInState
         get() = elapsedTime.milliseconds()
+
+    protected val isOverTimeOut
+        get() = secondsSpentInState > (state.timeOut ?: 0.0)
 
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()

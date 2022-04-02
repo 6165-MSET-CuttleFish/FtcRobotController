@@ -170,7 +170,6 @@ public class Platform extends Module<Platform.State> {
             case SOFT_DUMP:
                 double diff = kickPosition - lockPosition;
                 if (getState() == State.DUMPING) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
-                else
                 if (!Deposit.allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();

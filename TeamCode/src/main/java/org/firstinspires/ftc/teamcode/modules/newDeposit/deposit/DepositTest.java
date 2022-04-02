@@ -67,20 +67,20 @@ public class DepositTest extends ModuleTest {
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL3;
+                    defaultDepositState = Lift.Level.LEVEL3;
                     break;
                 case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Lift.Level.LEVEL2;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setDefaultLevel(defaultDepositState);
         } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Lift.Level.LEVEL2;
                     break;
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
+                    defaultDepositState = Lift.Level.LEVEL1;
                     break;
             }
             deposit.setDefaultLevel(defaultDepositState);
