@@ -4,7 +4,6 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 
@@ -28,10 +27,10 @@ fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
     return this
 }
 
-fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder<*> {
+fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
         // Platform.isLoaded = true
-        deposit.setState(level)
+        deposit.setLevel(level)
     }
 }
 

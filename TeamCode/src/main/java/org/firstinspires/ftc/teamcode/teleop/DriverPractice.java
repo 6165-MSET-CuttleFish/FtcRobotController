@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
@@ -44,12 +43,11 @@ public class DriverPractice extends LinearOpMode {
             capVerticalInc, capHorizontalDec, capVerticalDec, capRetract, intakeCounterBalance;
     ToggleButtonReader depositLift;
 
-    Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+    Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
-        Deposit.allowLift = true;
         intake = robot.intake;
         deposit = robot.deposit;
         carousel = robot.carousel;
@@ -76,6 +74,7 @@ public class DriverPractice extends LinearOpMode {
         };
         Deposit.allowLift = false;
         waitForStart();
+        boolean liftIndication = false;
         while (opModeIsActive()) {
             robot.update();
             for (KeyReader reader : keyReaders) {
@@ -91,12 +90,16 @@ public class DriverPractice extends LinearOpMode {
                 gamepad2.rumble(500);
             }
             if (depositLift.wasJustPressed()) {
+                liftIndication = true;
+            }
+            if (robot.current < 10 && liftIndication) {
                 Deposit.allowLift = !Deposit.allowLift;
+                liftIndication = false;
             }
             if (intakeCounterBalance.wasJustPressed()) {
-                Platform.shouldCounterBalance = !Platform.shouldCounterBalance;
+                Deposit.shouldCounterBalance = !Deposit.shouldCounterBalance;
             }
-            if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
+            if (ninjaMode.isDown() || deposit.platformIsOut(deposit.getState())) drivePower = drivePower.times(0.60);
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
@@ -146,7 +149,7 @@ public class DriverPractice extends LinearOpMode {
     void setCapstone() {
         capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
         capstone.setVerticalTurret(gamepad1.left_stick_y);
-        capstone.setHorizontalTurret(gamepad1.left_stick_x);
+        capstone.setHorizontalTurret(gamepad1.right_stick_x);
         carousel.setPower(gamepad2.right_stick_y);
         if (capHorizontalInc.wasJustPressed()) {
             capstone.incrementHorizontal(1);
@@ -168,30 +171,30 @@ public class DriverPractice extends LinearOpMode {
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL3;
+                    defaultDepositState = Deposit.Level.LEVEL3;
                     break;
                 case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
+                    defaultDepositState = Deposit.Level.LEVEL1;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         }
 
         if (dumpButton.wasJustPressed()) {
-            if (Platform.isLoaded) {
+            if (Deposit.isLoaded) {
                 deposit.dump();
             } else {
-                Platform.isLoaded = true;
+                Deposit.isLoaded = true;
             }
         }
         if (gamepad1.right_trigger > 0.5) {

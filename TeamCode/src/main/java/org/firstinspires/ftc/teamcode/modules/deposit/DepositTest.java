@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
@@ -18,7 +17,7 @@ public class DepositTest extends ModuleTest {
     Intake intake;
     Deposit deposit;
     GamepadEx primary;
-    Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+    Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
     ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement, farDeposit;
 
     @Override
@@ -38,19 +37,18 @@ public class DepositTest extends ModuleTest {
 
     @Override
     public void update() {
-        packet.put("isLoaded", Platform.isLoaded);
-        packet.put("farDeposit", Deposit.farDeposit);
+        packet.put("isLoaded", Deposit.isLoaded);
         packet.put("balance", balance);
         packet.put("LB", tippedAway.getState());
         packet.put("RB", tippedToward.getState());
         intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
-        if (gamepad1.b) {
-            Platform.isLoaded = true;
-            deposit.platform.prepPlatform(deposit.getDefaultState());
-        }
-        if (farDeposit.wasJustPressed()) {
-            Deposit.farDeposit = !Deposit.farDeposit;
-        }
+//        if (gamepad1.b) {
+//            Deposit.isLoaded = true;
+//            deposit.prepPlatform(deposit.g);
+//        }
+//        if (farDeposit.wasJustPressed()) {
+//            Deposit.farDeposit = !Deposit.farDeposit;
+//        }
         if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
             gamepad1.rumble(500);
             gamepad2.rumble(500);
@@ -68,23 +66,23 @@ public class DepositTest extends ModuleTest {
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL3;
+                    defaultDepositState = Deposit.Level.LEVEL3;
                     break;
                 case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
+                    defaultDepositState = Deposit.Level.LEVEL1;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         }
     }
 }

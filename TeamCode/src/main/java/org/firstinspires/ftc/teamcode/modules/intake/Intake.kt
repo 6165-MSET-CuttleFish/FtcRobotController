@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform
+import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.util.field.Freight
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
-import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
-import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import java.lang.Exception
 
 /**
@@ -155,9 +153,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 power = -1.0
                 containsBlock = false
                 if (unfilteredDistance > transferTolerance) {
-                    Platform.isLoaded = true
+                    Deposit.isLoaded = true
                 }
-                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                if ((Deposit.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -218,7 +216,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun deploy() {
-        Platform.isLoaded = false
+        Deposit.isLoaded = false
         dropIntake()
         if (flip.isTransitioning && shortInake) {
             extensionServos.lock()

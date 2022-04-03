@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
+import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
@@ -36,7 +37,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
-import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
@@ -285,13 +285,13 @@ public class Robot<T> extends ImprovedTankDrive {
         location = TSEDetector.getLocation();
     }
 
-    public static Deposit.State getLevel(TSEDetector.Location location) {
+    public static Deposit.Level getLevel(TSEDetector.Location location) {
         switch (location) {
-            case LEFT: return Deposit.State.LEVEL1;
-            case MIDDLE: return Deposit.State.LEVEL2;
-            case RIGHT: return Deposit.State.LEVEL3;
+            case LEFT: return Deposit.Level.LEVEL1;
+            case MIDDLE: return Deposit.Level.LEVEL2;
+            case RIGHT: return Deposit.Level.LEVEL3;
         }
-        return Deposit.State.LEVEL3;
+        return Deposit.Level.LEVEL3;
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -398,9 +398,9 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double maxX = 36;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
-
+    public double current = 0;
     public void update() {
-        double current = 0;
+        current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
             current += module.getCurrent(CurrentUnit.AMPS);
