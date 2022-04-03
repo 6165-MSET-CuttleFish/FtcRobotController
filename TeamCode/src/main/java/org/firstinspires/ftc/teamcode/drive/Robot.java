@@ -206,7 +206,6 @@ public class Robot<T> extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-
         };
         relocalizer = new Relocalizer(hardwareMap, imu);
         for (Module module : modules) {
@@ -395,9 +394,7 @@ public class Robot<T> extends ImprovedTankDrive {
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
-    double lastVelo = 0;
     public boolean isOverPoles = false;
-    public static double MIN_ACCEL = 7000;
     public static double minX = 14;
     public static double maxX = 36;
     public static boolean fullSend = false;
