@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.auto.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
@@ -45,26 +46,26 @@ class CyclingBlue : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.0
         @JvmField var intakeY = -55.0
-        @JvmField var stop = 50.8
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 20.0
+        @JvmField var depositDelay = 26.0
         @JvmField var closeDist = 25.0
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.05
+        @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 30.0
         @JvmField var cyclingDistance = 30.0
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
-        @JvmField var cyclingAngle = -60.0
-        @JvmField var intakingAngle = 0.0
+        @JvmField var cyclingAngle = -55.0
+        @JvmField var intakingAngle = -10.0
         @JvmField var depositingTimeout = 0.3
         @JvmField var intakeError = 10.0
-        @JvmField var intakeVelo = 30.0
-        @JvmField var depositVelo = 60.0
-        @JvmField var angleOffset = -12.0
+        @JvmField var intakeVelo = 33.0
+        @JvmField var depositVelo = MAX_VEL
+        @JvmField var angleOffset = -15.0
     }
 
     enum class PathState {
@@ -186,7 +187,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
                 .defaultGains()
                 //.carouselOff(carousel)
-                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue),0.0)
+                .splineTo(Vector2d(stop + i / divConstant, coast).flip(blue),Math.toRadians(intakingAngle).flip(blue))
 //                .waitWhile(::signalTurn) {
 //                    intake.state == Intake.State.OUT
 //                }
@@ -233,6 +234,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineTo(allianceHub.center.polarAdd(
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
+                .waitWhile(deposit::isTransitioningState)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)

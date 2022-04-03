@@ -570,6 +570,15 @@ class TrajectorySequenceBuilder<T>(
         return this
     }
 
+    @JvmOverloads
+    fun turnTo(
+        absoluteAngle: Double,
+        maxAngVel: Double = currentTurnConstraintMaxAngVel,
+        maxAngAccel: Double = currentTurnConstraintMaxAngAccel
+    ): TrajectorySequenceBuilder<T> {
+        return turn(absoluteAngle - lastPose.heading, maxAngVel, maxAngAccel)
+    }
+
     fun waitSeconds(seconds: Double): TrajectorySequenceBuilder<T> {
         pushPath()
         sequenceSegments.add(WaitSegment(lastPose, seconds, emptyList()))

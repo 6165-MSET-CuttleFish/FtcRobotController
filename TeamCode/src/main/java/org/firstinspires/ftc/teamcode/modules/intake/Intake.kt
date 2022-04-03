@@ -140,7 +140,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                             Freight.CUBE
                         }
                     } else {
-                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
+                        val dist = extensionDistance.getDistance(DistanceUnit.CM)
+                        if (dist > 500) {
+                            extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
+                        }
+                        if (dist < distanceTolerance) {
                             state = State.TRANSFER
                         }
                     }

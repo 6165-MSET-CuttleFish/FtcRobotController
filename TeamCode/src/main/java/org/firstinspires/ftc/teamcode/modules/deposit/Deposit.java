@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.deposit;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -99,7 +100,7 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 31.258;
+    public static double TICKS_PER_INCH = 61.74;
     boolean intakeCleared;
     private Level defaultLevel = Level.LEVEL3;
 
@@ -134,14 +135,14 @@ public class Deposit extends Module<Deposit.State> {
         extR.setDirection(Servo.Direction.REVERSE);
         extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        flipIn();
-        flipIn();
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
         slides = new ControllableMotor(hardwareMap.get(DcMotorEx.class, "depositSlides"));
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
-        if (opModeType != OpModeType.TELE) slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flipIn();
+        arm.setPosition(inPosition);
         setActuators(lock, slides);
     }
 
@@ -166,7 +167,7 @@ public class Deposit extends Module<Deposit.State> {
                     if (intake.getState() != Intake.State.OUT && intake.getState() != Intake.State.TRANSFER) intake.retractIntake();
                     intakeCleared = true;
                 }
-                if (intake.getState() == Intake.State.OUT && intake.isTransitioningState()) {
+                if (intake.getState() == Intake.State.OUT && intake.isTransitioningState() && !extension.isTransitioning() && Math.abs(getLastError()) > allowableDepositError) {
                     setState(State.CREATE_CLEARANCE);
                 }
                 break;
@@ -256,6 +257,10 @@ public class Deposit extends Module<Deposit.State> {
         return defaultLevel;
     }
 
+//    public Vector2d getModuleVector() {
+//        Vector2d extension = new Vector2d(extension.dis)
+//    }
+
     public static double LEVEL3 = 11.8;
     public static double LEVEL2 = 7;
     public static double LEVEL1 = 0;
@@ -329,7 +334,7 @@ public class Deposit extends Module<Deposit.State> {
     private void flipIn() {
         double position = inPosition;
         extension.setPosition(extendIn);
-        if (!extension.isTransitioning()) {
+        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition()) - 0) < allowableDepositError) {
             arm.setPosition(position);
         } else {
             arm.setPosition(holdingPosition);

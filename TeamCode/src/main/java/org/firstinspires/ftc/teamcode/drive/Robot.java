@@ -246,6 +246,10 @@ public class Robot<T> extends ImprovedTankDrive {
         return trajectorySequenceRunner.getState();
     }
 
+    public void nextSegment() {
+        trajectorySequenceRunner.nextSegment();
+    }
+
     public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
@@ -378,7 +382,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 20;
+    public static double correctionTolerance = 30;
 
     public void correctPosition() {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);

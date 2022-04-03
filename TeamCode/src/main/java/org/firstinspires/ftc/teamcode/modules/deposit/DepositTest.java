@@ -46,14 +46,15 @@ public class DepositTest extends ModuleTest {
 //            Deposit.isLoaded = true;
 //            deposit.prepPlatform(deposit.g);
 //        }
-//        if (farDeposit.wasJustPressed()) {
-//            Deposit.farDeposit = !Deposit.farDeposit;
-//        }
+        if (farDeposit.wasJustPressed()) {
+            Deposit.allowLift = !Deposit.allowLift;
+        }
         if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
             gamepad1.rumble(500);
             gamepad2.rumble(500);
         }
         if (gamepad1.a) {
+            Deposit.isLoaded = true;
             deposit.dump();
         }
         if (tippedAway.isDown() && tippedToward.isDown()) {

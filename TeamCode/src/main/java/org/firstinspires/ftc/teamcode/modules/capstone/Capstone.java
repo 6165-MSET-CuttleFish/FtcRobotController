@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
@@ -19,7 +20,7 @@ public class Capstone extends Module<Capstone.State> {
     public static double passivePower = 0.0;
     private CRServo tape;
     private Servo verticalTurret, horizontalTurret;
-    public static double verticalPosDef = 0.38, horizontalPosDef = 0.0;
+    public static double verticalPosDef = 0.6, horizontalPosDef = 0.0;
     private double lastTimeStamp = System.currentTimeMillis();
     private double verticalInc, horizontalInc;
     public static double vUpperLimit = 0.8, vLowerLimit = 0.1;
@@ -54,7 +55,6 @@ public class Capstone extends Module<Capstone.State> {
         tape.setDirection(DcMotorSimple.Direction.REVERSE);
         horizontalTurret = hardwareMap.servo.get("hTurret");
         verticalTurret = hardwareMap.servo.get("vTurret");
-        //setActuators(horizontalTurret, verticalTurret);
     }
 
     double power;
@@ -86,6 +86,10 @@ public class Capstone extends Module<Capstone.State> {
         lastTimeStamp = System.currentTimeMillis();
         verticalInc = 0;
         horizontalInc = 0;
+        if (isDebugMode()) {
+            Context.packet.put("Horizontal Turret", horizontalTurret.getPosition());
+            Context.packet.put("Vertical Turret", verticalTurret.getPosition());
+        }
     }
 
     public void setHorizontalTurret(double pwr) {
