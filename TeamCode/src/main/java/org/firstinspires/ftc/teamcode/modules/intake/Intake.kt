@@ -44,7 +44,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var alphaTolerance = 0.05
+        var blueTolerance = 0.05
         @JvmField
         var smoothingCoeffecientDistance = 0.8
         @JvmField
@@ -115,8 +115,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         distanceFilter.a = if (state == State.OUT) 0.75 else smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
-        val unfilteredAlpha = blockSensor.normalizedColors.blue.toDouble()
-        val alpha = colorFilter.update(unfilteredAlpha)
+        val unfilteredBlue = blockSensor.normalizedColors.blue.toDouble()
+        val blue = colorFilter.update(unfilteredBlue)
         val unfilteredDistance = distance
         val distance = distanceFilter.update(unfilteredDistance)
         when (state) {
@@ -134,7 +134,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 }
                 if (containsBlock) {
                     if (isTransitioningState()) {
-                        freight = if (alpha > alphaTolerance) {
+                        freight = if (blue > blueTolerance) {
                             Freight.BALL
                         } else {
                             Freight.CUBE
@@ -182,8 +182,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             Context.packet.put("containsBlock", containsBlock)
             Context.packet.put("Extension Real Position", extensionServos.realPosition)
             Context.packet.put("Drop Real Position", flip.realPosition)
-            Context.packet.put("Raw Blue", unfilteredAlpha)
-            Context.packet.put("Filtered Blue", alpha)
+            Context.packet.put("Raw Blue", unfilteredBlue)
+            Context.packet.put("Filtered Blue", blue)
             Context.packet.put("Filtered Block Distance", distance)
             Context.packet.put("Block Sensor Distance", unfilteredDistance)
             Context.packet.put("Extension Distance", extensionDistance.getDistance(DistanceUnit.CM))
