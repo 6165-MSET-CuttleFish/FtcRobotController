@@ -44,11 +44,11 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.0
+        @JvmField var coast = -55.5
         @JvmField var intakeY = -55.0
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 26.0
+        @JvmField var depositDelay = 30.0
         @JvmField var closeDist = 25.0
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
@@ -63,7 +63,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakingAngle = -10.0
         @JvmField var depositingTimeout = 0.3
         @JvmField var intakeError = 10.0
-        @JvmField var intakeVelo = 33.0
+        @JvmField var intakeVelo = 28.0
         @JvmField var depositVelo = MAX_VEL
         @JvmField var angleOffset = -15.0
     }
@@ -187,7 +187,7 @@ class CyclingBlue : LinearOpMode() {
                 .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
                 .defaultGains()
                 //.carouselOff(carousel)
-                .splineTo(Vector2d(stop + i / divConstant, coast).flip(blue),Math.toRadians(intakingAngle).flip(blue))
+                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue),0.0)
 //                .waitWhile(::signalTurn) {
 //                    intake.state == Intake.State.OUT
 //                }

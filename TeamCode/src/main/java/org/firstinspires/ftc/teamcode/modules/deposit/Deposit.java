@@ -37,9 +37,9 @@ public class Deposit extends Module<Deposit.State> {
     public static double extendIn = 0.26, extendOut = 0.0;
     public static double holdingPosition = 0.4;
     public static double tipDiff = 0.004;
-    public static double inPosition = 0.515, higherInPosition = 0.47;
-    public static double lockPosition = 0.75;
-    public static double unlockPosition = 0.64;
+    public static double inPosition = 0.5, higherInPosition = 0.47;
+    public static double lockPosition = 0.72;
+    public static double unlockPosition = 0.56;
     public static double kickPosition = 0.95;
     public static double dumpServoPositionPerSecond = 0.5;
     public static double extensionServoPositionPerSecond = 0.6;
