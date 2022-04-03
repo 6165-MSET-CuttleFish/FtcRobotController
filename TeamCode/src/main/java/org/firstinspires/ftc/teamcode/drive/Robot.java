@@ -452,13 +452,26 @@ public class Robot<T> extends ImprovedTankDrive {
                 robotDisabled = false;
                 currentTimer.reset();
             }
-            if (!systemIsOverCurrent) {
-                // currentIntegral = 0;
-            }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
-        if (signal != null) setDriveSignal(signal);
+        if (signal != null) {
+            if (deposit.getState() != Deposit.State.IN) {
+                double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement(), 2);
+                double inertialChange = depoDisplacementSquared * deposit.getWeight();
+                DriveSignal newSignal = new DriveSignal(
+                        new Pose2d(
+                                signal.getVel().getX(),
+                                signal.getVel().getY(),
+                                signal.getVel().getHeading() * inertialChange * powerChangePerInertia
+                        ),
+                        signal.getAccel()
+                );
+            }
+            setDriveSignal(signal);
+        }
     }
+
+    public static double powerChangePerInertia = 1;
 
     public void waitForIdle() {
         waitForIdle(() -> {

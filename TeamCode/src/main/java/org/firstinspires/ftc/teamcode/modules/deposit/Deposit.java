@@ -244,7 +244,7 @@ public class Deposit extends Module<Deposit.State> {
         if (isDebugMode()) {
             Context.packet.put("Lift Target Height", pidController.getTargetPosition());
             Context.packet.put("Lift Actual Height", ticksToInches(slides.getCurrentPosition()));
-            Context.packet.put("Deposit Motor Power", power);
+            Context.packet.put("Lift Motor Power", power);
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
@@ -257,9 +257,30 @@ public class Deposit extends Module<Deposit.State> {
         return defaultLevel;
     }
 
-//    public Vector2d getModuleVector() {
-//        Vector2d extension = new Vector2d(extension.dis)
-//    }
+    public static double weightSlides = 1, weightArm = 0.5, weightExtension = 0.5;
+
+    public Vector2d getModuleWeightedVector() {
+        Vector2d slidesVec = new Vector2d(
+                ticksToInches(slides.getCurrentPosition()) * Math.cos(angle),
+                ticksToInches(slides.getCurrentPosition()) * Math.sin(angle)
+        );
+        Vector2d extensionVec = new Vector2d(extension.getDisplacement()).plus(slidesVec);
+        Vector2d armVec = arm.getVector().plus(extensionVec);
+        return ((slidesVec.times(weightSlides))
+                .plus((extensionVec).times(weightExtension))
+                .plus(armVec.times(weightArm)))
+                .div(weightSlides + weightArm + weightExtension);
+    }
+
+    public double getWeightedDisplacement() {
+        getModuleWeightedVector().component1();
+        Vector2d vec = getModuleWeightedVector();
+        return Math.hypot(vec.getX(), vec.getY());
+    }
+
+    public double getWeight() {
+        return weightSlides + weightArm + weightExtension;
+    }
 
     public static double LEVEL3 = 11.8;
     public static double LEVEL2 = 3;
