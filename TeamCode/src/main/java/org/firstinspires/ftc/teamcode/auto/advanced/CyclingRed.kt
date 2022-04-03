@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.drive.Robot.admissibleError
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
 import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
@@ -32,7 +31,6 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
 import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.Throws
-import kotlin.math.sin
 
 @Autonomous
 @Config
@@ -50,7 +48,7 @@ class CyclingRed : LinearOpMode() {
         @JvmField var stop = 50.8
         @JvmField var intakeDelay = 16.0
         @JvmField var depositDelay = 16.0
-        @JvmField var closeDist = 21.9
+        @JvmField var closeDist = 21.6
         @JvmField var depositWaitTime = 0.05
         @JvmField var conjoiningPoint = 14.0
         @JvmField var conjoiningDeposit = 30.0
@@ -103,10 +101,14 @@ class CyclingRed : LinearOpMode() {
         Async.start {
             while (opModeIsActive()) {
                 if (robot.pathState == PathState.INTAKING) {
-                    robot.relocalizer.updatePoseEstimate(
-                        Relocalizer.Sensor.FRONT_LEFT,
-                        Relocalizer.Sensor.RIGHT
-                    )
+                    try {
+                        robot.relocalizer.updatePoseEstimate(
+                            Relocalizer.Sensor.FRONT_LEFT,
+                            Relocalizer.Sensor.RIGHT
+                        )
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
         }
@@ -118,7 +120,7 @@ class CyclingRed : LinearOpMode() {
             TSEDetector.Location.MIDDLE -> middleSequence
             TSEDetector.Location.RIGHT -> rightSequence
         }
-        deposit.setState(Robot.getLevel(location))
+        deposit.setLevel(Robot.getLevel(location))
         robot.turnOffVision()
         robot.followTrajectorySequenceAsync(sequence)
         while (robot.isBusy && opModeIsActive()) {
@@ -192,7 +194,7 @@ class CyclingRed : LinearOpMode() {
                 .relocalize(robot)
                 .setReversed(true)
                 .intakeOff(intake)
-                .liftUp(deposit, Deposit.State.LEVEL3)
+                .liftUp(deposit, Deposit.Level.LEVEL3)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -211,7 +213,7 @@ class CyclingRed : LinearOpMode() {
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
-                .waitWhile(deposit.platform::isTransitioningState)
+                .waitWhile(deposit::isTransitioningState)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
@@ -227,7 +229,7 @@ class CyclingRed : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .waitSeconds(0.4)
-                .liftUp(deposit, Deposit.State.LEVEL1)
+                .liftUp(deposit, Deposit.Level.LEVEL1)
                 .splineTo(allianceHub.center.polarAdd(
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
@@ -240,7 +242,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .liftUp(deposit, Deposit.State.LEVEL2)
+                .liftUp(deposit, Deposit.Level.LEVEL2)
                 .waitSeconds(0.4)
                 .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
@@ -252,7 +254,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .liftUp(deposit, Deposit.State.LEVEL3)
+                .liftUp(deposit, Deposit.Level.LEVEL3)
                 .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)

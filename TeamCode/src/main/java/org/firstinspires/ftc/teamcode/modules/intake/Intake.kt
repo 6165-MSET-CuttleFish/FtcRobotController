@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
-import org.firstinspires.ftc.teamcode.modules.deposit.Platform
+import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.util.field.Freight
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
-import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
-import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import java.lang.Exception
 
 /**
@@ -55,6 +53,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         var div = 2.0
         @JvmField
         var distanceTolerance = 12.0
+        @JvmField
+        var transferTolerance = 12.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -140,7 +140,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                             Freight.CUBE
                         }
                     } else {
-                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
+                        val dist = extensionDistance.getDistance(DistanceUnit.CM)
+                        if (dist > 500) {
+                            extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
+                        }
+                        if (dist < distanceTolerance) {
                             state = State.TRANSFER
                         }
                     }
@@ -152,7 +156,10 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                if ((Platform.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
+                if (unfilteredDistance > transferTolerance) {
+                    Deposit.isLoaded = true
+                }
+                if ((Deposit.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
                     this.power = power
@@ -166,6 +173,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.COUNTER_BALANCE -> {
                 extensionServos.position = midPosition
+                // flip.position = 0.5
             }
         }
         poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
@@ -208,11 +216,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun retractIntake() {
-        state = State.IN
+        if (state != State.TRANSFER) state = State.IN
     }
 
     private fun deploy() {
-        Platform.isLoaded = false
+        Deposit.isLoaded = false
         dropIntake()
         if (flip.isTransitioning && shortInake) {
             extensionServos.lock()

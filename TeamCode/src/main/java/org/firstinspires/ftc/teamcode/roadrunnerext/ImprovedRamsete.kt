@@ -15,7 +15,7 @@ import kotlin.math.sqrt
 /**
  * Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
  * [Ramsete01.pdf](https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf).
- *
+ * Property of the Dick Blick Company
  * @param b b parameter (non-negative)
  * @param zeta zeta parameter (on (0, 1))
  * @param admissibleError admissible/satisfactory pose error at the end of each move
@@ -51,11 +51,7 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        var error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
-
-        if (Robot.gainMode != Robot.GainMode.IDLE) {
-             // error = Pose2d(error.x, 0.0, error.heading)
-        }
+        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
         val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
@@ -73,28 +69,6 @@ class ImprovedRamsete @JvmOverloads constructor(
 
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
         lastVelocityError = currentRobotVel?.toMeters()?.let { Kinematics.calculateRobotPoseError(Pose2d(v, 0.0, omega).toInches(), it.toInches()) }
-        // val alternative = calculate(currentPose.toFTCLibPose2d(), targetPose.toFTCLibPose2d(), targetRobotVel.x, targetRobotVel.heading)
         return DriveSignal(Pose2d(outV, 0.0, outOmega).toInches(), targetRobotAccel.toInches())
     }
-        private fun calculate(
-            currentPose: com.arcrobotics.ftclib.geometry.Pose2d?,
-            poseRef: com.arcrobotics.ftclib.geometry.Pose2d,
-            linearVelocityRefMeters: Double,
-            angularVelocityRefRadiansPerSecond: Double
-        ): DriveSignal {
-            val m_poseError = poseRef.relativeTo(currentPose)
-            val eX: Double = m_poseError.translation.x
-            val eY: Double = m_poseError.translation.y
-            val eTheta: Double = m_poseError.rotation.radians
-            val k: Double = 2.0 * zeta * sqrt(
-                    angularVelocityRefRadiansPerSecond.pow(2)
-                ) + b * linearVelocityRefMeters.pow(2)
-            return DriveSignal(
-                Pose2d(
-                    linearVelocityRefMeters * m_poseError.heading + k * eX,
-                    0.0,
-                    angularVelocityRefRadiansPerSecond + k * eTheta + b * linearVelocityRefMeters * sinc(eTheta) * eY
-                ).toInches()
-            )
-        }
 }

@@ -178,4 +178,6 @@ abstract class ImprovedTankDrive constructor(
     abstract fun getPitch(): Double
 
     abstract fun getTilt(): Double
+
+    fun getPoseAcceleration(): Pose2d? = (localizer as? ImprovedLocalizer ?: TankLocalizer(this)).poseAcceleration
 }

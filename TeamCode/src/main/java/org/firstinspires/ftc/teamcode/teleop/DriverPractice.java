@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 import org.firstinspires.ftc.teamcode.util.field.Balance;
-import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
@@ -39,16 +38,16 @@ public class DriverPractice extends LinearOpMode {
     GamepadEx primary;
     GamepadEx secondary;
     KeyReader[] keyReaders;
-    TriggerReader intakeButton, ninjaMode, liftButton;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc, capVerticalInc, capHorizontalDec, capVerticalDec, capRetract;
+    TriggerReader intakeButton, ninjaMode, liftButton, softDump;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, capHorizontalInc,
+            capVerticalInc, capHorizontalDec, capVerticalDec, capRetract, intakeCounterBalance;
     ToggleButtonReader depositLift;
 
-    Deposit.State defaultDepositState = Deposit.State.LEVEL3;
+    Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
-        Deposit.allowLift = true;
         intake = robot.intake;
         deposit = robot.deposit;
         carousel = robot.carousel;
@@ -69,10 +68,13 @@ public class DriverPractice extends LinearOpMode {
                 tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 depositLift = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
-                capRetract = new ButtonReader(primary, GamepadKeys.Button.X)
+                capRetract = new ButtonReader(primary, GamepadKeys.Button.X),
+                intakeCounterBalance = new ButtonReader(secondary, GamepadKeys.Button.A),
+                softDump = new TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER)
         };
-        Deposit.farDeposit = true;
+        Deposit.allowLift = false;
         waitForStart();
+        boolean liftIndication = false;
         while (opModeIsActive()) {
             robot.update();
             for (KeyReader reader : keyReaders) {
@@ -88,10 +90,16 @@ public class DriverPractice extends LinearOpMode {
                 gamepad2.rumble(500);
             }
             if (depositLift.wasJustPressed()) {
-                Deposit.allowLift = !Deposit.allowLift;
+                liftIndication = true;
             }
-
-            if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
+            if (robot.current < 10 && liftIndication) {
+                Deposit.allowLift = !Deposit.allowLift;
+                liftIndication = false;
+            }
+            if (intakeCounterBalance.wasJustPressed()) {
+                Deposit.shouldCounterBalance = !Deposit.shouldCounterBalance;
+            }
+            if (ninjaMode.isDown() || deposit.platformIsOut(deposit.getState())) drivePower = drivePower.times(0.60);
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     if (mode == Mode.DRIVING) {
@@ -163,27 +171,34 @@ public class DriverPractice extends LinearOpMode {
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL3;
+                    defaultDepositState = Deposit.Level.LEVEL3;
                     break;
                 case LEVEL1:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         } else if (levelDecrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL3:
-                    defaultDepositState = Deposit.State.LEVEL2;
+                    defaultDepositState = Deposit.Level.LEVEL2;
                     break;
                 case LEVEL2:
-                    defaultDepositState = Deposit.State.LEVEL1;
+                    defaultDepositState = Deposit.Level.LEVEL1;
                     break;
             }
-            deposit.setState(defaultDepositState);
+            deposit.setLevel(defaultDepositState);
         }
 
         if (dumpButton.wasJustPressed()) {
-            deposit.dump();
+            if (Deposit.isLoaded) {
+                deposit.dump();
+            } else {
+                Deposit.isLoaded = true;
+            }
+        }
+        if (gamepad1.right_trigger > 0.5) {
+            deposit.softDump();
         }
     }
 

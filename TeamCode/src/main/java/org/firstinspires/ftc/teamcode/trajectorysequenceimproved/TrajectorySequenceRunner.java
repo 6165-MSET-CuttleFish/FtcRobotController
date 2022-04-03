@@ -363,8 +363,8 @@ public class TrajectorySequenceRunner<T> {
     public void nextSegment() {
         SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
         if (currentSegment instanceof TrajectorySegment) {
-            double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
-            offset -= remaining;
+            //double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
+            //offset -= remaining;
         }
         state = null;
         currentSegmentIndex++;

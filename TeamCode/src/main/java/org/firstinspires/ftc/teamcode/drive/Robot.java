@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 
+import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTankDrive;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedTrajectoryFollower;
@@ -36,7 +37,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
-import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence;
@@ -85,8 +85,8 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 12;
-    public static double MAX_POWER = 20;
+    public static double MID_POWER = 8;
+    public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleTimeout = 0.3;
@@ -246,6 +246,10 @@ public class Robot<T> extends ImprovedTankDrive {
         return trajectorySequenceRunner.getState();
     }
 
+    public void nextSegment() {
+        trajectorySequenceRunner.nextSegment();
+    }
+
     public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
@@ -285,13 +289,13 @@ public class Robot<T> extends ImprovedTankDrive {
         location = TSEDetector.getLocation();
     }
 
-    public static Deposit.State getLevel(TSEDetector.Location location) {
+    public static Deposit.Level getLevel(TSEDetector.Location location) {
         switch (location) {
-            case LEFT: return Deposit.State.LEVEL1;
-            case MIDDLE: return Deposit.State.LEVEL2;
-            case RIGHT: return Deposit.State.LEVEL3;
+            case LEFT: return Deposit.Level.LEVEL1;
+            case MIDDLE: return Deposit.Level.LEVEL2;
+            case RIGHT: return Deposit.Level.LEVEL3;
         }
-        return Deposit.State.LEVEL3;
+        return Deposit.Level.LEVEL3;
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -378,7 +382,7 @@ public class Robot<T> extends ImprovedTankDrive {
     boolean robotSlowed;
     boolean robotDisabled;
 
-    public static double correctionTolerance = 20;
+    public static double correctionTolerance = 30;
 
     public void correctPosition() {
         // relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
@@ -398,9 +402,9 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double maxX = 36;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
-
+    public double current = 0;
     public void update() {
-        double current = 0;
+        current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
             current += module.getCurrent(CurrentUnit.AMPS);
@@ -435,11 +439,12 @@ public class Robot<T> extends ImprovedTankDrive {
         Canvas canvas = Context.packet.fieldOverlay();
         canvas.setStroke("#F04141");
         DashboardUtil.drawRobot(canvas, relocalizer.getPoseEstimate());
-        currentIntegral += current * loopTime.seconds();
+        currentIntegral += (current - MAX_CURRENT) * loopTime.seconds();
+        currentIntegral = Range.clip(currentIntegral, 0, Double.POSITIVE_INFINITY);
         loopTime.reset();
         systemIsOverCurrent = current > MAX_CURRENT;
-        robotSlowed = currentIntegral > MID_POWER && opModeType != OpModeType.AUTO;
-        if (systemIsOverCurrent && currentIntegral > MAX_POWER && opModeType != OpModeType.AUTO) {
+        robotSlowed = currentIntegral > MID_POWER;
+        if (systemIsOverCurrent && currentIntegral > MAX_POWER) {
             robotDisabled = true;
             currentTimer.reset();
         } else {
@@ -448,7 +453,7 @@ public class Robot<T> extends ImprovedTankDrive {
                 currentTimer.reset();
             }
             if (!systemIsOverCurrent) {
-                currentIntegral = 0;
+                // currentIntegral = 0;
             }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -555,6 +560,17 @@ public class Robot<T> extends ImprovedTankDrive {
         }
         double pitch = 0;
         return Arrays.asList(leftSum * Math.cos(pitch), rightSum * Math.cos(pitch));
+    }
+
+    public List<Double> getMotorCurrent(CurrentUnit currentUnit) {
+        double leftSum = 0, rightSum = 0;
+        for (DcMotorEx leftMotor : leftMotors) {
+            leftSum += leftMotor.getCurrent(currentUnit);
+        }
+        for (DcMotorEx rightMotor : rightMotors) {
+            rightSum += rightMotor.getCurrent(currentUnit);
+        }
+        return Arrays.asList(leftSum, rightSum);
     }
 
     public List<Double> getWheelVelocities() {
