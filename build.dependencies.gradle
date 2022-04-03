@@ -25,4 +25,5 @@ dependencies {
         exclude group: 'com.arcrobotics'
     }
     implementation 'org.firstinspires.ftc:gameAssets-FreightFrenzy:1.0.0'
+    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v1.0.3'
 }

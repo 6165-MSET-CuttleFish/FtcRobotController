@@ -6,5 +6,5 @@ dependencies {
     implementation (name: 'tfod-release', ext:'aar')
     implementation (name: 'tensorflow-lite-0.0.0-nightly', ext:'aar')
     implementation 'org.openftc:easyopencv:1.5.0'
-
+    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v1.0.3'
 }
