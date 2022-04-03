@@ -18,7 +18,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Config
-class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module<NullType?>(hardwareMap, null) {
+class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, null) {
     enum class Sensor {
         FRONT_LEFT,
         FRONT_RIGHT,
@@ -103,7 +103,11 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
     }
 
     override fun internalUpdate() {
-
+//        if (alliance == Alliance.RED) {
+//            updatePoseEstimate(Sensor.FRONT_LEFT, Sensor.RIGHT)
+//        } else {
+//            updatePoseEstimate(Sensor.FRONT_RIGHT, Sensor.LEFT)
+//        }
     }
 
     override fun isDoingInternalWork() = false

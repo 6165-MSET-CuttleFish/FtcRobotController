@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.hardware.HardwareDevice
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
+import org.outoftheboxrobotics.neutrinoi2c.MB1242.AsyncMB1242
 
-class UltrasonicDistanceSensor constructor(
+class UltrasonicDistanceSensor @JvmOverloads constructor(
     hardwareMap: HardwareMap,
     name: String,
     _state: SensorType,
-    poseOffset: Pose2d,
+    poseOffset: Pose2d = Pose2d(),
 ) : Module<UltrasonicDistanceSensor.SensorType>(hardwareMap, _state, poseOffset), DistanceSensor {
     enum class SensorType {
         LongRange,

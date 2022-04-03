@@ -29,7 +29,6 @@ public class RelocalizationTest extends LinearOpMode {
         });
         while (opModeIsActive()) {
             robot.update();
-
             robot.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
