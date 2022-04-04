@@ -61,7 +61,7 @@ abstract class Module<T> @JvmOverloads constructor(
     /**
      * The time elapsed since the last update call in milliseconds
      */
-    val milliSecondsSinceLastUpdate
+    val millisecondsSinceLastUpdate
         get() = loopTime.milliseconds()
 
     /// Module utilities

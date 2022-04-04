@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules.capstone;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,7 +22,6 @@ public class Capstone extends Module<Capstone.State> {
     private CRServo tape;
     private ControllableServos verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
-    private double lastTimeStamp = System.currentTimeMillis();
     private double verticalInc, horizontalInc;
     public static double vUpperLimit = 0.62, vLowerLimit = 0.37;
     public static double hUpperLimit = 1.0, hLowerLimit = 0.0;
@@ -47,7 +47,7 @@ public class Capstone extends Module<Capstone.State> {
      * @param hardwareMap  instance of the hardware map provided by the OpMode
      */
     public Capstone(HardwareMap hardwareMap) {
-        super(hardwareMap, State.IDLE);
+        super(hardwareMap, State.IDLE, new Pose2d());
     }
 
     public void internalInit() {
@@ -61,7 +61,7 @@ public class Capstone extends Module<Capstone.State> {
 
     @Override
     protected void internalUpdate() {
-        double millisSinceLastUpdate = System.currentTimeMillis() - lastTimeStamp;
+        double millisSinceLastUpdate = getMillisecondsSinceLastUpdate();
         verticalPos = Range.clip(verticalPos + (verticalInc * millisSinceLastUpdate), vLowerLimit, vUpperLimit);
         horizontalPos = Range.clip(horizontalPos + (horizontalInc * millisSinceLastUpdate), hLowerLimit, hUpperLimit);
         switch (getState()) {
@@ -83,7 +83,6 @@ public class Capstone extends Module<Capstone.State> {
                 }
                 break;
         }
-        lastTimeStamp = System.currentTimeMillis();
         verticalInc = 0;
         horizontalInc = 0;
         if (isDebugMode()) {
