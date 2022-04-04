@@ -452,21 +452,17 @@ public class Robot<T> extends ImprovedTankDrive {
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) {
-            if (deposit.getState() != Deposit.State.IN) {
-                double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
-                double inertialChange = depoDisplacementSquared * deposit.getWeight();
-                DriveSignal newSignal = new DriveSignal(
-                        new Pose2d(
-                                signal.getVel().getX(),
-                                signal.getVel().getY(),
-                                signal.getVel().getHeading() + (signal.getVel().getHeading() * inertialChange * powerChangePerInertia)
-                        ),
-                        signal.getAccel()
-                );
-                setDriveSignal(newSignal);
-            } else {
-                setDriveSignal(signal);
-            }
+            double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
+            double inertialChange = depoDisplacementSquared * deposit.getWeight();
+            DriveSignal newSignal = new DriveSignal(
+                    new Pose2d(
+                            signal.getVel().getX(),
+                            signal.getVel().getY(),
+                            signal.getVel().getHeading() + (signal.getVel().getHeading() * inertialChange * powerChangePerInertia)
+                    ),
+                    signal.getAccel()
+            );
+            setDriveSignal(newSignal);
         }
         double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
         double inertialChange = depoDisplacementSquared * deposit.getWeight();
@@ -475,7 +471,6 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public static double powerChangePerInertia = 8;
-    public static boolean turnOffCovergence = false;
 
     public void waitForIdle() {
         waitForIdle(() -> {
