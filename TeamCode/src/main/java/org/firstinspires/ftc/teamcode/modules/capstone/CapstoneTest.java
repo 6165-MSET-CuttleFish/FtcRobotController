@@ -30,6 +30,7 @@ public class CapstoneTest extends ModuleTest {
 
     @Override
     public void update() {
+        capstone.active();
         capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
         capstone.setVerticalTurret(gamepad1.left_stick_y);
         capstone.setHorizontalTurret(gamepad1.right_stick_x);

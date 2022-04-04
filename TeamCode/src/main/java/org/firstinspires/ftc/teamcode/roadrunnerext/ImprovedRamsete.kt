@@ -51,7 +51,7 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        var error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
+        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
 
 //        if (Robot.gainMode != Robot.GainMode.IDLE && Robot.turnOffCovergence) {
 //            error = Pose2d(error.x, 0.0, error.heading)
