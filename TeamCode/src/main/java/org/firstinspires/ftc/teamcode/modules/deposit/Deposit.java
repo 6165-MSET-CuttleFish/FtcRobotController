@@ -257,19 +257,22 @@ public class Deposit extends Module<Deposit.State> {
         return defaultLevel;
     }
 
-    public static double weightSlides = 1, weightArm = 0.5, weightExtension = 0.5;
+    public static double weightSlides = 0.8, weightArm = 0.5, weightExtension = 0.3;
 
     public Vector2d getModuleWeightedVector() {
         Vector2d slidesVec = new Vector2d(
                 ticksToInches(slides.getCurrentPosition()) * Math.cos(angle),
                 ticksToInches(slides.getCurrentPosition()) * Math.sin(angle)
         );
-        Vector2d extensionVec = new Vector2d(extension.getDisplacement()).plus(slidesVec);
-        Vector2d armVec = arm.getVector().plus(extensionVec);
+        Vector2d extensionVec = new Vector2d().plus(slidesVec);
+        if (platformIsOut(getState())) {
+            extensionVec = new Vector2d(13.4252).div(2).plus(slidesVec);
+        }
+        //Vector2d armVec = arm.getVector().plus(extensionVec);
         return ((slidesVec.times(weightSlides))
                 .plus((extensionVec).times(weightExtension))
-                .plus(armVec.times(weightArm)))
-                .div(weightSlides + weightArm + weightExtension);
+                //.plus(armVec.times(weightArm)))
+                .div(weightSlides + weightExtension));
     }
 
     public double getWeightedDisplacement() {
@@ -279,7 +282,7 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public double getWeight() {
-        return weightSlides + weightArm + weightExtension;
+        return weightSlides + weightExtension;
     }
 
     public static double LEVEL3 = 11.8;

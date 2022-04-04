@@ -45,14 +45,12 @@ class CyclingBlue : LinearOpMode() {
     private val blue = true
     companion object {
         @JvmField var coast = -55.5
-        @JvmField var intakeY = -55.0
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 30.0
+        @JvmField var depositDelay = 24.0
         @JvmField var closeDist = 25.0
-        @JvmField var depositWaitTime = 0.05
-        @JvmField var conjoiningPoint = 14.0
-        @JvmField var conjoiningDeposit = 30.0
+        @JvmField var conjoiningPoint = 20.0
+        @JvmField var conjoiningDeposit = 40.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 30.0
@@ -60,12 +58,11 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
-        @JvmField var intakingAngle = -10.0
         @JvmField var depositingTimeout = 0.3
         @JvmField var intakeError = 10.0
         @JvmField var intakeVelo = 28.0
         @JvmField var depositVelo = MAX_VEL
-        @JvmField var angleOffset = -15.0
+        @JvmField var angleOffset = -5.0
     }
 
     enum class PathState {
@@ -229,7 +226,6 @@ class CyclingBlue : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .waitSeconds(0.4)
                 .liftUp(deposit, Deposit.Level.LEVEL1)
                 .splineTo(allianceHub.center.polarAdd(
                     closeDist, Math.toRadians(
@@ -245,7 +241,6 @@ class CyclingBlue : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .liftUp(deposit, Deposit.Level.LEVEL2)
-                .waitSeconds(0.4)
                 .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
@@ -257,7 +252,12 @@ class CyclingBlue : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .liftUp(deposit, Deposit.Level.LEVEL3)
-                .splineTo(allianceHub.center.polarAdd(depositDistance, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
+                .splineTo(
+                    allianceHub.center.polarAdd(depositDistance,
+                        Math.toRadians(depositingAngle).flip(blue)),
+                    allianceHub.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
+                )
                 .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition

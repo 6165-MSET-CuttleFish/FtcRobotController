@@ -417,8 +417,8 @@ public class Robot<T> extends ImprovedTankDrive {
         }
         Context.pitch = getPitch();
         Context.tilt = getTilt();
-        Context.packet.put("Pitch", Math.toDegrees(pitch));
-        Context.packet.put("Tilt", Math.toDegrees(tilt));
+//        Context.packet.put("Pitch", Math.toDegrees(pitch));
+//        Context.packet.put("Tilt", Math.toDegrees(tilt));
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
         Context.packet.put("Total Power", currentIntegral);
@@ -453,22 +453,29 @@ public class Robot<T> extends ImprovedTankDrive {
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) {
             if (deposit.getState() != Deposit.State.IN) {
-                double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement(), 2);
+                double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
                 double inertialChange = depoDisplacementSquared * deposit.getWeight();
                 DriveSignal newSignal = new DriveSignal(
                         new Pose2d(
                                 signal.getVel().getX(),
                                 signal.getVel().getY(),
-                                signal.getVel().getHeading() * inertialChange * powerChangePerInertia
+                                signal.getVel().getHeading() + (signal.getVel().getHeading() * inertialChange * powerChangePerInertia)
                         ),
                         signal.getAccel()
                 );
+                setDriveSignal(newSignal);
+            } else {
+                setDriveSignal(signal);
             }
-            setDriveSignal(signal);
         }
+        double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
+        double inertialChange = depoDisplacementSquared * deposit.getWeight();
+        Context.packet.put("Inertial Change", inertialChange);
+        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 1;
+    public static double powerChangePerInertia = 8;
+    public static boolean turnOffCovergence = false;
 
     public void waitForIdle() {
         waitForIdle(() -> {
