@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.roadrunnerext.geometry
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import kotlin.math.hypot
 import kotlin.math.sqrt
 
 class Vector3d @JvmOverloads constructor(
@@ -12,7 +13,12 @@ class Vector3d @JvmOverloads constructor(
     infix fun distTo(other: Vector3d): Double = (this - other).norm()
     infix fun dot(other: Vector3d) = x * other.x + y * other.y + z * other.z
     fun horizontalAngleTo(other: Vector3d) = component1().angleBetween(other.component1())
-    fun verticalAngleTo(other: Vector3d) = component2().angleBetween(other.component2())
+    fun verticalAngleTo(other: Vector3d): Double {
+        val delta = this - other
+        val height = delta.z
+        val length = delta.component1().norm()
+        return hypot(height, length)
+    }
     fun component1() = Vector2d(x, y)
     fun component2() = Vector2d(x, z)
     fun component3() = Vector2d(y, z)
