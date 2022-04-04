@@ -23,6 +23,7 @@ abstract class Module<T> @JvmOverloads constructor(
 ) {
     /// State related fields
     private val elapsedTime = ElapsedTime()
+    private val loopTime = ElapsedTime()
 
     /**
      * @return The previous state of the module
@@ -57,6 +58,12 @@ abstract class Module<T> @JvmOverloads constructor(
     protected val millisecondsSpentInState
         get() = elapsedTime.milliseconds()
 
+    /**
+     * The time elapsed since the last update call in milliseconds
+     */
+    val milliSecondsSinceLastUpdate
+        get() = loopTime.milliseconds()
+
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
     private var actuators = arrayOf<Actuator>()
@@ -88,6 +95,7 @@ abstract class Module<T> @JvmOverloads constructor(
         // actuators.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
+        loopTime.reset()
     }
 
     fun drawModule() {

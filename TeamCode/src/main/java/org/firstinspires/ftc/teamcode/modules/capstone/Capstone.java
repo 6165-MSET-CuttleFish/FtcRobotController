@@ -4,11 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
+import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @Config
@@ -19,7 +19,7 @@ public class Capstone extends Module<Capstone.State> {
     private double horizontalPos = 0.5, verticalPos = 0.45;
     public static double passivePower = 0.0;
     private CRServo tape;
-    private Servo verticalTurret, horizontalTurret;
+    private ControllableServos verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
     private double lastTimeStamp = System.currentTimeMillis();
     private double verticalInc, horizontalInc;
@@ -53,8 +53,8 @@ public class Capstone extends Module<Capstone.State> {
     public void internalInit() {
         tape = hardwareMap.crservo.get("tape");
         tape.setDirection(DcMotorSimple.Direction.REVERSE);
-        horizontalTurret = hardwareMap.servo.get("hTurret");
-        verticalTurret = hardwareMap.servo.get("vTurret");
+        horizontalTurret = new ControllableServos(hardwareMap.servo.get("hTurret"));
+        verticalTurret = new ControllableServos(hardwareMap.servo.get("vTurret"));
     }
 
     double power;
@@ -94,16 +94,23 @@ public class Capstone extends Module<Capstone.State> {
 
     public void setHorizontalTurret(double pwr) {
         if (Math.abs(pwr) > horizontalTolerance) horizontalInc = servoIncrementHorizontal * pwr;
-
     }
     public void incrementHorizontal(double pwr) {
         if (Math.abs(pwr) > horizontalTolerance) horizontalPos += servoIncrementHorizontalLarge * pwr;
+    }
+    public void setHorizontalAngle(double angle) {
+        horizontalTurret.setAngle(angle);
+        horizontalPos = horizontalTurret.getPosition();
     }
     public void incrementVertical(double pwr) {
         if (Math.abs(pwr) > verticalTolerance) verticalPos += servoIncrementVerticalLarge * pwr;
     }
     public void setVerticalTurret(double pwr) {
         if (Math.abs(pwr) > verticalTolerance) verticalInc = servoIncrementVertical * pwr;
+    }
+    public void setVerticalAngle(double angle) {
+        verticalTurret.setAngle(angle);
+        verticalPos = verticalTurret.getPosition();
     }
     public void setTape(double pwr) {
         power = pwr;
