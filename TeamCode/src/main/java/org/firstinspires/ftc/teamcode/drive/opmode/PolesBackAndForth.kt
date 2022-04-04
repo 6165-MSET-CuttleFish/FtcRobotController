@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance

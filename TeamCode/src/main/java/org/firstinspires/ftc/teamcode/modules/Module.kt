@@ -4,8 +4,8 @@ import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.Actuator
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
-import org.firstinspires.ftc.teamcode.roadrunnerext.toPose
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toPose
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose

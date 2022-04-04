@@ -7,7 +7,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.UltrasonicDistanceSensor
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance

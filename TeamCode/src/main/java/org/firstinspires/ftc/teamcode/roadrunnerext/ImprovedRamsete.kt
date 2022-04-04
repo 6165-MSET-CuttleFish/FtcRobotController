@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.roadrunnerext.RamseteConstants.*
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toInches
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toMeters
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
