@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
-import org.firstinspires.ftc.teamcode.util.field.OpModeType
 
 /*
 * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base

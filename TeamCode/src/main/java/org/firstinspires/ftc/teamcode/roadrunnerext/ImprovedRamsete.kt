@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.roadrunnerext.RamseteConstants.*
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toInches
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toMeters
@@ -54,10 +53,6 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetOmega = targetRobotVel.heading
 
         val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
-
-//        if (Robot.gainMode != Robot.GainMode.IDLE && Robot.turnOffCovergence) {
-//            error = Pose2d(error.x, 0.0, error.heading)
-//        }
 
         val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
