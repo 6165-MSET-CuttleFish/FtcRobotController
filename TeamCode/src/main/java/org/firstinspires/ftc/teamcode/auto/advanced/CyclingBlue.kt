@@ -53,8 +53,8 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 30.0
-        @JvmField var cyclingDistance = 30.0
+        @JvmField var depositDistance = 25.0
+        @JvmField var cyclingDistance = 25.0
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
@@ -126,38 +126,23 @@ class CyclingBlue : LinearOpMode() {
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
-                    admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(40.0))
+                    admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(20.0))
                     Robot.admissibleTimeout = 0.1
-                    if (robot.isOverPoles) {
-                        //carousel.setPower(1.0)
-                        Robot.gainMode = GainMode.FORWARD
-                    } else {
-                        //carousel.setPower(0.0)
-                        Robot.gainMode = GainMode.IDLE
+                    Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
+                    if (robot.poseEstimate.x > 40 && robot.intake.containsBlock) {
+                        robot.nextSegment(true)
                     }
                 }
                 PathState.DUMPING -> {
                     admissibleError = Pose2d(2.0, 2.0, Math.toRadians(10.0))
                     Robot.admissibleTimeout = depositingTimeout
-                    if (robot.isOverPoles) {
-                        //carousel.setPower(1.0)
-                        Robot.gainMode = GainMode.BACKWARD
-                    } else {
-                        //carousel.setPower(0.0)
-                        Robot.gainMode = GainMode.IDLE
-                    }
-                    if (timer.seconds() > 29) {
+                    Robot.gainMode = if (robot.isOverPoles) GainMode.BACKWARD else GainMode.IDLE
+                    if (timer.seconds() >= 29) {
                         deposit.liftDown()
                         robot.followTrajectorySequenceAsync(parkEmergency)
                         while (robot.isBusy && opModeIsActive()) {
                             robot.update()
-                            if (robot.isOverPoles) {
-                                //carousel.setPower(1.0)
-                                Robot.gainMode = GainMode.FORWARD
-                            } else {
-                                //carousel.setPower(0.0)
-                                Robot.gainMode = GainMode.IDLE
-                            }
+                            Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
                         }
                         break
                     }
@@ -176,14 +161,13 @@ class CyclingBlue : LinearOpMode() {
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
+                    deposit.liftDown()
                 }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .increaseGains(intakeVelo)
-                //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
                 .defaultGains()
-                //.carouselOff(carousel)
                 .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue),0.0)
 //                .waitWhile(::signalTurn) {
 //                    intake.state == Intake.State.OUT
@@ -195,7 +179,7 @@ class CyclingBlue : LinearOpMode() {
                 .liftUp(deposit, Deposit.Level.LEVEL3)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
-                .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
+                .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI) // change
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                 .UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
                 .increaseGains(depositVelo)
@@ -239,8 +223,13 @@ class CyclingBlue : LinearOpMode() {
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
                 .liftUp(deposit, Deposit.Level.LEVEL2)
-                .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
-                .setReversed(false)
+                .splineTo(
+                    allianceHub.center.polarAdd(
+                        closeDist,
+                        Math.toRadians(depositingAngle).flip(blue)),
+                    allianceHub.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
+                )                .setReversed(false)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)

@@ -11,13 +11,10 @@ import kotlin.Throws
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import org.firstinspires.ftc.teamcode.drive.Robot
-import org.firstinspires.ftc.teamcode.drive.opmode.ForceCalculator
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toMeters
-import org.firstinspires.ftc.teamcode.util.field.Context
 
 @TeleOp
 class DriverPractice : LinearOpMode() {
@@ -34,11 +31,12 @@ class DriverPractice : LinearOpMode() {
     lateinit var primary: GamepadEx
     lateinit var secondary: GamepadEx
     lateinit var ninjaMode: TriggerReader
-    lateinit var liftButton: TriggerReader
+
     lateinit var softDump1: TriggerReader
     lateinit var hardDump1: ButtonReader
     lateinit var softDump2: TriggerReader
     lateinit var hardDump2: ButtonReader
+
     lateinit var levelIncrement: ButtonReader
     lateinit var levelDecrement: ButtonReader
 
@@ -81,9 +79,6 @@ class DriverPractice : LinearOpMode() {
             ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN).also {
                 levelDecrement = it
             },
-            TriggerReader(secondary, GamepadKeys.Trigger.LEFT_TRIGGER).also {
-                liftButton = it
-            },
             ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER).also {
                 depositLift = it
             },
@@ -104,7 +99,7 @@ class DriverPractice : LinearOpMode() {
             },
             ToggleButtonReader(primary, GamepadKeys.Button.LEFT_STICK_BUTTON).also {
                 ninjaOverride = it
-            }
+            },
         )
         deposit.liftDown()
         waitForStart()
@@ -160,14 +155,10 @@ class DriverPractice : LinearOpMode() {
             if (deposit.state == Deposit.State.IN) setIntake()
             setDeposit()
             setCarousel()
-            val accel = robot.getPoseAcceleration() ?: Pose2d()
-            Context.packet.put("Linear Acceleration", accel.toMeters().x)
-            Context.packet.put("Angular Acceleration", accel.heading)
-            Context.packet.put("Force Estimate", accel.toMeters().x * ForceCalculator.mass)
         }
     }
 
-    fun setCapstone() {
+    private fun setCapstone() {
         capstone.setTape((gamepad1.right_trigger - gamepad1.left_trigger).toDouble())
         capstone.setVerticalTurret(gamepad1.left_stick_y.toDouble())
         capstone.setHorizontalTurret(gamepad1.right_stick_x.toDouble())
@@ -184,25 +175,33 @@ class DriverPractice : LinearOpMode() {
         }
     }
 
-    fun setIntake() {
+    private fun setIntake() {
         intake.setPower((gamepad2.right_trigger + gamepad2.left_trigger).toDouble())
     }
 
-    fun setDeposit() {
-        if (levelIncrement.wasJustPressed()) {
-            when (defaultDepositState) {
-                Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
-                Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.LEVEL2
-                else -> {}
+    private fun setDeposit() {
+        if (!deposit.platformIsOut()) {
+            if (levelIncrement.wasJustPressed()) {
+                when (defaultDepositState) {
+                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
+                    Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.LEVEL2
+                    else -> {}
+                }
+                deposit.setLevel(defaultDepositState)
+            } else if (levelDecrement.wasJustPressed()) {
+                when (defaultDepositState) {
+                    Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
+                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL1
+                    else -> {}
+                }
+                deposit.setLevel(defaultDepositState)
             }
-            deposit.setLevel(defaultDepositState)
-        } else if (levelDecrement.wasJustPressed()) {
-            when (defaultDepositState) {
-                Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
-                Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL1
-                else -> {}
+        } else {
+            if (levelIncrement.wasJustPressed()) {
+                deposit.offsetOutPosition += 0.1
+            } else if (levelDecrement.wasJustPressed()) {
+                deposit.offsetOutPosition -= 0.1
             }
-            deposit.setLevel(defaultDepositState)
         }
         if (hardDump1.wasJustPressed()) {
             if (Deposit.isLoaded) {

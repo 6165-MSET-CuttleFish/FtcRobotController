@@ -58,7 +58,7 @@ public class TrajectorySequenceRunner<T> {
     private final PIDFController turnController;
 
     private final NanoClock clock;
-    private double offset;
+    private double offset, segmentOffset;
     private final ElapsedTime time = new ElapsedTime();
     private final ElapsedTime segmentDuration = new ElapsedTime();
     private T state;
@@ -160,7 +160,8 @@ public class TrajectorySequenceRunner<T> {
                 Trajectory currentTrajectory = ((TrajectorySegment) currentSegment).getTrajectory();
 
                 if (isNewTransition) {
-                    follower.followTrajectory(currentTrajectory);
+                    follower.followTrajectory(currentTrajectory, segmentOffset);
+                    segmentOffset = 0;
                 }
                 state = (T) ((TrajectorySegment) currentSegment).getState();
 
@@ -361,10 +362,14 @@ public class TrajectorySequenceRunner<T> {
         return currentTrajectorySequence != null;
     }
     public void nextSegment() {
+        nextSegment(false);
+    }
+    public void nextSegment(boolean offsetNextSegment) {
         SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
         if (currentSegment instanceof TrajectorySegment) {
-            //double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
-            //offset -= remaining;
+            double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
+            offset -= remaining;
+            if (offsetNextSegment) segmentOffset = remaining > 0 ? remaining : 0;
         }
         state = null;
         currentSegmentIndex++;

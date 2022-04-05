@@ -21,8 +21,6 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableSer
 import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
-
-import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 
 /**
@@ -34,22 +32,31 @@ public class Deposit extends Module<Deposit.State> {
     public static double outPosition3 = 0.32;
     public static double outPosition2 = 0.23;
     public static double outPosition1 = 0.23;
-    private double offsetOutPosition;
-    public static double outPositionIncrement;
+    public double offsetOutPosition;
+    public static double
+            outOffsetPower,
+            outOffsetIncrement = 0.03;
     public static double extendIn = 0.26, extendOut = 0.0;
-    private double offsetExtendPosition;
-    public static double extendPositionIncrement;
+    public double offsetExtendPosition;
+    public static double
+            linkageOffsetPower,
+            linkageOffsetIncrement = 0.1;
     public static double holdingPosition = 0.4;
-    public static double inPosition = 0.5, higherInPosition = 0.47;
-    public static double lockPosition = 0.72;
-    public static double unlockPosition = 0.56;
-    public static double kickPosition = 0.95;
-    public static double dumpServoPositionPerSecond = 0.5;
-    public static double extensionServoPositionPerSecond = 0.6;
+    public static double
+            inPosition = 0.5,
+            higherInPosition = 0.47;
+    public static double
+            lockPosition = 0.72,
+            unlockPosition = 0.56,
+            kickPosition = 0.95;
+    public static double
+            armServoPositionPerSecond = 0.5,
+            extensionServoPositionPerSecond = 0.6;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.13;
     private boolean allowLift = false;
+    private boolean farDeposit = false;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning() || Math.abs(getLastError()) > allowableDepositError;
@@ -154,8 +161,9 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     protected void internalUpdate() {
-        arm.getServos().setPositionPerSecond(dumpServoPositionPerSecond);
+        arm.getServos().setPositionPerSecond(armServoPositionPerSecond);
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
+        extension.getServos().setLimits(extendOut, extendIn);
         switch (getState()) {
             case IN:
                 offsetOutPosition = 0.0;
@@ -269,12 +277,45 @@ public class Deposit extends Module<Deposit.State> {
         allowLift = !allowLift;
     }
 
+    public void setFarDeposit(boolean farDeposit) {
+        this.farDeposit = farDeposit;
+    }
+
+    public void toggleFarDeposit() {
+        farDeposit = !farDeposit;
+    }
+
+    public void moveArmPosition(double pwr) {
+        offsetOutPosition =
+                Range.clip(
+                        offsetOutPosition + pwr * outOffsetPower * getMillisecondsSinceLastUpdate(),
+                        arm.getServos().getLowerLimit(),
+                        arm.getServos().getUpperLimit()
+                );
+    }
+
     public void incrementArmPosition(double pwr) {
-        offsetOutPosition += pwr * outPositionIncrement;
+        offsetOutPosition = Range.clip(
+                offsetOutPosition + pwr * outOffsetIncrement,
+                arm.getServos().getLowerLimit(),
+                arm.getServos().getUpperLimit()
+        );
+    }
+
+    public void moveLinkagePosition(double pwr) {
+        offsetExtendPosition = Range.clip(
+                offsetExtendPosition + pwr * linkageOffsetPower * getMillisecondsSinceLastUpdate(),
+                extension.getServos().getLowerLimit(),
+                extension.getServos().getUpperLimit()
+        );
     }
 
     public void incrementLinkagePosition(double pwr) {
-        offsetExtendPosition += pwr * extendPositionIncrement;
+        offsetExtendPosition = Range.clip(
+                offsetExtendPosition + pwr * linkageOffsetIncrement,
+                extension.getServos().getLowerLimit(),
+                extension.getServos().getUpperLimit()
+        );
     }
 
     private Level getLevel() {
@@ -310,10 +351,10 @@ public class Deposit extends Module<Deposit.State> {
         return weightSlides + weightExtension;
     }
 
-    public static double LEVEL3 = 11.8;
+    public static double LEVEL3 = 12;
     public static double LEVEL2 = 3;
     public static double LEVEL1 = 0;
-    public static double allowableDepositError = 1;
+    public static double allowableDepositError = 2;
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(Level state) {
@@ -362,7 +403,9 @@ public class Deposit extends Module<Deposit.State> {
     private void flipOut(Level state) {
         double position = outPosition(state);
         arm.setPosition(position);
-        extension.setPosition(extendOut + offsetExtendPosition);
+        double extensionPos = extendOut;
+        if (farDeposit) extensionPos  = extendIn / 2;
+        extension.setPosition(extensionPos + offsetExtendPosition);
     }
 
     private void holdingPosition() {

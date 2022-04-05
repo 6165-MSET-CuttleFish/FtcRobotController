@@ -17,6 +17,10 @@ class ControllableServos(vararg servos: Servo) :
     private var initted = false
     var lowerLimit = 0.0
     var upperLimit = 1.0
+    fun setLimits(lowerLimit: Double, upperLimit: Double) {
+        this.lowerLimit = lowerLimit
+        this.upperLimit = upperLimit
+    }
     val realPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
             previousPosition + timer.seconds() * positionPerSecond,

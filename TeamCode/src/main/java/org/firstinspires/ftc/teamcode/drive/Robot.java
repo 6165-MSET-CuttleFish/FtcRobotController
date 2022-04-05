@@ -249,6 +249,10 @@ public class Robot<T> extends ImprovedTankDrive {
         trajectorySequenceRunner.nextSegment();
     }
 
+    public void nextSegment(boolean offsetNextSegment) {
+        trajectorySequenceRunner.nextSegment(offsetNextSegment);
+    }
+
     public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
