@@ -4,8 +4,8 @@ import com.acmerobotics.roadrunner.util.Angle
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.Actuator
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
-import org.firstinspires.ftc.teamcode.roadrunnerext.toPose
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toPose
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.robotPose
@@ -23,6 +23,7 @@ abstract class Module<T> @JvmOverloads constructor(
 ) {
     /// State related fields
     private val elapsedTime = ElapsedTime()
+    private val loopTime = ElapsedTime()
 
     /**
      * @return The previous state of the module
@@ -57,6 +58,12 @@ abstract class Module<T> @JvmOverloads constructor(
     protected val millisecondsSpentInState
         get() = elapsedTime.milliseconds()
 
+    /**
+     * The time elapsed since the last update call in milliseconds
+     */
+    val millisecondsSinceLastUpdate
+        get() = loopTime.milliseconds()
+
     /// Module utilities
     private var nestedModules = arrayOf<Module<*>>()
     private var actuators = arrayOf<Actuator>()
@@ -88,6 +95,7 @@ abstract class Module<T> @JvmOverloads constructor(
         // actuators.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
+        loopTime.reset()
     }
 
     fun drawModule() {

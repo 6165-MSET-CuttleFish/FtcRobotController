@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.localizers.t265
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.teamcode.roadrunnerext.*
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.geometry.Transform2d
 import com.arcrobotics.ftclib.geometry.Translation2d
@@ -9,6 +8,7 @@ import com.intel.realsense.librealsense.UsbUtilities
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.RobotLog
 import com.spartronics4915.lib.T265Camera
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.*
 
 /**
  * Static accessibility class which allows for easy
