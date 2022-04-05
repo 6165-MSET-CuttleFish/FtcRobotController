@@ -31,14 +31,19 @@ class ControllableServos(vararg servos: Servo) :
         set(value) {
             position = (value - angleOffset) / servoRotation
         }
-        get() = position * servoRotation
+        get() = (position * servoRotation) - angleOffset
     val realAngle: Double
-        get() = realPosition * servoRotation
+        get() = (realPosition * servoRotation) - angleOffset
     fun lock() {
         val realPosition = realPosition
         for (servo in servos) {
             servo.position = realPosition
         }
+    }
+    fun calibrateOffset(position: Double, angle: Double) {
+        // angle = (position * servoRotation) - angleOffset
+        // angleOffset = angle - pos*servoRot
+        angleOffset = angle - position * servoRotation
     }
 
     var position: Double
