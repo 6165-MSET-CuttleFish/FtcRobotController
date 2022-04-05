@@ -49,8 +49,8 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakeDelay = 16.0
         @JvmField var depositDelay = 24.0
         @JvmField var closeDist = 25.0
-        @JvmField var conjoiningPoint = 20.0
-        @JvmField var conjoiningDeposit = 40.0
+        @JvmField var conjoiningPoint = 14.0
+        @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 30.0
@@ -94,7 +94,7 @@ class CyclingBlue : LinearOpMode() {
             telemetry.addData("Position", location)
             telemetry.update()
         }
-        Deposit.allowLift = true
+        deposit.liftUp()
         waitForStart()
         Async.start {
             while (opModeIsActive()) {
@@ -147,7 +147,7 @@ class CyclingBlue : LinearOpMode() {
                         Robot.gainMode = GainMode.IDLE
                     }
                     if (timer.seconds() > 29) {
-                        Deposit.allowLift = false
+                        deposit.liftDown()
                         robot.followTrajectorySequenceAsync(parkEmergency)
                         while (robot.isBusy && opModeIsActive()) {
                             robot.update()
@@ -197,9 +197,7 @@ class CyclingBlue : LinearOpMode() {
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                .UNSTABLE_addDisplacementMarkerOffset(depositDelay) {
-                    Deposit.allowLift = true
-                }
+                .UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
                 .increaseGains(depositVelo)
                 .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
                 .defaultGains()

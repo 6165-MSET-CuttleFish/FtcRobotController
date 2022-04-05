@@ -34,9 +34,12 @@ public class Deposit extends Module<Deposit.State> {
     public static double outPosition3 = 0.32;
     public static double outPosition2 = 0.23;
     public static double outPosition1 = 0.23;
+    private double offsetOutPosition;
+    public static double outPositionIncrement;
     public static double extendIn = 0.26, extendOut = 0.0;
+    private double offsetExtendPosition;
+    public static double extendPositionIncrement;
     public static double holdingPosition = 0.4;
-    public static double tipDiff = 0.004;
     public static double inPosition = 0.5, higherInPosition = 0.47;
     public static double lockPosition = 0.72;
     public static double unlockPosition = 0.56;
@@ -44,9 +47,9 @@ public class Deposit extends Module<Deposit.State> {
     public static double dumpServoPositionPerSecond = 0.5;
     public static double extensionServoPositionPerSecond = 0.6;
     public static boolean isLoaded;
-    public static boolean shouldCounterBalance = true;
+    public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.13;
-    public static boolean allowLift = false;
+    private boolean allowLift = false;
     @Override
     public boolean isTransitioningState() {
         return extension.isTransitioning() || arm.isTransitioning() || Math.abs(getLastError()) > allowableDepositError;
@@ -155,6 +158,8 @@ public class Deposit extends Module<Deposit.State> {
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         switch (getState()) {
             case IN:
+                offsetOutPosition = 0.0;
+                offsetExtendPosition = 0.0;
                 if (!Deposit.isLoaded) unlock();
                 flipIn();
                 if (!extension.isTransitioning()) {
@@ -186,7 +191,7 @@ public class Deposit extends Module<Deposit.State> {
             case HOLDING:
                 holdingPosition();
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (Deposit.allowLift) {
+                if (allowLift) {
                     prepPlatform(getLevel());
                 }
                 break;
@@ -201,7 +206,7 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 intakeCleared = false;
                 setState(getNeededOutState(getLevel()));
-                if (!Deposit.allowLift) {
+                if (!allowLift) {
                     flipIn();
                     setState(State.IN);
                 }
@@ -213,14 +218,14 @@ public class Deposit extends Module<Deposit.State> {
                 double diff = kickPosition - lockPosition;
                 if (getState() == State.SOFT_DUMP) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
                 else lock.setPosition(kickPosition);
-                if (!Deposit.allowLift) {
+                if (!allowLift) {
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }
                     setState(State.IN);
                 }
                 if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
-                    Deposit.allowLift = false;
+                    allowLift = false;
                     if (getPreviousState() == State.OUT1) {
                         intake.createClearance();
                     }
@@ -252,6 +257,26 @@ public class Deposit extends Module<Deposit.State> {
         }
     }
 
+    public void liftUp() {
+        allowLift = true;
+    }
+
+    public void liftDown() {
+        allowLift = false;
+    }
+
+    public void toggleLift() {
+        allowLift = !allowLift;
+    }
+
+    public void incrementArmPosition(double pwr) {
+        offsetOutPosition += pwr * outPositionIncrement;
+    }
+
+    public void incrementLinkagePosition(double pwr) {
+        offsetExtendPosition += pwr * extendPositionIncrement;
+    }
+
     private Level getLevel() {
         if (getState() == State.IN) return Level.LEVEL1;
         return defaultLevel;
@@ -265,7 +290,7 @@ public class Deposit extends Module<Deposit.State> {
                 ticksToInches(slides.getCurrentPosition()) * Math.sin(angle)
         );
         Vector2d extensionVec = new Vector2d().plus(slidesVec);
-        if (platformIsOut(getState())) {
+        if (platformIsOut()) {
             extensionVec = new Vector2d(13.4252).div(2).plus(slidesVec);
         }
         //Vector2d armVec = arm.getVector().plus(extensionVec);
@@ -328,14 +353,7 @@ public class Deposit extends Module<Deposit.State> {
                 outPos = outPosition1;
                 break;
         }
-        switch (balance) {
-            case BALANCED:
-                case TOWARD:
-                return outPos - tipDiff;
-                case AWAY:
-                    return outPos + tipDiff;
-            }
-        return outPos;
+        return outPos + offsetOutPosition;
     }
 
     /**
@@ -344,7 +362,7 @@ public class Deposit extends Module<Deposit.State> {
     private void flipOut(Level state) {
         double position = outPosition(state);
         arm.setPosition(position);
-        extension.setPosition(extendOut);
+        extension.setPosition(extendOut + offsetExtendPosition);
     }
 
     private void holdingPosition() {
@@ -410,10 +428,10 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut(getState()) || getState() == State.SOFT_DUMP;
+        return getState() == State.DUMPING || platformIsOut() || getState() == State.SOFT_DUMP;
     }
 
-    public boolean platformIsOut(State state) {
-        return state == State.OUT1 || state == State.OUT2 || state == State.OUT3;
+    public boolean platformIsOut() {
+        return getState() == State.OUT1 || getState() == State.OUT2 || getState() == State.OUT3;
     }
 }

@@ -61,7 +61,7 @@ class CarouselRed : LinearOpMode() {
             telemetry.addData("Location", location)
             telemetry.update()
         }
-        Deposit.allowLift = false
+        deposit.liftDown()
         val left = leftAuto()
         val right = rightAuto()
         val mid = midAuto()
@@ -102,7 +102,7 @@ class CarouselRed : LinearOpMode() {
             .turn(Math.toRadians(90.0).flip(blue))
             .liftUp(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                Deposit.allowLift = true
+                deposit.liftUp()
             }
             .waitSeconds(0.5)
             .setReversed(true)

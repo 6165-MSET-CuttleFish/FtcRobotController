@@ -84,7 +84,7 @@ public class SingleDriverPractice extends LinearOpMode {
                 balance = Balance.TOWARD;
             }
             if (liftButton.wasJustPressed()) {
-                Deposit.allowLift = true;
+                deposit.toggleLift();
             }
         }
     }

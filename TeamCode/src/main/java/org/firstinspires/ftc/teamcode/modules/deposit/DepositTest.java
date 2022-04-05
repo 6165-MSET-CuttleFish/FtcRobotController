@@ -42,13 +42,6 @@ public class DepositTest extends ModuleTest {
         packet.put("LB", tippedAway.getState());
         packet.put("RB", tippedToward.getState());
         intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
-//        if (gamepad1.b) {
-//            Deposit.isLoaded = true;
-//            deposit.prepPlatform(deposit.g);
-//        }
-        if (farDeposit.wasJustPressed()) {
-            Deposit.allowLift = !Deposit.allowLift;
-        }
         if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
             gamepad1.rumble(500);
             gamepad2.rumble(500);
