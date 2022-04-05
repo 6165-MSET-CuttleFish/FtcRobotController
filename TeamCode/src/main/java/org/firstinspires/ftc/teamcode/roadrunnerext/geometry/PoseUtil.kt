@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.roadrunnerext
+package org.firstinspires.ftc.teamcode.roadrunnerext.geometry
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.geometry.Pose2d
 import com.arcrobotics.ftclib.geometry.Rotation2d
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 
 fun Pose2d.toRRPose2d(): com.acmerobotics.roadrunner.geometry.Pose2d {
     return com.acmerobotics.roadrunner.geometry.Pose2d(this.x, this.y, this.heading)
@@ -74,7 +72,12 @@ fun Vector2d.polarAdd (distance: Double, angle: Double) : Vector2d {
 fun Vector2d.toPose (angle: Double) : com.acmerobotics.roadrunner.geometry.Pose2d {
     return com.acmerobotics.roadrunner.geometry.Pose2d(this, angle)
 }
+
 fun Vector2d.angleTo (vector2d: Vector2d): Double {
     return Coordinate.toPoint(this).angleTo(
         Coordinate.toPoint(vector2d))
+}
+
+fun Vector2d.to3d(z: Double): Vector3d {
+    return Vector3d(x, y, z)
 }

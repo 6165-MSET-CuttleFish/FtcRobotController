@@ -11,13 +11,13 @@ import com.acmerobotics.roadrunner.trajectory.*
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
 import com.acmerobotics.roadrunner.util.Angle.norm
-import org.firstinspires.ftc.teamcode.roadrunnerext.angleTo
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.angleTo
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.*
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Coordinate
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.min
