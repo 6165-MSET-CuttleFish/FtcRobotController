@@ -85,10 +85,12 @@ class Relocalizer(hardwareMap: HardwareMap, private val imu: BNO055IMU) : Module
         val rawYDist = ySensor.getDistance(DistanceUnit.INCH)
         val xDist = rawXDist * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
         val yDist = rawYDist * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
-//        Context.packet.put("XDIST", xDist)
-//        Context.packet.put("YDIST", yDist)
-//        Context.packet.put("RAW_XDIST", rawXDist)
-//        Context.packet.put("RAW_YDIST", rawYDist)
+
+            Context.packet.put("YDIST", yDist)
+            Context.packet.put("XDIST", xDist)
+            Context.packet.put("RAW_XDIST", rawXDist)
+            Context.packet.put("RAW_YDIST", rawYDist)
+
         val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
         val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)
         val xPoseEstimate =

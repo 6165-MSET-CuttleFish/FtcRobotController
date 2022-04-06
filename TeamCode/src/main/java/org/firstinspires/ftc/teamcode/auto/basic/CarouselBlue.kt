@@ -95,7 +95,7 @@ class CarouselBlue : LinearOpMode() {
             .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(90.0).flip(blue))
-            .liftUp(deposit, getLevel(location))
+            .liftLevel(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 deposit.liftUp()
             }

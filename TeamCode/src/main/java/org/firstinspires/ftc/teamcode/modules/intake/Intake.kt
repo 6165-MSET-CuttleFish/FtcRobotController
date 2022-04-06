@@ -46,7 +46,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var blueTolerance = 0.05
         @JvmField
-        var smoothingCoeffecientDistance = 0.8
+        var smoothingCoeffecientDistance = 0.7
         @JvmField
         var smoothingCoefficientAlpha = 0.8
         @JvmField
@@ -54,7 +54,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var distanceTolerance = 12.0
         @JvmField
-        var transferTolerance = 12.0
+        var transferTolerance = 9.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -81,11 +81,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        // Extend range of servo by 30°
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
         extensionServos.init(inPosition)
-        flip.init(raisedPosition)
         flip.init(raisedPosition)
         setActuators(flip, intake)
     }
@@ -112,7 +110,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        distanceFilter.a = if (state == State.OUT) 0.75 else smoothingCoeffecientDistance
+        distanceFilter.a = smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
         val unfilteredBlue = blockSensor.normalizedColors.blue.toDouble()
@@ -122,7 +120,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         when (state) {
             State.OUT -> {
                 deploy()
-                if (containsBlock) {
+                if (containsBlock && !flip.isTransitioning) {
                     state = State.IN
                 }
                 containsBlock = distance < intakeLimit
@@ -208,7 +206,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     fun createClearance() {
-        state = State.CREATE_CLEARANCE
+        if (state != State.OUT) state = State.CREATE_CLEARANCE
     }
 
     fun counterBalance() {

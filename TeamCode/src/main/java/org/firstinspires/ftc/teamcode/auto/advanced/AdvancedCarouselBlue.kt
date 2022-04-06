@@ -64,7 +64,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
                     duckLocation().vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
-                .liftUp(deposit, Deposit.Level.LEVEL3)
+                .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineTo(dumpPosition().vec(), dumpPosition().heading)
                 .setReversed(false)

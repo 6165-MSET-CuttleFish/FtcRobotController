@@ -24,6 +24,7 @@ public class RelocalizationTest extends LinearOpMode {
         waitForStart();
         Async.start(() -> {
             while (opModeIsActive()) {
+                // sleep(10);
                 robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
             }
         });

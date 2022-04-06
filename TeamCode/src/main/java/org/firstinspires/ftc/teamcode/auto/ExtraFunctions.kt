@@ -21,7 +21,7 @@ fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
     return this
 }
 
-fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder<*> {
+fun TrajectorySequenceBuilder<*>.liftLevel(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
         deposit.setLevel(level)
     }

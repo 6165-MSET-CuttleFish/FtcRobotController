@@ -31,7 +31,7 @@ public class SingleDriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, tippedToward, tippedAway, liftButton, softDump;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, softDump;
     ToggleButtonReader carouselButton;
 
     Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
@@ -50,15 +50,11 @@ public class SingleDriverPractice extends LinearOpMode {
                 levelIncrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
                 levelDecrement = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 liftButton = new ButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                tippedAway = new ButtonReader(secondary, GamepadKeys.Button.LEFT_BUMPER),
-                tippedToward = new ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                dumpButton = new ButtonReader(primary, GamepadKeys.Button.A),
-
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
         };
         waitForStart();
         while (opModeIsActive()) {
-
             robot.update();
             for (KeyReader reader : keyReaders) {
                 reader.readValue();
@@ -74,53 +70,51 @@ public class SingleDriverPractice extends LinearOpMode {
             }
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             robot.setWeightedDrivePower(drivePower);
-            setIntake();
+            if (deposit.getState() == Deposit.State.IN || deposit.getState() == Deposit.State.CREATE_CLEARANCE) setIntake();
             setDeposit();
-            if (tippedAway.isDown() && tippedToward.isDown()) {
-                balance = Balance.BALANCED;
-            } else if (tippedAway.isDown()) {
-                balance = Balance.AWAY;
-            } else if (tippedToward.isDown()) {
-                balance = Balance.TOWARD;
-            }
             if (liftButton.wasJustPressed()) {
                 deposit.toggleLift();
             }
         }
     }
     void setIntake() {
-        if (intakeButton.isDown()) {
-            intake.setPower(1);
-        } else {
-            intake.setPower(0);
-        }
+        intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
     }
 
     void setDeposit() {
-        if (levelIncrement.wasJustPressed()) {
-            switch (defaultDepositState) {
-                case LEVEL2:
-                    defaultDepositState = Deposit.Level.LEVEL3;
-                    break;
-                case LEVEL1:
-                    defaultDepositState = Deposit.Level.LEVEL2;
-                    break;
+        if (!deposit.platformIsOut()) {
+            if (levelIncrement.wasJustPressed()) {
+                switch (defaultDepositState) {
+                    case LEVEL2:
+                        defaultDepositState = Deposit.Level.LEVEL3;
+                        break;
+                    case LEVEL1:
+                        defaultDepositState = Deposit.Level.LEVEL2;
+                        break;
+                }
+                deposit.setLevel(defaultDepositState);
+            } else if (levelDecrement.wasJustPressed()) {
+                switch (defaultDepositState) {
+                    case LEVEL3:
+                        defaultDepositState = Deposit.Level.LEVEL2;
+                        break;
+                    case LEVEL2:
+                        defaultDepositState = Deposit.Level.LEVEL1;
+                        break;
+                }
+                deposit.setLevel(defaultDepositState);
             }
-            deposit.setLevel(defaultDepositState);
-        } else if (levelDecrement.wasJustPressed()) {
-            switch (defaultDepositState) {
-                case LEVEL3:
-                    defaultDepositState = Deposit.Level.LEVEL2;
-                    break;
-                case LEVEL2:
-                    defaultDepositState = Deposit.Level.LEVEL1;
-                    break;
+        } else {
+            if (levelIncrement.wasJustPressed()) {
+                deposit.incrementArmPosition(1.0);
+            } else if (levelDecrement.wasJustPressed()) {
+                deposit.incrementArmPosition(-1.0);
             }
-            deposit.setLevel(defaultDepositState);
         }
-
         if (dumpButton.wasJustPressed()) {
             deposit.dump();
+        } else if (gamepad1.right_trigger > 0.5) {
+            deposit.softDump();
         }
     }
 }

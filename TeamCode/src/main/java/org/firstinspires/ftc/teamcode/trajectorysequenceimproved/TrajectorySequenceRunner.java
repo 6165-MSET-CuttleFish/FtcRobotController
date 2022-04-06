@@ -60,12 +60,11 @@ public class TrajectorySequenceRunner<T> {
     private final NanoClock clock;
     private double offset, segmentOffset;
     private final ElapsedTime time = new ElapsedTime();
-    private final ElapsedTime segmentDuration = new ElapsedTime();
     private T state;
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
-    private int currentSegmentIndex;
+    public int currentSegmentIndex;
     private int lastSegmentIndex;
 
     private Pose2d lastPoseError = new Pose2d();
@@ -134,7 +133,6 @@ public class TrajectorySequenceRunner<T> {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
-                segmentDuration.reset();
                 if (lastSegmentIndex >= 0) {
                     if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
                         offset += time.seconds();
@@ -367,12 +365,11 @@ public class TrajectorySequenceRunner<T> {
     public void nextSegment(boolean offsetNextSegment) {
         SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
         if (currentSegment instanceof TrajectorySegment) {
-            double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
-            offset -= remaining;
-            if (offsetNextSegment) segmentOffset = remaining > 0 ? remaining : 0;
+            double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - follower.elapsedTime();
+            // offset -= remaining;
+            // if (offsetNextSegment) segmentOffset = remaining > 0 ? remaining : 0;
+            // state = null;
+            currentSegmentIndex++;
         }
-        state = null;
-        currentSegmentIndex++;
-        segmentDuration.reset();
     }
 }

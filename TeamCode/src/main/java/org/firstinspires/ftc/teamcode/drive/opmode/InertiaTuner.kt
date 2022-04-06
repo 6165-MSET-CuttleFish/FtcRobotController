@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode
 
 import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -9,19 +10,13 @@ import kotlin.Throws
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import org.firstinspires.ftc.teamcode.drive.Robot
+import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.util.field.Context
 import java.util.*
 
 @TeleOp
 @Config
-class ForceCalculator : LinearOpMode() {
-    companion object {
-        @JvmField
-        var power = 0.5
-        @JvmField
-        var mass = 19.0509 // in kg
-    }
-    // F = ma
+class InertiaTuner : LinearOpMode() {
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         val robot = Robot<Any?>(this)
@@ -29,23 +24,16 @@ class ForceCalculator : LinearOpMode() {
         val modeToggle = ToggleButtonReader(gamepadEx, GamepadKeys.Button.A)
         waitForStart()
         while (opModeIsActive()) {
+            robot.setDriveSignal(DriveSignal( Pose2d(0.0, 0.0, Math.toRadians(50.0))))
             robot.update()
-            modeToggle.readValue()
             if (modeToggle.state) {
-                robot.setWeightedDrivePower(Pose2d(-power))
+                robot.deposit.liftUp()
+                Deposit.isLoaded = true
+                robot.deposit.setLevel(Deposit.Level.LEVEL3)
             } else {
-                robot.setWeightedDrivePower(
-                    Pose2d(
-                        (-gamepad1.left_stick_y).toDouble(),
-                        0.0,
-                        (-gamepad1.right_stick_x).toDouble()
-                    )
-                )
+                robot.deposit.liftDown()
+                Deposit.isLoaded = false
             }
-            val accel = robot.getPoseAcceleration() ?: Pose2d()
-            Context.packet.put("Linear Acceleration", accel.x)
-            Context.packet.put("Angular Acceleration", accel.heading)
-            Context.packet.put("Force Estimate", accel.x * mass)
         }
     }
 }

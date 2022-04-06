@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.modules.Module;
@@ -20,7 +21,7 @@ public class Capstone extends Module<Capstone.State> {
     private double horizontalPos = 0.5, verticalPos = 0.45;
     public static double passivePower = 0.0;
     private CRServo tape;
-    private ControllableServos verticalTurret, horizontalTurret;
+    private Servo verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
     private double verticalInc, horizontalInc;
     public static double vUpperLimit = 0.62, vLowerLimit = 0.37;
@@ -53,8 +54,8 @@ public class Capstone extends Module<Capstone.State> {
     public void internalInit() {
         tape = hardwareMap.crservo.get("tape");
         tape.setDirection(DcMotorSimple.Direction.REVERSE);
-        horizontalTurret = new ControllableServos(hardwareMap.servo.get("hTurret"));
-        verticalTurret = new ControllableServos(hardwareMap.servo.get("vTurret"));
+        horizontalTurret = hardwareMap.servo.get("hTurret");
+        verticalTurret = hardwareMap.servo.get("vTurret");
     }
 
     double power;
@@ -98,8 +99,8 @@ public class Capstone extends Module<Capstone.State> {
         if (Math.abs(pwr) > horizontalTolerance) horizontalPos += servoIncrementHorizontalLarge * pwr;
     }
     public void setHorizontalAngle(double angle) {
-        horizontalTurret.setAngle(angle);
-        horizontalPos = horizontalTurret.getPosition();
+//        horizontalTurret.setAngle(angle);
+//        horizontalPos = horizontalTurret.getPosition();
     }
     public void incrementVertical(double pwr) {
         if (Math.abs(pwr) > verticalTolerance) verticalPos += servoIncrementVerticalLarge * pwr;
@@ -108,8 +109,8 @@ public class Capstone extends Module<Capstone.State> {
         if (Math.abs(pwr) > verticalTolerance) verticalInc = servoIncrementVertical * pwr;
     }
     public void setVerticalAngle(double angle) {
-        verticalTurret.setAngle(angle);
-        verticalPos = verticalTurret.getPosition();
+//        verticalTurret.setAngle(angle);
+//        verticalPos = verticalTurret.getPosition();
     }
     public void setTape(double pwr) {
         power = pwr;

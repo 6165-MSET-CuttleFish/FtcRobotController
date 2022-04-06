@@ -120,6 +120,7 @@ class DriverPractice : LinearOpMode() {
             if (depositLift.wasJustPressed()) {
                 deposit.toggleLift()
             }
+            deposit.setFarDeposit(!ninjaOverride.state)
             if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
@@ -150,11 +151,12 @@ class DriverPractice : LinearOpMode() {
                     0.0
                 ).div(8.0)
                 setCapstone()
+                setCarousel()
+            } else {
+                setDeposit()
+                if (deposit.state == Deposit.State.IN || deposit.state == Deposit.State.CREATE_CLEARANCE) setIntake()
             }
             robot.setWeightedDrivePower(drivePower)
-            if (deposit.state == Deposit.State.IN) setIntake()
-            setDeposit()
-            setCarousel()
         }
     }
 
@@ -197,13 +199,13 @@ class DriverPractice : LinearOpMode() {
                 deposit.setLevel(defaultDepositState)
             }
         } else {
-            if (levelIncrement.wasJustPressed()) {
-                deposit.offsetOutPosition += 0.1
-            } else if (levelDecrement.wasJustPressed()) {
-                deposit.offsetOutPosition -= 0.1
+            if (levelIncrement.wasJustPressed() || capVerticalInc.wasJustPressed()) {
+                deposit.incrementArmPosition(1.0)
+            } else if (levelDecrement.wasJustPressed() || capVerticalDec.wasJustPressed()) {
+                deposit.incrementArmPosition(-1.0)
             }
         }
-        if (hardDump1.wasJustPressed()) {
+        if (hardDump1.wasJustPressed() || hardDump2.wasJustPressed()) {
             if (Deposit.isLoaded) {
                 deposit.dump()
                 gamepad1.rumble(200)
@@ -212,10 +214,12 @@ class DriverPractice : LinearOpMode() {
                 Deposit.isLoaded = true
             }
         }
-        if (softDump1.isDown) {
-            deposit.softDump()
-            gamepad1.rumble(100)
-            gamepad2.rumble(100)
+        if (deposit.platformIsOut()) {
+            if (softDump1.isDown || softDump2.isDown) {
+                deposit.softDump()
+                gamepad1.rumble(100)
+                gamepad2.rumble(100)
+            }
         }
     }
 

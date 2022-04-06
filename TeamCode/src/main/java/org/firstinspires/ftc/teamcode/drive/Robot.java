@@ -92,7 +92,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double kStaticIncrease = 19;
-    public static double kvIncrease = 20;
+    public static double kvIncrease = 2;
     public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -130,7 +130,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
-    private final TrajectorySequenceRunner<T> trajectorySequenceRunner;
+    public final TrajectorySequenceRunner<T> trajectorySequenceRunner;
     private final FtcDashboard dashboard;
 
     public Robot(OpMode opMode, Pose2d pose2d) {
@@ -408,7 +408,7 @@ public class Robot<T> extends ImprovedTankDrive {
         current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
-            current += module.getCurrent(CurrentUnit.AMPS);
+            if (opModeType != OpModeType.AUTO) current += module.getCurrent(CurrentUnit.AMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -474,7 +474,7 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 8;
+    public static double powerChangePerInertia = 6;
 
     public void waitForIdle() {
         waitForIdle(() -> {

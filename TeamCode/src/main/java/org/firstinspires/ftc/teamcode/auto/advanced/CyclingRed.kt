@@ -179,6 +179,7 @@ class CyclingRed : LinearOpMode() {
                 }
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
+                .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeVelo)
                 //.carouselOn(carousel)
                 .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
@@ -192,7 +193,6 @@ class CyclingRed : LinearOpMode() {
                 .relocalize(robot)
                 .setReversed(true)
                 .intakeOff(intake)
-                .liftUp(deposit, Deposit.Level.LEVEL3)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI)
@@ -224,7 +224,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .liftUp(deposit, Deposit.Level.LEVEL1)
+                .liftLevel(deposit, Deposit.Level.LEVEL1)
                 .splineTo(allianceHub.center.polarAdd(
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
@@ -238,7 +238,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .liftUp(deposit, Deposit.Level.LEVEL2)
+                .liftLevel(deposit, Deposit.Level.LEVEL2)
                 .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
                 .dump(deposit)
@@ -249,7 +249,7 @@ class CyclingRed : LinearOpMode() {
         val trajectoryBuilder =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setReversed(true)
-                .liftUp(deposit, Deposit.Level.LEVEL3)
+                .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(depositDistance,
                         Math.toRadians(depositingAngle).flip(blue)),
