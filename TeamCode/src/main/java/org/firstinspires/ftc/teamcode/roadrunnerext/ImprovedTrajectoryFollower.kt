@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.Robot
 import kotlin.math.abs
+import kotlin.math.hypot
 
 /**
  * Generic [Trajectory] follower for time-based pose reference tracking.
@@ -92,9 +93,8 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
         }
 
         val trajEndError = trajectory.end() - currentPose
-        admissible = abs(trajEndError.x) < admissibleError.x &&
-                abs(trajEndError.y) < admissibleError.y &&
-                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
+        admissible = abs(hypot(trajEndError.x, trajEndError.y)) < admissibleError.x &&
+            abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
             internalUpdate(currentPose, currentRobotVel)
         } else {
