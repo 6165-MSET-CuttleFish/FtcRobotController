@@ -153,6 +153,7 @@ public class TrajectorySequenceRunner<T> {
             }
 
             double deltaTime = now - currentSegmentStartTime;
+            state = null;
 
             if (currentSegment instanceof TrajectorySegment) {
                 Trajectory currentTrajectory = ((TrajectorySegment) currentSegment).getTrajectory();

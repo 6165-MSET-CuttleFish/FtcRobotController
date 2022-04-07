@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
@@ -32,6 +33,7 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.util.Async
 import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.Throws
+import kotlin.math.sin
 
 @Autonomous
 @Config
@@ -47,19 +49,20 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var coast = -55.5
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 26.0
+        @JvmField var depositDelay = 10.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 20.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.1
+        @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
         @JvmField var depositDistance = 25.0
         @JvmField var cyclingDistance = 25.0
         @JvmField var divConstant = 9.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
-        @JvmField var depositingTimeout = 0.5
+        @JvmField var depositingTimeout = 0.2
         @JvmField var intakeError = 2.0
+        @JvmField var depositError = 8.0
         @JvmField var intakeVelo = 28.0
         @JvmField var depositVelo = MAX_VEL
         @JvmField var angleOffset = -5.0
@@ -129,7 +132,7 @@ class CyclingBlue : LinearOpMode() {
             when (robot.pathState) {
                 PathState.INTAKING -> {
                     admissibleError = Pose2d(intakeError, intakeError, Math.toRadians(20.0))
-                    Robot.admissibleTimeout = 0.5
+                    Robot.admissibleTimeout = 0.2
                     Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
                     if (robot.poseEstimate.x > 40 && robot.intake.containsBlock && !incremented) {
                         robot.nextSegment(true)
@@ -138,7 +141,7 @@ class CyclingBlue : LinearOpMode() {
                 }
                 PathState.DUMPING -> {
                     incremented = false
-                    admissibleError = Pose2d(2.0, 2.0, Math.toRadians(10.0))
+                    admissibleError = Pose2d(depositError, depositError, Math.toRadians(10.0))
                     Robot.admissibleTimeout = depositingTimeout
                     Robot.gainMode = if (robot.isOverPoles) GainMode.BACKWARD else GainMode.IDLE
                     if (timer.seconds() >= 29) {
@@ -158,10 +161,10 @@ class CyclingBlue : LinearOpMode() {
         }
     }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(20.0, 0.0, Math.toRadians(-70.0)))
+        return DriveSignal(Pose2d(0.0, 0.0, Math.toRadians(Range.clip(500.0*sin(5*t), -60.0, 60.0))))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
-        for (i in 1..5) {
+        for (i in 1..6) {
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)

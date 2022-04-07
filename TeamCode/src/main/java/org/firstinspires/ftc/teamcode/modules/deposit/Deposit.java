@@ -39,9 +39,9 @@ public class Deposit extends Module<Deposit.State> {
     private double offsetOutPosition;
     public static double
             outOffsetPower,
-            outOffsetIncrement = 0.015;
+            outOffsetIncrement = -0.05;
     public static double
-            extendIn = 0.26,
+            extendIn = 0.32,
             extendOut3 = 0.26 / 2,
             extendOut2 = 0.07,
             extendOut1 = 0.07,
@@ -50,17 +50,17 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.4;
+    public static double holdingPosition = 0.55;
     public static double
             inPosition = 0.39,
             higherInPosition = 0.41;
     public static double
-            lockPosition = 0.72,
-            unlockPosition = 0.56,
+            lockPosition = 0.65,
+            unlockPosition = 0.53,
             kickPosition = 0.95;
     public static double
-            armServoPositionPerSecond = 0.5,
-            extensionServoPositionPerSecond = 0.6;
+            armServoPositionPerSecond = 1.0,
+            extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.13;
@@ -179,11 +179,6 @@ public class Deposit extends Module<Deposit.State> {
                 if (!extension.isTransitioning()) {
                     pidController.setTargetPosition(0.0);
                 }
-                if (getPreviousState() == State.DUMPING || getPreviousState() == State.SOFT_DUMP) {
-                    if (getSecondsSpentInState() < 0.1) {
-                        freight = Freight.NONE;
-                    }
-                }
                 if (isLoaded) {
                     setState(State.LOCKING);
                 }
@@ -223,8 +218,7 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 intakeCleared = false;
                 if (!allowLift) {
-                    flipIn();
-                    setState(State.IN);
+                    setState(State.HOLDING);
                 }
                 lock();
                 flipOut(getLevel());
@@ -247,6 +241,7 @@ public class Deposit extends Module<Deposit.State> {
                     }
                     setState(State.IN);
                     isLoaded = false;
+                    freight = Freight.NONE;
                 }
                 break;
         }
@@ -269,8 +264,10 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
-            Context.packet.put("Extension Real Distance", extension.getRealDisplacement());
+            Context.packet.put("Extension Real Position", extension.getRealPosition());
+            Context.packet.put("IsFarDeposit", farDeposit);
         }
+        Context.packet.put("Freight", freight);
     }
 
     public void liftUp() {
@@ -329,7 +326,7 @@ public class Deposit extends Module<Deposit.State> {
         return defaultLevel;
     }
 
-    public static double weightSlides = 0.8, weightArm = 0.5, weightExtension = 0.3;
+    public static double weightSlides = 0.9, weightArm = 0.5, weightExtension = 0.4;
 
     public Vector2d getModuleWeightedVector() {
         Vector2d slidesVec = new Vector2d(
@@ -432,6 +429,7 @@ public class Deposit extends Module<Deposit.State> {
     private void holdingPosition() {
         double position = holdingPosition;
         arm.setPosition(position);
+        extension.setPosition(inPosition);
     }
 
     /**

@@ -53,8 +53,9 @@ class ControllableServos(vararg servos: Servo) :
     var position: Double
         get() = servos[0].position
         set(var1) {
+            val position = position
+            servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
             if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000 && initted) {
-                servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
                 return
             }
             initted = true

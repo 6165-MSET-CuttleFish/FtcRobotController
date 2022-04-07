@@ -97,7 +97,7 @@ class DriverPractice : LinearOpMode() {
             TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER).also {
                 softDump2 = it
             },
-            ToggleButtonReader(primary, GamepadKeys.Button.LEFT_STICK_BUTTON).also {
+            ToggleButtonReader(primary, GamepadKeys.Button.A).also {
                 ninjaOverride = it
             },
         )
@@ -120,7 +120,10 @@ class DriverPractice : LinearOpMode() {
             if (depositLift.wasJustPressed()) {
                 deposit.toggleLift()
             }
-            deposit.setFarDeposit(!ninjaOverride.state)
+            if (ninjaOverride.wasJustPressed()) {
+                deposit.toggleFarDeposit()
+                gamepad1.rumble(1.0, 1.0, 200)
+            }
             if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
             if (gamepad1.touchpad) {
                 if (!toggleMode) {

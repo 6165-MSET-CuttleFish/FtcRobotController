@@ -467,6 +467,7 @@ public class Robot<T> extends ImprovedTankDrive {
                     signal.getAccel()
             );
             setDriveSignal(newSignal);
+            Context.packet.put("Compensated Heading Velo", Math.toDegrees(signal.getVel().getHeading() * inertialChange * powerChangePerInertia));
         }
         double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
         double inertialChange = depoDisplacementSquared * deposit.getWeight();

@@ -38,13 +38,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var midPosition = 0.4
         @JvmField
-        var stallingSpeed = 0.5
+        var stallingSpeed = 0.9
         @JvmField
         var extensionPositionPerSecond = 0.6
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.05
+        var blueTolerance = 0.03
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField
@@ -73,7 +73,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         )
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
-    private var extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
+    private var extensionDistance = hardwareMap.get(ColorRangeSensor::class.java, "extDistance")
     private var power = 0.0
     var containsBlock = false
     private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
@@ -138,11 +138,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                             Freight.CUBE
                         }
                     } else {
-                        val dist = extensionDistance.getDistance(DistanceUnit.CM)
-                        if (dist > 500) {
-                            extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
-                        }
-                        if (dist < distanceTolerance) {
+                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
                             state = State.TRANSFER
                         }
                     }
