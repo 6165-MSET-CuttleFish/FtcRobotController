@@ -34,7 +34,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.75,
-            outPosition2 = 0.84,
+            outPosition2 = 0.80,
             outPosition1 = 0.9;
     private double offsetOutPosition;
     public static double
@@ -43,8 +43,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             extendIn = 0.32,
             extendOut3 = 0.26 / 2,
-            extendOut2 = 0.07,
-            extendOut1 = 0.07,
+            extendOut2 = 0.03,
+            extendOut1 = 0.03,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -79,7 +79,7 @@ public class Deposit extends Module<Deposit.State> {
         DUMPING(0.15),
         SOFT_DUMP(0.1),
         OUT;
-        private final Double timeOut;
+        private final double timeOut;
         @Override
         public Double getTimeOut() {
             return this.timeOut;
@@ -88,7 +88,7 @@ public class Deposit extends Module<Deposit.State> {
             this.timeOut = timeOut;
         }
         State() {
-            this.timeOut = null;
+            this.timeOut = 0.0;
         }
     }
 
@@ -159,6 +159,7 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
         arm.setPosition(inPosition);
+        if (opModeType == OpModeType.AUTO) arm.setPosition(0.45);
         setActuators(lock, slides);
     }
 
@@ -474,10 +475,14 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return getState() == State.DUMPING || platformIsOut() || getState() == State.SOFT_DUMP;
+        return (isDumping() && getSecondsSpentInState() < (getState().timeOut + dumpTimeOut) * 0.6) || platformIsOut();
     }
 
     public boolean platformIsOut() {
         return getState() == State.OUT;
+    }
+
+    public boolean isDumping() {
+        return getState() == State.DUMPING || getState() == State.SOFT_DUMP;
     }
 }

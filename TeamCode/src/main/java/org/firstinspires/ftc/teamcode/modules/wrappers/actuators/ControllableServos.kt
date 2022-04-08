@@ -33,7 +33,7 @@ class ControllableServos(vararg servos: Servo) :
         )) * 1000) / 1000
     var angle: Double
         set(value) {
-            position = (value - angleOffset) / servoRotation
+            position = (value + angleOffset) / servoRotation
         }
         get() = (position * servoRotation) - angleOffset
     val realAngle: Double
@@ -47,6 +47,7 @@ class ControllableServos(vararg servos: Servo) :
     fun calibrateOffset(position: Double, angle: Double) {
         // angle = (position * servoRotation) - angleOffset
         // angleOffset = angle - pos*servoRot
+        // position = (angle + angleOffset) / servoRotation
         angleOffset = angle - position * servoRotation
     }
 
@@ -54,8 +55,8 @@ class ControllableServos(vararg servos: Servo) :
         get() = servos[0].position
         set(var1) {
             val position = position
-            servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
             if (round(position * 1000) / 1000 == round(var1 * 1000) / 1000 && initted) {
+                servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
                 return
             }
             initted = true

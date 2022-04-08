@@ -257,6 +257,8 @@ public class TrajectorySequenceRunner<T> {
 
         packet.put("Path State Actual", state);
 
+        packet.put("Absolute Position Error", getLastPoseError().vec().norm());
+
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
         dashboard.sendTelemetryPacket(packet);

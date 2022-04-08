@@ -47,25 +47,24 @@ class CyclingBlue : LinearOpMode() {
     private val blue = true
     companion object {
         @JvmField var coast = -55.5
-        @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 10.0
+        @JvmField var stop = 52.0
+        @JvmField var intakeDelay = 20.0
+        @JvmField var depositDelay = 5.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 20.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var depositDistance = 25.0
-        @JvmField var cyclingDistance = 25.0
-        @JvmField var divConstant = 9.0
+        @JvmField var cyclingDistance = 29.0
+        @JvmField var divConstant = 6.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
-        @JvmField var depositingTimeout = 0.2
-        @JvmField var intakeError = 2.0
-        @JvmField var depositError = 8.0
-        @JvmField var intakeVelo = 28.0
+        @JvmField var depositingTimeout = 0.5
+        @JvmField var intakeError = 7.0
+        @JvmField var depositError = 7.0
+        @JvmField var intakeVelo = 30.0
         @JvmField var depositVelo = MAX_VEL
-        @JvmField var angleOffset = -5.0
+        @JvmField var angleOffset = -6.0
     }
 
     enum class PathState {
@@ -160,8 +159,12 @@ class CyclingBlue : LinearOpMode() {
             }
         }
     }
+    fun randomRange(lower: Double, upper: Double): Double{
+        return Math.random() * upper + Math.random() * lower
+    }
     private fun signalTurn(t: Double): DriveSignal {
-        return DriveSignal(Pose2d(0.0, 0.0, Math.toRadians(Range.clip(500.0*sin(5*t), -60.0, 60.0))))
+        if (robot.poseEstimate.x < 50) return DriveSignal(Pose2d(30.0))
+        return DriveSignal(Pose2d(Range.clip(50.0*sin(2*t), -5.0, 15.0), 0.0))
     }
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         for (i in 1..6) {
@@ -174,12 +177,18 @@ class CyclingBlue : LinearOpMode() {
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeVelo)
-                .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
+                .splineTo(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .defaultGains()
-                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue),0.0)
-                .waitWhile(::signalTurn) {
-                    intake.state == Intake.State.OUT
-                }
+                .splineTo(
+                    Vector2d(stop + i / divConstant, coast).flip(blue) + Vector2d(
+                        randomRange(-1.0, 5.0),
+                        randomRange(-1.0, 5.0)
+                    ).flip(blue),
+                    Math.toRadians(randomRange(-20.0, 20.0)).flip(blue)
+                )
+//                        .waitWhile(::signalTurn) {
+//                            intake.state == Intake.State.OUT
+//                        }
                 .waitSeconds(waitTime)
                 .relocalize(robot)
                 .setReversed(true)
@@ -247,7 +256,8 @@ class CyclingBlue : LinearOpMode() {
                 .setReversed(true)
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .splineTo(
-                    allianceHub.center.polarAdd(depositDistance,
+                    allianceHub.center.polarAdd(
+                        cyclingDistance,
                         Math.toRadians(depositingAngle).flip(blue)),
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),

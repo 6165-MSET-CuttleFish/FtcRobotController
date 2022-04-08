@@ -61,7 +61,6 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.util.field.Context.location;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
-import static org.firstinspires.ftc.teamcode.util.field.Context.pitch;
 import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
@@ -73,7 +72,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCO
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
-import static org.firstinspires.ftc.teamcode.util.field.Context.tilt;
 
 /**
  * This class represents the robot and its drivetrain
@@ -475,7 +473,7 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 6;
+    public static double powerChangePerInertia = 3;
 
     public void waitForIdle() {
         waitForIdle(() -> {

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules.intake
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
@@ -14,6 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableSer
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
+import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
 import java.lang.Exception
@@ -36,7 +36,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var inPosition = 0.1
         @JvmField
-        var midPosition = 0.4
+        var midPosition = 0.34
         @JvmField
         var stallingSpeed = 0.9
         @JvmField
@@ -44,7 +44,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.03
+        var blueTolerance = 0.05
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField
@@ -78,6 +78,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     var containsBlock = false
     private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
     private var colorFilter = LowPassFilter(smoothingCoefficientAlpha, 0.0)
+    private var distanceMedian = MovingMedian(5)
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -103,9 +104,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    override fun isDoingInternalWork(): Boolean {
-        return state == State.OUT || state == State.TRANSFER
-    }
+    override fun isDoingInternalWork(): Boolean = state == State.OUT || state == State.TRANSFER
 
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
@@ -116,18 +115,19 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         val unfilteredBlue = blockSensor.normalizedColors.blue.toDouble()
         val blue = colorFilter.update(unfilteredBlue)
         val unfilteredDistance = distance
-        val distance = distanceFilter.update(unfilteredDistance)
+        val filteredDistance = distanceFilter.update(unfilteredDistance)
+        val medianDistance = distanceMedian.update(unfilteredDistance)
         when (state) {
             State.OUT -> {
                 deploy()
                 if (containsBlock && !flip.isTransitioning) {
                     state = State.IN
                 }
-                containsBlock = distance < intakeLimit
+                containsBlock = medianDistance < intakeLimit
             }
             State.IN -> {
                 retract()
-                if (distance < intakeLimit && isTransitioningState() && previousState == State.OUT) {
+                if (medianDistance < intakeLimit && isTransitioningState() && previousState == State.OUT) {
                     containsBlock = true
                 }
                 if (containsBlock) {
@@ -178,8 +178,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             Context.packet.put("Drop Real Position", flip.realPosition)
             Context.packet.put("Raw Blue", unfilteredBlue)
             Context.packet.put("Filtered Blue", blue)
-            Context.packet.put("Filtered Block Distance", distance)
-            Context.packet.put("Block Sensor Distance", unfilteredDistance)
+            Context.packet.put("Block Distance Filtered", filteredDistance)
+            Context.packet.put("Block Distance Median", medianDistance)
+            Context.packet.put("Block Distance Raw", unfilteredDistance)
             Context.packet.put("Extension Distance", extensionDistance.getDistance(DistanceUnit.CM))
         }
         val intakePose = modulePoseEstimate.polarAdd(7.7)
