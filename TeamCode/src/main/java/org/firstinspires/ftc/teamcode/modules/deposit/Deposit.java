@@ -52,14 +52,14 @@ public class Deposit extends Module<Deposit.State> {
             linkageOffsetIncrement = 0.1;
     public static double holdingPosition = 0.55;
     public static double
-            inPosition = 0.39,
-            higherInPosition = 0.41;
+            inPosition = 0.4,
+            higherInPosition = 0.4;
     public static double
-            lockPosition = 0.65,
-            unlockPosition = 0.53,
+            lockPosition = 0.58,
+            unlockPosition = 0.46,
             kickPosition = 0.95;
     public static double
-            armServoPositionPerSecond = 1.0,
+            armServoPositionPerSecond = 0.65,
             extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
@@ -159,7 +159,7 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
         arm.setPosition(inPosition);
-        if (opModeType == OpModeType.AUTO) arm.setPosition(0.45);
+        if (opModeType == OpModeType.AUTO) arm.setPosition(0.48);
         setActuators(lock, slides);
     }
 
@@ -206,7 +206,7 @@ public class Deposit extends Module<Deposit.State> {
             case HOLDING:
                 holdingPosition();
                 if (opModeType != OpModeType.AUTO) pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (allowLift) {
+                if (allowLift && !isTransitioningState()) {
                     setState(State.OUT);
                 }
                 break;
@@ -358,7 +358,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL3 = 12;
     public static double LEVEL2 = 3;
     public static double LEVEL1 = 2;
-    public static double allowableDepositError = 2;
+    public static double allowableDepositError = 8;
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(Level state) {
@@ -430,7 +430,7 @@ public class Deposit extends Module<Deposit.State> {
     private void holdingPosition() {
         double position = holdingPosition;
         arm.setPosition(position);
-        extension.setPosition(inPosition);
+        extension.setPosition(extendIn);
     }
 
     /**
@@ -439,7 +439,7 @@ public class Deposit extends Module<Deposit.State> {
     private void flipIn() {
         double position = inPosition;
         extension.setPosition(extendIn);
-        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition()) - 0) < allowableDepositError) {
+        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 6.0) {
             arm.setPosition(position);
         } else {
             arm.setPosition(holdingPosition);

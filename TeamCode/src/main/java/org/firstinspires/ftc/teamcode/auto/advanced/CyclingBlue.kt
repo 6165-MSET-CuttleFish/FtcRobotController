@@ -47,7 +47,7 @@ class CyclingBlue : LinearOpMode() {
     private val blue = true
     companion object {
         @JvmField var coast = -55.5
-        @JvmField var stop = 52.0
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 20.0
         @JvmField var depositDelay = 5.0
         @JvmField var closeDist = 25.0
@@ -55,16 +55,18 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 29.0
+        @JvmField var cyclingDistance = 27.0
         @JvmField var divConstant = 6.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.5
         @JvmField var intakeError = 7.0
         @JvmField var depositError = 7.0
-        @JvmField var intakeVelo = 30.0
+        @JvmField var intakeCrossingVelo = 30.0
+        @JvmField var intakeVelo = 50.0
+        @JvmField var intakeAngle = 5.0
         @JvmField var depositVelo = MAX_VEL
-        @JvmField var angleOffset = -6.0
+        @JvmField var angleOffset = -7.0
     }
 
     enum class PathState {
@@ -176,19 +178,14 @@ class CyclingBlue : LinearOpMode() {
                 .setState(PathState.INTAKING)
                 .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
+                .increaseGains(intakeCrossingVelo)
+                .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .increaseGains(intakeVelo)
-                .splineTo(Vector2d(gainsPoint, coast).flip(blue), 0.0)
-                .defaultGains()
                 .splineTo(
-                    Vector2d(stop + i / divConstant, coast).flip(blue) + Vector2d(
-                        randomRange(-1.0, 5.0),
-                        randomRange(-1.0, 5.0)
-                    ).flip(blue),
-                    Math.toRadians(randomRange(-20.0, 20.0)).flip(blue)
+                    Vector2d(stop + i / divConstant, coast).flip(blue),
+                    Math.toRadians(randomRange(-intakeAngle, intakeAngle)).flip(blue)
                 )
-//                        .waitWhile(::signalTurn) {
-//                            intake.state == Intake.State.OUT
-//                        }
+                .defaultGains()
                 .waitSeconds(waitTime)
                 .relocalize(robot)
                 .setReversed(true)

@@ -123,6 +123,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 if (containsBlock && !flip.isTransitioning) {
                     state = State.IN
                 }
+                if (flip.error > 0.3) {
+                    power = 0.0
+                }
                 containsBlock = medianDistance < intakeLimit
             }
             State.IN -> {
@@ -161,12 +164,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.CREATE_CLEARANCE -> {
                 extensionServos.position = midPosition
+                raiseIntake()
                 if (!extensionServos.isTransitioning) {
                     state = State.IN
                 }
             }
             State.COUNTER_BALANCE -> {
                 extensionServos.position = midPosition
+                raiseIntake()
                 // flip.position = 0.5
             }
         }
@@ -199,7 +204,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun raiseIntake() {
-        flip.position = raisedPosition
+        flip.position = if (Deposit.isLoaded || containsBlock) raisedPosition else 0.4
     }
 
     fun createClearance() {

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import kotlin.math.abs
 import kotlin.math.round
 
 class ControllableServos(vararg servos: Servo) :
@@ -31,6 +32,8 @@ class ControllableServos(vararg servos: Servo) :
             position,
             previousPosition
         )) * 1000) / 1000
+    val error: Double
+        get() = abs(realPosition - position)
     var angle: Double
         set(value) {
             position = (value + angleOffset) / servoRotation

@@ -102,6 +102,7 @@ class DriverPractice : LinearOpMode() {
             },
         )
         deposit.liftDown()
+        var liftIntent = false
         waitForStart()
         while (opModeIsActive()) {
             robot.update()
@@ -118,13 +119,18 @@ class DriverPractice : LinearOpMode() {
                 gamepad2.rumble(500)
             }
             if (depositLift.wasJustPressed()) {
+                liftIntent = true
+                gamepad1.rumble(1.0, 1.0, 100)
+            }
+            if (liftIntent && robot.current < 10) {
+                liftIntent = false
                 deposit.toggleLift()
             }
             if (ninjaOverride.wasJustPressed()) {
                 deposit.toggleFarDeposit()
-                gamepad1.rumble(1.0, 1.0, 200)
+                gamepad1.rumble(1.0, 1.0, 500)
             }
-            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
+            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.4
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     mode = if (mode == Mode.DRIVING) {
@@ -154,11 +160,11 @@ class DriverPractice : LinearOpMode() {
                     0.0
                 ).div(8.0)
                 setCapstone()
-                setCarousel()
             } else {
                 setDeposit()
                 if (deposit.state == Deposit.State.IN || deposit.state == Deposit.State.CREATE_CLEARANCE) setIntake()
             }
+            setCarousel()
             robot.setWeightedDrivePower(drivePower)
         }
     }
@@ -167,7 +173,6 @@ class DriverPractice : LinearOpMode() {
         capstone.setTape((gamepad1.right_trigger - gamepad1.left_trigger).toDouble())
         capstone.setVerticalTurret(gamepad1.left_stick_y.toDouble())
         capstone.setHorizontalTurret(gamepad1.right_stick_x.toDouble())
-        carousel.setPower(gamepad2.right_stick_y.toDouble())
         if (capHorizontalInc.wasJustPressed()) {
             capstone.incrementHorizontal(1.0)
         } else if (capHorizontalDec.wasJustPressed()) {
