@@ -122,7 +122,7 @@ class DriverPractice : LinearOpMode() {
                 liftIntent = true
                 gamepad1.rumble(1.0, 1.0, 100)
             }
-            if (liftIntent && robot.current < 10) {
+            if (liftIntent) {
                 liftIntent = false
                 deposit.toggleLift()
             }
@@ -130,7 +130,8 @@ class DriverPractice : LinearOpMode() {
                 deposit.toggleFarDeposit()
                 gamepad1.rumble(1.0, 1.0, 500)
             }
-            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.4
+            if (Deposit.isLoaded) drivePower *= 0.9
+            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     mode = if (mode == Mode.DRIVING) {
