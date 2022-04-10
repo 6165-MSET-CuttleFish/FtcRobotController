@@ -43,8 +43,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             extendIn = 0.32,
             extendOut3 = 0.26 / 2,
-            extendOut2 = 0.03,
-            extendOut1 = 0.03,
+            extendOut2 = 0.07,
+            extendOut1 = 0.07,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -59,7 +59,7 @@ public class Deposit extends Module<Deposit.State> {
             unlockPosition = 0.46,
             kickPosition = 0.95;
     public static double
-            armServoPositionPerSecond = 0.65,
+            armServoPositionPerSecond = 0.68,
             extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
@@ -159,9 +159,11 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
         arm.setPosition(inPosition);
-        if (opModeType == OpModeType.AUTO) arm.setPosition(0.48);
+        if (opModeType == OpModeType.AUTO) arm.setPosition(0.49);
         setActuators(lock, slides);
     }
+
+    private boolean toggle = false;
 
     /**
      * This function updates all necessary controls in a loop
@@ -173,6 +175,7 @@ public class Deposit extends Module<Deposit.State> {
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         extension.getServos().setLimits(0.0, extendIn);
         arm.getServos().setLimits(0.0, 0.94);
+        toggle = !toggle;
         switch (getState()) {
             case IN:
                 if (!Deposit.isLoaded) unlock();
@@ -206,7 +209,7 @@ public class Deposit extends Module<Deposit.State> {
             case HOLDING:
                 holdingPosition();
                 if (opModeType != OpModeType.AUTO) pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (allowLift && !isTransitioningState()) {
+                if (allowLift && (!isTransitioningState() || opModeType == OpModeType.AUTO)) {
                     setState(State.OUT);
                 }
                 break;
@@ -425,6 +428,7 @@ public class Deposit extends Module<Deposit.State> {
         arm.setPosition(position);
         double extensionPos = extendPosition(state);
         extension.setPosition(extensionPos);
+        if (toggle) arm.setPosition(position + 0.001);
     }
 
     private void holdingPosition() {
@@ -441,6 +445,7 @@ public class Deposit extends Module<Deposit.State> {
         extension.setPosition(extendIn);
         if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 6.0) {
             arm.setPosition(position);
+            if (toggle) arm.setPosition(position - 0.001);
         } else {
             arm.setPosition(holdingPosition);
         }

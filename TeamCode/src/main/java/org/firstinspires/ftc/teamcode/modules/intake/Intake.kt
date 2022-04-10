@@ -36,7 +36,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var inPosition = 0.1
         @JvmField
-        var midPosition = 0.34
+        var midPosition = 0.38
         @JvmField
         var stallingSpeed = 0.9
         @JvmField
