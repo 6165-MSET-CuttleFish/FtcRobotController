@@ -58,7 +58,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var cyclingDistance = 28.0
         @JvmField var divConstant = 4.0
         @JvmField var depositingAngle = -60.0
-        @JvmField var cyclingAngle = -53.0
+        @JvmField var cyclingAngle = -52.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
