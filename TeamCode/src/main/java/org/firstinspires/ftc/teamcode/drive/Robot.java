@@ -83,14 +83,14 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 8;
+    public static double MID_POWER = 10;
     public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double kStaticIncrease = 19;
-    public static double kvIncrease = 2;
+    public static double kStaticIncrease = 15;
+    public static double kvIncrease = 1.9;
     public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -473,7 +473,7 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 2.3;
+    public static double powerChangePerInertia = 2.1;
 
     public void waitForIdle() {
         waitForIdle(() -> {

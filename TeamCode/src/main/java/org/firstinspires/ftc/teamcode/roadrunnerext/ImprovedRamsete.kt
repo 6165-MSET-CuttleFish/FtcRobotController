@@ -54,9 +54,9 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetOmega = targetRobotVel.heading
 
         var error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
-//        if (Robot.gainMode == Robot.GainMode.BACKWARD) {
-//            error = Pose2d(error.x, 0.0, error.heading)
-//        }
+        if (Robot.gainMode != Robot.GainMode.IDLE && avoidConvergence) {
+            error = Pose2d(error.x, 0.0, error.heading)
+        }
         val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
         val k2 = b

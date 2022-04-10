@@ -46,28 +46,28 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -56.0
-        @JvmField var stop = 52.0
-        @JvmField var intakeDelay = 16.0
-        @JvmField var depositDelay = 4.0
+        @JvmField var coast = -55.6
+        @JvmField var stop = 51.5
+        @JvmField var intakeDelay = 17.0
+        @JvmField var depositDelay = 5.0
         @JvmField var closeDist = 25.0
-        @JvmField var conjoiningPoint = 30.0
-        @JvmField var conjoiningDeposit = 30.0
+        @JvmField var conjoiningPoint = 28.0
+        @JvmField var conjoiningDeposit = 28.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 27.5
+        @JvmField var cyclingDistance = 28.0
         @JvmField var divConstant = 4.0
         @JvmField var depositingAngle = -60.0
-        @JvmField var cyclingAngle = -55.0
+        @JvmField var cyclingAngle = -53.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
-        @JvmField var intakeCrossingVelo = 30.0
+        @JvmField var intakeCrossingVelo = 29.0
         @JvmField var intakeVelo = 55.0
         @JvmField var intakeAngle = 5.0
         @JvmField var depositVelo = MAX_VEL
-        @JvmField var angleOffset = -9.0
-        @JvmField var yIncrement = 0.08
+        @JvmField var angleOffset = -10.0
+        @JvmField var yIncrement = 0.09
     }
 
     enum class PathState {
@@ -216,8 +216,9 @@ class CyclingBlue : LinearOpMode() {
         }
         return trajectoryBuilder
             .setState(PathState.IDLE)
+            .increaseGains(65.0)
             .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
-            .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
+            .splineToConstantHeading(Vector2d(stop + 2, coast).flip(blue), 0.0)
             .build()
     }
     private fun leftAuto() : TrajectorySequence {
