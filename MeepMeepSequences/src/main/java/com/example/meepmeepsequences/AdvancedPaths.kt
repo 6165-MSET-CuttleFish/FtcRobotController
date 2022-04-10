@@ -115,25 +115,28 @@ class AdvancedPaths {
             }
     }
 
-    @JvmField var coast = -55.5
-    @JvmField var stop = 52.0
-    @JvmField var intakeDelay = 16.0
+    @JvmField var coast = -55.6
+    @JvmField var stop = 51.5
+    @JvmField var intakeDelay = 17.0
     @JvmField var depositDelay = 5.0
     @JvmField var closeDist = 25.0
-    @JvmField var conjoiningPoint = 20.0
-    @JvmField var conjoiningDeposit = 30.0
+    @JvmField var conjoiningPoint = 28.0
+    @JvmField var conjoiningDeposit = 28.0
     @JvmField var waitTime = 0.08
     @JvmField var gainsPoint = 36.0
-    @JvmField var cyclingDistance = 29.0
-    @JvmField var divConstant = 6.0
+    @JvmField var cyclingDistance = 28.0
+    @JvmField var divConstant = 4.0
     @JvmField var depositingAngle = -60.0
-    @JvmField var cyclingAngle = -55.0
-    @JvmField var depositingTimeout = 0.3
-    @JvmField var intakeError = 7.0
-    @JvmField var depositError = 7.0
-    @JvmField var intakeVelo = 30.0
-    @JvmField var depositVelo = 60.0
-    @JvmField var angleOffset = -6.0
+    @JvmField var cyclingAngle = -52.0
+    @JvmField var depositingTimeout = 0.4
+    @JvmField var intakeError = 8.0
+    @JvmField var depositError = 8.0
+    @JvmField var intakeCrossingVelo = 29.0
+    @JvmField var intakeVelo = 55.0
+    @JvmField var intakeAngle = 20.0
+    @JvmField var depositVelo = 62.0
+    @JvmField var angleOffset = -10.0
+    @JvmField var yIncrement = 0.09
     fun randomRange(lower: Double, upper: Double): Double{
         return Math.random() * upper + Math.random() * lower
     }
@@ -158,7 +161,9 @@ class AdvancedPaths {
                     .setReversed(false)
                     .dump(deposit)
                     .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                for (i in 1..6) {
+                var coast = coast
+                for (i in 1..7) {
+                    val angle = Math.toRadians(randomRange(-intakeAngle, intakeAngle / 4)).flip(blue)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                             intake.setPower(1.0)
@@ -167,19 +172,11 @@ class AdvancedPaths {
                         //.setState(PathState.INTAKING)
                         .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                         //.liftLevel(deposit, Deposit.Level.LEVEL3)
+                        .increaseGains(intakeCrossingVelo)
+                        .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                         .increaseGains(intakeVelo)
-                        .splineTo(Vector2d(34.0, coast).flip(blue), 0.0)
+                        .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
                         .defaultGains()
-                        .splineTo(
-                            Vector2d(stop + i / divConstant, coast).flip(blue) + Vector2d(
-                                randomRange(-5.0, 5.0),
-                                randomRange(-5.0, 5.0)
-                            ).flip(blue),
-                            Math.toRadians(randomRange(-20.0, 20.0)).flip(blue)
-                        )
-//                        .waitWhile(::signalTurn) {
-//                            intake.state == Intake.State.OUT
-//                        }
                         .waitSeconds(waitTime)
                         .relocalize(robot)
                         .setReversed(true)
@@ -204,11 +201,13 @@ class AdvancedPaths {
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                         .setReversed(false)
+                    coast -= yIncrement
                 }
                 trajectoryBuilder
                     //.setState(PathState.IDLE)
+                    .increaseGains(65.0)
                     .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
-                    .splineToConstantHeading(Vector2d(stop, coast).flip(blue), 0.0)
+                    .splineToConstantHeading(Vector2d(stop + 2, coast).flip(blue), 0.0)
                     .build()
             }
     }

@@ -64,7 +64,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositError = 8.0
         @JvmField var intakeCrossingVelo = 29.0
         @JvmField var intakeVelo = 55.0
-        @JvmField var intakeAngle = 5.0
+        @JvmField var intakeAngle = 20.0
         @JvmField var depositVelo = MAX_VEL
         @JvmField var angleOffset = -10.0
         @JvmField var yIncrement = 0.09
@@ -172,6 +172,7 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         var coast = coast
         for (i in 1..7) {
+            val angle = Math.toRadians(randomRange(-intakeAngle, intakeAngle / 4)).flip(blue)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
@@ -184,8 +185,8 @@ class CyclingBlue : LinearOpMode() {
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .increaseGains(intakeVelo)
                 .splineTo(
-                    Vector2d(stop + i / divConstant, coast).flip(blue),
-                    Math.toRadians(randomRange(-intakeAngle, intakeAngle / 2)).flip(blue)
+                    Pose2d(gainsPoint, coast).flip(blue)
+                        .polarAdd(stop - gainsPoint + i / divConstant, angle).vec(), angle
                 )
                 .defaultGains()
                 .waitSeconds(waitTime)

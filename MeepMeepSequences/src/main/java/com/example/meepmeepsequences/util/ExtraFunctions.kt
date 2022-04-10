@@ -93,7 +93,7 @@ fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
         .setDimensions(16.877953, 16.1417)
-        .setConstraints(60.0, 100.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
+        .setConstraints(62.0, 100.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
 }
 
 fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {
