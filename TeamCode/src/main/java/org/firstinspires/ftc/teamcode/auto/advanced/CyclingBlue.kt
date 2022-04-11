@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.auto.*
-import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot

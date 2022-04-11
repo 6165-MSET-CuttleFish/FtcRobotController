@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import kotlin.Throws
 
 @Autonomous
-@Disabled
 class AdvancedCarouselRed : LinearOpMode() {
     lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit

@@ -86,7 +86,7 @@ class AdvancedPaths {
                         }
                         .splineTo(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(-40.0).flip(blue))
                         .increaseGains()
-                        .splineTo(Vector2d(30.0, polesCoast).flip(blue), Math.toRadians(-40.0).flip(blue))
+                        .splineToConstantHeading(Vector2d(16.0, -20.0).flip(blue).polarAdd(20.0, Math.toRadians(-40.0).flip(blue)), Math.toRadians(-40.0).flip(blue))
                         .defaultGains()
                         .splineTo(
                             Vector2d(50.0, -45.0).flip(blue),
@@ -95,9 +95,9 @@ class AdvancedPaths {
                         .turn(Math.toRadians(30.0).flip(blue))
                         .setReversed(true)
                         .intakeOff(intake)
-                        .splineTo(Vector2d(30.0, polesCoast).flip(blue), Math.toRadians(180 - 40.0).flip(blue))
+                        .splineTo(Vector2d(16.0, -20.0).flip(blue).polarAdd(20.0, Math.toRadians(-40.0).flip(blue)), Math.toRadians(180.0 - 40.0).flip(blue))
                         .increaseGains()
-                        .splineTo(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(180 - 40.0).flip(blue))
+                        .splineToConstantHeading(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(180 - 40.0).flip(blue))
                         .defaultGains()
                         .liftUp(deposit, Deposit.State.LEVEL3)
                         .splineTo(
