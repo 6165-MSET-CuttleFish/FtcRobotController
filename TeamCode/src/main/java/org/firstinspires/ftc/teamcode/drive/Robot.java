@@ -91,7 +91,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double kStaticIncrease = 15;
-    public static double kvIncrease = 1.9;
+    public static double kvIncrease = 5;
     public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
