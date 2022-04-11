@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
+import org.firstinspires.ftc.teamcode.util.Encoder
 import kotlin.math.abs
 import kotlin.math.round
 
@@ -16,13 +18,22 @@ class ControllableServos(vararg servos: Servo) :
     var positionPerSecond = 0.7
     private var incrementingPosition = true
     private var initted = false
+    var encoder: Encoder? = null
     var lowerLimit = 0.0
     var upperLimit = 1.0
     fun setLimits(lowerLimit: Double, upperLimit: Double) {
         this.lowerLimit = lowerLimit
         this.upperLimit = upperLimit
     }
-    val realPosition: Double
+    private fun ticksToDegrees(ticks: Int): Double {
+        return ticks / 1120.0
+    }
+    val realPosition: Double?
+        get() {
+            if (encoder == null) return null
+            return ticksToDegrees(encoder!!.currentPosition)
+        }
+    val estimatedPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
             previousPosition + timer.seconds() * positionPerSecond,
             previousPosition,
@@ -33,16 +44,16 @@ class ControllableServos(vararg servos: Servo) :
             previousPosition
         )) * 1000) / 1000
     val error: Double
-        get() = abs(realPosition - position)
+        get() = abs(estimatedPosition - position)
     var angle: Double
         set(value) {
             position = (value + angleOffset) / servoRotation
         }
         get() = (position * servoRotation) - angleOffset
-    val realAngle: Double
-        get() = (realPosition * servoRotation) - angleOffset
+    val estimatedAngle: Double
+        get() = (estimatedPosition * servoRotation) - angleOffset
     fun lock() {
-        val realPosition = realPosition
+        val realPosition = estimatedPosition
         for (servo in servos) {
             servo.position = realPosition
         }
@@ -52,6 +63,7 @@ class ControllableServos(vararg servos: Servo) :
         // angleOffset = angle - pos*servoRot
         // position = (angle + angleOffset) / servoRotation
         angleOffset = angle - position * servoRotation
+        encoder?.reset()
     }
 
     var position: Double
@@ -63,8 +75,8 @@ class ControllableServos(vararg servos: Servo) :
                 return
             }
             initted = true
-            incrementingPosition = realPosition < var1
-            previousPosition = realPosition
+            incrementingPosition = estimatedPosition < var1
+            previousPosition = estimatedPosition
             servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
             timer.reset()
         }
@@ -75,7 +87,7 @@ class ControllableServos(vararg servos: Servo) :
     }
 
     val isTransitioning: Boolean
-        get() = round(realPosition * 1000) / 1000 != round(position * 1000) / 1000
+        get() = round(estimatedPosition * 1000) / 1000 != round(position * 1000) / 1000
 
     override fun disable() {
 //        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == true) it.setPwmDisable() }

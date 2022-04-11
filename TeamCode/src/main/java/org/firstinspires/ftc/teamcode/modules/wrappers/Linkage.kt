@@ -13,8 +13,8 @@ class Linkage @JvmOverloads constructor(
     val servos: ControllableServos,
     private val initialAngle: Double = 0.0,
 ) {
-    val realDisplacement: Double
-        get() = -displacement(servos.realAngle) + displacement(initialAngle)
+    val estimatedDisplacement: Double
+        get() = -displacement(servos.estimatedAngle) + displacement(initialAngle)
     val displacement: Double
         get() = -displacement(servos.angle) + displacement(initialAngle)
     private fun displacement(theta: Double): Double =
@@ -24,8 +24,8 @@ class Linkage @JvmOverloads constructor(
         set(value) {
             servos.position = value
         }
-    val realPosition: Double
-        get() = servos.realPosition
+    val estimatedPosition: Double
+        get() = servos.estimatedPosition
     val isTransitioning: Boolean
         get() = servos.isTransitioning
 }

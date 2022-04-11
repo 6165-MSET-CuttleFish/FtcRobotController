@@ -175,12 +175,12 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 // flip.position = 0.5
             }
         }
-        poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
+        poseOffset = Pose2d(7.7 + extensionServos.estimatedPosition * 6.0)
         intake.power = if (isHazardous) 0.0 else power
         if (isDebugMode) {
             Context.packet.put("containsBlock", containsBlock)
-            Context.packet.put("Extension Real Position", extensionServos.realPosition)
-            Context.packet.put("Drop Real Position", flip.realPosition)
+            Context.packet.put("Extension Real Position", extensionServos.estimatedPosition)
+            Context.packet.put("Drop Real Position", flip.estimatedPosition)
             Context.packet.put("Raw Blue", unfilteredBlue)
             Context.packet.put("Filtered Blue", blue)
             Context.packet.put("Block Distance Filtered", filteredDistance)
