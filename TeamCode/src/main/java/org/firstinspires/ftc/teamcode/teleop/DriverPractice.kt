@@ -130,7 +130,7 @@ class DriverPractice : LinearOpMode() {
                 deposit.toggleFarDeposit()
                 gamepad1.rumble(1.0, 1.0, 500)
             }
-            if (Deposit.isLoaded) drivePower *= 0.9
+            if (Deposit.isLoaded) drivePower *= 0.85
             if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
             if (gamepad1.touchpad) {
                 if (!toggleMode) {

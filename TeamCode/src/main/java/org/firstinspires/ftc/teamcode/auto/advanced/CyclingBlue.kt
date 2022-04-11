@@ -46,27 +46,28 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -56.0
-        @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 17.0
-        @JvmField var depositDelay = 10.0
+        @JvmField var coast = -56.5
+        @JvmField var stop = 50.0
+        @JvmField var intakeDelay = 16.5
+        @JvmField var depositDelay = 8.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 26.6
-        @JvmField var divConstant = 4.0
+        @JvmField var cyclingDistance = 26.0
+        @JvmField var depositDistance = 27.0
+        @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
-        @JvmField var intakeCrossingVelo = 30.0
+        @JvmField var intakeCrossingVelo = 32.0
         @JvmField var intakeVelo = 60.0
-        @JvmField var intakeAngle = 8.0
+        @JvmField var intakeAngle = 11.0
         @JvmField var depositVelo = 50.0
-        @JvmField var angleOffset = -10.0
+        @JvmField var angleOffset = -12.0
         @JvmField var yIncrement = 0.0
     }
 
@@ -259,7 +260,7 @@ class CyclingBlue : LinearOpMode() {
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .splineTo(
                     allianceHub.center.polarAdd(
-                        cyclingDistance,
+                        depositDistance,
                         Math.toRadians(depositingAngle).flip(blue)),
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
