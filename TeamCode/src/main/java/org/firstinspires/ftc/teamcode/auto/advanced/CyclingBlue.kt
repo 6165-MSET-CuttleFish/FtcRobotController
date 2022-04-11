@@ -63,7 +63,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
-        @JvmField var intakeCrossingVelo = 32.0
+        @JvmField var intakeCrossingVelo = 30.0
         @JvmField var intakeVelo = 60.0
         @JvmField var intakeAngle = 8.0
         @JvmField var depositVelo = 50.0
