@@ -20,6 +20,7 @@ import kotlin.math.hypot
 abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
     var admissibleError: Pose2d = Pose2d(),
     var timeout: Double = 0.0,
+    var admissibleVelo: Pose2d = Pose2d(),
     private val clock: NanoClock = NanoClock.system(),
 ) {
     private var startTimestamp: Double = 0.0
@@ -83,19 +84,24 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
-        if (Robot.admissibleError != this.admissibleError || Robot.admissibleTimeout != this.timeout) {
+        if (Robot.admissibleError != this.admissibleError || Robot.admissibleTimeout != this.timeout || Robot.admissibleVelo != admissibleVelo) {
             this.admissibleError = Robot.admissibleError
             this.timeout = Robot.admissibleTimeout
+            this.admissibleVelo = Robot.admissibleVelo
         }
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
 
         val trajEndError = trajectory.end() - currentPose
+        val signal = internalUpdate(currentPose, currentRobotVel)
+        val targetVel = signal.vel
         admissible = hypot(trajEndError.x, trajEndError.y) < admissibleError.x &&
-            abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
+                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading ||
+                hypot(targetVel.x, targetVel.y) < admissibleVelo.x &&
+                        abs(Angle.norm(targetVel.heading)) < admissibleVelo.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
-            internalUpdate(currentPose, currentRobotVel)
+            signal
         } else {
             for (marker in remainingMarkers) {
                 marker.callback.onMarkerReached()

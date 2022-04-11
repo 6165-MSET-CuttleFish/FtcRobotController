@@ -53,13 +53,15 @@ class AdvancedPaths {
                         .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                         .splineTo(
                             carouselVec.center.polarAdd(
-                                carouselVec.radius,
+                                carouselVec.radius + 10.0,
                                 Math.toRadians(40.0).flip(blue)
-                            ), carouselVec.center
+                            ), carouselVec.center,
+                            Pose2d(0.0, 0.0, Math.toRadians(20.0))
                         )
-                        .waitSeconds(1.2, DriveSignal(Pose2d(5.0)))
+                        .waitSeconds(2.0, DriveSignal(Pose2d(5.0)))
                         .carouselOff(carousel) // drop the ducky
                         .intakeOn(intake)
+                        .back(5.0)
                         .turn(Math.toRadians(60.0).flip(blue))
                         .turn(Math.toRadians(-120.0).flip(blue))
                         .intakeOff(intake)
@@ -70,7 +72,7 @@ class AdvancedPaths {
                                 cyclingDistance, Math.toRadians(
                                     -125.0
                                 ).flip(blue)
-                            ), allianceHub.center
+                            ), allianceHub.center,
                         )
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork)

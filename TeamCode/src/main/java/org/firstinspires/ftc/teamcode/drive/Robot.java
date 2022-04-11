@@ -88,6 +88,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static Pose2d admissibleVelo = new Pose2d(5, 5, Math.toRadians(60));
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
     public static double kStaticIncrease = 15;
