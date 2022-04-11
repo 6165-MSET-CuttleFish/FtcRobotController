@@ -16,7 +16,7 @@ class V4B(private val armLength: Double, val servos: ControllableServos) {
         }
         get() = servos.position
     val realPosition: Double
-        get() = servos.realPosition
+        get() = servos.estimatedPosition
     val isTransitioning: Boolean
         get() = servos.isTransitioning
     fun setY(height: Double) {

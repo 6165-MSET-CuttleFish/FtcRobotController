@@ -33,16 +33,16 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.75,
-            outPosition2 = 0.80,
-            outPosition1 = 0.9;
+            outPosition3 = 0.53,
+            outPosition2 = 0.5,
+            outPosition1 = 0.43;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
             outOffsetIncrement = -0.05;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.23 / 2,
+            extendOut3 = 0.21 / 2,
             extendOut2 = 0.07,
             extendOut1 = 0.07,
             extendOutShared = 0.26;
@@ -50,16 +50,16 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.55;
+    public static double holdingPosition = 0.7;
     public static double
-            inPosition = 0.38,
-            higherInPosition = 0.38;
+            inPosition = 0.8,
+            higherInPosition = 0.8;
     public static double
             lockPosition = 0.58,
             unlockPosition = 0.46,
             kickPosition = 0.95;
     public static double
-            armServoPositionPerSecond = 0.68,
+            armServoPositionPerSecond = 0.884,
             extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
@@ -159,7 +159,7 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
         arm.setPosition(inPosition);
-        if (opModeType == OpModeType.AUTO) arm.setPosition(0.48);
+        if (opModeType == OpModeType.AUTO) arm.setPosition(0.72);
         setActuators(lock, slides);
     }
 
@@ -265,7 +265,7 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
-            Context.packet.put("Extension Real Position", extension.getRealPosition());
+            Context.packet.put("Extension Real Position", extension.getEstimatedPosition());
             Context.packet.put("IsFarDeposit", farDeposit);
         }
         Context.packet.put("Freight", freight);

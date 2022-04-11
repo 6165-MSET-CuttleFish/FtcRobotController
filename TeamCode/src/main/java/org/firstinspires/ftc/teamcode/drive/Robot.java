@@ -475,7 +475,7 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 2.1;
+    public static double powerChangePerInertia = 2.0;
 
     public void waitForIdle() {
         waitForIdle(() -> {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop
 
+import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -17,9 +18,14 @@ import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
 
 @TeleOp
+@Config
 class DriverPractice : LinearOpMode() {
     enum class Mode {
         DRIVING, ENDGAME
+    }
+
+    companion object {
+        @JvmField var multiple = 0.85
     }
 
     lateinit var intake: Intake
@@ -130,7 +136,7 @@ class DriverPractice : LinearOpMode() {
                 deposit.toggleFarDeposit()
                 gamepad1.rumble(1.0, 1.0, 500)
             }
-            if (Deposit.isLoaded) drivePower *= 0.85
+            if (Deposit.isLoaded) drivePower *= multiple
             if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
