@@ -195,12 +195,11 @@ class CyclingBlue : LinearOpMode() {
                 .intakeOff(intake)
             trajectoryBuilder
                 .setState(PathState.DUMPING)
+                .increaseGains(depositVelo)
                 .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI) // change
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                 .UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
-                .increaseGains(depositVelo)
                 .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
-                .defaultGains()
                 .splineTo(
                     allianceHub.center.polarAdd(
                         cyclingDistance,
@@ -209,6 +208,7 @@ class CyclingBlue : LinearOpMode() {
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
+                .defaultGains()
                 .waitWhile(deposit::isTransitioningState)
                 .dump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
