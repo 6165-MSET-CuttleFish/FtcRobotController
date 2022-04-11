@@ -47,6 +47,7 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.field.Freight;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedRamsete;
@@ -152,6 +153,7 @@ public class Robot<T> extends ImprovedTankDrive {
         dashboard = FtcDashboard.getInstance();
         Context.opModeType = type;
         Context.alliance = alliance;
+        Context.freight = Freight.NONE;
         robotPose = pose2d;
         if (opModeType == OpModeType.AUTO) robotPose = FrequentPositions.startingPosition();
         hardwareMap = opMode.hardwareMap;
