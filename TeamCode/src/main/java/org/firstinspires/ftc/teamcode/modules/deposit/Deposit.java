@@ -34,12 +34,12 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.53,
-            outPosition2 = 0.5,
+            outPosition2 = 0.47,
             outPosition1 = 0.43;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
-            outOffsetIncrement = -0.05;
+            outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.32,
             extendOut3 = 0.21 / 2,
@@ -159,7 +159,10 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
         arm.setPosition(inPosition);
-        if (opModeType == OpModeType.AUTO) arm.setPosition(0.72);
+        if (opModeType == OpModeType.AUTO) {
+            arm.setPosition(0.72);
+            isLoaded = true;
+        }
         setActuators(lock, slides);
     }
 
@@ -209,6 +212,9 @@ public class Deposit extends Module<Deposit.State> {
                 if (allowLift && (!isTransitioningState() || opModeType == OpModeType.AUTO)) {
                     setState(State.OUT);
                 }
+//                if (!isLoaded) {
+//                    setState(State.IN);
+//                }
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
@@ -345,9 +351,29 @@ public class Deposit extends Module<Deposit.State> {
                 .div(weightSlides + weightExtension));
     }
 
+    public Vector2d getModuleWeightedVelocityVector() {
+        Vector2d slidesVec = new Vector2d(
+                ticksToInches(slides.getVelocity()) * Math.cos(angle),
+                ticksToInches(slides.getVelocity()) * Math.sin(angle)
+        );
+        Vector2d extensionVec = new Vector2d().plus(slidesVec);
+        if (platformIsOut() && extension.isTransitioning()) {
+            extensionVec = new Vector2d(26.4252).div(2).plus(slidesVec);
+        }
+        //Vector2d armVec = arm.getVector().plus(extensionVec);
+        return ((slidesVec.times(weightSlides))
+                .plus((extensionVec).times(weightExtension))
+                //.plus(armVec.times(weightArm)))
+                .div(weightSlides + weightExtension));
+    }
+
     public double getWeightedDisplacement() {
-        getModuleWeightedVector().component1();
         Vector2d vec = getModuleWeightedVector();
+        return Math.hypot(vec.getX(), vec.getY());
+    }
+
+    public double getWeightedVelocity() {
+        Vector2d vec = getModuleWeightedVelocityVector();
         return Math.hypot(vec.getX(), vec.getY());
     }
 

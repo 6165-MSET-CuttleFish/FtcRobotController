@@ -405,6 +405,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static boolean fullSend = false;
     public boolean polesDebug = false;
     public double current = 0;
+    double lastInertia = 0;
     public void update() {
         current = 0;
         for (LynxModule module : allHubs) {
@@ -456,27 +457,31 @@ public class Robot<T> extends ImprovedTankDrive {
             }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
+        double inertialChange = depoDisplacementSquared * deposit.getWeight();
         if (signal != null) {
-            double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
-            double inertialChange = depoDisplacementSquared * deposit.getWeight();
+            double inertialVel = (inertialChange - lastInertia) / loopTime.seconds();
             DriveSignal newSignal = new DriveSignal(
                     new Pose2d(
                             signal.getVel().getX(),
                             signal.getVel().getY(),
-                            signal.getVel().getHeading() + (signal.getVel().getHeading() * inertialChange * powerChangePerInertia)
+                            signal.getVel().getHeading() +
+                                    (signal.getVel().getHeading() * inertialChange * powerChangePerInertia) +
+                                    (signal.getVel().getHeading() * inertialVel * feedForwardInertia)
                     ),
                     signal.getAccel()
             );
+
             setDriveSignal(newSignal);
             Context.packet.put("Compensated Heading Velo", Math.toDegrees(signal.getVel().getHeading() * inertialChange * powerChangePerInertia));
         }
-        double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
-        double inertialChange = depoDisplacementSquared * deposit.getWeight();
+        lastInertia = inertialChange;
         Context.packet.put("Inertial Change", inertialChange);
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 2.0;
+    public static double powerChangePerInertia = 1.9;
+    public static double feedForwardInertia = 0.1;
 
     public void waitForIdle() {
         waitForIdle(() -> {
