@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
 import kotlin.Throws
@@ -60,7 +60,7 @@ class CarouselBlue : LinearOpMode() {
             telemetry.addData("Location", location)
             telemetry.update()
         }
-        Deposit.allowLift = false
+        deposit.liftDown()
         val left = leftAuto()
         val right = rightAuto()
         val mid = midAuto()
@@ -95,9 +95,9 @@ class CarouselBlue : LinearOpMode() {
             .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .splineTo(Vector2d(-55.0, -8.0).flip(blue), Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(90.0).flip(blue))
-            .liftUp(deposit, getLevel(location))
+            .liftLevel(deposit, getLevel(location))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                Deposit.allowLift = true
+                deposit.liftUp()
             }
             .waitSeconds(0.3)
             .setReversed(true)

@@ -47,6 +47,7 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.modules.Module;
+import org.firstinspires.ftc.teamcode.util.field.Freight;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.roadrunnerext.ImprovedRamsete;
@@ -61,7 +62,6 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import static org.firstinspires.ftc.teamcode.util.field.Context.location;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
-import static org.firstinspires.ftc.teamcode.util.field.Context.pitch;
 import static org.firstinspires.ftc.teamcode.util.field.Context.robotPose;
 import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
@@ -73,7 +73,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCO
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.util.field.Context.telemetry;
-import static org.firstinspires.ftc.teamcode.util.field.Context.tilt;
 
 /**
  * This class represents the robot and its drivetrain
@@ -85,14 +84,15 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 8;
+    public static double MID_POWER = 10;
     public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static Pose2d admissibleVelo = new Pose2d(5, 5, Math.toRadians(60));
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
-    public static double kStaticIncrease = 19;
-    public static double kvIncrease = 20;
+    public static double kStaticIncrease = 15;
+    public static double kvIncrease = 5;
     public static double loweredVelo = 33;
     public static boolean isDebugMode;
     public enum GainMode {
@@ -105,7 +105,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
-    private final TSEDetector TSEDetector = new TSEDetector();
+    private final TSEDetector tseDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
     public static boolean gainSchedule = true;
@@ -130,7 +130,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double OMEGA_WEIGHT = 2;
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
-    private final TrajectorySequenceRunner<T> trajectorySequenceRunner;
+    public final TrajectorySequenceRunner<T> trajectorySequenceRunner;
     private final FtcDashboard dashboard;
 
     public Robot(OpMode opMode, Pose2d pose2d) {
@@ -154,6 +154,7 @@ public class Robot<T> extends ImprovedTankDrive {
         dashboard = FtcDashboard.getInstance();
         Context.opModeType = type;
         Context.alliance = alliance;
+        Context.freight = Freight.NONE;
         robotPose = pose2d;
         if (opModeType == OpModeType.AUTO) robotPose = FrequentPositions.startingPosition();
         hardwareMap = opMode.hardwareMap;
@@ -206,7 +207,6 @@ public class Robot<T> extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
-
         };
         relocalizer = new Relocalizer(hardwareMap, imu);
         for (Module module : modules) {
@@ -235,7 +235,6 @@ public class Robot<T> extends ImprovedTankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner<>(follower, HEADING_PID);
         pitchOffset = getPitch();
         tiltOffset = getTilt();
-        // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -250,6 +249,10 @@ public class Robot<T> extends ImprovedTankDrive {
         trajectorySequenceRunner.nextSegment();
     }
 
+    public void nextSegment(boolean offsetNextSegment) {
+        trajectorySequenceRunner.nextSegment(offsetNextSegment);
+    }
+
     public void visionInit() {
         int cameraMonitorViewId = this
                 .hardwareMap
@@ -262,7 +265,7 @@ public class Robot<T> extends ImprovedTankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(TSEDetector);
+        webcam.setPipeline(tseDetector);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -286,7 +289,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public void scan() {
-        location = TSEDetector.getLocation();
+        location = tseDetector.getLocation();
     }
 
     public static Deposit.Level getLevel(TSEDetector.Location location) {
@@ -395,19 +398,18 @@ public class Robot<T> extends ImprovedTankDrive {
         setPoseEstimate(relocalizer.getPoseEstimate());
     }
 
-    double lastVelo = 0;
     public boolean isOverPoles = false;
-    public static double MIN_ACCEL = 7000;
     public static double minX = 14;
     public static double maxX = 36;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
     public double current = 0;
+    double lastInertia = 0;
     public void update() {
         current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
-            current += module.getCurrent(CurrentUnit.AMPS);
+            if (opModeType != OpModeType.AUTO) current += module.getCurrent(CurrentUnit.AMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -420,8 +422,8 @@ public class Robot<T> extends ImprovedTankDrive {
         }
         Context.pitch = getPitch();
         Context.tilt = getTilt();
-        Context.packet.put("Pitch", Math.toDegrees(pitch));
-        Context.packet.put("Tilt", Math.toDegrees(tilt));
+//        Context.packet.put("Pitch", Math.toDegrees(pitch));
+//        Context.packet.put("Tilt", Math.toDegrees(tilt));
         Context.packet.put("Loop Time", loopTime.milliseconds());
         Context.packet.put("Total Current", current);
         Context.packet.put("Total Power", currentIntegral);
@@ -452,13 +454,33 @@ public class Robot<T> extends ImprovedTankDrive {
                 robotDisabled = false;
                 currentTimer.reset();
             }
-            if (!systemIsOverCurrent) {
-                // currentIntegral = 0;
-            }
         }
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
-        if (signal != null) setDriveSignal(signal);
+        double depoDisplacementSquared = Math.pow(deposit.getWeightedDisplacement() / 39.3701, 2);
+        double inertialChange = depoDisplacementSquared * deposit.getWeight();
+        if (signal != null) {
+            double inertialVel = (inertialChange - lastInertia) / loopTime.seconds();
+            DriveSignal newSignal = new DriveSignal(
+                    new Pose2d(
+                            signal.getVel().getX(),
+                            signal.getVel().getY(),
+                            signal.getVel().getHeading() +
+                                    (signal.getVel().getHeading() * inertialChange * powerChangePerInertia) +
+                                    (signal.getVel().getHeading() * inertialVel * feedForwardInertia)
+                    ),
+                    signal.getAccel()
+            );
+
+            setDriveSignal(newSignal);
+            Context.packet.put("Compensated Heading Velo", Math.toDegrees(signal.getVel().getHeading() * inertialChange * powerChangePerInertia));
+        }
+        lastInertia = inertialChange;
+        Context.packet.put("Inertial Change", inertialChange);
+        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
+
+    public static double powerChangePerInertia = 1.3;
+    public static double feedForwardInertia = 0.05;
 
     public void waitForIdle() {
         waitForIdle(() -> {

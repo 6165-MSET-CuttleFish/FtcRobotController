@@ -58,14 +58,13 @@ public class TrajectorySequenceRunner<T> {
     private final PIDFController turnController;
 
     private final NanoClock clock;
-    private double offset;
+    private double offset, segmentOffset;
     private final ElapsedTime time = new ElapsedTime();
-    private final ElapsedTime segmentDuration = new ElapsedTime();
     private T state;
 
     private TrajectorySequence currentTrajectorySequence;
     private double currentSegmentStartTime;
-    private int currentSegmentIndex;
+    public int currentSegmentIndex;
     private int lastSegmentIndex;
 
     private Pose2d lastPoseError = new Pose2d();
@@ -134,7 +133,6 @@ public class TrajectorySequenceRunner<T> {
             currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
 
             if (isNewTransition) {
-                segmentDuration.reset();
                 if (lastSegmentIndex >= 0) {
                     if (currentTrajectorySequence.get(lastSegmentIndex) instanceof FutureSegment) {
                         offset += time.seconds();
@@ -155,12 +153,14 @@ public class TrajectorySequenceRunner<T> {
             }
 
             double deltaTime = now - currentSegmentStartTime;
+            state = null;
 
             if (currentSegment instanceof TrajectorySegment) {
                 Trajectory currentTrajectory = ((TrajectorySegment) currentSegment).getTrajectory();
 
                 if (isNewTransition) {
-                    follower.followTrajectory(currentTrajectory);
+                    follower.followTrajectory(currentTrajectory, segmentOffset);
+                    segmentOffset = 0;
                 }
                 state = (T) ((TrajectorySegment) currentSegment).getState();
 
@@ -256,6 +256,8 @@ public class TrajectorySequenceRunner<T> {
         packet.put("headingVelocityError (deg)", Math.toDegrees(getLastVelocityError().getHeading()));
 
         packet.put("Path State Actual", state);
+
+        packet.put("Absolute Position Error", getLastPoseError().vec().norm());
 
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
@@ -361,13 +363,19 @@ public class TrajectorySequenceRunner<T> {
         return currentTrajectorySequence != null;
     }
     public void nextSegment() {
+        nextSegment(false);
+    }
+    public void nextSegment(boolean offsetNextSegment) {
         SequenceSegment currentSegment = currentTrajectorySequence.get(currentSegmentIndex);
         if (currentSegment instanceof TrajectorySegment) {
-            //double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - segmentDuration.seconds();
-            //offset -= remaining;
+            double remaining = ((TrajectorySegment) currentSegment).getTrajectory().duration() - follower.elapsedTime();
+            offset -= remaining;
+            if (offsetNextSegment) {
+                segmentOffset = remaining > 0 ? remaining : 0;
+                offset -= remaining;
+            }
+            state = null;
+            currentSegmentIndex++;
         }
-        state = null;
-        currentSegmentIndex++;
-        segmentDuration.reset();
     }
 }

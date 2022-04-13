@@ -6,9 +6,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.Robot
 import kotlin.math.abs
+import kotlin.math.hypot
 
 /**
  * Generic [Trajectory] follower for time-based pose reference tracking.
@@ -20,7 +20,8 @@ import kotlin.math.abs
 abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
     var admissibleError: Pose2d = Pose2d(),
     var timeout: Double = 0.0,
-    private val clock: NanoClock = NanoClock.system()
+    var admissibleVelo: Pose2d = Pose2d(),
+    private val clock: NanoClock = NanoClock.system(),
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false
@@ -48,8 +49,8 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
     /**
      * Follow the given [trajectory].
      */
-    open fun followTrajectory(trajectory: Trajectory) {
-        this.startTimestamp = clock.seconds()
+    @JvmOverloads open fun followTrajectory(trajectory: Trajectory, offset: Double = 0.0) {
+        this.startTimestamp = clock.seconds() - offset
         this.trajectory = trajectory
         this.admissible = false
 
@@ -83,20 +84,24 @@ abstract class ImprovedTrajectoryFollower @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
-        if (Robot.admissibleError != this.admissibleError || Robot.admissibleTimeout != this.timeout) {
+        if (Robot.admissibleError != this.admissibleError || Robot.admissibleTimeout != this.timeout || Robot.admissibleVelo != admissibleVelo) {
             this.admissibleError = Robot.admissibleError
             this.timeout = Robot.admissibleTimeout
+            this.admissibleVelo = Robot.admissibleVelo
         }
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
 
         val trajEndError = trajectory.end() - currentPose
-        admissible = abs(trajEndError.x) < admissibleError.x &&
-                abs(trajEndError.y) < admissibleError.y &&
-                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
+        val signal = internalUpdate(currentPose, currentRobotVel)
+        val targetVel = signal.vel
+        admissible = hypot(trajEndError.x, trajEndError.y) < admissibleError.x &&
+                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading ||
+                hypot(targetVel.x, targetVel.y) < admissibleVelo.x &&
+                        abs(Angle.norm(targetVel.heading)) < admissibleVelo.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
-            internalUpdate(currentPose, currentRobotVel)
+            signal
         } else {
             for (marker in remainingMarkers) {
                 marker.callback.onMarkerReached()

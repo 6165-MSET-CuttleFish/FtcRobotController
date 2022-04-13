@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules.intake
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
@@ -11,12 +10,15 @@ import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.util.field.Freight
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableMotor
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
+import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
 import java.lang.Exception
+import kotlin.math.abs
+import kotlin.math.sin
 
 /**
  * Frontal mechanism for collecting freight
@@ -36,17 +38,17 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var inPosition = 0.1
         @JvmField
-        var midPosition = 0.4
+        var midPosition = 0.38
         @JvmField
-        var stallingSpeed = 0.5
+        var stallingSpeed = 0.9
         @JvmField
         var extensionPositionPerSecond = 0.6
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var alphaTolerance = 0.05
+        var blueTolerance = 0.05
         @JvmField
-        var smoothingCoeffecientDistance = 0.8
+        var smoothingCoeffecientDistance = 0.7
         @JvmField
         var smoothingCoefficientAlpha = 0.8
         @JvmField
@@ -54,7 +56,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var distanceTolerance = 12.0
         @JvmField
-        var transferTolerance = 12.0
+        var transferTolerance = 9.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -62,6 +64,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         IN,
         CREATE_CLEARANCE,
         COUNTER_BALANCE,
+        STEP_BRO,
     }
 
     private var intake = ControllableMotor(hardwareMap.get(DcMotorEx::class.java, "intake"))
@@ -73,19 +76,19 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         )
     private var flip = ControllableServos(hardwareMap.servo["flip"])
     private var blockSensor = hardwareMap.get(ColorRangeSensor::class.java, "block")
-    private var extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
+    private var extensionDistance = hardwareMap.get(ColorRangeSensor::class.java, "extDistance")
     private var power = 0.0
     var containsBlock = false
     private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
     private var colorFilter = LowPassFilter(smoothingCoefficientAlpha, 0.0)
+    private var distanceMedian = MovingMedian(5)
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        // Extend range of servo by 30°
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
         extensionServos.init(inPosition)
-        flip.init(raisedPosition)
+        extensionServos.setLimits(inPosition, outPosition)
         flip.init(raisedPosition)
         setActuators(flip, intake)
     }
@@ -105,46 +108,44 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary for
      */
-    override fun isDoingInternalWork(): Boolean {
-        return state == State.OUT || state == State.TRANSFER
-    }
+    override fun isDoingInternalWork(): Boolean = state == State.OUT || state == State.TRANSFER
 
     public override fun internalUpdate() {
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        distanceFilter.a = if (state == State.OUT) 0.75 else smoothingCoeffecientDistance
+        distanceFilter.a = smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
-        val unfilteredAlpha = blockSensor.normalizedColors.blue.toDouble()
-        val alpha = colorFilter.update(unfilteredAlpha)
+        val unfilteredBlue = blockSensor.normalizedColors.blue.toDouble()
+        val blue = colorFilter.update(unfilteredBlue)
         val unfilteredDistance = distance
-        val distance = distanceFilter.update(unfilteredDistance)
+        val filteredDistance = distanceFilter.update(unfilteredDistance)
+        val medianDistance = distanceMedian.update(unfilteredDistance)
         when (state) {
             State.OUT -> {
                 deploy()
-                if (containsBlock) {
+                if (containsBlock && !flip.isTransitioning) {
                     state = State.IN
                 }
-                containsBlock = distance < intakeLimit
+                if (flip.error > 0.3) {
+                    power = 0.0
+                }
+                containsBlock = medianDistance < intakeLimit
             }
             State.IN -> {
                 retract()
-                if (distance < intakeLimit && isTransitioningState() && previousState == State.OUT) {
+                if (medianDistance < intakeLimit && isTransitioningState() && previousState == State.OUT) {
                     containsBlock = true
                 }
                 if (containsBlock) {
                     if (isTransitioningState()) {
-                        freight = if (alpha > alphaTolerance) {
+                        freight = if (blue > blueTolerance) {
                             Freight.BALL
                         } else {
                             Freight.CUBE
                         }
                     } else {
-                        val dist = extensionDistance.getDistance(DistanceUnit.CM)
-                        if (dist > 500) {
-                            extensionDistance = hardwareMap.get(Rev2mDistanceSensor::class.java, "extDistance")
-                        }
-                        if (dist < distanceTolerance) {
+                        if (extensionDistance.getDistance(DistanceUnit.CM) < distanceTolerance) {
                             state = State.TRANSFER
                         }
                     }
@@ -167,25 +168,37 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.CREATE_CLEARANCE -> {
                 extensionServos.position = midPosition
+                raiseIntake()
                 if (!extensionServos.isTransitioning) {
                     state = State.IN
                 }
             }
             State.COUNTER_BALANCE -> {
                 extensionServos.position = midPosition
+                raiseIntake()
                 // flip.position = 0.5
             }
+            State.STEP_BRO -> {
+                extensionServos.position = abs(outPosition*sin(2*secondsSpentInState))
+                dropIntake()
+                if (containsBlock && !flip.isTransitioning) {
+                    state = State.IN
+                }
+                power = if (flip.error > 0.3) 0.0 else 1.0
+                containsBlock = medianDistance < intakeLimit
+            }
         }
-        poseOffset = Pose2d(7.7 + extensionServos.realPosition * 6.0)
+        poseOffset = Pose2d(7.7 + extensionServos.estimatedPosition * 6.0)
         intake.power = if (isHazardous) 0.0 else power
         if (isDebugMode) {
             Context.packet.put("containsBlock", containsBlock)
-            Context.packet.put("Extension Real Position", extensionServos.realPosition)
-            Context.packet.put("Drop Real Position", flip.realPosition)
-            Context.packet.put("Raw Blue", unfilteredAlpha)
-            Context.packet.put("Filtered Blue", alpha)
-            Context.packet.put("Filtered Block Distance", distance)
-            Context.packet.put("Block Sensor Distance", unfilteredDistance)
+            Context.packet.put("Extension Real Position", extensionServos.estimatedPosition)
+            Context.packet.put("Drop Real Position", flip.estimatedPosition)
+            Context.packet.put("Raw Blue", unfilteredBlue)
+            Context.packet.put("Filtered Blue", blue)
+            Context.packet.put("Block Distance Filtered", filteredDistance)
+            Context.packet.put("Block Distance Median", medianDistance)
+            Context.packet.put("Block Distance Raw", unfilteredDistance)
             Context.packet.put("Extension Distance", extensionDistance.getDistance(DistanceUnit.CM))
         }
         val intakePose = modulePoseEstimate.polarAdd(7.7)
@@ -204,11 +217,11 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun raiseIntake() {
-        flip.position = raisedPosition
+        flip.position = if (Deposit.isLoaded || containsBlock) raisedPosition else 0.5
     }
 
     fun createClearance() {
-        state = State.CREATE_CLEARANCE
+        if (state != State.OUT) state = State.CREATE_CLEARANCE
     }
 
     fun counterBalance() {

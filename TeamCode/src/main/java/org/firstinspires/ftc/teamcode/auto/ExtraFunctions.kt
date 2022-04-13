@@ -13,23 +13,16 @@ fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.
 
 fun TrajectorySequenceBuilder<*>.increaseGains(velo: Double) : TrajectorySequenceBuilder<*> {
     setVelConstraint(Robot.getVelocityConstraint(velo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH))
-//    UNSTABLE_addDisplacementMarkerOffset(0.0) {
-//        Robot.gainMode = gainMode
-//    }
     return this
 }
 
 fun TrajectorySequenceBuilder<*>.defaultGains() : TrajectorySequenceBuilder<*> {
     resetConstraints()
-//    UNSTABLE_addDisplacementMarkerOffset(0.0) {
-//        Robot.gainMode = Robot.GainMode.IDLE
-//    }
     return this
 }
 
-fun TrajectorySequenceBuilder<*>.liftUp(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder<*> {
+fun TrajectorySequenceBuilder<*>.liftLevel(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
-        // Platform.isLoaded = true
         deposit.setLevel(level)
     }
 }
@@ -47,7 +40,7 @@ fun TrajectorySequenceBuilder<*>.intakeOff(intake: Intake): TrajectorySequenceBu
 }
 
 fun TrajectorySequenceBuilder<*>.dump(deposit: Deposit): TrajectorySequenceBuilder<*> {
-    return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::softDump)
+    return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::dump)
 }
 
 fun TrajectorySequenceBuilder<*>.carouselOn(carousel: Carousel): TrajectorySequenceBuilder<*> {

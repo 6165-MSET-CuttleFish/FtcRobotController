@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.roadrunnerext.RamseteConstants.*
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toInches
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toMeters
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -26,8 +28,9 @@ import kotlin.math.sqrt
 class ImprovedRamsete @JvmOverloads constructor(
     admissibleError: Pose2d = Pose2d(2.0, 2.0, Math.toRadians(5.0)),
     timeout: Double =  0.5,
+    admissibleVelo: Pose2d = Pose2d(5.0, 5.0, Math.toRadians(60.0)),
     clock: NanoClock = NanoClock.system(),
-) : ImprovedTrajectoryFollower(admissibleError, timeout, clock) {
+) : ImprovedTrajectoryFollower(admissibleError, timeout, admissibleVelo, clock) {
     override var lastError: Pose2d = Pose2d()
     override var lastVelocityError: Pose2d? = Pose2d()
 
@@ -51,8 +54,10 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
-
+        var error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
+        if (Robot.gainMode != Robot.GainMode.IDLE && avoidConvergence) {
+            error = Pose2d(error.x, 0.0, error.heading)
+        }
         val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
         val k2 = b
