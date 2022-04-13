@@ -42,9 +42,9 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.21 / 2,
-            extendOut2 = 0.07,
-            extendOut1 = 0.07,
+            extendOut3 = 0.18,
+            extendOut2 = 0.085,
+            extendOut1 = 0.085,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -207,14 +207,13 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case HOLDING:
-                holdingPosition();
-                if (opModeType != OpModeType.AUTO) pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (allowLift && (!isTransitioningState() || opModeType == OpModeType.AUTO)) {
+                if (opModeType != OpModeType.AUTO) {
+                    holdingPosition();
+                    pidController.setTargetPosition(getLevelHeight(getLevel()));
+                }
+                if (allowLift && !isTransitioningState()) {
                     setState(State.OUT);
                 }
-//                if (!isLoaded) {
-//                    setState(State.IN);
-//                }
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));

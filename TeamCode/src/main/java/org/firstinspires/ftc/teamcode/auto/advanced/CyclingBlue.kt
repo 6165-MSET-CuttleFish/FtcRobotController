@@ -45,16 +45,16 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -56.0
-        @JvmField var stop = 52.0
+        @JvmField var coast = -55.0
+        @JvmField var stop = 51.0
         @JvmField var intakeDelay = 16.5
-        @JvmField var depositDelay = 18.0
+        @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.1
+        @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 26.0
+        @JvmField var cyclingDistance = 27.0
         @JvmField var depositDistance = 29.5
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
@@ -62,12 +62,12 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
-        @JvmField var intakeCrossingVelo = 30.0
-        @JvmField var intakeVelo = 50.0
-        @JvmField var intakeAngle = 5.0
+        @JvmField var intakeCrossingVelo = 28.0
+        @JvmField var intakeVelo = 55.0
+        @JvmField var intakeAngle = 0.0
         @JvmField var depositVelo = 60.0
-        @JvmField var angleOffset = -12.0
-        @JvmField var yIncrement = -0.05
+        @JvmField var angleOffset = -8.0
+        @JvmField var yIncrement = -0.0
     }
 
     enum class PathState {
@@ -137,7 +137,7 @@ class CyclingBlue : LinearOpMode() {
                     Robot.admissibleTimeout = 0.2
                     Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
                     Robot.admissibleVelo = Pose2d(15.0, 15.0, Math.toRadians(60.0))
-                    if (robot.poseEstimate.x > 40 && robot.intake.containsBlock && !incremented) {
+                    if (robot.poseEstimate.x > 45 && robot.intake.containsBlock && !incremented) {
                         robot.nextSegment(true)
                         incremented = true
                     }
@@ -174,7 +174,7 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         var coast = coast
         for (i in 1..7) {
-            val angle = Math.toRadians(randomRange(-intakeAngle, intakeAngle / 4)).flip(blue)
+            val angle = Math.toRadians(randomRange(-intakeAngle / 4, intakeAngle)).flip(blue)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)

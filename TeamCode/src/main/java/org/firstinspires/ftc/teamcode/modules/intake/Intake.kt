@@ -17,6 +17,8 @@ import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
 import java.lang.Exception
+import kotlin.math.abs
+import kotlin.math.sin
 
 /**
  * Frontal mechanism for collecting freight
@@ -62,6 +64,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         IN,
         CREATE_CLEARANCE,
         COUNTER_BALANCE,
+        STEP_BRO,
     }
 
     private var intake = ControllableMotor(hardwareMap.get(DcMotorEx::class.java, "intake"))
@@ -85,6 +88,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
         extensionServos.init(inPosition)
+        extensionServos.setLimits(inPosition, outPosition)
         flip.init(raisedPosition)
         setActuators(flip, intake)
     }
@@ -174,6 +178,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 raiseIntake()
                 // flip.position = 0.5
             }
+            State.STEP_BRO -> {
+                extensionServos.position = abs(outPosition*sin(2*secondsSpentInState))
+                dropIntake()
+                if (containsBlock && !flip.isTransitioning) {
+                    state = State.IN
+                }
+                power = if (flip.error > 0.3) 0.0 else 1.0
+                containsBlock = medianDistance < intakeLimit
+            }
         }
         poseOffset = Pose2d(7.7 + extensionServos.estimatedPosition * 6.0)
         intake.power = if (isHazardous) 0.0 else power
@@ -204,7 +217,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun raiseIntake() {
-        flip.position = if (Deposit.isLoaded || containsBlock) raisedPosition else 0.4
+        flip.position = if (Deposit.isLoaded || containsBlock) raisedPosition else 0.5
     }
 
     fun createClearance() {

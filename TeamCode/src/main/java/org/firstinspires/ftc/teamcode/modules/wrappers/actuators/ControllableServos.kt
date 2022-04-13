@@ -14,6 +14,7 @@ class ControllableServos(vararg servos: Servo) :
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0
     var servoRotation = Math.toRadians(270.0)
+    var gearing = 1.0
     var angleOffset = 0.0
     var positionPerSecond = 0.7
     private var incrementingPosition = true
@@ -21,17 +22,18 @@ class ControllableServos(vararg servos: Servo) :
     var encoder: Encoder? = null
     var lowerLimit = 0.0
     var upperLimit = 1.0
+    private var posOffset = 0.0
     fun setLimits(lowerLimit: Double, upperLimit: Double) {
         this.lowerLimit = lowerLimit
         this.upperLimit = upperLimit
     }
     private fun ticksToDegrees(ticks: Int): Double {
-        return ticks / 1120.0
+        return ticks / 8192.0
     }
     val realPosition: Double?
         get() {
             if (encoder == null) return null
-            return ticksToDegrees(encoder!!.currentPosition)
+            return ticksToDegrees(encoder!!.currentPosition) * gearing
         }
     val estimatedPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
@@ -63,6 +65,7 @@ class ControllableServos(vararg servos: Servo) :
         // angleOffset = angle - pos*servoRot
         // position = (angle + angleOffset) / servoRotation
         angleOffset = angle - position * servoRotation
+        posOffset = position
         encoder?.reset()
     }
 
@@ -84,6 +87,7 @@ class ControllableServos(vararg servos: Servo) :
     fun init(var1: Double) {
         position = var1
         previousPosition = var1
+        posOffset = var1
     }
 
     val isTransitioning: Boolean

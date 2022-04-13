@@ -105,7 +105,7 @@ public class Robot<T> extends ImprovedTankDrive {
     private static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     private OpenCvCamera webcam;
-    private final TSEDetector TSEDetector = new TSEDetector();
+    private final TSEDetector tseDetector = new TSEDetector();
     private final double pitchOffset;
     private final double tiltOffset;
     public static boolean gainSchedule = true;
@@ -235,7 +235,6 @@ public class Robot<T> extends ImprovedTankDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner<>(follower, HEADING_PID);
         pitchOffset = getPitch();
         tiltOffset = getTilt();
-        // imu.startAccelerationIntegration(new Position(), new Velocity(), 50);
         setPoseEstimate(robotPose);
         telemetry.clear();
         telemetry.addData("Init", "Complete");
@@ -266,7 +265,7 @@ public class Robot<T> extends ImprovedTankDrive {
         webcam = OpenCvCameraFactory
                 .getInstance()
                 .createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_NAME), cameraMonitorViewId);
-        webcam.setPipeline(TSEDetector);
+        webcam.setPipeline(tseDetector);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -290,7 +289,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public void scan() {
-        location = TSEDetector.getLocation();
+        location = tseDetector.getLocation();
     }
 
     public static Deposit.Level getLevel(TSEDetector.Location location) {
@@ -480,8 +479,8 @@ public class Robot<T> extends ImprovedTankDrive {
         Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 1.9;
-    public static double feedForwardInertia = 0.1;
+    public static double powerChangePerInertia = 1.3;
+    public static double feedForwardInertia = 0.05;
 
     public void waitForIdle() {
         waitForIdle(() -> {
