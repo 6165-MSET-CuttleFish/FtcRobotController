@@ -21,6 +21,7 @@ public class SeriesServoTuner extends LinearOpMode {
     public static String servoNames = "";
     public static String encoder = "";
     public static double position;
+    public static double totalRotation = 360;
     public static double gearing = 1.0;
     public static boolean calibrate;
 
@@ -42,6 +43,8 @@ public class SeriesServoTuner extends LinearOpMode {
                 servos[i] = hardwareMap.servo.get(names[i].trim());
             }
             servo = new ControllableServos(servos);
+            servo.setServoRotation(Math.toRadians(totalRotation));
+            servo.setGearing(gearing);
             if (!encoder.isEmpty()) {
                 servo.setEncoder(new Encoder(hardwareMap.get(DcMotorEx.class, encoder)));
             }
@@ -78,6 +81,10 @@ public class SeriesServoTuner extends LinearOpMode {
                 Context.packet.put("Target Position", servo.getPosition());
                 Context.packet.put("Estimated Position", servo.getEstimatedPosition());
                 Context.packet.put("Real Position", servo.getRealPosition());
+
+                Context.packet.put("Target Angle", servo.getAngle());
+                Context.packet.put("Estimated Angle", servo.getEstimatedAngle());
+                Context.packet.put("Real Angle", servo.getRealAngle());
                 ftcDashboard.sendTelemetryPacket(Context.packet);
                 Context.packet = new TelemetryPacket();
                 telemetry.update();
