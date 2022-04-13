@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
+import org.outoftheboxrobotics.neutrinoi2c.MB1242.AsyncMB1242
 
 class UltrasonicDistanceSensor constructor(
     hardwareMap: HardwareMap,
@@ -18,7 +19,7 @@ class UltrasonicDistanceSensor constructor(
         ShortRange,
     }
     private val distanceSensor: DistanceSensor =
-        if (_state == SensorType.LongRange) MB1242(hardwareMap, name) else MB1643(hardwareMap, name)
+        if (_state == SensorType.LongRange) hardwareMap.get(AsyncMB1242::class.java, name) else MB1643(hardwareMap, name)
 
     override fun internalInit() {
     }
