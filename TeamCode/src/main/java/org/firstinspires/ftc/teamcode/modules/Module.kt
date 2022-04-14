@@ -30,7 +30,8 @@ abstract class Module<T> @JvmOverloads constructor(
      */
     var previousState: T = _state
         private set
-
+    var isFirstLoop: Boolean = true
+        private set
     open var state: T
         /**
          * @return The state of the module
@@ -45,6 +46,7 @@ abstract class Module<T> @JvmOverloads constructor(
             elapsedTime.reset()
             previousState = state
             _state = value
+            isFirstLoop = true
         }
     /**
      * The time spent in the current state in seconds
@@ -96,6 +98,7 @@ abstract class Module<T> @JvmOverloads constructor(
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
         loopTime.reset()
+        isFirstLoop = false
     }
 
     fun drawModule() {
