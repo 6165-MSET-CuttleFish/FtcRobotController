@@ -13,15 +13,15 @@ class ControllableCRServo(private val crServo: CRServo) {
             crServo.power = val1
         }
     fun update() {
-        internalPosEstimate += power * timer.seconds()
-        timer.reset()
-        if (isRetracting) {
-            if (internalPosEstimate <= 0) {
-                power = 0.0
-                isRetracting = false
-            } else {
-                power = -1.0
-            }
-        }
+//        internalPosEstimate += power * timer.seconds()
+//        timer.reset()
+//        if (isRetracting) {
+//            if (internalPosEstimate <= 0) {
+//                power = 0.0
+//                isRetracting = false
+//            } else {
+//                power = -1.0
+//            }
+//        }
     }
 }

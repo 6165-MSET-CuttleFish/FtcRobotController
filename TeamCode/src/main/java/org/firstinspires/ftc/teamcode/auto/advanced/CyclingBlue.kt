@@ -45,16 +45,16 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.0
+        @JvmField var coast = -55.7
         @JvmField var stop = 51.3
         @JvmField var intakeDelay = 16.5
-        @JvmField var depositDelay = 26.8
+        @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.08
+        @JvmField var waitTime = 0.12
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 27.0
+        @JvmField var cyclingDistance = 26.0
         @JvmField var depositDistance = 28.0
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
@@ -63,10 +63,10 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 8.0
         @JvmField var intakeCrossingVelo = 28.0
-        @JvmField var intakeVelo = 55.0
+        @JvmField var intakeVelo = 50.0
         @JvmField var intakeAngle = 0.0
-        @JvmField var depositVelo = 60.0
-        @JvmField var angleOffset = -8.0
+        @JvmField var depositVelo = 50.0
+        @JvmField var angleOffset = -4.0
         @JvmField var yIncrement = -0.0
     }
 
@@ -128,8 +128,6 @@ class CyclingBlue : LinearOpMode() {
         robot.followTrajectorySequenceAsync(sequence)
         var incremented = false
         while (robot.isBusy && opModeIsActive()) {
-            Context.packet.put("Path State", robot.pathState)
-            Context.packet.put("Segment Index", robot.trajectorySequenceRunner.currentSegmentIndex)
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {

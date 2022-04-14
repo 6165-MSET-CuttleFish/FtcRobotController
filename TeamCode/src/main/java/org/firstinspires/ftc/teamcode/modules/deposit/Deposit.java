@@ -34,30 +34,30 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.53,
-            outPosition2 = 0.485,
-            outPosition1 = 0.43;
+            outPosition2 = 0.59,
+            outPosition1 = 0.62;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
             outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.18,
-            extendOut2 = 0.13,
-            extendOut1 = 0.13,
+            extendOut3 = 0.12,
+            extendOut2 = 0.1,
+            extendOut1 = 0.1,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.7;
+    public static double holdingPosition = 0.35;
     public static double
-            inPosition = 0.8,
-            higherInPosition = 0.8;
+            inPosition = 0.19,
+            higherInPosition = 0.19;
     public static double
-            lockPosition = 0.58,
+            lockPosition = 0.56,
             unlockPosition = 0.46,
-            kickPosition = 0.95;
+            kickPosition = 0.85;
     public static double
             armServoPositionPerSecond = 0.884,
             extensionServoPositionPerSecond = 0.65;
@@ -68,6 +68,7 @@ public class Deposit extends Module<Deposit.State> {
     private boolean farDeposit = false;
     @Override
     public boolean isTransitioningState() {
+        if (getState() == State.OUT) return arm.getPosition() != outPosition(getLevel());
         return extension.isTransitioning() || arm.isTransitioning() || Math.abs(getLastError()) > allowableDepositError;
     }
 
@@ -160,12 +161,13 @@ public class Deposit extends Module<Deposit.State> {
         flipIn();
         arm.setPosition(inPosition);
         if (opModeType == OpModeType.AUTO) {
-            arm.setPosition(0.72);
+            arm.setPosition(0.3);
             isLoaded = true;
         }
         setActuators(lock, slides);
     }
-
+    private double lastOutPosition;
+    public static double flipOutTime = 0.4;
     /**
      * This function updates all necessary controls in a loop
      */
@@ -212,6 +214,7 @@ public class Deposit extends Module<Deposit.State> {
                     pidController.setTargetPosition(getLevelHeight(getLevel()));
                 }
                 if (allowLift && !isTransitioningState()) {
+                    lastOutPosition = arm.getRealPosition();
                     setState(State.OUT);
                 }
                 break;
@@ -270,7 +273,7 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
-            Context.packet.put("Extension Real Position", extension.getEstimatedPosition());
+            Context.packet.put("Extension Real Position", extension.getEstimatedDisplacement());
             Context.packet.put("IsFarDeposit", farDeposit);
         }
         Context.packet.put("Freight", freight);
@@ -448,6 +451,8 @@ public class Deposit extends Module<Deposit.State> {
     private void flipOut(Level state) {
         double position = outPosition(state);
         arm.setPosition(position);
+        // speed * time
+        //arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
         if (getLevel() == Level.LEVEL2) {
             if (arm.getServos().getError() < 0.3) {
                 double extensionPos = extendPosition(state);

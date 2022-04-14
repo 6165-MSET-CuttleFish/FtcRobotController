@@ -92,7 +92,7 @@ abstract class Module<T> @JvmOverloads constructor(
      */
     fun update() {
         nestedModules.forEach { it.update() }
-        // actuators.forEach { it.update() }
+        actuators.forEach { it.update() }
         internalUpdate()
         Context.packet.put(javaClass.simpleName + " State", if (isTransitioningState()) "$previousState --> $state" else state)
         loopTime.reset()

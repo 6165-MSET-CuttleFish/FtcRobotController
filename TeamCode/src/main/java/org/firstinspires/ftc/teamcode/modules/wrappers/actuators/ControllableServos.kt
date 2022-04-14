@@ -21,6 +21,7 @@ class ControllableServos(vararg servos: Servo) :
     private var incrementingPosition = true
     private var initted = false
     var encoder: Encoder? = null
+    var isMotionProfiled = false
 
     var lowerLimit = 0.0
         private set
@@ -117,6 +118,5 @@ class ControllableServos(vararg servos: Servo) :
     }
 
     override fun update() {
-
     }
 }
