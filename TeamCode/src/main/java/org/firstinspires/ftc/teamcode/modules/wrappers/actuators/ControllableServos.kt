@@ -22,8 +22,10 @@ class ControllableServos(vararg servos: Servo) :
     private var initted = false
     var encoder: Encoder? = null
 
-    private var lowerLimit = 0.0
-    private var upperLimit = 1.0
+    var lowerLimit = 0.0
+        private set
+    var upperLimit = 1.0
+        private set
 
     private var angleOffset = 0.0
     private var posOffset = 0.0

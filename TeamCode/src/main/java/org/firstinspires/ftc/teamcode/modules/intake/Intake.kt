@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
+import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.sin
@@ -32,7 +34,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 9.0
+        var intakeLimit = 14.0
         @JvmField
         var outPosition = 0.45
         @JvmField

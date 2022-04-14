@@ -46,16 +46,16 @@ class CyclingBlue : LinearOpMode() {
     private val blue = true
     companion object {
         @JvmField var coast = -55.0
-        @JvmField var stop = 51.0
+        @JvmField var stop = 51.3
         @JvmField var intakeDelay = 16.5
-        @JvmField var depositDelay = 27.0
+        @JvmField var depositDelay = 26.8
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
         @JvmField var cyclingDistance = 27.0
-        @JvmField var depositDistance = 29.5
+        @JvmField var depositDistance = 28.0
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
@@ -186,10 +186,7 @@ class CyclingBlue : LinearOpMode() {
                 .increaseGains(intakeCrossingVelo)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                 .increaseGains(intakeVelo)
-                .splineTo(
-                    Pose2d(gainsPoint, coast).flip(blue)
-                        .polarAdd(stop - gainsPoint + i / divConstant, angle).vec(), angle
-                )
+                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue), 0.0)
                 .defaultGains()
                 .waitSeconds(waitTime)
                 .relocalize(robot)
@@ -233,7 +230,7 @@ class CyclingBlue : LinearOpMode() {
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
@@ -250,7 +247,7 @@ class CyclingBlue : LinearOpMode() {
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )                .setReversed(false)
-                .dump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }

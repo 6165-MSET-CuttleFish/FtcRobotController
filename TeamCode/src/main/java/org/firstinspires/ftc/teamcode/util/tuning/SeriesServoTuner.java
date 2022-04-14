@@ -82,9 +82,9 @@ public class SeriesServoTuner extends LinearOpMode {
                 Context.packet.put("Estimated Position", servo.getEstimatedPosition());
                 Context.packet.put("Real Position", servo.getRealPosition());
 
-                Context.packet.put("Target Angle", servo.getAngle());
-                Context.packet.put("Estimated Angle", servo.getEstimatedAngle());
-                Context.packet.put("Real Angle", servo.getRealAngle());
+                Context.packet.put("Target Angle", Math.toDegrees(servo.getAngle()));
+                Context.packet.put("Estimated Angle", Math.toDegrees(servo.getEstimatedAngle()));
+                if (servo.getRealAngle() != null) Context.packet.put("Real Angle", Math.toDegrees(servo.getRealAngle()));
                 ftcDashboard.sendTelemetryPacket(Context.packet);
                 Context.packet = new TelemetryPacket();
                 telemetry.update();

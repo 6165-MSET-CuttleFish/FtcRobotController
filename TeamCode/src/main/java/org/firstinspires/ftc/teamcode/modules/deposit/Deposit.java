@@ -34,7 +34,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.53,
-            outPosition2 = 0.47,
+            outPosition2 = 0.485,
             outPosition1 = 0.43;
     private double offsetOutPosition;
     public static double
@@ -43,8 +43,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             extendIn = 0.32,
             extendOut3 = 0.18,
-            extendOut2 = 0.085,
-            extendOut1 = 0.085,
+            extendOut2 = 0.13,
+            extendOut1 = 0.13,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -383,7 +383,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL3 = 12;
     public static double LEVEL2 = 3;
     public static double LEVEL1 = 2;
-    public static double allowableDepositError = 8;
+    public static double allowableDepositError = 1.5;
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(Level state) {
@@ -448,8 +448,15 @@ public class Deposit extends Module<Deposit.State> {
     private void flipOut(Level state) {
         double position = outPosition(state);
         arm.setPosition(position);
-        double extensionPos = extendPosition(state);
-        extension.setPosition(extensionPos);
+        if (getLevel() == Level.LEVEL2) {
+            if (arm.getServos().getError() < 0.3) {
+                double extensionPos = extendPosition(state);
+                extension.setPosition(extensionPos);
+            }
+        } else {
+            double extensionPos = extendPosition(state);
+            extension.setPosition(extensionPos);
+        }
     }
 
     private void holdingPosition() {
@@ -509,5 +516,10 @@ public class Deposit extends Module<Deposit.State> {
 
     public boolean isDumping() {
         return getState() == State.DUMPING || getState() == State.SOFT_DUMP;
+    }
+
+    public void resetEncoder() {
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

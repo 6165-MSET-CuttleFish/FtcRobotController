@@ -40,6 +40,10 @@ fun TrajectorySequenceBuilder<*>.intakeOff(intake: Intake): TrajectorySequenceBu
 }
 
 fun TrajectorySequenceBuilder<*>.dump(deposit: Deposit): TrajectorySequenceBuilder<*> {
+    return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::softDump)
+}
+
+fun TrajectorySequenceBuilder<*>.hardDump(deposit: Deposit): TrajectorySequenceBuilder<*> {
     return UNSTABLE_addTemporalMarkerOffset(0.0, deposit::dump)
 }
 
