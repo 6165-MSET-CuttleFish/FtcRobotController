@@ -69,7 +69,7 @@ class AdvancedCarouselRed : LinearOpMode() {
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                 .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
@@ -100,7 +100,7 @@ class AdvancedCarouselRed : LinearOpMode() {
                 .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
                 .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
                 .splineToCircle(allianceHub, Line.yAxis(-33.0), Vector2d(12.0, -24.0).flip(blue))
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         val sequence = trajectoryBuilder

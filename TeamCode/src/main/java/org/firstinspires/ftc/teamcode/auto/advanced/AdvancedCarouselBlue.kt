@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.carouselVec
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.dumpPosition
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
@@ -101,7 +99,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
                     ), allianceHub.center
                 )
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
                 .splineTo(
@@ -127,7 +125,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
                         ).flip(blue)
                     ), allianceHub.center,
                 )
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork)
                 .setReversed(false)
                 .splineTo(Vector2d(-55.0, -46.0).flip(blue), Math.toRadians(90.0).flip(blue))
@@ -160,7 +158,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
                         closeDist, Math.toRadians(40.0).flip(blue)
                     ), allianceHub.center
                 )
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         val sequence = trajectoryBuilder

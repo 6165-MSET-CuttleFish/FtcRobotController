@@ -209,7 +209,7 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .defaultGains()
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
             coast -= yIncrement
@@ -264,7 +264,7 @@ class CyclingBlue : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }

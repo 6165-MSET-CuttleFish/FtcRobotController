@@ -111,7 +111,7 @@ class CarouselRed : LinearOpMode() {
     fun leftAuto() : TrajectorySequence {
         val traj = theRest(robot.trajectorySequenceBuilder(startingPosition()))
             .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(150.0).flip(blue)), allianceHub.center)
-            .dump(deposit)
+            .softDump(deposit)
             .waitWhile(deposit::isDoingWork)
             .setReversed(false)
             .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
@@ -123,7 +123,7 @@ class CarouselRed : LinearOpMode() {
     fun midAuto() : TrajectorySequence {
         val traj = theRest(robot.trajectorySequenceBuilder(startingPosition()))
             .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(150.0).flip(blue)), allianceHub.center)
-            .dump(deposit)
+            .softDump(deposit)
             .waitWhile(deposit::isDoingWork)
             .setReversed(false)
             .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))
@@ -135,7 +135,7 @@ class CarouselRed : LinearOpMode() {
     fun rightAuto() : TrajectorySequence {
         val traj = theRest(robot.trajectorySequenceBuilder(startingPosition()))
             .splineTo(allianceHub.center.polarAdd(24.0, Math.toRadians(150.0).flip(blue)), allianceHub.center)
-            .dump(deposit)
+            .softDump(deposit)
             .waitWhile(deposit::isDoingWork)
             .setReversed(false)
             .splineTo(Vector2d(-58.0, -16.0).flip(blue), Math.toRadians(180.0).flip(blue))

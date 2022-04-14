@@ -13,8 +13,6 @@ import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableSer
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 
-import java.util.ArrayList;
-
 @Config
 @TeleOp
 public class SeriesServoTuner extends LinearOpMode {
