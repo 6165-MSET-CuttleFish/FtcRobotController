@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode.drive
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.roadrunnerext.polarAdd
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 
 object FrequentPositions {
     @JvmStatic

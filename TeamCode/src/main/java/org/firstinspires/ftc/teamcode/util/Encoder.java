@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
@@ -93,5 +94,9 @@ public class Encoder {
 
     public double getCorrectedVelocity() {
         return inverseOverflow(getRawVelocity(), velocityEstimates.getMean());
+    }
+
+    public void reset() {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

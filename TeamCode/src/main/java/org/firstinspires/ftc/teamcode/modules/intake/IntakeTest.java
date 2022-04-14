@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
 
 @TeleOp
-@Disabled
 public class IntakeTest extends ModuleTest {
     Intake intake;
 

@@ -4,22 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
+import org.outoftheboxrobotics.neutrinoi2c.MB1242.AsyncMB1242;
 
 @TeleOp
 public class DistanceSensorTest extends ModuleTest {
     UltrasonicDistanceSensor frontDist, sideDist;
     @Override
     public void initialize() {
-        frontDist = new UltrasonicDistanceSensor(
-                hardwareMap,
-                "leftFrontDS",
-                UltrasonicDistanceSensor.SensorType.LongRange
-        );
-        sideDist = new UltrasonicDistanceSensor(
-                hardwareMap,
-                "rightDS",
-                UltrasonicDistanceSensor.SensorType.ShortRange
-        );
+        frontDist = hardwareMap.get(AsyncMB1242.class, "leftFrontDS");
+        sideDist = new MB1643(hardwareMap, "rightDS");
     }
 
     public void update() {

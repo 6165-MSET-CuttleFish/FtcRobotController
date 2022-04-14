@@ -3,13 +3,11 @@ package com.example.meepmeepsequences.util
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
 import com.example.meepmeepsequences.util.geometry.*
 import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
 import com.noahbres.meepmeep.roadrunner.DriveShim
 import com.noahbres.meepmeep.roadrunner.DriveTrainType
-import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
 import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySegment
@@ -28,7 +26,7 @@ fun TrajectorySequenceBuilder.waitSeconds(seconds: Double, driveSignal: DriveSig
     return this.waitSeconds(seconds)
 }
 
-fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d) = this.splineTo(endPosition, endPosition.angleTo(endTangent))
+fun TrajectorySequenceBuilder.splineTo(endPosition: Vector2d, endTangent: Vector2d, offset: Pose2d = Pose2d()) = this.splineTo(endPosition + offset.vec(), endPosition.angleTo(endTangent) + offset.heading)
 
 fun TrajectorySequenceBuilder.splineToCircle(circle: Circle, line: Line, reference: Vector2d) : TrajectorySequenceBuilder {
     val endPose = Coordinate.lineCircleIntersection(circle, Coordinate.toPoint(line.start), Coordinate.toPoint(line.end)).minByOrNull { it.distTo(reference) }
@@ -95,7 +93,7 @@ fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
         .setDimensions(16.877953, 16.1417)
-        .setConstraints(90.0, 90.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
+        .setConstraints(62.0, 100.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
 }
 
 fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {
@@ -104,11 +102,11 @@ fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBot
         .addEntity(botEntityBuilder(false, this))
 }
 
-fun TrajectorySequenceBuilder.increaseGains() = UNSTABLE_addDisplacementMarkerOffset(0.0) {
+fun TrajectorySequenceBuilder.increaseGains(amount: Double = 40.0) = UNSTABLE_addDisplacementMarkerOffset(0.0) {
     println("Gains Increased")
 }.setVelConstraint(
         getVelocityConstraint(
-            40.0,
+            amount,
             Math.toRadians(274.0),
             15.0
         )

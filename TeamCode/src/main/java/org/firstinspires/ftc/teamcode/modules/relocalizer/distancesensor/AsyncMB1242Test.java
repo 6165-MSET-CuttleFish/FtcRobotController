@@ -12,9 +12,10 @@ public class AsyncMB1242Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         AsyncMB1242 sensor = hardwareMap.get(AsyncMB1242.class, "leftFrontDS");
+        sensor.setMinRunDelayMs(100);
         waitForStart();
-        while(opModeIsActive()){
-            telemetry.addData("Distance", sensor.getDistance(DistanceUnit.INCH));
+        while(opModeIsActive()) {
+            telemetry.addData("Distance", sensor.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
     }

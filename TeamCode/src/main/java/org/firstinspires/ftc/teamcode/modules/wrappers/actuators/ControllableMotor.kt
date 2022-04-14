@@ -30,6 +30,10 @@ class ControllableMotor(vararg motors: DcMotorEx) :
         get() = motors
             .map { it.currentPosition }
             .reduce { a, b -> a + b }
+    val velocity: Double
+        get() = motors
+            .map { it.velocity }
+            .reduce { a, b -> a + b }
 
     fun getCurrent(unit: CurrentUnit): Double {
         return motors

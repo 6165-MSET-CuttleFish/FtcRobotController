@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.localizers.ImprovedLocalizer
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toPose
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 
@@ -57,13 +58,6 @@ abstract class ImprovedTankDrive constructor(
                 .zip(lastWheelPositions)
                 .map { it.first - it.second }
                 .toMutableList()
-//            if (Robot.gainMode != Robot.GainMode.IDLE) {
-//                if (Context.alliance == Alliance.RED) {
-//                    wheelDeltas[0] = wheelDeltas[0] / Robot.slowFactor
-//                } else {
-//                    wheelDeltas[1] = wheelDeltas[1] / Robot.slowFactor
-//                }
-//            }
             val robotPoseDelta =
                 TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
             val finalHeadingDelta = if (useExternalHeading) {
@@ -87,13 +81,6 @@ abstract class ImprovedTankDrive constructor(
             val wheelVelocities = drive.getWheelVelocities()?.toMutableList()
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
-//                if (Robot.gainMode != Robot.GainMode.IDLE) {
-//                    if (Context.alliance == Alliance.RED) {
-//                        wheelVelocities[0] = wheelVelocities[0] / Robot.slowFactor
-//                    } else {
-//                        wheelVelocities[1] = wheelVelocities[1] / Robot.slowFactor
-//                    }
-//                }
                 poseVelocity =
                     TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {

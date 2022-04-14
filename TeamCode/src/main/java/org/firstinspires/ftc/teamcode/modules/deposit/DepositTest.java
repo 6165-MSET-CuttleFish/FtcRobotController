@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.modules.deposit;
 
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.ModuleTest;
-import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
@@ -18,7 +18,8 @@ public class DepositTest extends ModuleTest {
     Deposit deposit;
     GamepadEx primary;
     Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
-    ToggleButtonReader tippedAway, tippedToward, levelIncrement, levelDecrement, farDeposit;
+    ToggleButtonReader levelIncrement, levelDecrement, farDeposit;
+    ButtonReader dumpButton;
 
     @Override
     public void initialize() {
@@ -29,9 +30,8 @@ public class DepositTest extends ModuleTest {
         setKeyReaders(
                 levelDecrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
                 levelIncrement = new ToggleButtonReader(primary, GamepadKeys.Button.DPAD_UP),
-                tippedAway = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
-                tippedToward = new ToggleButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
-                farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X)
+                farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
+                dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER)
         );
     }
 
@@ -39,30 +39,17 @@ public class DepositTest extends ModuleTest {
     public void update() {
         packet.put("isLoaded", Deposit.isLoaded);
         packet.put("balance", balance);
-        packet.put("LB", tippedAway.getState());
-        packet.put("RB", tippedToward.getState());
         intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
-//        if (gamepad1.b) {
-//            Deposit.isLoaded = true;
-//            deposit.prepPlatform(deposit.g);
-//        }
-        if (farDeposit.wasJustPressed()) {
-            Deposit.allowLift = !Deposit.allowLift;
-        }
         if (intake.getContainsBlock() && intake.getState() == Intake.State.OUT) {
             gamepad1.rumble(500);
             gamepad2.rumble(500);
         }
-        if (gamepad1.a) {
-            Deposit.isLoaded = true;
-            deposit.dump();
+        if (dumpButton.wasJustPressed()) {
+            if (Deposit.isLoaded) deposit.dump();
+            else Deposit.isLoaded = true;
         }
-        if (tippedAway.isDown() && tippedToward.isDown()) {
-            balance = Balance.BALANCED;
-        } else if (tippedAway.isDown()) {
-            balance = Balance.AWAY;
-        } else if (tippedToward.isDown()) {
-            balance = Balance.TOWARD;
+        if (farDeposit.wasJustPressed()) {
+            deposit.toggleLift();
         }
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {

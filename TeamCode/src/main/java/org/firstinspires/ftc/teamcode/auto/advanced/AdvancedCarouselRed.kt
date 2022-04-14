@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
-import org.firstinspires.ftc.teamcode.roadrunnerext.flip
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
 import kotlin.Throws
 
@@ -65,7 +65,7 @@ class AdvancedCarouselRed : LinearOpMode() {
                     duckLocation().vec(),
                     Math.toRadians(90.0).flip(blue) + duckLocation().heading
                 )
-                .liftUp(deposit, Deposit.Level.LEVEL3)
+                .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .waitWhile(capstone::isDoingWork) // capstone loaded
                 .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))
                 .setReversed(false)
