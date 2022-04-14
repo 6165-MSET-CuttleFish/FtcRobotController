@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 
+import com.qualcomm.robotcore.hardware.PwmControl
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.ServoImplEx
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
@@ -115,6 +117,10 @@ class ControllableServos(vararg servos: Servo) :
 
     override fun enable() {
 //        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
+    }
+
+    fun increaseRange(newRange: PwmControl.PwmRange) {
+        servos.forEach { (it as ServoImplEx).pwmRange = newRange }
     }
 
     override fun update() {

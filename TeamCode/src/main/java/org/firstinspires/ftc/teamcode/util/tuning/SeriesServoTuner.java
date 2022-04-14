@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
@@ -22,6 +23,9 @@ public class SeriesServoTuner extends LinearOpMode {
     public static double totalRotation = 360;
     public static double gearing = 1.0;
     public static boolean calibrate;
+
+    public static double minPwmRange = 0;
+    public static double maxPwmRange = 0;
 
     private String lastServoNames = servoNames;
     private String lastEncoder = encoder;
@@ -60,7 +64,11 @@ public class SeriesServoTuner extends LinearOpMode {
                     for (int i = 0; i < names.length; i++) {
                         servos[i] = hardwareMap.servo.get(names[i].trim());
                     }
+
                     servo = new ControllableServos(servos);
+                    if (minPwmRange != 0 && maxPwmRange != 0) {
+                        servo.increaseRange(new PwmControl.PwmRange(minPwmRange, maxPwmRange));
+                    }
                     if (!encoder.isEmpty()) {
                         servo.setEncoder(new Encoder(hardwareMap.get(DcMotorEx.class, encoder)));
                     }

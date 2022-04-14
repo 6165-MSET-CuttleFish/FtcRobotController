@@ -480,7 +480,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public static double powerChangePerInertia = 1.3;
-    public static double feedForwardInertia = 0.03;
+    public static double feedForwardInertia = 0.001;
 
     public void waitForIdle() {
         waitForIdle(() -> {
