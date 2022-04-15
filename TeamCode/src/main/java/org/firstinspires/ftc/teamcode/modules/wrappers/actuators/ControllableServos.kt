@@ -72,12 +72,12 @@ class ControllableServos(vararg servos: Servo) :
 
     val error: Double
         get() = abs(estimatedPosition - position)
-
+    var reversedAngle = false
     var angle: Double
         set(value) {
             position = getPosition(value)
         }
-        get() = getAngle(position)
+        get() = getAngle(if (reversedAngle) 1 - position else position)
     val estimatedAngle: Double
         get() = getAngle(estimatedPosition)
     val realAngle: Double?

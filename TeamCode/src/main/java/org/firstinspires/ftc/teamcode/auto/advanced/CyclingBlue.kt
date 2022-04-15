@@ -52,7 +52,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var powerDelay = 30.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
-        @JvmField var conjoiningPoint = 30.0
+        @JvmField var conjoiningPoint = 18.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.21
         @JvmField var gainsPoint = 36.0
@@ -65,7 +65,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 5.0
         @JvmField var intakeCrossingVelo = 26.0
-        @JvmField var intakeVelo = 50.0
+        @JvmField var intakeVelo = 30.0
         @JvmField var intakeAngle = 0.0
         @JvmField var depositVelo = DriveConstants.MAX_VEL
         @JvmField var angleOffset = -8.0
@@ -189,7 +189,7 @@ class CyclingBlue : LinearOpMode() {
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeCrossingVelo)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
-                .defaultGains()
+                .increaseGains(intakeVelo)
                 .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
                 .defaultGains()
                 .waitSeconds(waitTime)

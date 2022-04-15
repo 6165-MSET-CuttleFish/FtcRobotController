@@ -150,7 +150,9 @@ public class Deposit extends Module<Deposit.State> {
                 extL = hardwareMap.servo.get("extL"),
                 extR = hardwareMap.servo.get("extR");
         extR.setDirection(Servo.Direction.REVERSE);
-        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR));
+        extension = new Linkage(9.961, 4.40945, 6.2795276, new ControllableServos(extL, extR), Math.toRadians(59.58));
+        extension.getServos().setReversedAngle(true);
+        extension.getServos().calibrateOffset(extendIn, Math.toRadians(59.58));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
         unlock();
         if (opModeType == OpModeType.AUTO) lock();
@@ -343,9 +345,7 @@ public class Deposit extends Module<Deposit.State> {
                 ticksToInches(slides.getCurrentPosition()) * Math.sin(angle)
         );
         Vector2d extensionVec = new Vector2d().plus(slidesVec);
-        if (platformIsOut()) {
-            extensionVec = new Vector2d(13.4252).div(2).plus(slidesVec);
-        }
+        //extensionVec = new Vector2d(extension.getEstimatedDisplacement()).div(2).plus(slidesVec);
         //Vector2d armVec = arm.getVector().plus(extensionVec);
         return ((slidesVec.times(weightSlides))
                 .plus((extensionVec).times(weightExtension))
