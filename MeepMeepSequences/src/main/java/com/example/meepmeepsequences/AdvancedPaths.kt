@@ -39,7 +39,7 @@ class AdvancedPaths {
                 val trajectoryBuilder =
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
-                        .liftUp(deposit, Robot.getLevel(location))
+                        .liftLevel(deposit, Robot.getLevel(location))
                         .splineTo(
                             allianceHub.center.polarAdd(
                                 cyclingDistance, Math.toRadians(
@@ -66,7 +66,7 @@ class AdvancedPaths {
                         .turn(Math.toRadians(-120.0).flip(blue))
                         .intakeOff(intake)
                         .setReversed(true)
-                        .liftUp(deposit, Deposit.State.LEVEL3)
+                        .liftLevel(deposit, Deposit.Level.LEVEL3)
                         .splineTo(
                             allianceHub.center.polarAdd(
                                 cyclingDistance, Math.toRadians(
@@ -101,7 +101,7 @@ class AdvancedPaths {
                         .increaseGains()
                         .splineToConstantHeading(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(180 - 40.0).flip(blue))
                         .defaultGains()
-                        .liftUp(deposit, Deposit.State.LEVEL3)
+                        .liftLevel(deposit, Deposit.Level.LEVEL3)
                         .splineTo(
                             allianceHub.center.polarAdd(
                                 closeDist, Math.toRadians(40.0).flip(blue)
@@ -119,8 +119,8 @@ class AdvancedPaths {
 
     @JvmField var coast = -54.5
     @JvmField var stop = 51.0
-    @JvmField var intakeDelay = 25.0
-    @JvmField var powerDelay = 30.0
+    @JvmField var intakeDelay = 12.0
+    @JvmField var powerDelay = 18.0
     @JvmField var depositDelay = 27.0
     @JvmField var closeDist = 25.0
     @JvmField var conjoiningPoint = 18.0
@@ -169,6 +169,9 @@ class AdvancedPaths {
                 for (i in 1..7) {
                     val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
                     trajectoryBuilder
+
+                       // .setState(PathState.INTAKING)
+                        .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                         .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                             intake.setPower(0.1)
                             //deposit.liftDown()
@@ -177,9 +180,7 @@ class AdvancedPaths {
                             intake.setPower(1.0)
                             //deposit.liftDown()
                         }
-                       // .setState(PathState.INTAKING)
-                        .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
-                        //.liftLevel(deposit, Deposit.Level.LEVEL3)
+                        .liftLevel(deposit, Deposit.Level.LEVEL3)
                         .increaseGains(intakeCrossingVelo)
                         .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
                         .increaseGains(intakeVelo)

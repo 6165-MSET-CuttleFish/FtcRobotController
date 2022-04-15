@@ -44,7 +44,7 @@ fun TrajectorySequenceBuilder.addTrajectorySegment(segment: TrajectorySegment): 
     return addTrajectory(segment.trajectory)
 }
 
-fun TrajectorySequenceBuilder.liftUp(deposit: Deposit, level: Deposit.State): TrajectorySequenceBuilder {
+fun TrajectorySequenceBuilder.liftLevel(deposit: Deposit, level: Deposit.Level): TrajectorySequenceBuilder {
     return UNSTABLE_addTemporalMarkerOffset(0.0) {
         deposit.setState(level)
     }
@@ -93,7 +93,7 @@ fun DefaultBotBuilder.configure(): DefaultBotBuilder {
     return this
         .setDriveTrainType(DriveTrainType.TANK)
         .setDimensions(16.877953, 16.1417)
-        .setConstraints(50.0, 150.0, Math.toRadians(774.5043079608481), Math.toRadians(774.5043079608481), 14.42126)
+        .setConstraints(50.0, 150.0, Math.toRadians(200.0), Math.toRadians(200.0), 14.42126)
 }
 
 fun MeepMeep.addMultiPath(botEntityBuilder: (Boolean, MeepMeep) -> RoadRunnerBotEntity): MeepMeep {

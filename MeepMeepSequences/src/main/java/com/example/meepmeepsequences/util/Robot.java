@@ -1,12 +1,12 @@
 package com.example.meepmeepsequences.util;
 
 public class Robot {
-    public static Deposit.State getLevel(Detector.Location location) {
+    public static Deposit.Level getLevel(Detector.Location location) {
         switch (location) {
-            case LEFT: return Deposit.State.IDLE;
-            case MIDDLE: return Deposit.State.LEVEL2;
-            case RIGHT: return Deposit.State.LEVEL3;
+            case LEFT: return Deposit.Level.IDLE;
+            case MIDDLE: return Deposit.Level.LEVEL2;
+            case RIGHT: return Deposit.Level.LEVEL3;
         }
-        return Deposit.State.LEVEL3;
+        return Deposit.Level.LEVEL3;
     }
 }

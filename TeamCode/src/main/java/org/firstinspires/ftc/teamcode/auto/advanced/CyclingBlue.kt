@@ -50,8 +50,8 @@ class CyclingBlue : LinearOpMode() {
     companion object {
         @JvmField var coast = -54.5
         @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 25.0
-        @JvmField var powerDelay = 30.0
+        @JvmField var intakeDelay = 12.0
+        @JvmField var powerDelay = 18.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 18.0
@@ -178,6 +178,8 @@ class CyclingBlue : LinearOpMode() {
         for (i in 1..7) {
             val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
             trajectoryBuilder
+                .setState(PathState.INTAKING)
+                .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(0.1)
                     deposit.liftDown()
@@ -186,8 +188,6 @@ class CyclingBlue : LinearOpMode() {
                     intake.setPower(1.0)
                     deposit.liftDown()
                 }
-                .setState(PathState.INTAKING)
-                .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeCrossingVelo)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)

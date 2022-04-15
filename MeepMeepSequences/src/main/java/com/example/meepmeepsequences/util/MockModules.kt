@@ -13,12 +13,12 @@ class Intake : Module() {
 
 class Deposit : Module() {
     private val platform = Platform()
-    enum class State {
+    enum class Level {
         LEVEL3,
         LEVEL2,
         IDLE
     }
-    fun setState(state: State) {
+    fun setState(state: Level) {
         println("Lift State $state")
     }
     fun dump() = platform.dump()

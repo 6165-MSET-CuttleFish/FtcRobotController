@@ -207,8 +207,8 @@ public class Robot<T> extends ImprovedTankDrive {
                 carousel = new Carousel(hardwareMap),
                 intake = new Intake(hardwareMap),
                 deposit = new Deposit(hardwareMap, intake),
+                relocalizer = new Relocalizer(hardwareMap),
         };
-        relocalizer = new Relocalizer(hardwareMap);
         for (Module module : modules) {
             module.init();
         }
