@@ -46,14 +46,14 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.2
+        @JvmField var coast = -55.0
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 19.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.2
+        @JvmField var waitTime = 0.16
         @JvmField var gainsPoint = 36.0
         @JvmField var cyclingDistance = 25.0
         @JvmField var depositDistance = 26.0
@@ -63,7 +63,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 5.0
-        @JvmField var intakeCrossingVelo = 26.0
+        @JvmField var intakeCrossingVelo = 28.0
         @JvmField var intakeVelo = 50.0
         @JvmField var intakeAngle = 0.0
         @JvmField var depositVelo = DriveConstants.MAX_VEL
