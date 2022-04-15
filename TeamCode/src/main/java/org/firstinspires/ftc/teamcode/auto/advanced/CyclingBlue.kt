@@ -38,6 +38,8 @@ import kotlin.math.sin
 @Autonomous
 @Config
 class CyclingBlue : LinearOpMode() {
+    //TUNING NOTES:
+    // Adjust acceleration, and cycling distance
     lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit
     lateinit var intake: Intake
@@ -46,7 +48,7 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -54.2
+        @JvmField var coast = -54.5
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 25.0
         @JvmField var powerDelay = 30.0

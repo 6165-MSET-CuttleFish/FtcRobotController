@@ -118,4 +118,7 @@ abstract class Module {
     fun isDoingWork(): Boolean {
         return true
     }
+    fun isTransitioningState(): Boolean {
+        return true
+    }
 }

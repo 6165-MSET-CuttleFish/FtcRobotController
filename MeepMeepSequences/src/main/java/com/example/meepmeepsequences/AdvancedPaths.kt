@@ -117,28 +117,30 @@ class AdvancedPaths {
             }
     }
 
-    @JvmField var coast = -55.6
-    @JvmField var stop = 51.5
-    @JvmField var intakeDelay = 17.0
-    @JvmField var depositDelay = 5.0
+    @JvmField var coast = -54.5
+    @JvmField var stop = 51.0
+    @JvmField var intakeDelay = 25.0
+    @JvmField var powerDelay = 30.0
+    @JvmField var depositDelay = 27.0
     @JvmField var closeDist = 25.0
-    @JvmField var conjoiningPoint = 28.0
-    @JvmField var conjoiningDeposit = 28.0
-    @JvmField var waitTime = 0.08
+    @JvmField var conjoiningPoint = 18.0
+    @JvmField var conjoiningDeposit = 30.0
+    @JvmField var waitTime = 0.21
     @JvmField var gainsPoint = 36.0
-    @JvmField var cyclingDistance = 28.0
-    @JvmField var divConstant = 4.0
+    @JvmField var cyclingDistance = 23.0
+    @JvmField var depositDistance = 25.0
+    @JvmField var divConstant = 2.0
     @JvmField var depositingAngle = -60.0
-    @JvmField var cyclingAngle = -52.0
+    @JvmField var cyclingAngle = -55.0
     @JvmField var depositingTimeout = 0.4
     @JvmField var intakeError = 8.0
-    @JvmField var depositError = 8.0
-    @JvmField var intakeCrossingVelo = 29.0
-    @JvmField var intakeVelo = 55.0
-    @JvmField var intakeAngle = 20.0
-    @JvmField var depositVelo = 62.0
-    @JvmField var angleOffset = -10.0
-    @JvmField var yIncrement = 0.09
+    @JvmField var depositError = 5.0
+    @JvmField var intakeCrossingVelo = 30.0
+    @JvmField var intakeVelo = 50.0
+    @JvmField var intakeAngle = 10.0
+    @JvmField var depositVelo = 60.0
+    @JvmField var angleOffset = -8.0
+    @JvmField var yIncrement = 0.0
     fun randomRange(lower: Double, upper: Double): Double{
         return Math.random() * upper + Math.random() * lower
     }
@@ -165,13 +167,17 @@ class AdvancedPaths {
                     .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 var coast = coast
                 for (i in 1..7) {
-                    val angle = Math.toRadians(randomRange(-intakeAngle, intakeAngle / 4)).flip(blue)
+                    val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
                     trajectoryBuilder
                         .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
+                            intake.setPower(0.1)
+                            //deposit.liftDown()
+                        }
+                        .UNSTABLE_addDisplacementMarkerOffset(powerDelay) {
                             intake.setPower(1.0)
                             //deposit.liftDown()
                         }
-                        //.setState(PathState.INTAKING)
+                       // .setState(PathState.INTAKING)
                         .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
                         //.liftLevel(deposit, Deposit.Level.LEVEL3)
                         .increaseGains(intakeCrossingVelo)
@@ -184,13 +190,12 @@ class AdvancedPaths {
                         .setReversed(true)
                         .intakeOff(intake)
                     trajectoryBuilder
-                        //.setState(PathState.DUMPING)
+                       // .setState(PathState.DUMPING)
+                        .increaseGains(depositVelo)
                         .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI) // change
                         .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
                         //.UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
-                        .increaseGains(depositVelo)
                         .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
-                        .defaultGains()
                         .splineTo(
                             allianceHub.center.polarAdd(
                                 cyclingDistance,
@@ -199,6 +204,7 @@ class AdvancedPaths {
                             allianceHub.center,
                             Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                         )
+                        .defaultGains()
                         //.waitWhile(deposit::isTransitioningState)
                         .dump(deposit)
                         .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
