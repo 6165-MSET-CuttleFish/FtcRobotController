@@ -5,9 +5,16 @@ import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.modules.intake.Intake
+import org.firstinspires.ftc.teamcode.modules.relocalizer.Relocalizer
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
+import org.firstinspires.ftc.teamcode.util.field.Alliance
+import org.firstinspires.ftc.teamcode.util.field.Context
 
-fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.0) = UNSTABLE_addTemporalMarkerOffset(offset) {
+fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.0) = performAction {
+    robot.relocalizer.updatePoseEstimate(
+        null,
+        if (Context.alliance == Alliance.BLUE) Relocalizer.Sensor.LEFT else Relocalizer.Sensor.RIGHT,
+    )
     robot.correctPosition()
 }
 
@@ -34,7 +41,7 @@ fun TrajectorySequenceBuilder<*>.intakeOn(intake: Intake): TrajectorySequenceBui
 }
 
 fun TrajectorySequenceBuilder<*>.intakeOff(intake: Intake): TrajectorySequenceBuilder<*> {
-    return UNSTABLE_addDisplacementMarkerOffset(0.0) {
+    return performAction {
         intake.setPower(0.0)
     }
 }

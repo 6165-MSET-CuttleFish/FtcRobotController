@@ -111,7 +111,7 @@ class CyclingBlue : LinearOpMode() {
                     try {
                         robot.relocalizer.updatePoseEstimate(
                             Relocalizer.Sensor.FRONT_RIGHT,
-                            Relocalizer.Sensor.LEFT
+                            null
                         )
                     } catch (e: Exception) {
 
@@ -215,7 +215,7 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .defaultGains()
                 .waitWhile(deposit::isTransitioningState)
-                .softDump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
             coast -= yIncrement
@@ -270,7 +270,7 @@ class CyclingBlue : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )
                 .setReversed(false)
-                .softDump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }

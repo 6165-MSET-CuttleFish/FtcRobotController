@@ -49,37 +49,41 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         Pose2d(-3.75, -8.2, Math.toRadians(-90.0))
     )
 
-    var poseEstimate = Pose2d()
-        private set
+    val poseEstimate: Pose2d
+        get() = Pose2d(x, y, heading)
+    private var x = 0.0
+    private var y = 0.0
+    private var heading = 0.0
 
     override fun internalInit() {
         setNestedModules(frontLeftDistance, frontRightDistance, leftDistance, rightDistance)
     }
 
-    private fun getSensor(sensor: Sensor): UltrasonicDistanceSensor {
+    private fun getSensor(sensor: Sensor?): UltrasonicDistanceSensor? {
         return when (sensor) {
             Sensor.FRONT_LEFT -> frontLeftDistance
             Sensor.FRONT_RIGHT -> frontRightDistance
             Sensor.LEFT -> leftDistance
             Sensor.RIGHT -> rightDistance
+            else -> null
         }
     }
 
     private val samplingX = MovingMedian(3)
     private val samplingY = MovingMedian(3)
 
-    fun updatePoseEstimate(xCorrection: Sensor, yCorrection: Sensor) {
+    fun updatePoseEstimate(xCorrection: Sensor?, yCorrection: Sensor?) {
         val xSensor = getSensor(xCorrection)
         val ySensor = getSensor(yCorrection)
         val frontWallX = 70.5
         val sideWallY = if (alliance == Alliance.BLUE) 70.5 else -70.5
         val heading = Context.robotPose.heading
-        val rawXDist = xSensor.getDistance(DistanceUnit.INCH)
-        val rawYDist = ySensor.getDistance(DistanceUnit.INCH)
+        val rawXDist = xSensor?.getDistance(DistanceUnit.INCH) ?: 0.0
+        val rawYDist = ySensor?.getDistance(DistanceUnit.INCH) ?: 0.0
         val filteredX = samplingX.update(rawXDist)
-        val filteredY = samplingY.update(rawYDist)
-        val xDist = filteredX * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val yDist = filteredY * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
+        val filteredY = rawYDist
+        val xDist = xSensor?.let { filteredX * cos(sin(it.poseOffset.heading) * tilt + cos(it.poseOffset.heading) * pitch) } ?: 0.0
+        val yDist = ySensor?.let { filteredY * cos(sin(it.poseOffset.heading) * tilt + cos(it.poseOffset.heading) * pitch) } ?: 0.0
 
         Context.packet.put("YDIST", yDist)
         Context.packet.put("XDIST", xDist)
@@ -88,17 +92,19 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         Context.packet.put("Filter_XDIST", filteredX)
         Context.packet.put("Filter_YDIST", filteredY)
 
-        val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
-        val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)
+        val x = xSensor?.let { frontWallX - xDist * cos(it.modulePoseEstimate.heading) } ?: 0.0
+        val y = ySensor?.let { sideWallY - yDist * cos(it.modulePoseEstimate.heading - Math.PI / 2) } ?: 0.0
         val xPoseEstimate =
             Pose2d(x, Context.robotPose.y, heading)
-                .polarAdd(-xSensor.poseOffset.x)
-                .polarAdd(-xSensor.poseOffset.y, Math.toRadians(90.0))
+                .polarAdd(-(xSensor?.poseOffset?.x ?: 0.0))
+                .polarAdd(-(xSensor?.poseOffset?.y ?: 0.0), Math.toRadians(90.0))
         val yPoseEstimate =
             Pose2d(Context.robotPose.x, y, heading)
-                .polarAdd(-ySensor.poseOffset.x)
-                .polarAdd(-ySensor.poseOffset.y, Math.toRadians(90.0))
-        if (rawXDist > 1.0 && rawYDist >= 1.0) poseEstimate = Pose2d(xPoseEstimate.x, yPoseEstimate.y, heading)
+                .polarAdd(-(ySensor?.poseOffset?.x ?: 0.0))
+                .polarAdd(-(ySensor?.poseOffset?.y ?: 0.0), Math.toRadians(90.0))
+        this.x = xPoseEstimate.x
+        this.y = yPoseEstimate.y
+        this.heading = heading
     }
 
     override fun internalUpdate() {

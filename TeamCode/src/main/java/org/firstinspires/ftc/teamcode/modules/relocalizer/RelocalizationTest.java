@@ -4,10 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
-import org.firstinspires.ftc.teamcode.util.Async;
 import org.firstinspires.ftc.teamcode.util.field.Alliance;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.Side;
+
+import static org.firstinspires.ftc.teamcode.util.field.Context.alliance;
 
 @TeleOp
 public class RelocalizationTest extends LinearOpMode {
@@ -22,12 +23,12 @@ public class RelocalizationTest extends LinearOpMode {
     public void runOpMode() {
         initialize();
         waitForStart();
-        Async.start(() -> {
-            while (opModeIsActive()) {
-                // sleep(10);
-                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
-            }
-        });
+//        Async.start(() -> {
+//            while (opModeIsActive()) {
+//                // sleep(10);
+//                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+//            }
+//        });
         while (opModeIsActive()) {
             robot.update();
             robot.setWeightedDrivePower(
@@ -38,6 +39,11 @@ public class RelocalizationTest extends LinearOpMode {
                     )
             );
             if (gamepad1.a) robot.rawCorrectPosition();
+            if (alliance == Alliance.RED) {
+                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_LEFT, Relocalizer.Sensor.RIGHT);
+            } else {
+                robot.relocalizer.updatePoseEstimate(Relocalizer.Sensor.FRONT_RIGHT, Relocalizer.Sensor.LEFT);
+            }
         }
     }
 }
