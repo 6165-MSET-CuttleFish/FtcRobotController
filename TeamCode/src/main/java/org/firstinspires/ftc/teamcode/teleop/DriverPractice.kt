@@ -110,6 +110,7 @@ class DriverPractice : LinearOpMode() {
         deposit.liftDown()
         var liftIntent = false
         waitForStart()
+        deposit.resetEncoder()
         while (opModeIsActive()) {
             robot.update()
             for (reader in keyReaders) {

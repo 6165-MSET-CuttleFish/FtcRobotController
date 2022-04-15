@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.modules.Module;
 import org.firstinspires.ftc.teamcode.modules.StateBuilder;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
@@ -79,7 +80,8 @@ public class Deposit extends Module<Deposit.State> {
         HOLDING,
         DUMPING(0.15),
         SOFT_DUMP(0.1),
-        OUT;
+        OUT,
+        RESETTING_ENCODER;
         private final double timeOut;
         @Override
         public Double getTimeOut() {
@@ -170,12 +172,18 @@ public class Deposit extends Module<Deposit.State> {
     }
     private double lastOutPosition;
     public static double flipOutTime = 0.4;
+    private int i = 0;
+    private boolean toggle = false;
+    public static boolean allowTransfer = true;
     /**
      * This function updates all necessary controls in a loop
      */
     @Override
     protected void internalUpdate() {
-        shouldCounterBalance = !farDeposit;
+        i++;
+        if (i >= 3) {
+            toggle = !toggle;
+        }
         arm.getServos().setPositionPerSecond(armServoPositionPerSecond);
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         extension.getServos().setLimits(0.0, extendIn);
@@ -193,6 +201,7 @@ public class Deposit extends Module<Deposit.State> {
                 if (!intakeCleared && !isTransitioningState()) {
                     if (intake.getState() != Intake.State.OUT && intake.getState() != Intake.State.TRANSFER) intake.retractIntake();
                     intakeCleared = true;
+                    allowTransfer = true;
                 }
                 if (intake.getState() == Intake.State.OUT && intake.isTransitioningState() && !extension.isTransitioning() && Math.abs(getLastError()) < allowableDepositError) {
                     setState(State.CREATE_CLEARANCE);
@@ -215,14 +224,14 @@ public class Deposit extends Module<Deposit.State> {
                     holdingPosition();
                     pidController.setTargetPosition(getLevelHeight(getLevel()));
                 }
-                if (allowLift && !isTransitioningState()) {
+                if (allowLift) {
                     lastOutPosition = arm.getRealPosition();
                     setState(State.OUT);
                 }
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (getLevel() == Level.SHARED_CLOSE || getLevel() == Level.SHARED_FAR || !shouldCounterBalance) {
+                if (getLevel() == Level.SHARED_CLOSE || getLevel() == Level.SHARED_FAR || !shouldCounterBalance || farDeposit) {
                     intake.retractIntake();
                 } else {
                     intake.counterBalance();
@@ -255,9 +264,21 @@ public class Deposit extends Module<Deposit.State> {
                     freight = Freight.NONE;
                 }
                 break;
+            case RESETTING_ENCODER:
+                allowTransfer = false;
+                holdingPosition();
+                slides.setPower(-1);
+                if (getSecondsSpentInState() > 0.3 && slides.getCurrent(CurrentUnit.AMPS) > 3) {
+                    slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    setState(State.IN);
+                }
+                break;
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
-        slides.setPower(power);
+        if (getState() != State.RESETTING_ENCODER) {
+            slides.setPower(power);
+        }
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
             lastKv = kV;
@@ -299,6 +320,14 @@ public class Deposit extends Module<Deposit.State> {
 
     public void toggleFarDeposit() {
         farDeposit = !farDeposit;
+    }
+
+    public void setShouldCounterBalance(boolean counterBalance) {
+        this.shouldCounterBalance = counterBalance;
+    }
+
+    public void toggleShouldCounterBalance() {
+        shouldCounterBalance = !shouldCounterBalance;
     }
 
     public void moveArmPosition(double pwr) {
@@ -450,6 +479,7 @@ public class Deposit extends Module<Deposit.State> {
      */
     private void flipOut(Level state) {
         double position = outPosition(state);
+        if (toggle) position -= 0.001;
         arm.setPosition(position);
         // speed * time
         //arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
@@ -476,7 +506,7 @@ public class Deposit extends Module<Deposit.State> {
     private void flipIn() {
         double position = inPosition;
         extension.setPosition(extendIn);
-        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 6.0) {
+        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 4.0) {
             arm.setPosition(position);
         } else {
             arm.setPosition(holdingPosition);
@@ -524,6 +554,7 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public void resetEncoder() {
+        setState(State.RESETTING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }

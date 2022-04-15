@@ -48,7 +48,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.05
+        var blueTolerance = 0.055
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField
@@ -89,15 +89,20 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        extensionServos.init(inPosition)
+
         extensionServos.setLimits(inPosition, outPosition)
-        flip.init(raisedPosition)
         if (opModeType == OpModeType.TELE) {
-            flip.init(0.6)
+            flip.init(0.5)
+            extensionServos.init(midPosition)
+        } else {
+            flip.init(raisedPosition)
+            extensionServos.init(inPosition)
         }
         setActuators(flip, intake)
     }
-    private var shortInake = false
+    private var shortIntake = false
+    var dontFlipOut = false
+
     fun setPower(power: Double) {
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
             if (power != 0.0 && !isDoingWork) {
@@ -106,7 +111,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 state = State.IN
             }
         }
-        shortInake = power > 1
+        shortIntake = power > 1
         this.power = power
     }
 
@@ -162,6 +167,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
+                dontFlipOut = false
                 if (unfilteredDistance > transferTolerance) {
                     Deposit.isLoaded = true
                 }
@@ -222,7 +228,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     }
 
     private fun raiseIntake() {
-        flip.position = if (Deposit.isLoaded || containsBlock) raisedPosition else 0.5
+        flip.position = if (Deposit.isLoaded || containsBlock || dontFlipOut) raisedPosition else 0.5
     }
 
     fun createClearance() {
@@ -240,7 +246,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private fun deploy() {
         Deposit.isLoaded = false
         dropIntake()
-        if (flip.isTransitioning && shortInake) {
+        if (flip.isTransitioning && shortIntake) {
             extensionServos.lock()
         } else {
             slidesOut()
