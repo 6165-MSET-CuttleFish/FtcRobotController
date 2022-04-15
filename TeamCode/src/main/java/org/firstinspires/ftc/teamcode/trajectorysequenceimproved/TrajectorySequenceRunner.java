@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.ActionSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.ConditionalWait;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.FutureSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.sequencesegment.SequenceSegment;
@@ -224,6 +225,11 @@ public class TrajectorySequenceRunner<T> {
                     time.reset();
                     currentSegmentIndex++;
                 }
+            } else if (currentSegment instanceof ActionSegment) {
+                lastPoseError = new Pose2d();
+                targetPose = currentSegment.getStartPose();
+                ((ActionSegment) currentSegment).getCallback().onMarkerReached();
+                currentSegmentIndex++;
             }
 
             while (!(currentSegment instanceof ConditionalWait) && remainingMarkers.size() > 0 && deltaTime > remainingMarkers.get(0).getTime() + offset) {

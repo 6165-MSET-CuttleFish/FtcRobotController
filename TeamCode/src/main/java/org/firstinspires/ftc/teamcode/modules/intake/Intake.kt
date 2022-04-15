@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.util.controllers.LowPassFilter
 import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
+import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
+import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.sin
@@ -32,7 +34,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 9.0
+        var intakeLimit = 13.0
         @JvmField
         var outPosition = 0.45
         @JvmField
@@ -56,7 +58,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var distanceTolerance = 12.0
         @JvmField
-        var transferTolerance = 9.0
+        var transferTolerance = 10.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
@@ -81,7 +83,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     var containsBlock = false
     private var distanceFilter = LowPassFilter(smoothingCoeffecientDistance, 0.0)
     private var colorFilter = LowPassFilter(smoothingCoefficientAlpha, 0.0)
-    private var distanceMedian = MovingMedian(5)
+    private var distanceMedian = MovingMedian(3)
     override fun internalInit() {
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT

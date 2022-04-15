@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.auto.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
@@ -47,27 +48,27 @@ class CyclingBlue : LinearOpMode() {
     companion object {
         @JvmField var coast = -55.0
         @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 16.5
+        @JvmField var intakeDelay = 19.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.08
+        @JvmField var waitTime = 0.16
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 27.0
-        @JvmField var depositDistance = 29.5
+        @JvmField var cyclingDistance = 25.0
+        @JvmField var depositDistance = 26.0
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
-        @JvmField var depositError = 8.0
+        @JvmField var depositError = 5.0
         @JvmField var intakeCrossingVelo = 28.0
-        @JvmField var intakeVelo = 55.0
+        @JvmField var intakeVelo = 50.0
         @JvmField var intakeAngle = 0.0
-        @JvmField var depositVelo = 60.0
+        @JvmField var depositVelo = DriveConstants.MAX_VEL
         @JvmField var angleOffset = -8.0
-        @JvmField var yIncrement = -0.0
+        @JvmField var yIncrement = 0.0
     }
 
     enum class PathState {
@@ -128,8 +129,6 @@ class CyclingBlue : LinearOpMode() {
         robot.followTrajectorySequenceAsync(sequence)
         var incremented = false
         while (robot.isBusy && opModeIsActive()) {
-            Context.packet.put("Path State", robot.pathState)
-            Context.packet.put("Segment Index", robot.trajectorySequenceRunner.currentSegmentIndex)
             robot.update()
             when (robot.pathState) {
                 PathState.INTAKING -> {
@@ -174,7 +173,7 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         var coast = coast
         for (i in 1..7) {
-            val angle = Math.toRadians(randomRange(-intakeAngle / 4, intakeAngle)).flip(blue)
+            val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
@@ -185,11 +184,8 @@ class CyclingBlue : LinearOpMode() {
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeCrossingVelo)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
-                .increaseGains(intakeVelo)
-                .splineTo(
-                    Pose2d(gainsPoint, coast).flip(blue)
-                        .polarAdd(stop - gainsPoint + i / divConstant, angle).vec(), angle
-                )
+                .defaultGains()
+                .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
                 .defaultGains()
                 .waitSeconds(waitTime)
                 .relocalize(robot)
@@ -212,7 +208,7 @@ class CyclingBlue : LinearOpMode() {
                 )
                 .defaultGains()
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
             coast -= yIncrement
@@ -233,7 +229,7 @@ class CyclingBlue : LinearOpMode() {
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
@@ -250,7 +246,7 @@ class CyclingBlue : LinearOpMode() {
                     allianceHub.center,
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )                .setReversed(false)
-                .dump(deposit)
+                .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
@@ -267,7 +263,7 @@ class CyclingBlue : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }

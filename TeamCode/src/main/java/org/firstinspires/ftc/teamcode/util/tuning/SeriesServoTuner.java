@@ -7,13 +7,12 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.field.Context;
-
-import java.util.ArrayList;
 
 @Config
 @TeleOp
@@ -21,8 +20,12 @@ public class SeriesServoTuner extends LinearOpMode {
     public static String servoNames = "";
     public static String encoder = "";
     public static double position;
+    public static double totalRotation = 360;
     public static double gearing = 1.0;
     public static boolean calibrate;
+
+    public static double minPwmRange = 0;
+    public static double maxPwmRange = 0;
 
     private String lastServoNames = servoNames;
     private String lastEncoder = encoder;
@@ -42,6 +45,8 @@ public class SeriesServoTuner extends LinearOpMode {
                 servos[i] = hardwareMap.servo.get(names[i].trim());
             }
             servo = new ControllableServos(servos);
+            servo.setServoRotation(Math.toRadians(totalRotation));
+            servo.setGearing(gearing);
             if (!encoder.isEmpty()) {
                 servo.setEncoder(new Encoder(hardwareMap.get(DcMotorEx.class, encoder)));
             }
@@ -59,7 +64,11 @@ public class SeriesServoTuner extends LinearOpMode {
                     for (int i = 0; i < names.length; i++) {
                         servos[i] = hardwareMap.servo.get(names[i].trim());
                     }
+
                     servo = new ControllableServos(servos);
+                    if (minPwmRange != 0 && maxPwmRange != 0) {
+                        servo.increaseRange(new PwmControl.PwmRange(minPwmRange, maxPwmRange));
+                    }
                     if (!encoder.isEmpty()) {
                         servo.setEncoder(new Encoder(hardwareMap.get(DcMotorEx.class, encoder)));
                     }
@@ -78,6 +87,10 @@ public class SeriesServoTuner extends LinearOpMode {
                 Context.packet.put("Target Position", servo.getPosition());
                 Context.packet.put("Estimated Position", servo.getEstimatedPosition());
                 Context.packet.put("Real Position", servo.getRealPosition());
+
+                Context.packet.put("Target Angle", Math.toDegrees(servo.getAngle()));
+                Context.packet.put("Estimated Angle", Math.toDegrees(servo.getEstimatedAngle()));
+                if (servo.getRealAngle() != null) Context.packet.put("Real Angle", Math.toDegrees(servo.getRealAngle()));
                 ftcDashboard.sendTelemetryPacket(Context.packet);
                 Context.packet = new TelemetryPacket();
                 telemetry.update();

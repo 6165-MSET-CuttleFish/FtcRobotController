@@ -87,7 +87,7 @@ public class Robot<T> extends ImprovedTankDrive {
     public static double MID_POWER = 10;
     public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
-    public static Pose2d admissibleError = new Pose2d(2, 2, Math.toRadians(5));
+    public static Pose2d admissibleError = new Pose2d(6, 6, Math.toRadians(10));
     public static Pose2d admissibleVelo = new Pose2d(5, 5, Math.toRadians(60));
     public static double admissibleTimeout = 0.3;
     @NonNull public static GainMode gainMode = GainMode.IDLE;
@@ -409,7 +409,7 @@ public class Robot<T> extends ImprovedTankDrive {
         current = 0;
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
-            if (opModeType != OpModeType.AUTO) current += module.getCurrent(CurrentUnit.AMPS);
+            current += module.getCurrent(CurrentUnit.AMPS);
         }
         updatePoseEstimate();
         if (!Thread.currentThread().isInterrupted()) {
@@ -480,7 +480,7 @@ public class Robot<T> extends ImprovedTankDrive {
     }
 
     public static double powerChangePerInertia = 1.3;
-    public static double feedForwardInertia = 0.05;
+    public static double feedForwardInertia = 0.01;
 
     public void waitForIdle() {
         waitForIdle(() -> {

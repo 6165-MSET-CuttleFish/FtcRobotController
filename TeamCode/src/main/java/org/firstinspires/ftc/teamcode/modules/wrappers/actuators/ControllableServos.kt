@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.wrappers.actuators
 
+import com.qualcomm.robotcore.hardware.PwmControl
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.ServoImplEx
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.drive.DriveConstants
@@ -13,16 +15,24 @@ class ControllableServos(vararg servos: Servo) :
     private var timer = ElapsedTime()
     private var servos: Array<Servo> = servos as Array<Servo>
     private var previousPosition = 0.0
+
     var servoRotation = Math.toRadians(270.0)
     var gearing = 1.0
-    var angleOffset = 0.0
+
     var positionPerSecond = 0.7
     private var incrementingPosition = true
     private var initted = false
     var encoder: Encoder? = null
+    var isMotionProfiled = false
+
     var lowerLimit = 0.0
+        private set
     var upperLimit = 1.0
+        private set
+
+    private var angleOffset = 0.0
     private var posOffset = 0.0
+
     fun setLimits(lowerLimit: Double, upperLimit: Double) {
         this.lowerLimit = lowerLimit
         this.upperLimit = upperLimit
@@ -33,7 +43,7 @@ class ControllableServos(vararg servos: Servo) :
     val realPosition: Double?
         get() {
             if (encoder == null) return null
-            return ticksToDegrees(encoder!!.currentPosition) * gearing
+            return getPosition(ticksToDegrees(encoder!!.currentPosition) / gearing) - posOffset
         }
     val estimatedPosition: Double
         get() = round((if (incrementingPosition) Range.clip(
@@ -45,30 +55,6 @@ class ControllableServos(vararg servos: Servo) :
             position,
             previousPosition
         )) * 1000) / 1000
-    val error: Double
-        get() = abs(estimatedPosition - position)
-    var angle: Double
-        set(value) {
-            position = (value + angleOffset) / servoRotation
-        }
-        get() = (position * servoRotation) - angleOffset
-    val estimatedAngle: Double
-        get() = (estimatedPosition * servoRotation) - angleOffset
-    fun lock() {
-        val realPosition = estimatedPosition
-        for (servo in servos) {
-            servo.position = realPosition
-        }
-    }
-    fun calibrateOffset(position: Double, angle: Double) {
-        // angle = (position * servoRotation) - angleOffset
-        // angleOffset = angle - pos*servoRot
-        // position = (angle + angleOffset) / servoRotation
-        angleOffset = angle - position * servoRotation
-        posOffset = position
-        encoder?.reset()
-    }
-
     var position: Double
         get() = servos[0].position
         set(var1) {
@@ -83,6 +69,38 @@ class ControllableServos(vararg servos: Servo) :
             servos.forEach { it.position = Range.clip(round(var1 * 1000) / 1000, lowerLimit, upperLimit) }
             timer.reset()
         }
+
+    val error: Double
+        get() = abs(estimatedPosition - position)
+
+    var angle: Double
+        set(value) {
+            position = getPosition(value)
+        }
+        get() = getAngle(position)
+    val estimatedAngle: Double
+        get() = getAngle(estimatedPosition)
+    val realAngle: Double?
+        get() = realPosition?.let(::getAngle)
+
+
+    private fun getAngle(position: Double) = (position * servoRotation * gearing) - angleOffset
+    private fun getPosition(angle: Double) = (angle + angleOffset) / (servoRotation * gearing)
+
+    fun lock() {
+        val realPosition = estimatedPosition
+        for (servo in servos) {
+            servo.position = realPosition
+        }
+    }
+    fun calibrateOffset(position: Double, angle: Double) {
+        // angle = (position * servoRotation) - angleOffset
+        // angleOffset = angle - pos*servoRot
+        // position = (angle + angleOffset) / servoRotation
+        angleOffset = angle - position * servoRotation
+        posOffset = position
+        encoder?.reset()
+    }
 
     fun init(var1: Double) {
         position = var1
@@ -101,7 +119,10 @@ class ControllableServos(vararg servos: Servo) :
 //        servos.forEach { if ((it as? ServoImplEx)?.isPwmEnabled == false) it.setPwmEnable() }
     }
 
-    override fun update() {
+    fun increaseRange(newRange: PwmControl.PwmRange) {
+        servos.forEach { (it as ServoImplEx).pwmRange = newRange }
+    }
 
+    override fun update() {
     }
 }

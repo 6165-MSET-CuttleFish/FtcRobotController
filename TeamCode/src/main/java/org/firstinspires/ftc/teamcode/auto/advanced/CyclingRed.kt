@@ -210,7 +210,7 @@ class CyclingRed : LinearOpMode() {
                 )
                 .defaultGains()
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         }
@@ -229,7 +229,7 @@ class CyclingRed : LinearOpMode() {
                     closeDist, Math.toRadians(
                         depositingAngle).flip(blue)), allianceHub.center)
                 .waitWhile(deposit::isTransitioningState)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
@@ -241,7 +241,7 @@ class CyclingRed : LinearOpMode() {
                 .liftLevel(deposit, Deposit.Level.LEVEL2)
                 .splineTo(allianceHub.center.polarAdd(closeDist, Math.toRadians(-60.0).flip(blue)), allianceHub.center)
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition/ wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }
@@ -257,7 +257,7 @@ class CyclingRed : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(-angleOffset).flip(blue)),
                 )
                 .setReversed(false)
-                .dump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
         return theRest(trajectoryBuilder as TrajectorySequenceBuilder<PathState>)
     }

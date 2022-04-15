@@ -606,6 +606,12 @@ class TrajectorySequenceBuilder<T>(
         sequenceSegments.add(ConditionalWait(lastPose, emptyList(), condition, driveSignal))
         return this
     }
+
+    fun performAction(markerCallback: MarkerCallback) : TrajectorySequenceBuilder<T> {
+        pushPath()
+        sequenceSegments.add(ActionSegment(lastPose, emptyList(), markerCallback))
+        return this
+    }
     
     fun addTrajectory(trajectory: Trajectory): TrajectorySequenceBuilder<T> {
         pushPath()

@@ -96,7 +96,7 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         val xPoseEstimate =
             Pose2d(x, Context.robotPose.y, heading)
                 .polarAdd(-xSensor.poseOffset.x)
-                .polarAdd(-xSensor.poseOffset.y, Math.toRadians(-90.0))
+                .polarAdd(-xSensor.poseOffset.y, Math.toRadians(90.0))
         val yPoseEstimate =
             Pose2d(Context.robotPose.x, y, heading)
                 .polarAdd(-ySensor.poseOffset.x)

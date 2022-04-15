@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,7 +17,13 @@ public class MB1643 implements DistanceSensor {
 
     @Override
     public double getDistance(DistanceUnit unit) {
-        double inches = 89.4897 * distanceSensor.getVoltage() - 12.9012 + .625;
+        double v;
+        try {
+            v = distanceSensor.getVoltage();
+        } catch (Exception e) {
+            v = 0;
+        }
+        double inches = 89.4897 * v - 12.9012 + .625;
         switch (unit) {
             case INCH: return inches;
             case CM: return inches * 2.54;
