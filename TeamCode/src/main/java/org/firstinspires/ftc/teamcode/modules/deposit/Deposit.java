@@ -33,8 +33,8 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.3,
-            outPosition2 = 0.2,
+            outPosition3 = 0.24,
+            outPosition2 = 0.1,
             outPosition1 = 0.0;
     private double offsetOutPosition;
     public static double
@@ -50,7 +50,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.66;
+    public static double holdingPosition = 0.7;
     public static double
             inPosition = 1.0,
             higherInPosition = 0.95;

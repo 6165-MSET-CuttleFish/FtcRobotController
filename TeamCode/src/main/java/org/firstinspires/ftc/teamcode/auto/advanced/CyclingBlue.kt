@@ -48,23 +48,23 @@ class CyclingBlue : LinearOpMode() {
     companion object {
         @JvmField var coast = -54.2
         @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 19.0
-        @JvmField var powerDelay = 25.0
-        @JvmField var depositDelay = 28.0
+        @JvmField var intakeDelay = 25.0
+        @JvmField var powerDelay = 30.0
+        @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.16
+        @JvmField var waitTime = 0.21
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 25.0
-        @JvmField var depositDistance = 26.0
+        @JvmField var cyclingDistance = 24.0
+        @JvmField var depositDistance = 25.0
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 5.0
-        @JvmField var intakeCrossingVelo = 28.0
+        @JvmField var intakeCrossingVelo = 26.0
         @JvmField var intakeVelo = 50.0
         @JvmField var intakeAngle = 0.0
         @JvmField var depositVelo = DriveConstants.MAX_VEL
@@ -137,7 +137,7 @@ class CyclingBlue : LinearOpMode() {
                     Robot.admissibleTimeout = 0.2
                     Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
                     Robot.admissibleVelo = Pose2d(15.0, 15.0, Math.toRadians(60.0))
-                    if (robot.poseEstimate.x > 45 && robot.intake.containsBlock && !incremented) {
+                    if (robot.poseEstimate.x > 41 && robot.intake.containsBlock && !incremented) {
                         robot.nextSegment(true)
                         incremented = true
                     }

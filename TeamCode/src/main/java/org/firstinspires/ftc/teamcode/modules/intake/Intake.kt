@@ -92,6 +92,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.init(inPosition)
         extensionServos.setLimits(inPosition, outPosition)
         flip.init(raisedPosition)
+        if (opModeType == OpModeType.TELE) {
+            flip.init(0.6)
+        }
         setActuators(flip, intake)
     }
     private var shortInake = false
