@@ -19,9 +19,10 @@ class UltrasonicDistanceSensor @JvmOverloads constructor(
         ShortRange,
     }
     private val distanceSensor: DistanceSensor =
-        if (_state == SensorType.LongRange) hardwareMap.get(AsyncMB1242::class.java, name) else MB1643(hardwareMap, name)
+        if (_state == SensorType.LongRange) MB1242(hardwareMap, name) else MB1643(hardwareMap, name)
 
     override fun internalInit() {
+        if (distanceSensor is MB1242) distanceSensor.setRunDelayMs(100)
     }
 
     override fun internalUpdate() {

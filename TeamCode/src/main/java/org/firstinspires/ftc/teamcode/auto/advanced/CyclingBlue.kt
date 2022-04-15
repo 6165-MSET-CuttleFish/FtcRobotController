@@ -46,10 +46,11 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.0
+        @JvmField var coast = -54.2
         @JvmField var stop = 51.0
         @JvmField var intakeDelay = 19.0
-        @JvmField var depositDelay = 27.0
+        @JvmField var powerDelay = 25.0
+        @JvmField var depositDelay = 28.0
         @JvmField var closeDist = 25.0
         @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
@@ -176,6 +177,10 @@ class CyclingBlue : LinearOpMode() {
             val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
+                    intake.setPower(0.1)
+                    deposit.liftDown()
+                }
+                .UNSTABLE_addDisplacementMarkerOffset(powerDelay) {
                     intake.setPower(1.0)
                     deposit.liftDown()
                 }

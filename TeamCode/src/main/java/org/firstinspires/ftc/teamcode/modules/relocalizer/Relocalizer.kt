@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.modules.relocalizer
 
-import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.hardware.bosch.BNO055IMU
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.relocalizer.distancesensor.UltrasonicDistanceSensor
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
+import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
@@ -17,7 +16,6 @@ import javax.lang.model.type.NullType
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Config
 class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, null) {
     enum class Sensor {
         FRONT_LEFT,
@@ -50,21 +48,13 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         UltrasonicDistanceSensor.SensorType.ShortRange,
         Pose2d(-3.75, -8.2, Math.toRadians(-90.0))
     )
-    companion object {
-        @JvmField
-        var frontDistanceSensorXOffset = 7.5
-        @JvmField
-        var horizontalDistanceSensorYOffset = 7.5
-        @JvmField
-        var frontDistanceSensorYOffset = -7.0
-        @JvmField
-        var horizontalDistanceSensorXOffset = -3.0785
-    }
 
     var poseEstimate = Pose2d()
         private set
 
-    override fun internalInit() {}
+    override fun internalInit() {
+        setNestedModules(frontLeftDistance, frontRightDistance, leftDistance, rightDistance)
+    }
 
     private fun getSensor(sensor: Sensor): UltrasonicDistanceSensor {
         return when (sensor) {
@@ -75,6 +65,9 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         }
     }
 
+    private val samplingX = MovingMedian(3)
+    private val samplingY = MovingMedian(3)
+
     fun updatePoseEstimate(xCorrection: Sensor, yCorrection: Sensor) {
         val xSensor = getSensor(xCorrection)
         val ySensor = getSensor(yCorrection)
@@ -83,13 +76,17 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
         val heading = Context.robotPose.heading
         val rawXDist = xSensor.getDistance(DistanceUnit.INCH)
         val rawYDist = ySensor.getDistance(DistanceUnit.INCH)
-        val xDist = rawXDist * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
-        val yDist = rawYDist * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
+        val filteredX = samplingX.update(rawXDist)
+        val filteredY = samplingY.update(rawYDist)
+        val xDist = filteredX * cos(sin(xSensor.poseOffset.heading) * tilt + cos(xSensor.poseOffset.heading) * pitch)
+        val yDist = filteredY * cos(sin(ySensor.poseOffset.heading) * tilt + cos(ySensor.poseOffset.heading) * pitch)
 
-            Context.packet.put("YDIST", yDist)
-            Context.packet.put("XDIST", xDist)
-            Context.packet.put("RAW_XDIST", rawXDist)
-            Context.packet.put("RAW_YDIST", rawYDist)
+        Context.packet.put("YDIST", yDist)
+        Context.packet.put("XDIST", xDist)
+        Context.packet.put("RAW_XDIST", rawXDist)
+        Context.packet.put("RAW_YDIST", rawYDist)
+        Context.packet.put("Filter_XDIST", filteredX)
+        Context.packet.put("Filter_YDIST", filteredY)
 
         val x = frontWallX - xDist * cos(xSensor.modulePoseEstimate.heading)
         val y = sideWallY - yDist * cos(ySensor.modulePoseEstimate.heading - Math.PI / 2)

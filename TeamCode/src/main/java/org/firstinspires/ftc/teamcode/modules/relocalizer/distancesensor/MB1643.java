@@ -23,6 +23,7 @@ public class MB1643 implements DistanceSensor {
         } catch (Exception e) {
             v = 0;
         }
+        if (v == Double.NaN) v = 0;
         double inches = 89.4897 * v - 12.9012 + .625;
         switch (unit) {
             case INCH: return inches;

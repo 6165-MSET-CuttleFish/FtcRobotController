@@ -50,7 +50,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.35;
+    public static double holdingPosition = 0.66;
     public static double
             inPosition = 1.0,
             higherInPosition = 0.95;
@@ -59,7 +59,7 @@ public class Deposit extends Module<Deposit.State> {
             unlockPosition = 0.4,
             kickPosition = 0.7;
     public static double
-            armServoPositionPerSecond = 0.884,
+            armServoPositionPerSecond = 3.5,
             extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
@@ -161,7 +161,7 @@ public class Deposit extends Module<Deposit.State> {
         flipIn();
         arm.setPosition(inPosition);
         if (opModeType == OpModeType.AUTO) {
-            arm.setPosition(0.3);
+            arm.setPosition(holdingPosition);
             isLoaded = true;
         }
         setActuators(lock, slides);
