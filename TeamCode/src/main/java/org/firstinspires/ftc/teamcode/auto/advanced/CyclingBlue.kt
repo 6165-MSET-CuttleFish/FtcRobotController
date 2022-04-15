@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.auto.*
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
@@ -45,29 +46,29 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -55.3
-        @JvmField var stop = 52.0
-        @JvmField var intakeDelay = 16.5
+        @JvmField var coast = -55.2
+        @JvmField var stop = 51.0
+        @JvmField var intakeDelay = 19.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
-        @JvmField var conjoiningPoint = 25.0
+        @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.2
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 27.0
-        @JvmField var depositDistance = 28.0
+        @JvmField var cyclingDistance = 25.0
+        @JvmField var depositDistance = 26.0
         @JvmField var divConstant = 2.0
         @JvmField var depositingAngle = -60.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
-        @JvmField var depositError = 8.0
-        @JvmField var intakeCrossingVelo = 28.0
+        @JvmField var depositError = 5.0
+        @JvmField var intakeCrossingVelo = 26.0
         @JvmField var intakeVelo = 50.0
         @JvmField var intakeAngle = 0.0
-        @JvmField var depositVelo = 50.0
-        @JvmField var angleOffset = -6.0
-        @JvmField var yIncrement = -0.0
+        @JvmField var depositVelo = DriveConstants.MAX_VEL
+        @JvmField var angleOffset = -8.0
+        @JvmField var yIncrement = 0.0
     }
 
     enum class PathState {
@@ -172,7 +173,7 @@ class CyclingBlue : LinearOpMode() {
     private fun theRest(trajectoryBuilder: TrajectorySequenceBuilder<PathState>): TrajectorySequence {
         var coast = coast
         for (i in 1..7) {
-            val angle = Math.toRadians(randomRange(-intakeAngle / 4, intakeAngle)).flip(blue)
+            val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
             trajectoryBuilder
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(1.0)
@@ -183,8 +184,8 @@ class CyclingBlue : LinearOpMode() {
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeCrossingVelo)
                 .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
-                .increaseGains(intakeVelo)
-                .splineToConstantHeading(Vector2d(stop + i / divConstant, coast).flip(blue), 0.0)
+                .defaultGains()
+                .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
                 .defaultGains()
                 .waitSeconds(waitTime)
                 .relocalize(robot)

@@ -42,9 +42,9 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.12,
-            extendOut2 = 0.1,
-            extendOut1 = 0.1,
+            extendOut3 = 0.16,
+            extendOut2 = 0.13,
+            extendOut1 = 0.13,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -55,9 +55,9 @@ public class Deposit extends Module<Deposit.State> {
             inPosition = 0.19,
             higherInPosition = 0.19;
     public static double
-            lockPosition = 0.56,
-            unlockPosition = 0.46,
-            kickPosition = 0.85;
+            lockPosition = 0.47,
+            unlockPosition = 0.3,
+            kickPosition = 0.8;
     public static double
             armServoPositionPerSecond = 0.884,
             extensionServoPositionPerSecond = 0.65;
