@@ -33,9 +33,9 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.53,
-            outPosition2 = 0.59,
-            outPosition1 = 0.62;
+            outPosition3 = 0.3,
+            outPosition2 = 0.2,
+            outPosition1 = 0.0;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
@@ -52,12 +52,12 @@ public class Deposit extends Module<Deposit.State> {
             linkageOffsetIncrement = 0.1;
     public static double holdingPosition = 0.35;
     public static double
-            inPosition = 0.19,
-            higherInPosition = 0.19;
+            inPosition = 1.0,
+            higherInPosition = 0.95;
     public static double
             lockPosition = 0.47,
-            unlockPosition = 0.3,
-            kickPosition = 0.8;
+            unlockPosition = 0.4,
+            kickPosition = 0.7;
     public static double
             armServoPositionPerSecond = 0.884,
             extensionServoPositionPerSecond = 0.65;
@@ -385,7 +385,7 @@ public class Deposit extends Module<Deposit.State> {
 
     public static double LEVEL3 = 12;
     public static double LEVEL2 = 3;
-    public static double LEVEL1 = 2;
+    public static double LEVEL1 = 0;
     public static double allowableDepositError = 1.5;
     public static double angle = Math.toRadians(30);
 
