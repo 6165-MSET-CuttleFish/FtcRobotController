@@ -18,7 +18,7 @@ fun TrajectorySequenceBuilder<*>.relocalize(robot: Robot<*>, offset: Double = 0.
     robot.correctPosition()
 }
 
-fun TrajectorySequenceBuilder<*>.increaseGains(velo: Double) : TrajectorySequenceBuilder<*> {
+@JvmOverloads fun TrajectorySequenceBuilder<*>.increaseGains(velo: Double, accel: Double? = null) : TrajectorySequenceBuilder<*> {
     setVelConstraint(Robot.getVelocityConstraint(velo, Math.toRadians(180.0), DriveConstants.TRACK_WIDTH))
     return this
 }

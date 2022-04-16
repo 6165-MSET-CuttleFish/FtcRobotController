@@ -48,30 +48,30 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -54.5
-        @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 12.0
-        @JvmField var powerDelay = 18.0
+        @JvmField var coast = -55.7
+        @JvmField var stop = 51.5
+        @JvmField var intakeDelay = 1.0
+        @JvmField var powerDelay = 2.0
         @JvmField var depositDelay = 27.0
         @JvmField var closeDist = 25.0
-        @JvmField var conjoiningPoint = 18.0
+        @JvmField var conjoiningPoint = 30.0
         @JvmField var conjoiningDeposit = 30.0
-        @JvmField var waitTime = 0.21
+        @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 24.0
+        @JvmField var cyclingDistance = 23.0
         @JvmField var depositDistance = 25.0
-        @JvmField var divConstant = 2.0
-        @JvmField var depositingAngle = -60.0
+        @JvmField var divConstant = 3.0
+        @JvmField var depositingAngle = -55.0
         @JvmField var cyclingAngle = -55.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
-        @JvmField var depositError = 5.0
-        @JvmField var intakeCrossingVelo = 26.0
-        @JvmField var intakeVelo = 30.0
-        @JvmField var intakeAngle = 0.0
-        @JvmField var depositVelo = DriveConstants.MAX_VEL
-        @JvmField var angleOffset = -8.0
-        @JvmField var yIncrement = 0.0
+        @JvmField var depositError = 6.0
+        @JvmField var intakeCrossingVelo = 28.0
+        @JvmField var intakeVelo = 55.0
+        @JvmField var intakeAngle = 6.0
+        @JvmField var depositVelo = 60.0
+        @JvmField var angleOffset = -9.0
+        @JvmField var yIncrement = -0.03
     }
 
     enum class PathState {
@@ -139,7 +139,7 @@ class CyclingBlue : LinearOpMode() {
                     Robot.admissibleTimeout = 0.2
                     Robot.gainMode = if (robot.isOverPoles) GainMode.FORWARD else GainMode.IDLE
                     Robot.admissibleVelo = Pose2d(15.0, 15.0, Math.toRadians(60.0))
-                    if (robot.poseEstimate.x > 41 && robot.intake.containsBlock && !incremented) {
+                    if (robot.poseEstimate.x > 36 && intake.containsBlock && !incremented) {
                         robot.nextSegment(true)
                         incremented = true
                     }
@@ -183,6 +183,7 @@ class CyclingBlue : LinearOpMode() {
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(0.1)
                     deposit.liftDown()
+                    Deposit.isLoaded = false
                 }
                 .UNSTABLE_addDisplacementMarkerOffset(powerDelay) {
                     intake.setPower(1.0)
@@ -214,7 +215,7 @@ class CyclingBlue : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
                 .defaultGains()
-                .waitWhile(deposit::isTransitioningState)
+                //.waitWhile(deposit::isTransitioningState)
                 .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)
@@ -222,9 +223,10 @@ class CyclingBlue : LinearOpMode() {
         }
         return trajectoryBuilder
             .setState(PathState.IDLE)
-            .increaseGains(65.0)
+            .setVelConstraint(Robot.getVelocityConstraint(80.0, Math.toRadians(200.0), DriveConstants.TRACK_WIDTH))
+            .setAccelConstraint(Robot.getAccelerationConstraint(180.0))
             .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
-            .splineToConstantHeading(Vector2d(stop + 2, coast).flip(blue), 0.0)
+            .splineToConstantHeading(Vector2d(stop + 10, coast).flip(blue), 0.0)
             .build()
     }
     private fun leftAuto() : TrajectorySequence {

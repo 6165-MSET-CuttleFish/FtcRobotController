@@ -102,8 +102,8 @@ class Relocalizer(hardwareMap: HardwareMap) : Module<NullType?>(hardwareMap, nul
             Pose2d(Context.robotPose.x, y, heading)
                 .polarAdd(-(ySensor?.poseOffset?.x ?: 0.0))
                 .polarAdd(-(ySensor?.poseOffset?.y ?: 0.0), Math.toRadians(90.0))
-        this.x = xPoseEstimate.x
-        this.y = yPoseEstimate.y
+        if (xCorrection != null) this.x = xPoseEstimate.x
+        if (yCorrection != null) this.y = yPoseEstimate.y
         this.heading = heading
     }
 

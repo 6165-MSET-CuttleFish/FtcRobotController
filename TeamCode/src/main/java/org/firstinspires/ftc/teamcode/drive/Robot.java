@@ -472,15 +472,15 @@ public class Robot<T> extends ImprovedTankDrive {
             );
 
             setDriveSignal(newSignal);
-            Context.packet.put("Compensated Heading Velo", Math.toDegrees(signal.getVel().getHeading() * inertialChange * powerChangePerInertia));
+           // Context.packet.put("Compensated Heading Velo", Math.toDegrees(signal.getVel().getHeading() * inertialChange * powerChangePerInertia));
         }
         lastInertia = inertialChange;
-        Context.packet.put("Inertial Change", inertialChange);
-        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
+//        Context.packet.put("Inertial Change", inertialChange);
+//        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 1.3;
-    public static double feedForwardInertia = 0.01;
+    public static double powerChangePerInertia = 0.2;
+    public static double feedForwardInertia = 0.0075;
 
     public void waitForIdle() {
         waitForIdle(() -> {

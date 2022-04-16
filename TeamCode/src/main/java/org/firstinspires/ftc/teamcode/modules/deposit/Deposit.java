@@ -43,9 +43,9 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.16,
-            extendOut2 = 0.13,
-            extendOut1 = 0.13,
+            extendOut3 = 0.18,
+            extendOut2 = 0.14,
+            extendOut1 = 0.14,
             extendOutShared = 0.26;
     private double offsetExtendPosition;
     public static double
@@ -53,18 +53,18 @@ public class Deposit extends Module<Deposit.State> {
             linkageOffsetIncrement = 0.1;
     public static double holdingPosition = 0.7;
     public static double
-            inPosition = 1.0,
-            higherInPosition = 0.95;
+            inPosition = 0.93,
+            higherInPosition = 0.8;
     public static double
-            lockPosition = 0.47,
-            unlockPosition = 0.4,
-            kickPosition = 0.7;
+            lockPosition = 0.62,
+            unlockPosition = 0.47,
+            kickPosition = 1.0;
     public static double
-            armServoPositionPerSecond = 3.5,
-            extensionServoPositionPerSecond = 0.65;
+            armServoPositionPerSecond = 5.0,
+            extensionServoPositionPerSecond = 0.9;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.13;
+    public static double dumpTimeOut = 0.25;
     private boolean allowLift = false;
     private boolean farDeposit = false;
     @Override
@@ -76,9 +76,9 @@ public class Deposit extends Module<Deposit.State> {
     public enum State implements StateBuilder {
         IN(0.5),
         CREATE_CLEARANCE,
-        LOCKING(0.16),
+        LOCKING(0.07),
         HOLDING,
-        DUMPING(0.15),
+        DUMPING(0.1),
         SOFT_DUMP(0.1),
         OUT,
         RESETTING_ENCODER;
@@ -121,7 +121,7 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 61.74;
+    public static double TICKS_PER_INCH = 61.74 * 2.6346;
     boolean intakeCleared;
     private Level defaultLevel = Level.LEVEL3;
 
@@ -163,7 +163,7 @@ public class Deposit extends Module<Deposit.State> {
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flipIn();
-        arm.setPosition(inPosition);
+        arm.setPosition(holdingPosition);
         if (opModeType == OpModeType.AUTO) {
             arm.setPosition(holdingPosition);
             isLoaded = true;
@@ -296,7 +296,7 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
-            Context.packet.put("Extension Real Position", extension.getEstimatedDisplacement());
+            Context.packet.put("Extension Real Displacement", extension.getEstimatedDisplacement());
             Context.packet.put("IsFarDeposit", farDeposit);
         }
         Context.packet.put("Freight", freight);
@@ -362,7 +362,7 @@ public class Deposit extends Module<Deposit.State> {
     private Level getLevel() {
         if (getState() == State.IN) return Level.LEVEL1;
         if (farDeposit) return Level.LEVEL3;
-        if (freight == Freight.BALL) return Level.LEVEL2;
+        if (freight == Freight.BALL && opModeType == OpModeType.TELE) return Level.LEVEL2;
         return defaultLevel;
     }
 
@@ -415,7 +415,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double LEVEL3 = 12;
     public static double LEVEL2 = 3;
     public static double LEVEL1 = 0;
-    public static double allowableDepositError = 1.5;
+    public static double allowableDepositError = 8.0;
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(Level state) {
@@ -542,7 +542,7 @@ public class Deposit extends Module<Deposit.State> {
      */
     @Override
     public boolean isDoingInternalWork() {
-        return (isDumping() && getSecondsSpentInState() < (getState().timeOut + dumpTimeOut) * 0.6) || platformIsOut();
+        return (isDumping() && getSecondsSpentInState() < (getState().timeOut + dumpTimeOut) * 0.4) || platformIsOut();
     }
 
     public boolean platformIsOut() {
