@@ -84,7 +84,7 @@ public class Robot<T> extends ImprovedTankDrive {
      * Robot statics
      */
     public static double MAX_CURRENT = 15;
-    public static double MID_POWER = 10;
+    public static double MID_POWER = 12;
     public static double MAX_POWER = 40;
     public static double COOLDOWN_TIME = 0.4;
     public static Pose2d admissibleError = new Pose2d(6, 6, Math.toRadians(10));
@@ -479,8 +479,8 @@ public class Robot<T> extends ImprovedTankDrive {
 //        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 0.2;
-    public static double feedForwardInertia = 0.0075;
+    public static double powerChangePerInertia = 1.2;
+    public static double feedForwardInertia = 0.012;
 
     public void waitForIdle() {
         waitForIdle(() -> {

@@ -15,16 +15,16 @@ import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
-    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.0002;
+    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00009;
     public static double horizontalTolerance = 0, verticalTolerance = 0;
-    public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.03;
+    public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;
     public static double passivePower = 0.0;
     private CRServo tape;
     private Servo verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
     private double verticalInc, horizontalInc;
-    public static double vUpperLimit = 0.62, vLowerLimit = 0.37;
+    public static double vUpperLimit = 0.532, vLowerLimit = 0.43;
     public static double hUpperLimit = 1.0, hLowerLimit = 0.0;
 
     @Override
@@ -81,6 +81,7 @@ public class Capstone extends Module<Capstone.State> {
                 verticalTurret.setPosition(verticalPosDef);
                 if (getSecondsSpentInState() > 3.5) {
                     horizontalTurret.setPosition(horizontalPosDef);
+                    tape.setPower(0.0);
                 }
                 break;
         }

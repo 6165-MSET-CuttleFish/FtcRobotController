@@ -25,7 +25,8 @@ class DriverPractice : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var multiple = 0.85
+        @JvmField var multiple = 1.0
+        @JvmField var currentLimit = 10
     }
 
     lateinit var intake: Intake
@@ -40,8 +41,6 @@ class DriverPractice : LinearOpMode() {
 
     lateinit var softDump1: TriggerReader
     lateinit var hardDump1: ButtonReader
-    lateinit var softDump2: TriggerReader
-    lateinit var hardDump2: ButtonReader
 
     lateinit var levelIncrement: ButtonReader
     lateinit var levelDecrement: ButtonReader
@@ -91,17 +90,11 @@ class DriverPractice : LinearOpMode() {
             ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER).also {
                 hardDump1 = it
             },
-            ButtonReader(secondary, GamepadKeys.Button.RIGHT_BUMPER).also {
-                hardDump2 = it
-            },
             ButtonReader(primary, GamepadKeys.Button.X).also {
                 capRetract = it
             },
             TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER).also {
                 softDump1 = it
-            },
-            TriggerReader(secondary, GamepadKeys.Trigger.RIGHT_TRIGGER).also {
-                softDump2 = it
             },
             ToggleButtonReader(primary, GamepadKeys.Button.A).also {
                 ninjaOverride = it
@@ -129,7 +122,7 @@ class DriverPractice : LinearOpMode() {
                 liftIntent = true
                 gamepad1.rumble(1.0, 1.0, 100)
             }
-            if (liftIntent) {
+            if (liftIntent && robot.current < currentLimit) {
                 liftIntent = false
                 deposit.toggleLift()
             }
@@ -203,6 +196,8 @@ class DriverPractice : LinearOpMode() {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
                     Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.LEVEL2
+                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.LEVEL1
+                    Deposit.Level.SHARED_FAR -> defaultDepositState = Deposit.Level.SHARED_CLOSE
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
@@ -210,6 +205,8 @@ class DriverPractice : LinearOpMode() {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL1
+                    Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.SHARED_CLOSE
+                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.SHARED_FAR
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
@@ -221,7 +218,7 @@ class DriverPractice : LinearOpMode() {
                 deposit.incrementArmPosition(-1.0)
             }
         }
-        if (hardDump1.wasJustPressed() || hardDump2.wasJustPressed()) {
+        if (hardDump1.wasJustPressed()) {
             if (Deposit.isLoaded) {
                 deposit.dump()
                 gamepad1.rumble(200)
@@ -231,7 +228,7 @@ class DriverPractice : LinearOpMode() {
             }
         }
         if (deposit.platformIsOut()) {
-            if (softDump1.isDown || softDump2.isDown) {
+            if (softDump1.isDown) {
                 deposit.softDump()
                 gamepad1.rumble(100)
                 gamepad2.rumble(100)

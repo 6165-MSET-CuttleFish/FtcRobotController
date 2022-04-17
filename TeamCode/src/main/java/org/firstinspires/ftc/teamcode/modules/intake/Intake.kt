@@ -34,9 +34,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var loweredPosition = 1.0
         @JvmField
-        var intakeLimit = 16.0
+        var intakeLimit = 14.0
         @JvmField
-        var outPosition = 0.42
+        var outPosition = 0.41
         @JvmField
         var inPosition = 0.1
         @JvmField
@@ -89,7 +89,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-
         extensionServos.setLimits(inPosition, outPosition)
         if (opModeType == OpModeType.TELE) {
             flip.init(0.5)
@@ -107,6 +106,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         if (this.power > 0 && power <= 0 || this.power < 0 && power >= 0 || this.power == 0.0 && power != 0.0) {
             if (power != 0.0 && !isDoingWork) {
                 state = State.OUT
+                Deposit.isLoaded = false
             } else if (isDoingWork) {
                 state = State.IN
             }
@@ -130,7 +130,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         val blue = colorFilter.update(unfilteredBlue)
         val unfilteredDistance = distance
         val filteredDistance = distanceFilter.update(unfilteredDistance)
-        val medianDistance = distanceMedian.update(unfilteredDistance)
+        val medianDistance = if (opModeType == OpModeType.TELE) filteredDistance else distanceMedian.update(unfilteredDistance)
         when (state) {
             State.OUT -> {
                 deploy()

@@ -42,29 +42,30 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetPower,
             outOffsetIncrement = 0.05;
     public static double
-            extendIn = 0.32,
-            extendOut3 = 0.18,
-            extendOut2 = 0.14,
-            extendOut1 = 0.14,
-            extendOutShared = 0.26;
+            extendIn = 0.3,
+            extendOut3 = 0.17,
+            extendOut2 = 0.12,
+            extendOut1 = 0.12,
+            extendOutShared = 0.32,
+            extendTeleOffset = 0.05;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
     public static double holdingPosition = 0.7;
     public static double
-            inPosition = 0.93,
+            inPosition = 0.9,
             higherInPosition = 0.8;
     public static double
-            lockPosition = 0.62,
-            unlockPosition = 0.47,
+            lockPosition = 0.67,
+            unlockPosition = 0.55,
             kickPosition = 1.0;
     public static double
             armServoPositionPerSecond = 5.0,
-            extensionServoPositionPerSecond = 0.9;
+            extensionServoPositionPerSecond = 0.65;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.25;
+    public static double dumpTimeOut = 0.2;
     private boolean allowLift = false;
     private boolean farDeposit = false;
     @Override
@@ -121,7 +122,7 @@ public class Deposit extends Module<Deposit.State> {
     double lastKp = MOTOR_PID.kP;
     double lastKi = MOTOR_PID.kI;
     double lastKd = MOTOR_PID.kD;
-    public static double TICKS_PER_INCH = 61.74 * 2.6346;
+    public static double TICKS_PER_INCH = 61.74;
     boolean intakeCleared;
     private Level defaultLevel = Level.LEVEL3;
 
@@ -220,9 +221,10 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case HOLDING:
-                if (opModeType != OpModeType.AUTO) {
+                pidController.setTargetPosition(0.0);
+                if (opModeType == OpModeType.TELE) {
                     holdingPosition();
-                    pidController.setTargetPosition(getLevelHeight(getLevel()));
+                    allowLift = true;
                 }
                 if (allowLift) {
                     lastOutPosition = arm.getRealPosition();
@@ -265,14 +267,16 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case RESETTING_ENCODER:
-                allowTransfer = false;
-                holdingPosition();
-                slides.setPower(-1);
-                if (getSecondsSpentInState() > 0.3 && slides.getCurrent(CurrentUnit.AMPS) > 3) {
-                    slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    setState(State.IN);
-                }
+                setState(State.IN);
+//                allowTransfer = false;
+//                holdingPosition();
+//                slides.setPower(-1);
+//                if ((getSecondsSpentInState() > 0.3 && slides.getCurrent(CurrentUnit.AMPS) > 0.7) || getSecondsSpentInState() >= 0.7) {
+//                    slides.setPower(0);
+//                    slides.getMotors()[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                    slides.getMotors()[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                    setState(State.IN);
+//                }
                 break;
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
@@ -292,6 +296,7 @@ public class Deposit extends Module<Deposit.State> {
         if (isDebugMode()) {
             Context.packet.put("Lift Target Height", pidController.getTargetPosition());
             Context.packet.put("Lift Actual Height", ticksToInches(slides.getCurrentPosition()));
+            Context.packet.put("Lift Current", slides.getCurrent(CurrentUnit.AMPS));
             Context.packet.put("Lift Motor Power", power);
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
@@ -412,8 +417,8 @@ public class Deposit extends Module<Deposit.State> {
         return weightSlides + weightExtension;
     }
 
-    public static double LEVEL3 = 12;
-    public static double LEVEL2 = 3;
+    public static double LEVEL3 = 11;
+    public static double LEVEL2 = 0;
     public static double LEVEL1 = 0;
     public static double allowableDepositError = 8.0;
     public static double angle = Math.toRadians(30);
@@ -471,6 +476,7 @@ public class Deposit extends Module<Deposit.State> {
                 extendPos = extendOut1;
                 break;
         }
+        if (opModeType == OpModeType.TELE) extendPos -= extendTeleOffset;
         return farDeposit ? 0.0 : extendPos + offsetExtendPosition;
     }
 
@@ -482,7 +488,7 @@ public class Deposit extends Module<Deposit.State> {
         if (toggle) position -= 0.001;
         arm.setPosition(position);
         // speed * time
-        //arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
+        // arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
         if (getLevel() == Level.LEVEL2) {
             if (arm.getServos().getError() < 0.3) {
                 double extensionPos = extendPosition(state);
@@ -506,10 +512,11 @@ public class Deposit extends Module<Deposit.State> {
     private void flipIn() {
         double position = inPosition;
         extension.setPosition(extendIn);
-        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 4.0) {
-            arm.setPosition(position);
+        if (!extension.isTransitioning() && Math.abs(ticksToInches(slides.getCurrentPosition())) < 6.0) {
+            if ((intake.getState() == Intake.State.IN && intake.getContainsBlock()) || intake.getState() == Intake.State.TRANSFER) arm.setPosition(position);
+            else arm.setPosition(higherInPosition);
         } else {
-            arm.setPosition(holdingPosition);
+            arm.setPosition(0.5);
         }
     }
 
@@ -555,7 +562,5 @@ public class Deposit extends Module<Deposit.State> {
 
     public void resetEncoder() {
         setState(State.RESETTING_ENCODER);
-        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

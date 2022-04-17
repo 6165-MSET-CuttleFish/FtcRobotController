@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
 class ControllableMotor(vararg motors: DcMotorEx) :
     Actuator {
-    private var motors: Array<DcMotorEx> = motors as Array<DcMotorEx>
+    var motors: Array<DcMotorEx> = motors as Array<DcMotorEx>
     private var disabled = false
 
     var power: Double
