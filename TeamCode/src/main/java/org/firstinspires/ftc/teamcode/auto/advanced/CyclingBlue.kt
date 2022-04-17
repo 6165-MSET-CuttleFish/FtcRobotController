@@ -48,33 +48,34 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -54.5
+        @JvmField var coast = -55.5
         @JvmField var stop = 51.0
-        @JvmField var intakeDelay = 5.0
-        @JvmField var powerDelay = 6.5
-        @JvmField var depositDelay = 28.0
+        @JvmField var intakeDelay = 0.0
+        @JvmField var powerDelay = 0.1
+        @JvmField var depositDelay = 14.0
         @JvmField var cycles = 7
         @JvmField var conjoiningPoint = 25.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 22.0
+        @JvmField var cyclingDistance = 22.5
         @JvmField var depositDistance = 25.0
         @JvmField var divConstant = 4.0
-        @JvmField var depositingAngle = -60.0
-        @JvmField var cyclingAngle = -55.0
+        @JvmField var depositingAngle = -54.0
+        @JvmField var cyclingAngle = -54.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 6.0
-        @JvmField var intakeCrossingVelo = 27.0
-        @JvmField var intakeVelo = 45.0
-        @JvmField var intakeAngle = 5.0
+        @JvmField var intakeCrossingVelo = 26.0
+        @JvmField var intakeVelo = 35.0
+        @JvmField var intakeAngle = 1.0
         @JvmField var depositVelo = 60.0
         @JvmField var angleOffset = -11.0
         @JvmField var yIncrement = -0.0
         @JvmField var offsetNext = true
         @JvmField var skipNext = true
-        @JvmField var intakeMinX = 45.0
+        @JvmField var intakeMinX = 48.0
+        @JvmField var pathRotationOffset = -6.0
     }
 
     enum class PathState {
@@ -180,13 +181,14 @@ class CyclingBlue : LinearOpMode() {
         var coast = coast
         for (i in 1..cycles) {
             val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
+            val forwardTangent = Math.toRadians(pathRotationOffset).flip(blue)
+            val conjoiningVec = Vector2d(conjoiningPoint, coast).flip(blue)
             trajectoryBuilder
                 .setState(PathState.INTAKING)
-                .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
+                .splineTo(conjoiningVec, forwardTangent)
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(0.1)
                     deposit.liftDown()
-                    Deposit.isLoaded = false
                 }
                 .UNSTABLE_addDisplacementMarkerOffset(powerDelay) {
                     intake.setPower(1.0)
@@ -194,9 +196,12 @@ class CyclingBlue : LinearOpMode() {
                 }
                 .liftLevel(deposit, Deposit.Level.LEVEL3)
                 .increaseGains(intakeCrossingVelo)
-                .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
+                .splineToConstantHeading(conjoiningVec.polarAdd(gainsPoint - conjoiningPoint, forwardTangent), forwardTangent)
                 .increaseGains(intakeVelo)
-                .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
+                .splineTo(conjoiningVec
+                    .polarAdd(gainsPoint - conjoiningPoint, forwardTangent)
+                    .polarAdd(stop - gainsPoint + i / divConstant, forwardTangent + angle)
+                    ,forwardTangent + angle)
                 .defaultGains()
                 .waitSeconds(waitTime)
                 .relocalize(robot)
@@ -205,10 +210,8 @@ class CyclingBlue : LinearOpMode() {
             trajectoryBuilder
                 .setState(PathState.DUMPING)
                 .increaseGains(depositVelo)
-                .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI) // change
-                .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
+                .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI + forwardTangent) // change
                 .UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
-                .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
                 .splineTo(
                     allianceHub.center.polarAdd(
                         cyclingDistance,
@@ -218,7 +221,6 @@ class CyclingBlue : LinearOpMode() {
                     Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
                 .defaultGains()
-                //.waitWhile(deposit::isTransitioningState)
                 .hardDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .setReversed(false)

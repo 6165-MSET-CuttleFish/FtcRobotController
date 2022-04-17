@@ -400,7 +400,7 @@ public class Robot<T> extends ImprovedTankDrive {
 
     public boolean isOverPoles = false;
     public static double minX = 14;
-    public static double maxX = 36;
+    public static double maxX = 34;
     public static boolean fullSend = false;
     public boolean polesDebug = false;
     public double current = 0;
@@ -479,7 +479,7 @@ public class Robot<T> extends ImprovedTankDrive {
 //        Context.packet.put("Radial Displacement", Math.sqrt(depoDisplacementSquared));
     }
 
-    public static double powerChangePerInertia = 1.2;
+    public static double powerChangePerInertia = 1.8;
     public static double feedForwardInertia = 0.012;
 
     public void waitForIdle() {

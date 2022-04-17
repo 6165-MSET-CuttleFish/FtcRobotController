@@ -122,7 +122,7 @@ class DriverPractice : LinearOpMode() {
                 liftIntent = true
                 gamepad1.rumble(1.0, 1.0, 100)
             }
-            if (liftIntent && robot.current < currentLimit) {
+            if (liftIntent) {
                 liftIntent = false
                 deposit.toggleLift()
             }

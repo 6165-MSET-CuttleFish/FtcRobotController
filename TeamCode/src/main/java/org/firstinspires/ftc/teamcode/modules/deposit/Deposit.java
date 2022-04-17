@@ -57,7 +57,7 @@ public class Deposit extends Module<Deposit.State> {
             inPosition = 0.9,
             higherInPosition = 0.8;
     public static double
-            lockPosition = 0.67,
+            lockPosition = 0.68,
             unlockPosition = 0.55,
             kickPosition = 1.0;
     public static double
@@ -77,7 +77,7 @@ public class Deposit extends Module<Deposit.State> {
     public enum State implements StateBuilder {
         IN(0.5),
         CREATE_CLEARANCE,
-        LOCKING(0.07),
+        LOCKING(0.15),
         HOLDING,
         DUMPING(0.1),
         SOFT_DUMP(0.1),
@@ -257,7 +257,7 @@ public class Deposit extends Module<Deposit.State> {
                     setState(State.IN);
                 }
                 if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
-                    allowLift = false;
+                    if (opModeType == OpModeType.AUTO) allowLift = false;
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
                     }
