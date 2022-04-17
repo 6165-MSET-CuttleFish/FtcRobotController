@@ -227,7 +227,7 @@ class CyclingBlue : LinearOpMode() {
         return trajectoryBuilder
             .setState(PathState.IDLE)
             .setVelConstraint(Robot.getVelocityConstraint(70.0, Math.toRadians(200.0), DriveConstants.TRACK_WIDTH))
-            .setAccelConstraint(Robot.getAccelerationConstraint(100.0))
+            .setAccelConstraint(Robot.getAccelerationConstraint(150.0))
             .splineTo(Vector2d(20.0, coast).flip(blue), 0.0)
             .splineToConstantHeading(Vector2d(stop + 10, coast).flip(blue), 0.0)
             .build()

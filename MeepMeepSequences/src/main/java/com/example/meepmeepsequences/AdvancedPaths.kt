@@ -36,7 +36,6 @@ class AdvancedPaths {
             .setColorScheme(colorSchemeVariable()) // Set theme
             .configure() // configure robot
             .followTrajectorySequence { robot ->
-                val trajectoryBuilder =
                     robot.trajectorySequenceBuilder(startingPosition())
                         .setReversed(true)
                         .liftLevel(deposit, Robot.getLevel(location))
@@ -79,68 +78,38 @@ class AdvancedPaths {
                         .setReversed(false)
                         .splineTo(Vector2d(-55.0, -46.0).flip(blue), Math.toRadians(90.0).flip(blue))
                         .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
-                        .splineTo(Vector2d(-12.0, -4.0).flip(blue), Math.toRadians(0.0).flip(blue))
-                        .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
-                for (i in 1..2)
-                    trajectoryBuilder
-                        .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
-                            intake.setPower(1.0)
-                        }
-                        .splineTo(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(-40.0).flip(blue))
-                        .increaseGains()
-                        .splineToConstantHeading(Vector2d(16.0, -20.0).flip(blue).polarAdd(20.0, Math.toRadians(-40.0).flip(blue)), Math.toRadians(-40.0).flip(blue))
-                        .defaultGains()
-                        .splineTo(
-                            Vector2d(50.0, -45.0).flip(blue),
-                            Math.toRadians(-30.0 - 20 * Math.random()).flip(blue)
-                        )
-                        .turn(Math.toRadians(30.0).flip(blue))
-                        .setReversed(true)
-                        .intakeOff(intake)
-                        .splineTo(Vector2d(16.0, -20.0).flip(blue).polarAdd(20.0, Math.toRadians(-40.0).flip(blue)), Math.toRadians(180.0 - 40.0).flip(blue))
-                        .increaseGains()
-                        .splineToConstantHeading(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(180 - 40.0).flip(blue))
-                        .defaultGains()
-                        .liftLevel(deposit, Deposit.Level.LEVEL3)
-                        .splineTo(
-                            allianceHub.center.polarAdd(
-                                closeDist, Math.toRadians(40.0).flip(blue)
-                            ), allianceHub.center
-                        )
-                        .dump(deposit)
-                        .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                        .setReversed(false)
-                trajectoryBuilder
-                    .splineTo(Vector2d(16.0, -20.0).flip(blue), Math.toRadians(-40.0).flip(blue))
-                    .splineTo(Vector2d(50.0, polesCoast).flip(blue), Math.toRadians(0.0).flip(blue))
                     .build()
             }
     }
-
-    @JvmField var coast = -54.5
-    @JvmField var stop = 51.0
-    @JvmField var intakeDelay = 12.0
-    @JvmField var powerDelay = 18.0
-    @JvmField var depositDelay = 27.0
+        @JvmField var coast = -54.5
     @JvmField var closeDist = 25.0
-    @JvmField var conjoiningPoint = 18.0
-    @JvmField var conjoiningDeposit = 30.0
-    @JvmField var waitTime = 0.21
-    @JvmField var gainsPoint = 36.0
-    @JvmField var cyclingDistance = 23.0
-    @JvmField var depositDistance = 25.0
-    @JvmField var divConstant = 2.0
-    @JvmField var depositingAngle = -60.0
-    @JvmField var cyclingAngle = -55.0
-    @JvmField var depositingTimeout = 0.4
-    @JvmField var intakeError = 8.0
-    @JvmField var depositError = 5.0
-    @JvmField var intakeCrossingVelo = 30.0
-    @JvmField var intakeVelo = 50.0
-    @JvmField var intakeAngle = 10.0
-    @JvmField var depositVelo = 60.0
-    @JvmField var angleOffset = -8.0
-    @JvmField var yIncrement = 0.0
+        @JvmField var stop = 51.0
+        @JvmField var intakeDelay = 5.0
+        @JvmField var powerDelay = 6.5
+        @JvmField var depositDelay = 28.0
+        @JvmField var cycles = 7
+        @JvmField var conjoiningPoint = 25.0
+        @JvmField var conjoiningDeposit = 30.0
+        @JvmField var waitTime = 0.1
+        @JvmField var gainsPoint = 36.0
+        @JvmField var cyclingDistance = 22.0
+        @JvmField var depositDistance = 25.0
+        @JvmField var divConstant = 4.0
+        @JvmField var depositingAngle = -50.0
+        @JvmField var cyclingAngle = -50.0
+        @JvmField var depositingTimeout = 0.4
+        @JvmField var intakeError = 8.0
+        @JvmField var depositError = 6.0
+        @JvmField var intakeCrossingVelo = 27.0
+        @JvmField var intakeVelo = 45.0
+        @JvmField var intakeAngle = 5.0
+        @JvmField var depositVelo = 60.0
+        @JvmField var angleOffset = -11.0
+        @JvmField var yIncrement = -0.0
+        @JvmField var offsetNext = true
+        @JvmField var skipNext = true
+        @JvmField var intakeMinX = 45.0
+    @JvmField var pathRotationOffset = -5.0
     fun randomRange(lower: Double, upper: Double): Double{
         return Math.random() * upper + Math.random() * lower
     }
@@ -168,10 +137,12 @@ class AdvancedPaths {
                 var coast = coast
                 for (i in 1..7) {
                     val angle = Math.toRadians(randomRange(-intakeAngle, 0.0)).flip(blue)
+                    val forwardTangent = Math.toRadians(pathRotationOffset).flip(blue)
+                    val conjoiningVec = Vector2d(conjoiningPoint, coast).flip(blue)
                     trajectoryBuilder
 
                        // .setState(PathState.INTAKING)
-                        .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), 0.0)
+                        .splineTo(conjoiningVec, forwardTangent)
                         .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                             intake.setPower(0.1)
                             //deposit.liftDown()
@@ -182,9 +153,12 @@ class AdvancedPaths {
                         }
                         .liftLevel(deposit, Deposit.Level.LEVEL3)
                         .increaseGains(intakeCrossingVelo)
-                        .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), 0.0)
+                        .splineToConstantHeading(conjoiningVec.polarAdd(gainsPoint - conjoiningPoint, forwardTangent), forwardTangent)
                         .increaseGains(intakeVelo)
-                        .splineTo(Pose2d(gainsPoint, coast).flip(blue).polarAdd(stop - gainsPoint + i/divConstant, angle).vec(), angle)
+                        .splineTo(conjoiningVec
+                            .polarAdd(gainsPoint - conjoiningPoint, forwardTangent)
+                            .polarAdd(stop - gainsPoint + i / divConstant, forwardTangent + angle)
+                            ,forwardTangent + angle)
                         .defaultGains()
                         .waitSeconds(waitTime)
                         .relocalize(robot)
@@ -193,10 +167,7 @@ class AdvancedPaths {
                     trajectoryBuilder
                        // .setState(PathState.DUMPING)
                         .increaseGains(depositVelo)
-                        .splineTo(Vector2d(39.0, coast).flip(blue), Math.PI) // change
-                        .splineToConstantHeading(Vector2d(gainsPoint, coast).flip(blue), Math.PI)
-                        //.UNSTABLE_addDisplacementMarkerOffset(depositDelay, deposit::liftUp)
-                        .splineToConstantHeading(Vector2d(conjoiningDeposit, coast).flip(blue), Math.PI)
+                        .splineTo(Vector2d(conjoiningPoint, coast).flip(blue), Math.PI + forwardTangent) // change
                         .splineTo(
                             allianceHub.center.polarAdd(
                                 cyclingDistance,
