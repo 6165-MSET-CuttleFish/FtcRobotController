@@ -267,5 +267,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.position = inPosition
     }
 
+    fun stepbro() {
+        state = State.STEP_BRO
+    }
+
+    fun stepsis() {
+        state = State.IN
+    }
+
     override fun isTransitioningState() = extensionServos.isTransitioning || flip.isTransitioning
 }

@@ -34,8 +34,8 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.24,
-            outPosition2 = 0.1,
+            outPosition3 = 0.34,
+            outPosition2 = 0.24,
             outPosition1 = 0.0;
     private double offsetOutPosition;
     public static double
@@ -45,17 +45,17 @@ public class Deposit extends Module<Deposit.State> {
             extendIn = 0.3,
             extendOut3 = 0.17,
             extendOut2 = 0.12,
-            extendOut1 = 0.12,
+            extendOut1 = 0.1,
             extendOutShared = 0.32,
-            extendTeleOffset = 0.05;
+            extendTeleOffset = -0.05;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.7;
+    public static double holdingPosition = 0.8;
     public static double
-            inPosition = 0.9,
-            higherInPosition = 0.8;
+            inPosition = 1.0,
+            higherInPosition = 0.9;
     public static double
             lockPosition = 0.68,
             unlockPosition = 0.55,
@@ -188,7 +188,7 @@ public class Deposit extends Module<Deposit.State> {
         arm.getServos().setPositionPerSecond(armServoPositionPerSecond);
         extension.getServos().setPositionPerSecond(extensionServoPositionPerSecond);
         extension.getServos().setLimits(0.0, extendIn);
-        arm.getServos().setLimits(0.0, 0.94);
+        arm.getServos().setLimits(0.0, 1.0);
         switch (getState()) {
             case IN:
                 if (!Deposit.isLoaded) unlock();

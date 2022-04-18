@@ -16,6 +16,8 @@ import com.noahbres.meepmeep.MeepMeep
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder
+import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getAccelerationConstraint
+import com.noahbres.meepmeep.roadrunner.SampleTankDrive.Companion.getVelocityConstraint
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity
 
 class AdvancedPaths {
@@ -27,8 +29,15 @@ class AdvancedPaths {
     private val intake = Intake()
     private val carousel = Carousel()
     private val relocalizer = Relocalizer()
-    @JvmField
-    var polesCoast = -35.0
+    @JvmField var cyclingDistance = 24.0
+    @JvmField var carouselAngle = 40.0
+    @JvmField var carouselDistance = 20.0
+    @JvmField var carouselAngleOffset = 20.0
+    @JvmField var cyclingAngle = -125.0
+    @JvmField var vel = 40.0
+    @JvmField var accel = 50.0
+    @JvmField var carouselCoast = -56.0
+    @JvmField var forwardDist = 20.0
     fun carouselPath(blue: Boolean, meepMeep: MeepMeep): RoadRunnerBotEntity {
         side = Side.CAROUSEL
         alliance = if (blue) Alliance.BLUE else Alliance.RED
@@ -36,48 +45,67 @@ class AdvancedPaths {
             .setColorScheme(colorSchemeVariable()) // Set theme
             .configure() // configure robot
             .followTrajectorySequence { robot ->
-                    robot.trajectorySequenceBuilder(startingPosition())
-                        .setReversed(true)
-                        .liftLevel(deposit, Robot.getLevel(location))
-                        .splineTo(
-                            allianceHub.center.polarAdd(
-                                cyclingDistance, Math.toRadians(
-                                    -125.0
-                                ).flip(blue)
-                            ), allianceHub.center
-                        )
-                        .setReversed(false)
-                        .dump(deposit)
-                        .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                        .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
-                        .splineTo(
-                            carouselVec.center.polarAdd(
-                                carouselVec.radius + 10.0,
-                                Math.toRadians(40.0).flip(blue)
-                            ), carouselVec.center,
-                            Pose2d(0.0, 0.0, Math.toRadians(20.0))
-                        )
-                        .waitSeconds(2.0, DriveSignal(Pose2d(5.0)))
-                        .carouselOff(carousel) // drop the ducky
-                        .intakeOn(intake)
-                        .back(5.0)
-                        .turn(Math.toRadians(60.0).flip(blue))
-                        .turn(Math.toRadians(-120.0).flip(blue))
-                        .intakeOff(intake)
-                        .setReversed(true)
-                        .liftLevel(deposit, Deposit.Level.LEVEL3)
-                        .splineTo(
-                            allianceHub.center.polarAdd(
-                                cyclingDistance, Math.toRadians(
-                                    -125.0
-                                ).flip(blue)
-                            ), allianceHub.center,
-                        )
-                        .dump(deposit)
-                        .waitWhile(deposit::isDoingWork)
-                        .setReversed(false)
-                        .splineTo(Vector2d(-55.0, -46.0).flip(blue), Math.toRadians(90.0).flip(blue))
-                        .splineTo(Vector2d(-55.0, -27.0).flip(blue), Math.toRadians(90.0).flip(blue))
+                robot.trajectorySequenceBuilder(startingPosition())
+                    .setAccelConstraint(getAccelerationConstraint(accel)!!)
+                    .setVelConstraint(getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+                    .setReversed(true)
+                    .liftLevel(deposit, Robot.getLevel(location))
+                    .splineTo(
+                        allianceHub.center.polarAdd(
+                            cyclingDistance, Math.toRadians(
+                                cyclingAngle
+                            ).flip(blue)
+                        ), allianceHub.center
+                    )
+                    .setReversed(false)
+                    .dump(deposit)
+                    .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
+                    .UNSTABLE_addDisplacementMarkerOffset(1.0) {
+                        //carousel.setPower(0.3)
+                    }
+                    .splineTo(Vector2d(-43.0, carouselCoast).flip(blue), Math.PI)
+                    .splineTo(
+                        carouselVec.center.polarAdd(
+                            carouselDistance,
+                            Math.toRadians(carouselAngle).flip(blue)
+                        ), carouselVec.center,
+                        Pose2d(0.0, 0.0, Math.toRadians(carouselAngleOffset))
+                    )
+                    .waitSeconds(2.0, DriveSignal(Pose2d(5.0)))
+                    .carouselOff(carousel) // drop the ducky
+                    .setReversed(true)
+                    .back(5.0)
+                    .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                       //intake.stepbro()
+                    }
+                    .splineTo(
+                        carouselVec.center.polarAdd(
+                            carouselDistance + 10,
+                            Math.toRadians(carouselAngle).flip(blue)
+                        ), carouselVec.center,
+                        Pose2d(0.0, 0.0, Math.PI)
+                    )
+                    .setTurnConstraint(Math.toRadians(90.0), Math.toRadians(90.0))
+                    .turn(Math.toRadians(60.0).flip(blue))
+                    .turn(Math.toRadians(-120.0).flip(blue))
+                    .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                        //intake.stepsis()
+                    }
+                    .setReversed(true)
+                    .liftLevel(deposit, Deposit.Level.LEVEL3)
+                    .splineTo(
+                        allianceHub.center.polarAdd(
+                            cyclingDistance, Math.toRadians(
+                                cyclingAngle
+                            ).flip(blue)
+                        ), allianceHub.center,
+                    )
+                    .dump(deposit)
+                    .waitWhile(deposit::isDoingWork)
+                    .setReversed(false)
+                    .splineTo(Vector2d(-60.0, -50.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                    .turn(-Math.PI.flip(blue) / 2)
+                    .forward(forwardDist)
                     .build()
             }
     }
@@ -92,11 +120,11 @@ class AdvancedPaths {
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.1
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 22.0
+        //@JvmField var cyclingDistance = 22.0
         @JvmField var depositDistance = 25.0
         @JvmField var divConstant = 4.0
         @JvmField var depositingAngle = -50.0
-        @JvmField var cyclingAngle = -50.0
+        //@JvmField var cyclingAngle = -50.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 6.0

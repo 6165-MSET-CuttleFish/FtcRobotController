@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
-    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00002;
+    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00009;
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;
@@ -24,7 +24,7 @@ public class Capstone extends Module<Capstone.State> {
     private Servo verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
     private double verticalInc, horizontalInc;
-    public static double vUpperLimit = 0.58, vLowerLimit = 0.39;
+    public static double vUpperLimit = 0.6, vLowerLimit = 0.35;
     public static double hUpperLimit = 1.0, hLowerLimit = 0.0;
 
     @Override

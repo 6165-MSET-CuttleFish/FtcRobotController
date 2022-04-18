@@ -27,6 +27,7 @@ class DriverPractice : LinearOpMode() {
     companion object {
         @JvmField var multiple = 1.0
         @JvmField var currentLimit = 10
+        @JvmField var ninjaSlowDown = 0.9
     }
 
     lateinit var intake: Intake
@@ -44,6 +45,9 @@ class DriverPractice : LinearOpMode() {
 
     lateinit var levelIncrement: ButtonReader
     lateinit var levelDecrement: ButtonReader
+
+    lateinit var armIncrement: ButtonReader
+    lateinit var armDecrement: ButtonReader
 
     lateinit var capHorizontalInc: ButtonReader
     lateinit var capVerticalInc: ButtonReader
@@ -78,11 +82,17 @@ class DriverPractice : LinearOpMode() {
             TriggerReader(primary, GamepadKeys.Trigger.LEFT_TRIGGER).also {
                 ninjaMode = it
             },
-            ButtonReader(secondary, GamepadKeys.Button.DPAD_UP).also {
+            ButtonReader(secondary, GamepadKeys.Button.DPAD_RIGHT).also {
                 levelIncrement = it
             },
-            ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN).also {
+            ButtonReader(secondary, GamepadKeys.Button.DPAD_LEFT).also {
                 levelDecrement = it
+            },
+            ButtonReader(secondary, GamepadKeys.Button.DPAD_UP).also {
+                armIncrement = it
+            },
+            ButtonReader(secondary, GamepadKeys.Button.DPAD_DOWN).also {
+                armDecrement = it
             },
             ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER).also {
                 depositLift = it
@@ -131,7 +141,7 @@ class DriverPractice : LinearOpMode() {
                 gamepad1.rumble(1.0, 1.0, 500)
             }
             if (Deposit.isLoaded) drivePower *= multiple
-            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= 0.6
+            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= ninjaSlowDown
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     mode = if (mode == Mode.DRIVING) {
@@ -191,7 +201,6 @@ class DriverPractice : LinearOpMode() {
     }
 
     private fun setDeposit() {
-        if (!deposit.platformIsOut()) {
             if (levelIncrement.wasJustPressed()) {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
@@ -211,12 +220,10 @@ class DriverPractice : LinearOpMode() {
                 }
                 deposit.setLevel(defaultDepositState)
             }
-        } else {
-            if (levelIncrement.wasJustPressed() || capVerticalInc.wasJustPressed()) {
-                deposit.incrementArmPosition(1.0)
-            } else if (levelDecrement.wasJustPressed() || capVerticalDec.wasJustPressed()) {
-                deposit.incrementArmPosition(-1.0)
-            }
+        if (armIncrement.wasJustPressed() || capVerticalInc.wasJustPressed()) {
+            deposit.incrementArmPosition(1.0)
+        } else if (armDecrement.wasJustPressed() || capVerticalDec.wasJustPressed()) {
+            deposit.incrementArmPosition(-1.0)
         }
         if (hardDump1.wasJustPressed()) {
             if (Deposit.isLoaded) {

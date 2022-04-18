@@ -54,7 +54,7 @@ public class TSEDetector extends OpenCvPipeline {
     public static int blueVHigh = 255;
 
     public static int visionMax = 100;
-    public static int visionMin = 12;
+    public static int visionMin = 9;
 
     public static boolean returnBlack = true;
 
