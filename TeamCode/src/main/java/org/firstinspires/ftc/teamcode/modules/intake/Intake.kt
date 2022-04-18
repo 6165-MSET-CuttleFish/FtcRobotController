@@ -92,6 +92,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         extensionServos.setLimits(inPosition, outPosition)
         if (opModeType == OpModeType.TELE) {
             flip.init(0.5)
+            flip.init(0.5)
+            flip.init(0.5)
             extensionServos.init(midPosition)
         } else {
             flip.init(raisedPosition)

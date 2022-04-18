@@ -43,11 +43,11 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetIncrement = 0.05;
     public static double
             extendIn = 0.3,
-            extendOut3 = 0.17,
+            extendOut3 = 0.15,
             extendOut2 = 0.12,
             extendOut1 = 0.1,
             extendOutShared = 0.32,
-            extendTeleOffset = -0.05;
+            extendTeleOffset = -0.03;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
@@ -157,8 +157,16 @@ public class Deposit extends Module<Deposit.State> {
         extension.getServos().setReversedAngle(true);
         extension.getServos().calibrateOffset(extendIn, Math.toRadians(59.58));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
-        unlock();
-        if (opModeType == OpModeType.AUTO) lock();
+        if (opModeType == OpModeType.AUTO) {
+            lock();
+            lock();
+            lock();
+        }
+        else {
+            unlock();
+            unlock();
+            unlock();
+        }
         slides = new ControllableMotor(hardwareMap.get(DcMotorEx.class, "depositSlides"));
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.field.Context;
 
 @Config
 public class Capstone extends Module<Capstone.State> {
-    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00009;
+    public static double servoIncrementHorizontal = 0.0003, servoIncrementVertical = -0.00014;
     public static double horizontalTolerance = 0, verticalTolerance = 0;
     public static double servoIncrementHorizontalLarge = 0.01, servoIncrementVerticalLarge = 0.01;
     private double horizontalPos = 0.5, verticalPos = 0.45;

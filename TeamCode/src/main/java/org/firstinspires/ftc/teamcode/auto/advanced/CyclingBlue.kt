@@ -75,7 +75,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var offsetNext = true
         @JvmField var skipNext = true
         @JvmField var intakeMinX = 48.0
-        @JvmField var pathRotationOffset = -7.0
+        @JvmField var pathRotationOffset = -4.0
     }
 
     enum class PathState {
