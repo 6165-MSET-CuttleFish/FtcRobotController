@@ -34,17 +34,18 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.34,
-            outPosition2 = 0.24,
+            outPosition3 = 0.38,
+            outPosition2 = 0.27,
             outPosition1 = 0.0;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
             outOffsetIncrement = 0.05;
+    public static double liftCurrentLimit = 5;
     public static double
             extendIn = 0.3,
-            extendOut3 = 0.15,
-            extendOut2 = 0.12,
+            extendOut3 = 0.14,
+            extendOut2 = 0.1,
             extendOut1 = 0.1,
             extendOutShared = 0.32,
             extendTeleOffset = -0.03;
@@ -275,16 +276,15 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case RESETTING_ENCODER:
-                setState(State.IN);
-//                allowTransfer = false;
-//                holdingPosition();
-//                slides.setPower(-1);
-//                if ((getSecondsSpentInState() > 0.3 && slides.getCurrent(CurrentUnit.AMPS) > 0.7) || getSecondsSpentInState() >= 0.7) {
-//                    slides.setPower(0);
-//                    slides.getMotors()[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                    slides.getMotors()[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//                    setState(State.IN);
-//                }
+                allowTransfer = false;
+                holdingPosition();
+                slides.setPower(-1);
+                if ((getSecondsSpentInState() > 0.3 && slides.getCurrent(CurrentUnit.AMPS) > liftCurrentLimit) || getSecondsSpentInState() >= 1.5) {
+                    slides.setPower(0);
+                    slides.getMotors()[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slides.getMotors()[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    setState(State.IN);
+                }
                 break;
         }
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));

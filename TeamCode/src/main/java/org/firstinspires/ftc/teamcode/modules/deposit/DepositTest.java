@@ -51,6 +51,9 @@ public class DepositTest extends ModuleTest {
         if (farDeposit.wasJustPressed()) {
             deposit.toggleLift();
         }
+        if (gamepad1.dpad_left) {
+            deposit.resetEncoder();
+        }
         if (levelIncrement.wasJustPressed()) {
             switch (defaultDepositState) {
                 case LEVEL2:
