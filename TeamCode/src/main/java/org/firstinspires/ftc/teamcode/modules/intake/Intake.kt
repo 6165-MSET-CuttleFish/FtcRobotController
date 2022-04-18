@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.modules.intake
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.*
+import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modules.Module
 import org.firstinspires.ftc.teamcode.modules.StateBuilder
@@ -48,7 +49,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.055
+        var blueTolerance = 0.052
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField
@@ -89,7 +90,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         intake.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         flip.positionPerSecond = dropPositionPerSecond
         extensionServos.positionPerSecond = extensionPositionPerSecond
-        extensionServos.setLimits(inPosition, outPosition)
+        extensionServos.setLimits(inPosition, 0.45)
         if (opModeType == OpModeType.TELE) {
             flip.init(0.5)
             flip.init(0.5)
@@ -192,13 +193,13 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 // flip.position = 0.5
             }
             State.STEP_BRO -> {
-                extensionServos.position = abs(outPosition*sin(2*secondsSpentInState))
+                extensionServos.position = extension
                 dropIntake()
                 if (containsBlock && !flip.isTransitioning) {
                     state = State.IN
                 }
                 power = if (flip.error > 0.3) 0.0 else 1.0
-                containsBlock = medianDistance < intakeLimit
+                containsBlock = filteredDistance < intakeLimit
             }
         }
         poseOffset = Pose2d(7.7 + extensionServos.estimatedPosition * 6.0)
@@ -268,13 +269,14 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private fun slidesIn() {
         extensionServos.position = inPosition
     }
-
-    fun stepbro() {
-        state = State.STEP_BRO
+    private var extension = outPosition
+    fun stepbro(extension: Double) {
+        this.extension = extension
+        if (!containsBlock && !Deposit.isLoaded) state = State.STEP_BRO
     }
 
     fun stepsis() {
-        state = State.IN
+        if (state == State.STEP_BRO) state = State.IN
     }
 
     override fun isTransitioningState() = extensionServos.isTransitioning || flip.isTransitioning

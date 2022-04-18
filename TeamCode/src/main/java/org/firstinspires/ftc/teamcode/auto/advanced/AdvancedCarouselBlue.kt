@@ -42,13 +42,20 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 25.0
-        @JvmField var carouselAngle = 40.0
-        @JvmField var carouselDistance = 20.0
-        @JvmField var carouselAngleOffset = 20.0
-        @JvmField var cyclingAngle = -125.0
-        @JvmField var vel = 40.0
-        @JvmField var accel = 50.0
+        @JvmField var cyclingDistance = 23.5
+        @JvmField var carouselAngle = 45.0
+        @JvmField var carouselDistance = 25.0
+        @JvmField var carouselAngleOffset = 50.0
+        @JvmField var cyclingAngle = -130.0
+        @JvmField var vel = 35.0
+        @JvmField var accel = 40.0
+        @JvmField var carouselCoast = -48.0
+        @JvmField var forwardDist = 13.0
+        @JvmField var carouselPower = 0.2
+        @JvmField var carouselTurn = 0.0
+        @JvmField var carouselForward = 4.0
+        @JvmField var waitTime = 3.0
+        @JvmField var carouselMovingSpeed = 20.0
     }
 
     @Throws(InterruptedException::class)
@@ -86,11 +93,13 @@ class AdvancedCarouselBlue : LinearOpMode() {
                     ), allianceHub.center
                 )
                 .setReversed(false)
-                .hardDump(deposit)
+                .softDump(deposit)
                 .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
                 .UNSTABLE_addDisplacementMarkerOffset(1.0) {
-                    carousel.setPower(0.3)
+                    carousel.setPower(carouselPower)
                 }
+                .splineTo(Vector2d(-35.0, carouselCoast).flip(blue), Math.PI)
+                .increaseGains(carouselMovingSpeed)
                 .splineTo(
                     carouselVec.center.polarAdd(
                         carouselDistance,
@@ -98,20 +107,40 @@ class AdvancedCarouselBlue : LinearOpMode() {
                     ), carouselVec.center,
                     Pose2d(0.0, 0.0, Math.toRadians(carouselAngleOffset))
                 )
-                .waitSeconds(2.0, DriveSignal(Pose2d(5.0)))
+                .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+                .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+                .waitSeconds(waitTime, DriveSignal(Pose2d(carouselForward, 0.0, Math.toRadians(-carouselTurn))))
                 .carouselOff(carousel) // drop the ducky
+                .setReversed(true)
                 .back(5.0)
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                    intake.stepbro()
+                    intake.stepbro(Intake.inPosition)
                 }
-                .setTurnConstraint(Math.toRadians(100.0), Math.toRadians(100.0))
-                .turn(Math.toRadians(60.0).flip(blue))
-                .turn(Math.toRadians(-120.0).flip(blue))
+                .splineTo(
+                    carouselVec.center.polarAdd(
+                        carouselDistance + 5,
+                        Math.toRadians(carouselAngle).flip(blue)
+                    ), carouselVec.center,
+                    Pose2d(0.0, 0.0, Math.PI)
+                )
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepbro(0.35)
+                }
+                .setTurnConstraint(Math.toRadians(120.0), Math.toRadians(150.0))
+                .turn(Math.toRadians(90.0).flip(blue))
+                .turn(Math.toRadians(-150.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepbro(0.45)
+                }
+                .turn(Math.toRadians(150.0).flip(blue))
+                .turn(Math.toRadians(-150.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     intake.stepsis()
+                    deposit.liftUp()
                 }
+                .waitSeconds(0.1)
                 .setReversed(true)
-                .liftLevel(deposit, Deposit.Level.LEVEL3)
+                .liftLevel(deposit, Deposit.Level.LEVEL2)
                 .splineTo(
                     allianceHub.center.polarAdd(
                         cyclingDistance, Math.toRadians(
@@ -119,11 +148,16 @@ class AdvancedCarouselBlue : LinearOpMode() {
                         ).flip(blue)
                     ), allianceHub.center,
                 )
-                .softDump(deposit)
+                .hardDump(deposit)
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.dontFlipOut = true
+                }
                 .waitWhile(deposit::isDoingWork)
                 .setReversed(false)
-                //.splineTo(Vector2d(-55.0, -46.0).flip(blue), Math.toRadians(90.0).flip(blue))
-            .build()
+                .splineTo(Vector2d(-60.0, -45.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .turn(Math.PI.flip(blue) / 2)
+                .back(forwardDist)
+                .build()
         robot.followTrajectorySequence(sequence)
     }
 }

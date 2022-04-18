@@ -204,8 +204,7 @@ class DriverPractice : LinearOpMode() {
             if (levelIncrement.wasJustPressed()) {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
-                    Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.LEVEL2
-                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.LEVEL1
+                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.LEVEL2
                     Deposit.Level.SHARED_FAR -> defaultDepositState = Deposit.Level.SHARED_CLOSE
                     else -> {}
                 }
@@ -213,8 +212,7 @@ class DriverPractice : LinearOpMode() {
             } else if (levelDecrement.wasJustPressed()) {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
-                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL1
-                    Deposit.Level.LEVEL1 -> defaultDepositState = Deposit.Level.SHARED_CLOSE
+                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.SHARED_CLOSE
                     Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.SHARED_FAR
                     else -> {}
                 }

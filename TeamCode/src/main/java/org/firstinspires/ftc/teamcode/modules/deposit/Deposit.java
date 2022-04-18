@@ -34,7 +34,7 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.38,
+            outPosition3 = 0.36,
             outPosition2 = 0.27,
             outPosition1 = 0.0;
     private double offsetOutPosition;
@@ -44,7 +44,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double liftCurrentLimit = 5;
     public static double
             extendIn = 0.3,
-            extendOut3 = 0.14,
+            extendOut3 = 0.16,
             extendOut2 = 0.1,
             extendOut1 = 0.1,
             extendOutShared = 0.32,
@@ -62,8 +62,8 @@ public class Deposit extends Module<Deposit.State> {
             unlockPosition = 0.55,
             kickPosition = 1.0;
     public static double
-            armServoPositionPerSecond = 5.0,
-            extensionServoPositionPerSecond = 0.65;
+            armServoPositionPerSecond = 4.0,
+            extensionServoPositionPerSecond = 0.55;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.2;
@@ -158,14 +158,13 @@ public class Deposit extends Module<Deposit.State> {
         extension.getServos().setReversedAngle(true);
         extension.getServos().calibrateOffset(extendIn, Math.toRadians(59.58));
         lock = new ControllableServos(hardwareMap.servo.get("lock"));
+        unlock();
         if (opModeType == OpModeType.AUTO) {
-            lock();
-            lock();
             lock();
         }
         else {
             unlock();
-            unlock();
+            lock();
             unlock();
         }
         slides = new ControllableMotor(hardwareMap.get(DcMotorEx.class, "depositSlides"));
@@ -202,7 +201,7 @@ public class Deposit extends Module<Deposit.State> {
             case IN:
                 if (!Deposit.isLoaded) unlock();
                 flipIn();
-                if (!extension.isTransitioning()) {
+                if (!extension.isTransitioning() || opModeType != OpModeType.TELE) {
                     pidController.setTargetPosition(0.0);
                 }
                 if (isLoaded) {
@@ -231,10 +230,7 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case HOLDING:
                 pidController.setTargetPosition(0.0);
-                if (opModeType == OpModeType.TELE) {
-                    holdingPosition();
-                    allowLift = true;
-                }
+                holdingPosition();
                 if (allowLift) {
                     lastOutPosition = arm.getRealPosition();
                     setState(State.OUT);
@@ -483,6 +479,11 @@ public class Deposit extends Module<Deposit.State> {
             case LEVEL1:
                 extendPos = extendOut1;
                 break;
+            case SHARED_CLOSE:
+                extendPos = extendOutShared;
+                break;
+            case SHARED_FAR:
+                extendPos = extendOut3;
         }
         if (opModeType == OpModeType.TELE) extendPos -= extendTeleOffset;
         return farDeposit ? 0.0 : extendPos + offsetExtendPosition;
@@ -497,7 +498,7 @@ public class Deposit extends Module<Deposit.State> {
         arm.setPosition(position);
         // speed * time
         // arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
-        if (getLevel() == Level.LEVEL2) {
+        if (getLevel() == Level.LEVEL2 || getLevel() == Level.LEVEL1) {
             if (arm.getServos().getError() < 0.3) {
                 double extensionPos = extendPosition(state);
                 extension.setPosition(extensionPos);

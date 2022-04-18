@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto.advanced
 
+import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -7,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
-import org.firstinspires.ftc.teamcode.drive.FrequentPositions.duckLocation
+import org.firstinspires.ftc.teamcode.drive.FrequentPositions.carouselVec
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.startingPosition
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
@@ -20,11 +22,11 @@ import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
-import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Line
+import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import kotlin.Throws
 
 @Autonomous
-@Disabled
+@Config
 class AdvancedCarouselRed : LinearOpMode() {
     lateinit var robot: Robot<PathState>
     lateinit var deposit: Deposit
@@ -39,9 +41,28 @@ class AdvancedCarouselRed : LinearOpMode() {
         IDLE,
     }
 
+    companion object {
+        @JvmField var cyclingDistance = 22.0
+        @JvmField var carouselAngle = 50.0
+        @JvmField var carouselDistance = 25.0
+        @JvmField var carouselAngleOffset = 50.0
+        @JvmField var cyclingAngle = -130.0
+        @JvmField var vel = 35.0
+        @JvmField var accel = 40.0
+        @JvmField var carouselCoast = -48.0
+        @JvmField var forwardDist = 13.0
+        @JvmField var carouselPower = -0.2
+        @JvmField var carouselTurn = 0.0
+        @JvmField var carouselForward = 4.0
+        @JvmField var waitTime = 3.0
+        @JvmField var carouselMovingSpeed = 15.0
+        @JvmField var parkY = -40.0
+        @JvmField var angleOffset = 10.0
+    }
+
     @Throws(InterruptedException::class)
     override fun runOpMode() {
-        side = Side.CYCLING
+        side = Side.CAROUSEL
         robot = Robot(this, startingPosition(), OpModeType.AUTO, Alliance.RED)
         intake = robot.intake
         capstone = robot.capstone
@@ -51,62 +72,94 @@ class AdvancedCarouselRed : LinearOpMode() {
 //        val leftSequence = leftAuto()
 //        val middleSequence = middleAuto()
 //        val rightSequence = rightAuto()
-        while (!opModeIsActive()) {
+        deposit.liftUp()
+        val sequence =
+            robot.trajectorySequenceBuilder(startingPosition())
+                .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+                .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+                .setReversed(true)
+                .liftLevel(deposit, Robot.getLevel(location))
+                .splineTo(
+                    allianceHub.center.polarAdd(
+                        cyclingDistance, Math.toRadians(
+                            cyclingAngle
+                        ).flip(blue)
+                    ), allianceHub.center
+                )
+                .setReversed(false)
+                .softDump(deposit)
+                .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
+                .UNSTABLE_addDisplacementMarkerOffset(1.0) {
+                    carousel.setPower(carouselPower)
+                }
+                .splineTo(Vector2d(-35.0, carouselCoast).flip(blue), Math.PI)
+                .increaseGains(carouselMovingSpeed)
+                .splineTo(
+                    carouselVec.center.polarAdd(
+                        carouselDistance,
+                        Math.toRadians(carouselAngle).flip(blue)
+                    ), carouselVec.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(carouselAngleOffset))
+                )
+                .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+                .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+                .waitSeconds(waitTime, DriveSignal(Pose2d(carouselForward, 0.0, Math.toRadians(-carouselTurn))))
+                .carouselOff(carousel) // drop the ducky
+                .setReversed(true)
+                .back(5.0)
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepbro(Intake.inPosition)
+                }
+                .back(3.0)
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepbro(0.35)
+                }
+                .setTurnConstraint(Math.toRadians(120.0), Math.toRadians(150.0))
+                .turn(Math.toRadians(90.0).flip(blue))
+                .turn(Math.toRadians(-150.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepbro(0.45)
+                }
+                .turn(Math.toRadians(150.0).flip(blue))
+                .turn(Math.toRadians(-150.0).flip(blue))
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.stepsis()
+
+                }
+                .waitSeconds(0.1)
+                .setReversed(true)
+                .liftLevel(deposit, Deposit.Level.LEVEL2)
+                .splineTo(
+                    allianceHub.center.polarAdd(
+                        cyclingDistance, Math.toRadians(
+                            cyclingAngle
+                        ).flip(blue)
+                    ), allianceHub.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
+                )
+                .performAction {
+                    deposit.liftUp()
+                }
+                .waitSeconds(0.3)
+                .waitWhile(deposit::isTransitioningState)
+                .hardDump(deposit)
+                .UNSTABLE_addTemporalMarkerOffset(0.0) {
+                    intake.dontFlipOut = true
+                }
+                .waitWhile(deposit::isDoingWork)
+                .setReversed(false)
+                .splineTo(Vector2d(-60.0, parkY).flip(blue), Math.toRadians(180.0).flip(blue))
+                .turn(Math.PI.flip(blue) / 2)
+                .back(forwardDist)
+                .build()
+        while (!opModeIsActive() && !isStopRequested) {
             robot.scan()
             telemetry.addData("Position", location)
             telemetry.update()
         }
         waitForStart()
         robot.scan()
-        val trajectoryBuilder =
-            robot.trajectorySequenceBuilder(startingPosition())
-                .setReversed(true)
-                .splineTo(
-                    duckLocation().vec(),
-                    Math.toRadians(90.0).flip(blue) + duckLocation().heading
-                )
-                .liftLevel(deposit, Deposit.Level.LEVEL3)
-                .waitWhile(capstone::isDoingWork) // capstone loaded
-                .splineToCircle(allianceHub, Line.yAxis(-30.0).flip(blue), Vector2d(-20.0, -24.0).flip(blue))
-                .setReversed(false)
-                .softDump(deposit)
-                .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                .UNSTABLE_addDisplacementMarkerOffset(1.0, carousel::on)
-                .splineTo(Vector2d(-55.0, -55.0).flip(blue), Math.toRadians(210.0).flip(blue))
-                .waitSeconds(1.5)
-                .carouselOff(carousel)// drop the ducky
-                .setReversed(true)
-                .splineTo(Vector2d(-24.0, -4.0).flip(blue), Math.toRadians(0.0).flip(blue))
-                .turn(Math.toRadians(-180.0).flip(blue))
-                .setReversed(false)
-                .lineToSplineHeading(Pose2d(-10.0, -4.0, Math.toRadians(0.0)).flip(blue))
-                .splineTo(Vector2d(10.0, -30.0).flip(blue), Math.toRadians(-90.0).flip(blue))
-        for (i in 1..4)
-            trajectoryBuilder
-                .UNSTABLE_addDisplacementMarkerOffset(10.0) {
-                    intake.setPower(1.0)
-                }
-                .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
-                .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
-                .splineTo(
-                    Vector2d(50.0, -45.0).plus(
-                        Vector2d(
-                            5 * Math.random(),
-                        )
-                    ).flip(blue), Math.toRadians(-30.0 - 10 * Math.random()).flip(blue)
-                )
-                .setReversed(true)
-                .intakeOff(intake)
-                .splineTo(Vector2d(39.0, -40.0).flip(blue), Math.PI)
-                .splineToConstantHeading(Vector2d(20.0, -40.0).flip(blue), Math.PI)
-                .splineToCircle(allianceHub, Line.yAxis(-33.0), Vector2d(12.0, -24.0).flip(blue))
-                .softDump(deposit)
-                .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-                .setReversed(false)
-        val sequence = trajectoryBuilder
-            .splineTo(Vector2d(20.0, -40.0).flip(blue), 0.0)
-            .splineToConstantHeading(Vector2d(39.0, -40.0).flip(blue), 0.0)
-            .build()
+        robot.turnOffVision()
         robot.followTrajectorySequence(sequence)
     }
 }

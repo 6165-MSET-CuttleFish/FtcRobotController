@@ -31,7 +31,6 @@ import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.util.Async
-import org.firstinspires.ftc.teamcode.util.field.Context
 import kotlin.Throws
 import kotlin.math.sin
 
@@ -52,7 +51,7 @@ class CyclingBlue : LinearOpMode() {
         @JvmField var stop = 50.7
         @JvmField var intakeDelay = 4.0
         @JvmField var powerDelay = 5.0
-        @JvmField var depositDelay = 17.2
+        @JvmField var depositDelay = 16.0
         @JvmField var cycles = 7
         @JvmField var conjoiningPoint = 25.0
         @JvmField var conjoiningDeposit = 30.0

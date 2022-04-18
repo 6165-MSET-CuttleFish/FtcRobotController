@@ -24,7 +24,7 @@ public class Capstone extends Module<Capstone.State> {
     private Servo verticalTurret, horizontalTurret;
     public static double verticalPosDef = 0.5, horizontalPosDef = 0.0;
     private double verticalInc, horizontalInc;
-    public static double vUpperLimit = 0.6, vLowerLimit = 0.35;
+    public static double vUpperLimit = 0.6, vLowerLimit = 0.32;
     public static double hUpperLimit = 1.0, hLowerLimit = 0.0;
 
     @Override

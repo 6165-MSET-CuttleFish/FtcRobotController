@@ -52,7 +52,7 @@ class CyclingRed : LinearOpMode() {
         @JvmField var stop = 50.7
         @JvmField var intakeDelay = 4.0
         @JvmField var powerDelay = 5.0
-        @JvmField var depositDelay = 17.2
+        @JvmField var depositDelay = 16.0
         @JvmField var cycles = 7
         @JvmField var conjoiningPoint = 25.0
         @JvmField var conjoiningDeposit = 30.0
