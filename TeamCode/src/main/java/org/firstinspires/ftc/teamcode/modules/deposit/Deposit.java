@@ -34,8 +34,8 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.36,
-            outPosition2 = 0.27,
+            outPosition3 = 0.39,
+            outPosition2 = 0.25,
             outPosition1 = 0.0;
     private double offsetOutPosition;
     public static double
@@ -45,8 +45,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             extendIn = 0.3,
             extendOut3 = 0.16,
-            extendOut2 = 0.1,
-            extendOut1 = 0.1,
+            extendOut2 = 0.07,
+            extendOut1 = 0.07,
             extendOutShared = 0.32,
             extendTeleOffset = -0.03;
     private double offsetExtendPosition;
@@ -62,13 +62,12 @@ public class Deposit extends Module<Deposit.State> {
             unlockPosition = 0.55,
             kickPosition = 1.0;
     public static double
-            armServoPositionPerSecond = 4.0,
-            extensionServoPositionPerSecond = 0.55;
+            armServoPositionPerSecond = 5.0,
+            extensionServoPositionPerSecond = 0.8;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
     public static double dumpTimeOut = 0.2;
     private boolean allowLift = false;
-    private boolean farDeposit = false;
     @Override
     public boolean isTransitioningState() {
         if (getState() == State.OUT) return arm.getPosition() != outPosition(getLevel());
@@ -105,6 +104,12 @@ public class Deposit extends Module<Deposit.State> {
         LEVEL1,
     }
 
+    public enum Distance {
+        CLOSE,
+        MEDIUM,
+        FAR
+    }
+
     private ControllableServos lock;
     private V4B arm;
     private Linkage extension;
@@ -126,6 +131,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double TICKS_PER_INCH = 61.74;
     boolean intakeCleared;
     private Level defaultLevel = Level.LEVEL3;
+    private Distance distance = Distance.MEDIUM;
 
 
     /**
@@ -184,6 +190,10 @@ public class Deposit extends Module<Deposit.State> {
     private int i = 0;
     private boolean toggle = false;
     public static boolean allowTransfer = true;
+    private boolean farDeposit() {
+        return distance == Distance.FAR;
+    }
+
     /**
      * This function updates all necessary controls in a loop
      */
@@ -238,7 +248,7 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (getLevel() == Level.SHARED_CLOSE || getLevel() == Level.SHARED_FAR || !shouldCounterBalance || farDeposit) {
+                if (getLevel() == Level.SHARED_CLOSE || getLevel() == Level.SHARED_FAR || !shouldCounterBalance || farDeposit()) {
                     intake.retractIntake();
                 } else {
                     intake.counterBalance();
@@ -306,7 +316,7 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("isLoaded", isLoaded);
             Context.packet.put("Arm Real Height", arm.getVector().getY());
             Context.packet.put("Extension Real Displacement", extension.getEstimatedDisplacement());
-            Context.packet.put("IsFarDeposit", farDeposit);
+            Context.packet.put("IsFarDeposit", farDeposit());
         }
         Context.packet.put("Freight", freight);
     }
@@ -323,12 +333,18 @@ public class Deposit extends Module<Deposit.State> {
         allowLift = !allowLift;
     }
 
-    public void setFarDeposit(boolean farDeposit) {
-        this.farDeposit = farDeposit;
+    public void toggleFarDeposit() {
+        if (distance != Distance.FAR) distance = Distance.FAR;
+        else distance = Distance.MEDIUM;
     }
 
-    public void toggleFarDeposit() {
-        farDeposit = !farDeposit;
+    public void toggleMediumDeposit() {
+        distance = Distance.MEDIUM;
+    }
+
+    public void toggleCloseDeposit() {
+        if (distance != Distance.CLOSE) distance = Distance.CLOSE;
+        else distance = Distance.MEDIUM;
     }
 
     public void setShouldCounterBalance(boolean counterBalance) {
@@ -370,7 +386,7 @@ public class Deposit extends Module<Deposit.State> {
 
     private Level getLevel() {
         if (getState() == State.IN) return Level.LEVEL1;
-        if (farDeposit) return Level.LEVEL3;
+        if (distance == Distance.FAR) return Level.LEVEL3;
         if (freight == Freight.BALL && opModeType == OpModeType.TELE) return Level.LEVEL2;
         return defaultLevel;
     }
@@ -429,7 +445,7 @@ public class Deposit extends Module<Deposit.State> {
 
     private double getLevelHeight(Level state) {
         switch (state) {
-            case LEVEL3: return LEVEL3;
+            case LEVEL3: return distance == Distance.CLOSE ? 2.0 : LEVEL3;
             case LEVEL2: return LEVEL2;
             case LEVEL1: return LEVEL1;
         }
@@ -471,7 +487,7 @@ public class Deposit extends Module<Deposit.State> {
         double extendPos = extendOut3;
         switch (level) {
             case LEVEL3:
-                extendPos = extendOut3;
+                extendPos = distance == Distance.CLOSE ? 0.0 : extendOut3;
                 break;
             case LEVEL2:
                 extendPos = extendOut2;
@@ -484,9 +500,10 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case SHARED_FAR:
                 extendPos = extendOut3;
+                break;
         }
         if (opModeType == OpModeType.TELE) extendPos -= extendTeleOffset;
-        return farDeposit ? 0.0 : extendPos + offsetExtendPosition;
+        return farDeposit() ? 0.0 : extendPos + offsetExtendPosition;
     }
 
     /**

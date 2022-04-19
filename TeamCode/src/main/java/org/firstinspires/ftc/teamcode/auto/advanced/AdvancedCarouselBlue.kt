@@ -42,20 +42,22 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 23.5
-        @JvmField var carouselAngle = 45.0
+        @JvmField var cyclingDistance = 22.0
+        @JvmField var carouselAngle = 50.0
         @JvmField var carouselDistance = 25.0
-        @JvmField var carouselAngleOffset = 50.0
+        @JvmField var carouselAngleOffset = 40.0
         @JvmField var cyclingAngle = -130.0
         @JvmField var vel = 35.0
         @JvmField var accel = 40.0
-        @JvmField var carouselCoast = -48.0
+        @JvmField var carouselCoast = -52.0
         @JvmField var forwardDist = 13.0
         @JvmField var carouselPower = 0.2
         @JvmField var carouselTurn = 0.0
         @JvmField var carouselForward = 4.0
-        @JvmField var waitTime = 3.0
-        @JvmField var carouselMovingSpeed = 20.0
+        @JvmField var waitTime = 4.0
+        @JvmField var carouselMovingSpeed = 15.0
+        @JvmField var parkY = -40.0
+        @JvmField var angleOffset = 10.0
     }
 
     @Throws(InterruptedException::class)
@@ -71,14 +73,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
 //        val middleSequence = middleAuto()
 //        val rightSequence = rightAuto()
         deposit.liftUp()
-        while (!opModeIsActive() && !isStopRequested) {
-            robot.scan()
-            telemetry.addData("Position", location)
-            telemetry.update()
-        }
-        waitForStart()
-        robot.scan()
-        robot.turnOffVision()
+        deposit.toggleCloseDeposit()
         val sequence =
             robot.trajectorySequenceBuilder(startingPosition())
                 .setAccelConstraint(Robot.getAccelerationConstraint(accel))
@@ -136,7 +131,6 @@ class AdvancedCarouselBlue : LinearOpMode() {
                 .turn(Math.toRadians(-150.0).flip(blue))
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     intake.stepsis()
-                    deposit.liftUp()
                 }
                 .waitSeconds(0.1)
                 .setReversed(true)
@@ -147,17 +141,31 @@ class AdvancedCarouselBlue : LinearOpMode() {
                             cyclingAngle
                         ).flip(blue)
                     ), allianceHub.center,
+                    Pose2d(0.0, 0.0, Math.toRadians(angleOffset).flip(blue))
                 )
+                .performAction {
+                    deposit.liftUp()
+                }
+                .waitSeconds(0.3)
+                .waitWhile(deposit::isTransitioningState)
                 .hardDump(deposit)
                 .UNSTABLE_addTemporalMarkerOffset(0.0) {
                     intake.dontFlipOut = true
                 }
                 .waitWhile(deposit::isDoingWork)
                 .setReversed(false)
-                .splineTo(Vector2d(-60.0, -45.0).flip(blue), Math.toRadians(180.0).flip(blue))
+                .splineTo(Vector2d(-60.0, parkY).flip(blue), Math.toRadians(180.0).flip(blue))
                 .turn(Math.PI.flip(blue) / 2)
                 .back(forwardDist)
                 .build()
+        while (!opModeIsActive() && !isStopRequested) {
+            robot.scan()
+            telemetry.addData("Position", location)
+            telemetry.update()
+        }
+        waitForStart()
+        robot.scan()
+        robot.turnOffVision()
         robot.followTrajectorySequence(sequence)
     }
 }
