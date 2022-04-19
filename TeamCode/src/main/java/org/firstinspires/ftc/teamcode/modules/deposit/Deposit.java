@@ -172,6 +172,7 @@ public class Deposit extends Module<Deposit.State> {
             unlock();
             lock();
             unlock();
+            allowLift = true;
         }
         slides = new ControllableMotor(hardwareMap.get(DcMotorEx.class, "depositSlides"));
         slides.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -193,6 +194,11 @@ public class Deposit extends Module<Deposit.State> {
     private boolean farDeposit() {
         return distance == Distance.FAR;
     }
+
+    private boolean closeDeposit() {
+        return distance == Distance.CLOSE;
+    }
+
 
     /**
      * This function updates all necessary controls in a loop
@@ -272,7 +278,7 @@ public class Deposit extends Module<Deposit.State> {
                     setState(State.IN);
                 }
                 if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
-                    if (opModeType == OpModeType.AUTO) allowLift = false;
+                    if (opModeType == OpModeType.AUTO || farDeposit() || closeDeposit()) allowLift = false;
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
                     }
@@ -345,6 +351,7 @@ public class Deposit extends Module<Deposit.State> {
     public void toggleCloseDeposit() {
         if (distance != Distance.CLOSE) distance = Distance.CLOSE;
         else distance = Distance.MEDIUM;
+        if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CLOSE;
     }
 
     public void setShouldCounterBalance(boolean counterBalance) {

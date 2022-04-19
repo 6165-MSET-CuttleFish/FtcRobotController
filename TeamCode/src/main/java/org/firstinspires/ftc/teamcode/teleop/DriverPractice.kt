@@ -55,7 +55,8 @@ class DriverPractice : LinearOpMode() {
     lateinit var capVerticalDec: ButtonReader
     lateinit var capRetract: ButtonReader
     lateinit var depositLift: ToggleButtonReader
-    lateinit var ninjaOverride: ToggleButtonReader
+    lateinit var farDeposit: ToggleButtonReader
+    lateinit var closeDeposit: ToggleButtonReader
     var defaultDepositState = Deposit.Level.LEVEL3
     @Throws(InterruptedException::class)
     override fun runOpMode() {
@@ -106,11 +107,13 @@ class DriverPractice : LinearOpMode() {
             TriggerReader(primary, GamepadKeys.Trigger.RIGHT_TRIGGER).also {
                 softDump1 = it
             },
-            ToggleButtonReader(primary, GamepadKeys.Button.A).also {
-                ninjaOverride = it
+            ToggleButtonReader(primary, GamepadKeys.Button.Y).also {
+                farDeposit = it
+            },
+            ToggleButtonReader(primary, GamepadKeys.Button.X).also {
+                closeDeposit = it
             },
         )
-        deposit.liftDown()
         var liftIntent = false
         waitForStart()
         deposit.resetEncoder()
@@ -136,12 +139,16 @@ class DriverPractice : LinearOpMode() {
                 liftIntent = false
                 deposit.toggleLift()
             }
-            if (ninjaOverride.wasJustPressed()) {
+            if (farDeposit.wasJustPressed()) {
                 deposit.toggleFarDeposit()
                 gamepad1.rumble(1.0, 1.0, 500)
             }
+            if (closeDeposit.wasJustPressed()) {
+                deposit.toggleCloseDeposit()
+                gamepad1.rumble(1.0, 1.0, 500)
+            }
             if (Deposit.isLoaded) drivePower *= multiple
-            if (ninjaMode.isDown || (deposit.platformIsOut() && !ninjaOverride.state)) drivePower *= ninjaSlowDown
+            if (ninjaMode.isDown || (deposit.platformIsOut() && !farDeposit.state)) drivePower *= ninjaSlowDown
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     mode = if (mode == Mode.DRIVING) {
