@@ -48,17 +48,17 @@ class CyclingRed : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = false
     companion object {
-        @JvmField var coast = -55.5
-        @JvmField var stop = 50.0
+        @JvmField var coast = -54.5
+        @JvmField var stop = 49.0
         @JvmField var intakeDelay = 2.0
         @JvmField var powerDelay = 2.1
         @JvmField var depositDelay = 17.0
         @JvmField var cycles = 6
-        @JvmField var conjoiningPoint = 25.0
+        @JvmField var conjoiningPoint = 20.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 22.0
+        @JvmField var cyclingDistance = 20.0
         @JvmField var depositDistance = 25.0
         @JvmField var divConstant = 4.0
         @JvmField var depositingAngle = -55.0
@@ -67,17 +67,17 @@ class CyclingRed : LinearOpMode() {
         @JvmField var intakeError = 8.0
         @JvmField var depositError = 6.0
         @JvmField var intakeCrossingVelo = 26.0
-        @JvmField var intakeVelo = 35.0
+        @JvmField var intakeVelo = 26.0
         @JvmField var intakeAngle = 1.0
         @JvmField var depositVelo = 60.0
         @JvmField var angleOffset = -11.0
-        @JvmField var initialOffset = 8.0
+        @JvmField var initialOffset = 15.0
         @JvmField var yIncrement = -0.0
         @JvmField var offsetNext = true
         @JvmField var skipNext = true
         @JvmField var shouldWait = true
         @JvmField var intakeMinX = 48.0
-        @JvmField var pathRotationOffset = -4.0
+        @JvmField var pathRotationOffset = -0.5
     }
 
     enum class PathState {
@@ -196,7 +196,7 @@ class CyclingRed : LinearOpMode() {
                 .UNSTABLE_addDisplacementMarkerOffset(intakeDelay) {
                     intake.setPower(0.1)
                     deposit.liftDown()
-                    deposit.toggleMediumDeposit()
+                    //deposit.toggleMediumDeposit()
                 }
                 .UNSTABLE_addDisplacementMarkerOffset(powerDelay) {
                     intake.setPower(1.0)

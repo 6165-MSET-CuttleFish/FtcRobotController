@@ -43,10 +43,10 @@ public class Deposit extends Module<Deposit.State> {
             outOffsetIncrement = 0.05;
     public static double liftCurrentLimit = 5;
     public static double
-            extendIn = 0.3,
+            extendIn = 0.32,
             extendOut3 = 0.16,
             extendOut2 = 0.07,
-            extendOut1 = 0.07,
+            extendOut1 = 0.0,
             extendOutShared = 0.32,
             extendTeleOffset = -0.03;
     private double offsetExtendPosition;

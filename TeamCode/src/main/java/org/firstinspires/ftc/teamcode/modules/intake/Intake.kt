@@ -97,8 +97,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             flip.init(0.5)
             extensionServos.init(midPosition)
         } else {
-            flip.init(raisedPosition)
-            extensionServos.init(inPosition)
+//            flip.init(raisedPosition)
+//            extensionServos.init(inPosition)
         }
         setActuators(flip, intake)
     }
