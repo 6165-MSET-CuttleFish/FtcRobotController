@@ -171,7 +171,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 power = -1.0
                 containsBlock = false
                 dontFlipOut = false
-                if (unfilteredDistance > transferTolerance) {
+                if (filteredDistance > transferTolerance && secondsSpentInState > 0.3) {
                     Deposit.isLoaded = true
                 }
                 if ((Deposit.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
@@ -190,7 +190,6 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.COUNTER_BALANCE -> {
                 extensionServos.position = midPosition
                 raiseIntake()
-                // flip.position = 0.5
             }
             State.STEP_BRO -> {
                 extensionServos.position = extension

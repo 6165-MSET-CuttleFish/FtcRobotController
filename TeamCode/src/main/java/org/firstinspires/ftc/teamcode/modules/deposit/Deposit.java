@@ -36,7 +36,8 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.39,
             outPosition2 = 0.25,
-            outPosition1 = 0.0;
+            outPosition1 = 0.0,
+            outPositionShared = 0.15;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
@@ -60,7 +61,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             lockPosition = 0.68,
             unlockPosition = 0.55,
-            kickPosition = 1.0;
+            kickPosition = 0.95;
     public static double
             armServoPositionPerSecond = 5.0,
             extensionServoPositionPerSecond = 0.8;
@@ -70,7 +71,6 @@ public class Deposit extends Module<Deposit.State> {
     private boolean allowLift = false;
     @Override
     public boolean isTransitioningState() {
-        if (getState() == State.OUT) return arm.getPosition() != outPosition(getLevel());
         return extension.isTransitioning() || arm.isTransitioning() || Math.abs(getLastError()) > allowableDepositError;
     }
 
@@ -100,7 +100,6 @@ public class Deposit extends Module<Deposit.State> {
         LEVEL3,
         LEVEL2,
         SHARED_CLOSE,
-        SHARED_FAR,
         LEVEL1,
     }
 
@@ -254,7 +253,7 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (getLevel() == Level.SHARED_CLOSE || getLevel() == Level.SHARED_FAR || !shouldCounterBalance || farDeposit()) {
+                if (getLevel() == Level.SHARED_CLOSE || !shouldCounterBalance || farDeposit()) {
                     intake.retractIntake();
                 } else {
                     intake.counterBalance();
@@ -320,8 +319,8 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Lift Motor Power", power);
             Context.packet.put("Lift Error", getLastError());
             Context.packet.put("isLoaded", isLoaded);
-            Context.packet.put("Arm Real Height", arm.getVector().getY());
-            Context.packet.put("Extension Real Displacement", extension.getEstimatedDisplacement());
+            Context.packet.put("Arm Real Position", arm.getServos().getRealPosition());
+            Context.packet.put("Extension Real Displacement", extension.getServos().getRealPosition());
             Context.packet.put("IsFarDeposit", farDeposit());
         }
         Context.packet.put("Freight", freight);
@@ -394,7 +393,7 @@ public class Deposit extends Module<Deposit.State> {
     private Level getLevel() {
         if (getState() == State.IN) return Level.LEVEL1;
         if (distance == Distance.FAR) return Level.LEVEL3;
-        if (freight == Freight.BALL && opModeType == OpModeType.TELE) return Level.LEVEL2;
+        if (freight == Freight.BALL && opModeType == OpModeType.TELE && defaultLevel == Level.LEVEL3) return Level.LEVEL2;
         return defaultLevel;
     }
 
@@ -452,7 +451,7 @@ public class Deposit extends Module<Deposit.State> {
 
     private double getLevelHeight(Level state) {
         switch (state) {
-            case LEVEL3: return distance == Distance.CLOSE ? 2.0 : LEVEL3;
+            case LEVEL3: return closeDeposit() ? 0.0 : LEVEL3;
             case LEVEL2: return LEVEL2;
             case LEVEL1: return LEVEL1;
         }
@@ -486,7 +485,11 @@ public class Deposit extends Module<Deposit.State> {
             case LEVEL1:
                 outPos = outPosition1;
                 break;
+            case SHARED_CLOSE:
+                outPos = outPositionShared;
+                break;
         }
+        if (closeDeposit()) outPos += 0.02;
         return outPos + offsetOutPosition;
     }
 
@@ -494,7 +497,7 @@ public class Deposit extends Module<Deposit.State> {
         double extendPos = extendOut3;
         switch (level) {
             case LEVEL3:
-                extendPos = distance == Distance.CLOSE ? 0.0 : extendOut3;
+                extendPos = closeDeposit() ? 0.0 : extendIn;
                 break;
             case LEVEL2:
                 extendPos = extendOut2;
@@ -505,11 +508,7 @@ public class Deposit extends Module<Deposit.State> {
             case SHARED_CLOSE:
                 extendPos = extendOutShared;
                 break;
-            case SHARED_FAR:
-                extendPos = extendOut3;
-                break;
         }
-        if (opModeType == OpModeType.TELE) extendPos -= extendTeleOffset;
         return farDeposit() ? 0.0 : extendPos + offsetExtendPosition;
     }
 
@@ -519,17 +518,16 @@ public class Deposit extends Module<Deposit.State> {
     private void flipOut(Level state) {
         double position = outPosition(state);
         if (toggle) position -= 0.001;
-        arm.setPosition(position);
+        double extensionPos = extendPosition(state);
+        extension.setPosition(extensionPos);
         // speed * time
         // arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
-        if (getLevel() == Level.LEVEL2 || getLevel() == Level.LEVEL1) {
-            if (arm.getServos().getError() < 0.3) {
-                double extensionPos = extendPosition(state);
-                extension.setPosition(extensionPos);
+        if (getLevel() == Level.LEVEL1) {
+            if (extension.getServos().getError() < 0.15) {
+                arm.setPosition(position);
             }
         } else {
-            double extensionPos = extendPosition(state);
-            extension.setPosition(extensionPos);
+            arm.setPosition(position);
         }
     }
 

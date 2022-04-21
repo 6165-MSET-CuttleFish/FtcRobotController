@@ -27,7 +27,7 @@ class DriverPractice : LinearOpMode() {
     companion object {
         @JvmField var multiple = 1.0
         @JvmField var currentLimit = 10
-        @JvmField var ninjaSlowDown = 0.9
+        @JvmField var ninjaSlowDown = 0.7
     }
 
     lateinit var intake: Intake
@@ -148,7 +148,7 @@ class DriverPractice : LinearOpMode() {
                 gamepad1.rumble(1.0, 1.0, 500)
             }
             if (Deposit.isLoaded) drivePower *= multiple
-            if (ninjaMode.isDown || (deposit.platformIsOut() && !farDeposit.state)) drivePower *= ninjaSlowDown
+            if (ninjaMode.isDown) drivePower *= ninjaSlowDown
             if (gamepad1.touchpad) {
                 if (!toggleMode) {
                     mode = if (mode == Mode.DRIVING) {
@@ -212,7 +212,6 @@ class DriverPractice : LinearOpMode() {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
                     Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.LEVEL2
-                    Deposit.Level.SHARED_FAR -> defaultDepositState = Deposit.Level.SHARED_CLOSE
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
@@ -220,7 +219,6 @@ class DriverPractice : LinearOpMode() {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.SHARED_CLOSE
-                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.SHARED_FAR
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
@@ -248,7 +246,7 @@ class DriverPractice : LinearOpMode() {
         }
     }
 
-    fun setCarousel() {
-        carousel.setPower(gamepad2.right_stick_y.toDouble())
+    private fun setCarousel() {
+        carousel.setPower(gamepad2.right_stick_y.toDouble() * 0.5)
     }
 }
