@@ -17,7 +17,6 @@ import kotlin.math.sqrt
 /**
  * Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
  * [Ramsete01.pdf](https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf).
- * Property of the Dick Blick Company
  * @param b b parameter (non-negative)
  * @param zeta zeta parameter (on (0, 1))
  * @param admissibleError admissible/satisfactory pose error at the end of each move
