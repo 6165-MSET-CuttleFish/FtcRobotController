@@ -44,25 +44,29 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 25.0
+        @JvmField var cyclingDistance = 24.0
         @JvmField var depositingDistance = 24.0
-        @JvmField var carouselAngle = 50.0
+        @JvmField var carouselAngle = 55.0
         @JvmField var carouselDistance = 25.0
         @JvmField var carouselAngleOffset = 40.0
         @JvmField var depositingAngle = -130.0
         @JvmField var cyclingAngle = -155.0
         @JvmField var vel = 35.0
         @JvmField var accel = 40.0
-        @JvmField var carouselCoast = -52.0
+        @JvmField var carouselCoast = -50.0
         @JvmField var forwardDist = 10.0
-        @JvmField var carouselPower = 0.15
+        @JvmField var carouselPower = 0.4
+        @JvmField var carouselPower2 = 0.2
         @JvmField var carouselTurn = 0.0
         @JvmField var carouselForward = 2.0
-        @JvmField var waitTime = 4.0
+        @JvmField var waitTime = 1.5
+        @JvmField var waitTime2 = 3.0
         @JvmField var carouselMovingSpeed = 15.0
         @JvmField var parkY = -40.0
         @JvmField var angleOffset = 10.0
         @JvmField var backDist = 1.0
+        @JvmField var extension1 = 0.35
+        @JvmField var extension2 = 0.42
     }
 
     @Throws(InterruptedException::class)
@@ -150,6 +154,10 @@ class AdvancedCarouselBlue : LinearOpMode() {
             .setAccelConstraint(Robot.getAccelerationConstraint(accel))
             .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
             .waitSeconds(waitTime, DriveSignal(Pose2d(carouselForward, 0.0, Math.toRadians(-carouselTurn))))
+            .performAction {
+                carousel.setPower(carouselPower2)
+            }
+            .waitSeconds(waitTime2, DriveSignal(Pose2d(carouselForward, 0.0, Math.toRadians(-carouselTurn))))
             .carouselOff(carousel) // drop the ducky
             .setReversed(true)
             .back(5.0)
@@ -164,13 +172,13 @@ class AdvancedCarouselBlue : LinearOpMode() {
                 Pose2d(0.0, 0.0, Math.PI)
             )
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                intake.stepbro(0.35)
+                intake.stepbro(extension1)
             }
             .setTurnConstraint(Math.toRadians(100.0), Math.toRadians(150.0))
             .turn(Math.toRadians(90.0).flip(blue))
             .turn(Math.toRadians(-170.0).flip(blue))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
-                intake.stepbro(0.45)
+                intake.stepbro(extension2)
             }
             .turn(Math.toRadians(170.0).flip(blue))
             .turn(Math.toRadians(-170.0).flip(blue))

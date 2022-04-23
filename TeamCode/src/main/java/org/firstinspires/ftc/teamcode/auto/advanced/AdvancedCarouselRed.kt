@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
@@ -45,18 +44,18 @@ class AdvancedCarouselRed : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 22.0
-        @JvmField var depositingDistance = 23.0
+        @JvmField var cyclingDistance = 25.0
+        @JvmField var depositingDistance = 24.0
         @JvmField var carouselAngle = 50.0
         @JvmField var carouselDistance = 25.0
-        @JvmField var carouselAngleOffset = 50.0
+        @JvmField var carouselAngleOffset = 40.0
         @JvmField var depositingAngle = -130.0
-        @JvmField var cyclingAngle = -160.0
+        @JvmField var cyclingAngle = -155.0
         @JvmField var vel = 35.0
         @JvmField var accel = 40.0
-        @JvmField var carouselCoast = -48.0
+        @JvmField var carouselCoast = -52.0
         @JvmField var forwardDist = 10.0
-        @JvmField var carouselPower = -0.15
+        @JvmField var carouselPower = 0.4
         @JvmField var carouselTurn = 0.0
         @JvmField var carouselForward = 2.0
         @JvmField var waitTime = 4.0
@@ -98,8 +97,8 @@ class AdvancedCarouselRed : LinearOpMode() {
 
     private fun leftAuto(): TrajectorySequence {
         val builder = robot.trajectorySequenceBuilder(startingPosition())
-            .setAccelConstraint(Robot.getAccelerationConstraint(AdvancedCarouselBlue.accel))
-            .setVelConstraint(Robot.getVelocityConstraint(AdvancedCarouselBlue.vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+            .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+            .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
             .setReversed(true)
             .liftLevel(deposit, Deposit.Level.LEVEL1)
         return theRest(builder)
@@ -107,8 +106,8 @@ class AdvancedCarouselRed : LinearOpMode() {
 
     private fun middleAuto(): TrajectorySequence {
         val builder = robot.trajectorySequenceBuilder(startingPosition())
-            .setAccelConstraint(Robot.getAccelerationConstraint(AdvancedCarouselBlue.accel))
-            .setVelConstraint(Robot.getVelocityConstraint(AdvancedCarouselBlue.vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+            .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+            .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
             .setReversed(true)
             .liftLevel(deposit, Deposit.Level.LEVEL2)
         return theRest(builder)
@@ -116,8 +115,8 @@ class AdvancedCarouselRed : LinearOpMode() {
 
     private fun rightAuto(): TrajectorySequence {
         val builder = robot.trajectorySequenceBuilder(startingPosition())
-            .setAccelConstraint(Robot.getAccelerationConstraint(AdvancedCarouselBlue.accel))
-            .setVelConstraint(Robot.getVelocityConstraint(AdvancedCarouselBlue.vel, Math.toRadians(200.0), Math.toRadians(200.0)))
+            .setAccelConstraint(Robot.getAccelerationConstraint(accel))
+            .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
             .setReversed(true)
             .liftLevel(deposit, Deposit.Level.LEVEL3)
         return theRest(builder)
@@ -127,12 +126,12 @@ class AdvancedCarouselRed : LinearOpMode() {
         return trajectorySequenceBuilder
             .waitSeconds(0.8)
             .splineTo(
-            allianceHub.center.polarAdd(
-                depositingDistance, Math.toRadians(
-                    depositingAngle
-                ).flip(blue)
-            ), allianceHub.center
-        )
+                allianceHub.center.polarAdd(
+                    depositingDistance, Math.toRadians(
+                        depositingAngle
+                    ).flip(blue)
+                ), allianceHub.center
+            )
             .setReversed(false)
             .softDump(deposit)
             .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
@@ -171,7 +170,6 @@ class AdvancedCarouselRed : LinearOpMode() {
             .turn(Math.toRadians(-170.0).flip(blue))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 intake.stepsis()
-
             }
             .waitSeconds(0.1)
             .setReversed(true)
