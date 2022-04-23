@@ -247,6 +247,6 @@ class DriverPractice : LinearOpMode() {
     }
 
     private fun setCarousel() {
-        carousel.setPower(gamepad2.right_stick_y.toDouble() * 0.5)
+        carousel.setPower(gamepad2.right_stick_y.toDouble() * 0.8)
     }
 }

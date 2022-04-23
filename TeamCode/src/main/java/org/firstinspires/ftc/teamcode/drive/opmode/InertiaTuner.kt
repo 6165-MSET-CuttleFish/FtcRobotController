@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader
 import kotlin.Throws
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit
 import org.firstinspires.ftc.teamcode.util.field.Context
@@ -17,6 +18,7 @@ import java.util.*
 
 @TeleOp
 @Config
+@Disabled
 class InertiaTuner : LinearOpMode() {
     companion object {
         @JvmField var angularVel = 100.0

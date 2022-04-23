@@ -44,13 +44,13 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 24.0
-        @JvmField var depositingDistance = 23.0
+        @JvmField var cyclingDistance = 25.0
+        @JvmField var depositingDistance = 24.0
         @JvmField var carouselAngle = 50.0
         @JvmField var carouselDistance = 25.0
         @JvmField var carouselAngleOffset = 40.0
         @JvmField var depositingAngle = -130.0
-        @JvmField var cyclingAngle = -160.0
+        @JvmField var cyclingAngle = -155.0
         @JvmField var vel = 35.0
         @JvmField var accel = 40.0
         @JvmField var carouselCoast = -52.0
