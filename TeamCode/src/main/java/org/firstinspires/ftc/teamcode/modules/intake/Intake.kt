@@ -18,7 +18,9 @@ import org.firstinspires.ftc.teamcode.util.controllers.MovingMedian
 import org.firstinspires.ftc.teamcode.util.field.Context
 import org.firstinspires.ftc.teamcode.util.field.Context.freight
 import org.firstinspires.ftc.teamcode.util.field.Context.opModeType
+import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
+import org.firstinspires.ftc.teamcode.util.field.Side
 import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.sin
@@ -175,6 +177,9 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 if (filteredDistance > transferTolerance && secondsSpentInState > minTime) {
                     Deposit.isLoaded = true
                 }
+                if (Deposit.isLoaded && opModeType == OpModeType.AUTO && side == Side.CAROUSEL) {
+                    flip.position = 0.5
+                }
                 if ((Deposit.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {
                     state = State.IN
                     power = 0.0
@@ -272,7 +277,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
     private var extension = outPosition
     fun stepbro(extension: Double) {
         this.extension = extension
-        if (!containsBlock && !Deposit.isLoaded) state = State.STEP_BRO
+        if (!containsBlock && !Deposit.isLoaded && state != State.TRANSFER) state = State.STEP_BRO
     }
 
     fun stepsis() {

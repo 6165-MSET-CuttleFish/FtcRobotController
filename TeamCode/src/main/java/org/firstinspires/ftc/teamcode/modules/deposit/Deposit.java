@@ -109,7 +109,8 @@ public class Deposit extends Module<Deposit.State> {
     public enum Distance {
         CLOSE,
         MEDIUM,
-        FAR
+        FAR,
+        CROSS,
     }
 
     private ControllableServos lock;
@@ -201,6 +202,10 @@ public class Deposit extends Module<Deposit.State> {
         return distance == Distance.CLOSE;
     }
 
+    private boolean crossDeposit() {
+        return distance == Distance.CROSS;
+    }
+
 
     /**
      * This function updates all necessary controls in a loop
@@ -241,8 +246,6 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case LOCKING:
-                double delta = 0.8 - inPosition;
-                if (opModeType == OpModeType.AUTO && side == Side.CAROUSEL) arm.setPosition(Range.clip(inPosition + delta * getSecondsSpentInState() / getState().timeOut, 0.8, inPosition));
                 lock();
                 if (getSecondsSpentInState() > getState().timeOut) {
                     setState(State.HOLDING);
@@ -283,7 +286,7 @@ public class Deposit extends Module<Deposit.State> {
                     setState(State.IN);
                 }
                 if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
-                    if (opModeType == OpModeType.AUTO || farDeposit() || closeDeposit()) allowLift = false;
+                    if (opModeType == OpModeType.AUTO || farDeposit() || closeDeposit() || crossDeposit()) allowLift = false;
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
                     }
@@ -356,7 +359,12 @@ public class Deposit extends Module<Deposit.State> {
     public void toggleCloseDeposit() {
         if (distance != Distance.CLOSE) distance = Distance.CLOSE;
         else distance = Distance.MEDIUM;
-        if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CLOSE;
+    }
+
+    public void toggleCrossDeposit() {
+        if (distance != Distance.CROSS) distance = Distance.CROSS;
+        else distance = Distance.MEDIUM;
+        if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CROSS;
     }
 
     public void setShouldCounterBalance(boolean counterBalance) {

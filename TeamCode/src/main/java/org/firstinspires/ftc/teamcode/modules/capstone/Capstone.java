@@ -79,7 +79,7 @@ public class Capstone extends Module<Capstone.State> {
             case AUTORETRACT:
                 tape.setPower(-1);
                 verticalTurret.setPosition(verticalPosDef);
-                if (getSecondsSpentInState() > 3.5) {
+                if (getSecondsSpentInState() > 2.5) {
                     horizontalTurret.setPosition(horizontalPosDef);
                     tape.setPower(0.0);
                 }

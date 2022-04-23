@@ -28,6 +28,7 @@ class DriverPractice : LinearOpMode() {
         @JvmField var multiple = 1.0
         @JvmField var currentLimit = 10
         @JvmField var ninjaSlowDown = 0.7
+        @JvmField var capSlowDown = 0.5
     }
 
     lateinit var intake: Intake
@@ -144,7 +145,7 @@ class DriverPractice : LinearOpMode() {
                 gamepad1.rumble(1.0, 1.0, 500)
             }
             if (closeDeposit.wasJustPressed()) {
-                deposit.toggleCloseDeposit()
+                deposit.toggleCrossDeposit()
                 gamepad1.rumble(1.0, 1.0, 500)
             }
             if (Deposit.isLoaded) drivePower *= multiple
@@ -186,11 +187,19 @@ class DriverPractice : LinearOpMode() {
             robot.setWeightedDrivePower(drivePower)
         }
     }
+    private var toggleCapSlow = false
+    private var rightBumperCheck = false
 
     private fun setCapstone() {
+        if (gamepad1.right_bumper && !rightBumperCheck) {
+            toggleCapSlow = !toggleCapSlow
+            rightBumperCheck = true
+        }
+        if (!gamepad1.right_bumper) rightBumperCheck = false
+        val mult = if (toggleCapSlow) capSlowDown else 1.0
         capstone.setTape((gamepad1.right_trigger - gamepad1.left_trigger).toDouble())
-        capstone.setVerticalTurret(gamepad1.left_stick_y.toDouble())
-        capstone.setHorizontalTurret(gamepad1.right_stick_x.toDouble())
+        capstone.setVerticalTurret(gamepad1.left_stick_y.toDouble() * mult)
+        capstone.setHorizontalTurret(gamepad1.right_stick_x.toDouble() * mult)
         if (capHorizontalInc.wasJustPressed()) {
             capstone.incrementHorizontal(1.0)
         } else if (capHorizontalDec.wasJustPressed()) {
@@ -247,6 +256,6 @@ class DriverPractice : LinearOpMode() {
     }
 
     private fun setCarousel() {
-        carousel.setPower(gamepad2.right_stick_y.toDouble() * 0.8)
+        carousel.setPower(gamepad2.right_stick_y.toDouble())
     }
 }
