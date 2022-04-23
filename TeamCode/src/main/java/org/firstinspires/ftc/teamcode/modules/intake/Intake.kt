@@ -49,7 +49,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.052
+        var blueTolerance = 0.03
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField
@@ -171,7 +171,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
                 power = -1.0
                 containsBlock = false
                 dontFlipOut = false
-                if (filteredDistance > transferTolerance && secondsSpentInState > 0.3) {
+                val minTime = if (freight == Freight.BALL) 0.4 else 0.3
+                if (filteredDistance > transferTolerance && secondsSpentInState > minTime) {
                     Deposit.isLoaded = true
                 }
                 if ((Deposit.isLoaded && secondsSpentInState > (state.timeOut?.div(div) ?: 0.0)) || secondsSpentInState > (state.timeOut ?: 0.0)) {

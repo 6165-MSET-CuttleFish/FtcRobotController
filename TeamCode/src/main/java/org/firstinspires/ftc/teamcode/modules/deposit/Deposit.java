@@ -23,9 +23,11 @@ import org.firstinspires.ftc.teamcode.util.controllers.BPIDFController;
 import org.firstinspires.ftc.teamcode.util.field.Context;
 import org.firstinspires.ftc.teamcode.util.field.Freight;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
+import org.firstinspires.ftc.teamcode.util.field.Side;
 
 import static org.firstinspires.ftc.teamcode.util.field.Context.freight;
 import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
+import static org.firstinspires.ftc.teamcode.util.field.Context.side;
 
 /**
  * Mechanism containing the freight and that which rotates outwards to deposit the freight using servos
@@ -34,8 +36,8 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.opModeType;
 @Config
 public class Deposit extends Module<Deposit.State> {
     public static double
-            outPosition3 = 0.39,
-            outPosition2 = 0.25,
+            outPosition3 = 0.37,
+            outPosition2 = 0.19,
             outPosition1 = 0.0,
             outPositionShared = 0.15;
     private double offsetOutPosition;
@@ -49,14 +51,15 @@ public class Deposit extends Module<Deposit.State> {
             extendOut2 = 0.07,
             extendOut1 = 0.0,
             extendOutShared = 0.32,
+            extendOutSharedFar = 0.2,
             extendTeleOffset = -0.03;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
             linkageOffsetIncrement = 0.1;
-    public static double holdingPosition = 0.8;
+    public static double holdingPosition = 0.82;
     public static double
-            inPosition = 1.0,
+            inPosition = 0.97,
             higherInPosition = 0.9;
     public static double
             lockPosition = 0.68,
@@ -99,7 +102,7 @@ public class Deposit extends Module<Deposit.State> {
     public enum Level {
         LEVEL3,
         LEVEL2,
-        SHARED_CLOSE,
+        SHARED,
         LEVEL1,
     }
 
@@ -238,13 +241,16 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 break;
             case LOCKING:
+                double delta = 0.8 - inPosition;
+                if (opModeType == OpModeType.AUTO && side == Side.CAROUSEL) arm.setPosition(Range.clip(inPosition + delta * getSecondsSpentInState() / getState().timeOut, 0.8, inPosition));
                 lock();
                 if (getSecondsSpentInState() > getState().timeOut) {
                     setState(State.HOLDING);
                 }
                 break;
             case HOLDING:
-                pidController.setTargetPosition(0.0);
+                if (farDeposit()) pidController.setTargetPosition(getLevelHeight(getLevel()));
+                else pidController.setTargetPosition(0.0);
                 holdingPosition();
                 if (allowLift) {
                     lastOutPosition = arm.getRealPosition();
@@ -253,7 +259,7 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case OUT:
                 pidController.setTargetPosition(getLevelHeight(getLevel()));
-                if (getLevel() == Level.SHARED_CLOSE || !shouldCounterBalance || farDeposit()) {
+                if (getLevel() == Level.SHARED || !shouldCounterBalance || farDeposit()) {
                     intake.retractIntake();
                 } else {
                     intake.counterBalance();
@@ -371,7 +377,21 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public void incrementArmPosition(double pwr) {
-        offsetOutPosition = offsetOutPosition + pwr * outOffsetIncrement;
+        switch (getLevel()) {
+            case LEVEL3:
+                outPosition3 += pwr * outOffsetIncrement;
+                break;
+            case LEVEL2:
+                outPosition2 += pwr * outOffsetIncrement;
+                break;
+            case LEVEL1:
+                outPosition1 += pwr * outOffsetIncrement;
+                break;
+            case SHARED:
+                outPositionShared += pwr * outOffsetIncrement;
+                break;
+        }
+        // offsetOutPosition = offsetOutPosition + pwr * outOffsetIncrement;
     }
 
     public void moveLinkagePosition(double pwr) {
@@ -485,7 +505,7 @@ public class Deposit extends Module<Deposit.State> {
             case LEVEL1:
                 outPos = outPosition1;
                 break;
-            case SHARED_CLOSE:
+            case SHARED:
                 outPos = outPositionShared;
                 break;
         }
@@ -505,8 +525,8 @@ public class Deposit extends Module<Deposit.State> {
             case LEVEL1:
                 extendPos = extendOut1;
                 break;
-            case SHARED_CLOSE:
-                extendPos = extendOutShared;
+            case SHARED:
+                extendPos = closeDeposit() ? extendOutSharedFar : extendOutShared;
                 break;
         }
         return farDeposit() ? 0.0 : extendPos + offsetExtendPosition;

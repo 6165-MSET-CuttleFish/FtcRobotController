@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.auto.*
 import org.firstinspires.ftc.teamcode.drive.FrequentPositions.allianceHub
@@ -45,22 +44,25 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     companion object {
-        @JvmField var cyclingDistance = 22.0
+        @JvmField var cyclingDistance = 24.0
+        @JvmField var depositingDistance = 23.0
         @JvmField var carouselAngle = 50.0
         @JvmField var carouselDistance = 25.0
         @JvmField var carouselAngleOffset = 40.0
-        @JvmField var cyclingAngle = -130.0
+        @JvmField var depositingAngle = -130.0
+        @JvmField var cyclingAngle = -160.0
         @JvmField var vel = 35.0
         @JvmField var accel = 40.0
         @JvmField var carouselCoast = -52.0
-        @JvmField var forwardDist = 13.0
-        @JvmField var carouselPower = 0.2
+        @JvmField var forwardDist = 10.0
+        @JvmField var carouselPower = 0.15
         @JvmField var carouselTurn = 0.0
-        @JvmField var carouselForward = 3.0
+        @JvmField var carouselForward = 2.0
         @JvmField var waitTime = 4.0
         @JvmField var carouselMovingSpeed = 15.0
         @JvmField var parkY = -40.0
         @JvmField var angleOffset = 10.0
+        @JvmField var backDist = 1.0
     }
 
     @Throws(InterruptedException::class)
@@ -121,19 +123,18 @@ class AdvancedCarouselBlue : LinearOpMode() {
     }
 
     private fun theRest(trajectorySequenceBuilder: TrajectorySequenceBuilder<*>): TrajectorySequence {
-        return trajectorySequenceBuilder.splineTo(
+        return trajectorySequenceBuilder
+            .waitSeconds(0.8)
+            .splineTo(
             allianceHub.center.polarAdd(
-                cyclingDistance, Math.toRadians(
-                    cyclingAngle
+                depositingDistance, Math.toRadians(
+                    depositingAngle
                 ).flip(blue)
             ), allianceHub.center
         )
             .setReversed(false)
             .softDump(deposit)
             .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
-            .UNSTABLE_addDisplacementMarkerOffset(1.0) {
-                carousel.setPower(carouselPower)
-            }
             .splineTo(Vector2d(-35.0, carouselCoast).flip(blue), Math.PI)
             .increaseGains(carouselMovingSpeed)
             .splineTo(
@@ -143,6 +144,9 @@ class AdvancedCarouselBlue : LinearOpMode() {
                 ), carouselVec.center,
                 Pose2d(0.0, 0.0, Math.toRadians(carouselAngleOffset))
             )
+            .performAction {
+                carousel.setPower(carouselPower)
+            }
             .setAccelConstraint(Robot.getAccelerationConstraint(accel))
             .setVelConstraint(Robot.getVelocityConstraint(vel, Math.toRadians(200.0), Math.toRadians(200.0)))
             .waitSeconds(waitTime, DriveSignal(Pose2d(carouselForward, 0.0, Math.toRadians(-carouselTurn))))
@@ -162,14 +166,14 @@ class AdvancedCarouselBlue : LinearOpMode() {
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 intake.stepbro(0.35)
             }
-            .setTurnConstraint(Math.toRadians(120.0), Math.toRadians(150.0))
+            .setTurnConstraint(Math.toRadians(100.0), Math.toRadians(150.0))
             .turn(Math.toRadians(90.0).flip(blue))
-            .turn(Math.toRadians(-150.0).flip(blue))
+            .turn(Math.toRadians(-170.0).flip(blue))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 intake.stepbro(0.45)
             }
-            .turn(Math.toRadians(150.0).flip(blue))
-            .turn(Math.toRadians(-150.0).flip(blue))
+            .turn(Math.toRadians(170.0).flip(blue))
+            .turn(Math.toRadians(-170.0).flip(blue))
             .UNSTABLE_addTemporalMarkerOffset(0.0) {
                 intake.stepsis()
             }
@@ -196,6 +200,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
             .waitWhile(deposit::isDoingWork)
             .setReversed(false)
             .splineTo(Vector2d(-60.0, parkY).flip(blue), Math.toRadians(180.0).flip(blue))
+            .back(backDist)
             .turn(Math.PI.flip(blue) / 2)
             .back(forwardDist)
             .build()

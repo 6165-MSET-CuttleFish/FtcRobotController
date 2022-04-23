@@ -211,14 +211,14 @@ class DriverPractice : LinearOpMode() {
             if (levelIncrement.wasJustPressed()) {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.LEVEL3
-                    Deposit.Level.SHARED_CLOSE -> defaultDepositState = Deposit.Level.LEVEL2
+                    Deposit.Level.SHARED -> defaultDepositState = Deposit.Level.LEVEL2
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
             } else if (levelDecrement.wasJustPressed()) {
                 when (defaultDepositState) {
                     Deposit.Level.LEVEL3 -> defaultDepositState = Deposit.Level.LEVEL2
-                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.SHARED_CLOSE
+                    Deposit.Level.LEVEL2 -> defaultDepositState = Deposit.Level.SHARED
                     else -> {}
                 }
                 deposit.setLevel(defaultDepositState)
