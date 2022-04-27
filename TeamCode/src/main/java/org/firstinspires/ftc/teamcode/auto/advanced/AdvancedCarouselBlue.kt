@@ -56,7 +56,7 @@ class AdvancedCarouselBlue : LinearOpMode() {
         @JvmField var carouselCoast = -50.0
         @JvmField var forwardDist = 10.0
         @JvmField var carouselPower = 0.4
-        @JvmField var carouselPower2 = 0.8
+        @JvmField var carouselPower2 = 1.0
         @JvmField var carouselTurn = 0.0
         @JvmField var carouselForward = 2.0
         @JvmField var waitTime = 1.5

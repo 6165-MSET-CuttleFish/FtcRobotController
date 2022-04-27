@@ -350,6 +350,7 @@ public class Deposit extends Module<Deposit.State> {
     public void toggleFarDeposit() {
         if (distance != Distance.FAR) distance = Distance.FAR;
         else distance = Distance.MEDIUM;
+        intake.setDontFlipOut(farDeposit());
     }
 
     public void toggleMediumDeposit() {
@@ -365,6 +366,7 @@ public class Deposit extends Module<Deposit.State> {
         if (distance != Distance.CROSS) distance = Distance.CROSS;
         else distance = Distance.MEDIUM;
         if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CROSS;
+        intake.setDontFlipOut(crossDeposit());
     }
 
     public void setShouldCounterBalance(boolean counterBalance) {
