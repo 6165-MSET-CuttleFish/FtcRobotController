@@ -172,7 +172,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             State.TRANSFER -> {
                 power = -1.0
                 containsBlock = false
-                dontFlipOut = false
+                // dontFlipOut = false
                 val minTime = if (freight == Freight.BALL) 0.4 else 0.3
                 if (filteredDistance > transferTolerance && secondsSpentInState > minTime) {
                     Deposit.isLoaded = true

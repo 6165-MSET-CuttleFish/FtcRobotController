@@ -108,6 +108,7 @@ public class Deposit extends Module<Deposit.State> {
 
     public enum Distance {
         CLOSE,
+        MEDIUM,
         FAR,
         CROSS,
     }
@@ -188,7 +189,6 @@ public class Deposit extends Module<Deposit.State> {
         }
         setActuators(lock, slides);
     }
-    private double lastOutPosition;
     public static double flipOutTime = 0.4;
     private int i = 0;
     private boolean toggle = false;
@@ -203,6 +203,10 @@ public class Deposit extends Module<Deposit.State> {
 
     private boolean crossDeposit() {
         return distance == Distance.CROSS;
+    }
+
+    private boolean mediumDeposit() {
+        return distance == Distance.MEDIUM;
     }
 
 
@@ -255,8 +259,10 @@ public class Deposit extends Module<Deposit.State> {
                 else pidController.setTargetPosition(0.0);
                 holdingPosition();
                 if (allowLift) {
-                    lastOutPosition = arm.getRealPosition();
                     setState(State.OUT);
+                }
+                if (!Deposit.isLoaded) {
+                    setState(State.IN);
                 }
                 break;
             case OUT:
@@ -277,7 +283,7 @@ public class Deposit extends Module<Deposit.State> {
             case SOFT_DUMP:
                 if (getState() == State.SOFT_DUMP) {
                     double diff = kickPosition - lockPosition;
-                    if (getLevel() == Level.SHARED) {
+                    if (getLevel() == Level.SHARED && !crossDeposit()) {
                         diff = 0 - lockPosition;
                         lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, 0.0, lockPosition));
                     } else {
@@ -319,6 +325,10 @@ public class Deposit extends Module<Deposit.State> {
         double power = pidController.update(ticksToInches(slides.getCurrentPosition()));
         if (getState() != State.RESETTING_ENCODER) {
             slides.setPower(power);
+        }
+        if (intake.getState() == Intake.State.OUT) {
+            Deposit.isLoaded = false;
+            setState(State.IN);
         }
         // for dashboard
         if (kV != lastKv || kA != lastKa || kStatic != lastKStatic || MOTOR_PID.kP != lastKp || MOTOR_PID.kI != lastKi || MOTOR_PID.kD != lastKd) {
@@ -365,6 +375,7 @@ public class Deposit extends Module<Deposit.State> {
 
     public void toggleCloseDeposit() {
         distance = Distance.CLOSE;
+        intake.setDontFlipOut(false);
     }
 
     public void toggleCrossDeposit() {
@@ -372,6 +383,13 @@ public class Deposit extends Module<Deposit.State> {
         else distance = Distance.CLOSE;
         if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CROSS;
         intake.setDontFlipOut(crossDeposit());
+    }
+
+    public void toggleMediumDeposit() {
+        if (distance != Distance.MEDIUM) distance = Distance.MEDIUM;
+        else distance = Distance.CLOSE;
+        if (opModeType == OpModeType.TELE) allowLift = distance == Distance.MEDIUM;
+        intake.setDontFlipOut(false);
     }
 
     public void setShouldCounterBalance(boolean counterBalance) {
@@ -478,7 +496,7 @@ public class Deposit extends Module<Deposit.State> {
         return weightSlides + weightExtension;
     }
 
-    public static double LEVEL3 = 11;
+    public static double LEVEL3 = 11.5;
     public static double LEVEL2 = 0;
     public static double LEVEL1 = 0;
     public static double allowableDepositError = 8.0;

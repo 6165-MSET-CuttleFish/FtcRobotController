@@ -15,10 +15,7 @@ import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel;
 import org.firstinspires.ftc.teamcode.modules.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.modules.intake.Intake;
-import org.firstinspires.ftc.teamcode.util.field.Balance;
 import org.firstinspires.ftc.teamcode.util.field.OpModeType;
-
-import static org.firstinspires.ftc.teamcode.util.field.Context.balance;
 
 @TeleOp
 public class SingleDriverPractice extends LinearOpMode {
@@ -32,7 +29,7 @@ public class SingleDriverPractice extends LinearOpMode {
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
     ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, softDump;
-    ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit;
+    ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit, mediumDeposit;
 
     Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
     @Override
@@ -54,7 +51,8 @@ public class SingleDriverPractice extends LinearOpMode {
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
                 closeDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.B),
                 farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
-                crossDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X)
+                crossDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X),
+                mediumDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.A)
         };
         waitForStart();
         deposit.resetEncoder();
@@ -72,6 +70,7 @@ public class SingleDriverPractice extends LinearOpMode {
                 gamepad1.rumble(500);
                 gamepad2.rumble(500);
             }
+            if (deposit.getState() == Deposit.State.OUT) drivePower = drivePower.times(0.5);
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             robot.setWeightedDrivePower(drivePower);
             if (deposit.getState() == Deposit.State.IN || deposit.getState() == Deposit.State.CREATE_CLEARANCE) setIntake();
@@ -90,6 +89,9 @@ public class SingleDriverPractice extends LinearOpMode {
             if (crossDeposit.wasJustPressed()) {
                 deposit.toggleCrossDeposit();
                 gamepad1.rumble(1.0, 1.0, 500);
+            }
+            if (mediumDeposit.wasJustPressed()) {
+                deposit.toggleMediumDeposit();
             }
         }
     }

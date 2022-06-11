@@ -59,7 +59,8 @@ public class TrajectorySequenceRunner<T> {
     private final PIDFController turnController;
 
     private final NanoClock clock;
-    private double offset, segmentOffset;
+    private double offset, // offset (in seconds) for sequence markers
+            segmentOffset; // offset (in seconds) for the next segment
     private final ElapsedTime time = new ElapsedTime();
     private T state;
 
