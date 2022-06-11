@@ -48,9 +48,9 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             extendIn = 0.32,
             extendOut3 = 0.16,
-            extendOut2 = 0.07,
+            extendOut2 = 0.13,
             extendOut1 = 0.0,
-            extendOutShared = 0.32,
+            extendOutShared = 0.24,
             extendOutSharedFar = 0.2,
             extendTeleOffset = -0.03;
     private double offsetExtendPosition;
@@ -63,7 +63,7 @@ public class Deposit extends Module<Deposit.State> {
             higherInPosition = 0.9;
     public static double
             lockPosition = 0.68,
-            unlockPosition = 0.55,
+            unlockPosition = 0.52,
             kickPosition = 0.95;
     public static double
             armServoPositionPerSecond = 5.0,
@@ -108,7 +108,6 @@ public class Deposit extends Module<Deposit.State> {
 
     public enum Distance {
         CLOSE,
-        MEDIUM,
         FAR,
         CROSS,
     }
@@ -134,7 +133,7 @@ public class Deposit extends Module<Deposit.State> {
     public static double TICKS_PER_INCH = 61.74;
     boolean intakeCleared;
     private Level defaultLevel = Level.LEVEL3;
-    private Distance distance = Distance.MEDIUM;
+    private Distance distance = Distance.CLOSE;
 
 
     /**
@@ -276,9 +275,19 @@ public class Deposit extends Module<Deposit.State> {
                 break;
             case DUMPING:
             case SOFT_DUMP:
-                double diff = kickPosition - lockPosition;
-                if (getState() == State.SOFT_DUMP) lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
-                else lock.setPosition(kickPosition);
+                if (getState() == State.SOFT_DUMP) {
+                    double diff = kickPosition - lockPosition;
+                    if (getLevel() == Level.SHARED) {
+                        diff = 0 - lockPosition;
+                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, 0.0, lockPosition));
+                    } else {
+                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                    }
+                }
+                else {
+                    if (getLevel() == Level.SHARED) lock.setPosition(0.0);
+                    else lock.setPosition(kickPosition);
+                }
                 if (!allowLift) {
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
@@ -333,6 +342,7 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("IsFarDeposit", farDeposit());
         }
         Context.packet.put("Freight", freight);
+        Context.packet.put("Level", defaultLevel);
     }
 
     public void liftUp() {
@@ -349,22 +359,17 @@ public class Deposit extends Module<Deposit.State> {
 
     public void toggleFarDeposit() {
         if (distance != Distance.FAR) distance = Distance.FAR;
-        else distance = Distance.MEDIUM;
+        else distance = Distance.CLOSE;
         intake.setDontFlipOut(farDeposit());
     }
 
-    public void toggleMediumDeposit() {
-        distance = Distance.MEDIUM;
-    }
-
     public void toggleCloseDeposit() {
-        if (distance != Distance.CLOSE) distance = Distance.CLOSE;
-        else distance = Distance.MEDIUM;
+        distance = Distance.CLOSE;
     }
 
     public void toggleCrossDeposit() {
         if (distance != Distance.CROSS) distance = Distance.CROSS;
-        else distance = Distance.MEDIUM;
+        else distance = Distance.CLOSE;
         if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CROSS;
         intake.setDontFlipOut(crossDeposit());
     }
@@ -480,8 +485,9 @@ public class Deposit extends Module<Deposit.State> {
     public static double angle = Math.toRadians(30);
 
     private double getLevelHeight(Level state) {
+        if (closeDeposit()) return 0;
         switch (state) {
-            case LEVEL3: return closeDeposit() ? 0.0 : LEVEL3;
+            case LEVEL3: return LEVEL3;
             case LEVEL2: return LEVEL2;
             case LEVEL1: return LEVEL1;
         }

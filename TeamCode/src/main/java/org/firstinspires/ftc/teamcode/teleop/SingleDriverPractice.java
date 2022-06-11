@@ -32,7 +32,7 @@ public class SingleDriverPractice extends LinearOpMode {
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
     ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, softDump;
-    ToggleButtonReader carouselButton;
+    ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit;
 
     Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
     @Override
@@ -52,8 +52,12 @@ public class SingleDriverPractice extends LinearOpMode {
                 liftButton = new ButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 carouselButton = new ToggleButtonReader(primary, GamepadKeys.Button.LEFT_BUMPER),
                 dumpButton = new ButtonReader(primary, GamepadKeys.Button.RIGHT_BUMPER),
+                closeDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.B),
+                farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
+                crossDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X)
         };
         waitForStart();
+        deposit.resetEncoder();
         while (opModeIsActive()) {
             robot.update();
             for (KeyReader reader : keyReaders) {
@@ -75,6 +79,18 @@ public class SingleDriverPractice extends LinearOpMode {
             if (liftButton.wasJustPressed()) {
                 deposit.toggleLift();
             }
+            if (farDeposit.wasJustPressed()) {
+                deposit.toggleFarDeposit();
+                gamepad1.rumble(1.0, 1.0, 500);
+            }
+            if (closeDeposit.wasJustPressed()) {
+                deposit.toggleCloseDeposit();
+                gamepad1.rumble(1.0, 1.0, 500);
+            }
+            if (crossDeposit.wasJustPressed()) {
+                deposit.toggleCrossDeposit();
+                gamepad1.rumble(1.0, 1.0, 500);
+            }
         }
     }
     void setIntake() {
@@ -88,7 +104,7 @@ public class SingleDriverPractice extends LinearOpMode {
                     case LEVEL2:
                         defaultDepositState = Deposit.Level.LEVEL3;
                         break;
-                    case LEVEL1:
+                    case SHARED:
                         defaultDepositState = Deposit.Level.LEVEL2;
                         break;
                 }
@@ -99,7 +115,7 @@ public class SingleDriverPractice extends LinearOpMode {
                         defaultDepositState = Deposit.Level.LEVEL2;
                         break;
                     case LEVEL2:
-                        defaultDepositState = Deposit.Level.LEVEL1;
+                        defaultDepositState = Deposit.Level.SHARED;
                         break;
                 }
                 deposit.setLevel(defaultDepositState);
