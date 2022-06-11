@@ -57,15 +57,15 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var smoothingCoefficientAlpha = 0.8
         @JvmField
-        var div = 2.0
+        var div = 1.0
         @JvmField
         var distanceTolerance = 9.0
         @JvmField
-        var transferTolerance = 11.0
+        var transferTolerance = 6.0
     }
     enum class State(override val timeOut: Double? = null) : StateBuilder {
         OUT,
-        TRANSFER(0.8),
+        TRANSFER(1.0),
         IN,
         CREATE_CLEARANCE,
         COUNTER_BALANCE,

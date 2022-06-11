@@ -92,6 +92,7 @@ public class SingleDriverPractice extends LinearOpMode {
             }
             if (mediumDeposit.wasJustPressed()) {
                 deposit.toggleMediumDeposit();
+                gamepad1.rumble(1.0, 1.0, 500);
             }
         }
     }

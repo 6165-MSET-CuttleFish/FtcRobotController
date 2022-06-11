@@ -291,7 +291,7 @@ public class Deposit extends Module<Deposit.State> {
                     }
                 }
                 else {
-                    if (getLevel() == Level.SHARED) lock.setPosition(0.0);
+                    if (getLevel() == Level.SHARED && !crossDeposit()) lock.setPosition(0.0);
                     else lock.setPosition(kickPosition);
                 }
                 if (!allowLift) {
@@ -560,7 +560,7 @@ public class Deposit extends Module<Deposit.State> {
                 extendPos = extendOut1;
                 break;
             case SHARED:
-                extendPos = closeDeposit() ? extendOutSharedFar : extendOutShared;
+                extendPos = crossDeposit() ? extendOutSharedFar : extendOutShared;
                 break;
         }
         return farDeposit() ? 0.0 : extendPos + offsetExtendPosition;
