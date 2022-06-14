@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class MB1242 extends I2cDeviceSynchDevice<I2cDeviceSynch> implements DistanceSensor {
     private long lastRun = 0;
 
-    private long runDelayMs = 40;
+    private long runDelayMs = 100;
 
     private short lastReading = 0;
 
