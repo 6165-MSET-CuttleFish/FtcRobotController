@@ -28,10 +28,12 @@ public class SingleDriverPractice extends LinearOpMode {
     GamepadEx secondary;
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
-    ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, softDump;
+    ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, capRetract, capVerticalInc, capVerticalDec, capHorizontalInc, capHorizontalDec;
     ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit, mediumDeposit;
 
     Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
+    DriverPractice.Mode mode = DriverPractice.Mode.DRIVING;
+    boolean toggleMode;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
@@ -52,7 +54,12 @@ public class SingleDriverPractice extends LinearOpMode {
                 closeDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.B),
                 farDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.Y),
                 crossDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.X),
-                mediumDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.A)
+                mediumDeposit = new ToggleButtonReader(primary, GamepadKeys.Button.A),
+                capRetract = new ButtonReader(primary, GamepadKeys.Button.X),
+                capHorizontalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_LEFT),
+                capHorizontalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_RIGHT),
+                capVerticalDec = new ButtonReader(primary, GamepadKeys.Button.DPAD_DOWN),
+                capVerticalInc = new ButtonReader(primary, GamepadKeys.Button.DPAD_UP),
         };
         waitForStart();
         deposit.resetEncoder();
@@ -73,8 +80,24 @@ public class SingleDriverPractice extends LinearOpMode {
             if (deposit.getState() == Deposit.State.OUT) drivePower = drivePower.times(0.5);
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
             robot.setWeightedDrivePower(drivePower);
-            if (deposit.getState() == Deposit.State.IN || deposit.getState() == Deposit.State.CREATE_CLEARANCE) setIntake();
-            setDeposit();
+            if (capRetract.wasJustPressed()) {
+                if (capstone.getState() == Capstone.State.ACTIVE) {
+                    capstone.retract();
+                } else {
+                    capstone.idle();
+                }
+            }
+            if (mode == DriverPractice.Mode.ENDGAME) {
+                drivePower = new Pose2d(
+                        (-gamepad2.left_stick_y),
+                        0.0,
+                        0.0
+                ).div(8.0);
+                setCapstone();
+            } else {
+                setDeposit();
+                if (deposit.getState() == Deposit.State.IN || deposit.getState() == Deposit.State.CREATE_CLEARANCE || deposit.getState() == Deposit.State.HOLDING) setIntake();
+            }
             if (liftButton.wasJustPressed()) {
                 deposit.toggleLift();
             }
@@ -94,8 +117,49 @@ public class SingleDriverPractice extends LinearOpMode {
                 deposit.toggleMediumDeposit();
                 gamepad1.rumble(1.0, 1.0, 500);
             }
+            if (gamepad1.touchpad) {
+                if (!toggleMode) {
+                    if (mode == DriverPractice.Mode.DRIVING) {
+                        capstone.setTape(0.0);
+                        capstone.active();
+                        mode = DriverPractice.Mode.ENDGAME;
+                    } else {
+                        capstone.retract();
+                        mode = DriverPractice.Mode.DRIVING;
+                    }
+                }
+                toggleMode = true;
+            } else {
+                toggleMode = false;
+            }
         }
     }
+
+    boolean rightBumperCheck;
+    boolean toggleCapSlow;
+
+    private void setCapstone() {
+        if (gamepad1.right_bumper && !rightBumperCheck) {
+            toggleCapSlow = !toggleCapSlow;
+            rightBumperCheck = true;
+        }
+        if (!gamepad1.right_bumper) rightBumperCheck = false;
+        double mult = toggleCapSlow ? 0.5 : 1.0;
+        capstone.setTape(gamepad1.right_trigger - gamepad1.left_trigger);
+        capstone.setVerticalTurret(gamepad1.left_stick_y * mult);
+        capstone.setHorizontalTurret(gamepad1.right_stick_x * mult);
+        if (capHorizontalInc.wasJustPressed()) {
+            capstone.incrementHorizontal(1.0);
+        } else if (capHorizontalDec.wasJustPressed()) {
+            capstone.incrementHorizontal(-1.0);
+        }
+        if (capVerticalInc.wasJustPressed()) {
+            capstone.incrementVertical(1.0);
+        } else if (capVerticalDec.wasJustPressed()) {
+            capstone.incrementVertical(-1.0);
+        }
+    }
+
     void setIntake() {
         intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
     }
@@ -131,9 +195,9 @@ public class SingleDriverPractice extends LinearOpMode {
             }
         }
         if (dumpButton.wasJustPressed()) {
-            deposit.dump();
-        } else if (gamepad1.right_trigger > 0.5) {
             deposit.softDump();
+        } else if (gamepad1.right_trigger > 0.5) {
+            deposit.dump();
         }
     }
 }

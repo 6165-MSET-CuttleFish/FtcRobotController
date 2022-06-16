@@ -37,9 +37,11 @@ import static org.firstinspires.ftc.teamcode.util.field.Context.side;
 public class Deposit extends Module<Deposit.State> {
     public static double
             outPosition3 = 0.37,
+            outPosition3WithLift = 0.28,
             outPosition2 = 0.19,
             outPosition1 = 0.0,
-            outPositionShared = 0.15;
+            outPositionShared = 0.15,
+            outPositionSharedFar = 0.1;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
@@ -51,7 +53,7 @@ public class Deposit extends Module<Deposit.State> {
             extendOut2 = 0.13,
             extendOut1 = 0.0,
             extendOutShared = 0.24,
-            extendOutSharedFar = 0.2,
+            extendOutSharedFar = 0.15,
             extendTeleOffset = -0.03;
     private double offsetExtendPosition;
     public static double
@@ -64,13 +66,14 @@ public class Deposit extends Module<Deposit.State> {
     public static double
             lockPosition = 0.68,
             unlockPosition = 0.52,
-            kickPosition = 0.95;
+            kickPosition = 0.95,
+            softKickPosition = 0.9;
     public static double
             armServoPositionPerSecond = 5.0,
             extensionServoPositionPerSecond = 0.8;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.2;
+    public static double dumpTimeOut = 0.2, softDumpTimeOut = 0.5;
     private boolean allowLift = false;
     @Override
     public boolean isTransitioningState() {
@@ -282,12 +285,12 @@ public class Deposit extends Module<Deposit.State> {
             case DUMPING:
             case SOFT_DUMP:
                 if (getState() == State.SOFT_DUMP) {
-                    double diff = kickPosition - lockPosition;
+                    double diff = softKickPosition - lockPosition;
                     if (getLevel() == Level.SHARED && !crossDeposit()) {
                         diff = 0 - lockPosition;
-                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, 0.0, lockPosition));
+                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / softDumpTimeOut, 0.0, lockPosition));
                     } else {
-                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / dumpTimeOut, lockPosition, kickPosition));
+                        lock.setPosition(Range.clip(lockPosition + diff * getSecondsSpentInState() / softDumpTimeOut, lockPosition, kickPosition));
                     }
                 }
                 else {
@@ -300,7 +303,8 @@ public class Deposit extends Module<Deposit.State> {
                     }
                     setState(State.IN);
                 }
-                if (getSecondsSpentInState() > dumpTimeOut + getState().timeOut) {
+                if (getState() == State.DUMPING && getSecondsSpentInState() > dumpTimeOut + getState().timeOut ||
+                getState() == State.SOFT_DUMP && getSecondsSpentInState() > softDumpTimeOut + getState().timeOut) {
                     if (opModeType == OpModeType.AUTO || farDeposit() || closeDeposit() || crossDeposit()) allowLift = false;
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
@@ -351,8 +355,8 @@ public class Deposit extends Module<Deposit.State> {
             Context.packet.put("Extension Real Displacement", extension.getServos().getRealPosition());
             Context.packet.put("IsFarDeposit", farDeposit());
         }
-        Context.packet.put("Freight", freight);
-        Context.packet.put("Level", defaultLevel);
+        //Context.packet.put("Freight", freight);
+        // Context.packet.put("Level", defaultLevel);
     }
 
     public void liftUp() {
@@ -412,7 +416,11 @@ public class Deposit extends Module<Deposit.State> {
     public void incrementArmPosition(double pwr) {
         switch (getLevel()) {
             case LEVEL3:
-                outPosition3 += pwr * outOffsetIncrement;
+                if (closeDeposit() || crossDeposit()) {
+                    outPosition3 += pwr * outOffsetIncrement;
+                } else {
+                    outPosition3WithLift += pwr * outOffsetIncrement;
+                }
                 break;
             case LEVEL2:
                 outPosition2 += pwr * outOffsetIncrement;
@@ -421,7 +429,11 @@ public class Deposit extends Module<Deposit.State> {
                 outPosition1 += pwr * outOffsetIncrement;
                 break;
             case SHARED:
-                outPositionShared += pwr * outOffsetIncrement;
+                if (crossDeposit()) {
+                    outPositionSharedFar += pwr * outOffsetIncrement;
+                } else {
+                    outPositionShared += pwr * outOffsetIncrement;
+                }
                 break;
         }
         // offsetOutPosition = offsetOutPosition + pwr * outOffsetIncrement;
@@ -531,7 +543,7 @@ public class Deposit extends Module<Deposit.State> {
         double outPos = outPosition3;
         switch (level) {
             case LEVEL3:
-                outPos = outPosition3;
+                outPos = closeDeposit() || crossDeposit() ? outPosition3 : outPosition3WithLift;
                 break;
             case LEVEL2:
                 outPos = outPosition2;
@@ -540,7 +552,7 @@ public class Deposit extends Module<Deposit.State> {
                 outPos = outPosition1;
                 break;
             case SHARED:
-                outPos = outPositionShared;
+                outPos = crossDeposit() ? outPositionSharedFar : outPositionShared;
                 break;
         }
         if (closeDeposit()) outPos += 0.02;

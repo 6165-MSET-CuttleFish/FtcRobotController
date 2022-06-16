@@ -131,7 +131,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         distanceFilter.a = smoothingCoeffecientDistance
         colorFilter.a = smoothingCoefficientAlpha
         var power = power
-        val unfilteredBlue = blockSensor.normalizedColors.blue.toDouble()
+        val unfilteredBlue = color
         val blue = colorFilter.update(unfilteredBlue)
         val unfilteredDistance = distance
         val filteredDistance = distanceFilter.update(unfilteredDistance)
@@ -188,7 +188,8 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
             }
             State.CREATE_CLEARANCE -> {
                 extensionServos.position = midPosition
-                raiseIntake()
+                flip.position = 0.5
+                // raiseIntake()
                 if (!extensionServos.isTransitioning) {
                     state = State.IN
                 }
@@ -226,10 +227,16 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
 
     private val distance: Double
         get() = try {
-                blockSensor.getDistance(DistanceUnit.CM)
+                blockSensor?.getDistance(DistanceUnit.CM) ?: 0.0
             } catch (e: Exception) {
                 0.0
             }
+    private val color: Double
+        get() = try {
+            blockSensor.normalizedColors?.blue?.toDouble() ?: 0.0
+        } catch (e: Exception) {
+            0.0
+        }
 
     private fun dropIntake() {
         flip.position = loweredPosition
