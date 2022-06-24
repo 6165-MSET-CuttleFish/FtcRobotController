@@ -67,6 +67,7 @@ public class SingleDriverPractice extends LinearOpMode {
             for (KeyReader reader : keyReaders) {
                 reader.readValue();
             }
+            carousel.setPower(gamepad2.right_stick_y);
             Pose2d drivePower = new Pose2d(
                     -gamepad1.left_stick_y,
                     0,
