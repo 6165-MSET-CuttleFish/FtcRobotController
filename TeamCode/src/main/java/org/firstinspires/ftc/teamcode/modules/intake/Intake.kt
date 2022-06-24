@@ -51,7 +51,7 @@ class Intake(hardwareMap: HardwareMap) : Module<Intake.State>(hardwareMap, State
         @JvmField
         var dropPositionPerSecond = 3.0
         @JvmField
-        var blueTolerance = 0.03
+        var blueTolerance = 0.01
         @JvmField
         var smoothingCoeffecientDistance = 0.7
         @JvmField

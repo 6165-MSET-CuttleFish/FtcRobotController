@@ -31,7 +31,6 @@ public class SingleDriverPractice extends LinearOpMode {
     ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, capRetract, capVerticalInc, capVerticalDec, capHorizontalInc, capHorizontalDec;
     ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit, mediumDeposit;
 
-    Deposit.Level defaultDepositState = Deposit.Level.LEVEL3;
     DriverPractice.Mode mode = DriverPractice.Mode.DRIVING;
     boolean toggleMode;
     @Override
@@ -79,7 +78,6 @@ public class SingleDriverPractice extends LinearOpMode {
             }
             if (deposit.getState() == Deposit.State.OUT) drivePower = drivePower.times(0.5);
             if (ninjaMode.isDown()) drivePower = drivePower.times(0.60);
-            robot.setWeightedDrivePower(drivePower);
             if (capRetract.wasJustPressed()) {
                 if (capstone.getState() == Capstone.State.ACTIVE) {
                     capstone.retract();
@@ -98,23 +96,28 @@ public class SingleDriverPractice extends LinearOpMode {
                 setDeposit();
                 if (deposit.getState() == Deposit.State.IN || deposit.getState() == Deposit.State.CREATE_CLEARANCE || deposit.getState() == Deposit.State.HOLDING) setIntake();
             }
+            robot.setWeightedDrivePower(drivePower);
             if (liftButton.wasJustPressed()) {
                 deposit.toggleLift();
             }
             if (farDeposit.wasJustPressed()) {
                 deposit.toggleFarDeposit();
+                deposit.setLevel(Deposit.Level.LEVEL3);
                 gamepad1.rumble(1.0, 1.0, 500);
             }
             if (closeDeposit.wasJustPressed()) {
                 deposit.toggleCloseDeposit();
+                deposit.setLevel(Deposit.Level.LEVEL3);
                 gamepad1.rumble(1.0, 1.0, 500);
             }
             if (crossDeposit.wasJustPressed()) {
                 deposit.toggleCrossDeposit();
+                deposit.setLevel(Deposit.Level.SHARED);
                 gamepad1.rumble(1.0, 1.0, 500);
             }
             if (mediumDeposit.wasJustPressed()) {
                 deposit.toggleMediumDeposit();
+                deposit.setLevel(Deposit.Level.LEVEL3);
                 gamepad1.rumble(1.0, 1.0, 500);
             }
             if (gamepad1.touchpad) {
@@ -167,31 +170,34 @@ public class SingleDriverPractice extends LinearOpMode {
     void setDeposit() {
         if (!deposit.platformIsOut()) {
             if (levelIncrement.wasJustPressed()) {
-                switch (defaultDepositState) {
+                switch (deposit.getDefaultLevel()) {
                     case LEVEL2:
-                        defaultDepositState = Deposit.Level.LEVEL3;
+                        deposit.setLevel(Deposit.Level.LEVEL3);
                         break;
                     case SHARED:
-                        defaultDepositState = Deposit.Level.LEVEL2;
+                        deposit.setLevel(Deposit.Level.LEVEL2);
                         break;
                 }
-                deposit.setLevel(defaultDepositState);
             } else if (levelDecrement.wasJustPressed()) {
-                switch (defaultDepositState) {
+                switch (deposit.getDefaultLevel()) {
                     case LEVEL3:
-                        defaultDepositState = Deposit.Level.LEVEL2;
+                        deposit.setLevel(Deposit.Level.LEVEL2);
                         break;
                     case LEVEL2:
-                        defaultDepositState = Deposit.Level.SHARED;
+                        deposit.setLevel(Deposit.Level.SHARED);
                         break;
                 }
-                deposit.setLevel(defaultDepositState);
             }
         } else {
             if (levelIncrement.wasJustPressed()) {
                 deposit.incrementArmPosition(1.0);
             } else if (levelDecrement.wasJustPressed()) {
                 deposit.incrementArmPosition(-1.0);
+            }
+            if (capHorizontalInc.wasJustPressed()) {
+                deposit.incrementLinkagePosition(-1.0);
+            } else if (capHorizontalDec.wasJustPressed()) {
+                deposit.incrementLinkagePosition(1.0);
             }
         }
         if (dumpButton.wasJustPressed()) {

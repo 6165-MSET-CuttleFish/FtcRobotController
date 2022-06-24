@@ -49,31 +49,31 @@ public class Deposit extends Module<Deposit.State> {
     public static double liftCurrentLimit = 5;
     public static double
             extendIn = 0.32,
-            extendOut3 = 0.16,
-            extendOut2 = 0.13,
+            extendOut3 = 0.32,
+            extendOutMax = 0.0,
+            extendOut2 = 0.1,
             extendOut1 = 0.0,
             extendOutShared = 0.24,
-            extendOutSharedFar = 0.15,
-            extendTeleOffset = -0.03;
+            extendOutSharedFar = 0.18;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
-            linkageOffsetIncrement = 0.1;
+            linkageOffsetIncrement = 0.04;
     public static double holdingPosition = 0.82;
     public static double
-            inPosition = 0.97,
+            inPosition = 1.0,
             higherInPosition = 0.9;
     public static double
-            lockPosition = 0.68,
-            unlockPosition = 0.52,
+            lockPosition = 0.7,
+            unlockPosition = 0.55,
             kickPosition = 0.95,
-            softKickPosition = 0.9;
+            softKickPosition = 0.85;
     public static double
             armServoPositionPerSecond = 5.0,
             extensionServoPositionPerSecond = 0.8;
     public static boolean isLoaded;
     public boolean shouldCounterBalance = true;
-    public static double dumpTimeOut = 0.2, softDumpTimeOut = 0.5;
+    public static double dumpTimeOut = 0.2, softDumpTimeOut = 0.4;
     private boolean allowLift = false;
     @Override
     public boolean isTransitioningState() {
@@ -305,7 +305,7 @@ public class Deposit extends Module<Deposit.State> {
                 }
                 if (getState() == State.DUMPING && getSecondsSpentInState() > dumpTimeOut + getState().timeOut ||
                 getState() == State.SOFT_DUMP && getSecondsSpentInState() > softDumpTimeOut + getState().timeOut) {
-                    if (opModeType == OpModeType.AUTO || farDeposit() || closeDeposit() || crossDeposit()) allowLift = false;
+                    if (opModeType == OpModeType.AUTO || farDeposit() || crossDeposit()) allowLift = false;
                     if (intake.getState() == Intake.State.IN) {
                         intake.createClearance();
                     }
@@ -373,8 +373,8 @@ public class Deposit extends Module<Deposit.State> {
 
     public void toggleFarDeposit() {
         if (distance != Distance.FAR) distance = Distance.FAR;
-        else distance = Distance.CLOSE;
-        intake.setDontFlipOut(farDeposit());
+        // else distance = Distance.CLOSE;
+        intake.setDontFlipOut(true);
     }
 
     public void toggleCloseDeposit() {
@@ -384,15 +384,15 @@ public class Deposit extends Module<Deposit.State> {
 
     public void toggleCrossDeposit() {
         if (distance != Distance.CROSS) distance = Distance.CROSS;
-        else distance = Distance.CLOSE;
-        if (opModeType == OpModeType.TELE) allowLift = distance != Distance.CROSS;
-        intake.setDontFlipOut(crossDeposit());
+        // else distance = Distance.CLOSE;
+        if (opModeType == OpModeType.TELE) allowLift = false;
+        intake.setDontFlipOut(true);
     }
 
     public void toggleMediumDeposit() {
         if (distance != Distance.MEDIUM) distance = Distance.MEDIUM;
-        else distance = Distance.CLOSE;
-        if (opModeType == OpModeType.TELE) allowLift = distance == Distance.MEDIUM;
+        // else distance = Distance.CLOSE;
+        if (opModeType == OpModeType.TELE) allowLift = true;
         intake.setDontFlipOut(false);
     }
 
@@ -448,17 +448,38 @@ public class Deposit extends Module<Deposit.State> {
     }
 
     public void incrementLinkagePosition(double pwr) {
-        offsetExtendPosition = Range.clip(
-                offsetExtendPosition + pwr * linkageOffsetIncrement,
-                extension.getServos().getLowerLimit(),
-                extension.getServos().getUpperLimit()
-        );
+        switch (getLevel()) {
+            case LEVEL3:
+                if (farDeposit() || mediumDeposit()) {
+                    extendOutMax += pwr * linkageOffsetIncrement;
+                } else {
+                    extendOut3 += pwr * linkageOffsetIncrement;
+                }
+                break;
+            case LEVEL2:
+                extendOut2 += pwr * linkageOffsetIncrement;
+                break;
+            case LEVEL1:
+                extendOut1 += pwr * linkageOffsetIncrement;
+                break;
+            case SHARED:
+                if (crossDeposit()) {
+                    extendOutSharedFar += pwr * linkageOffsetIncrement;
+                } else {
+                    extendOutShared += pwr * linkageOffsetIncrement;
+                }
+                break;
+        }
     }
 
     private Level getLevel() {
         if (getState() == State.IN) return Level.LEVEL1;
         if (distance == Distance.FAR) return Level.LEVEL3;
-        if (freight == Freight.BALL && opModeType == OpModeType.TELE && defaultLevel == Level.LEVEL3) return Level.LEVEL2;
+        if (freight == Freight.BALL && defaultLevel == Level.LEVEL3) return Level.LEVEL2;
+        return defaultLevel;
+    }
+
+    public Level getDefaultLevel() {
         return defaultLevel;
     }
 
@@ -563,7 +584,7 @@ public class Deposit extends Module<Deposit.State> {
         double extendPos = extendOut3;
         switch (level) {
             case LEVEL3:
-                extendPos = closeDeposit() ? 0.0 : extendIn;
+                extendPos = closeDeposit() ? extendOutMax : extendOut3;
                 break;
             case LEVEL2:
                 extendPos = extendOut2;
@@ -575,7 +596,7 @@ public class Deposit extends Module<Deposit.State> {
                 extendPos = crossDeposit() ? extendOutSharedFar : extendOutShared;
                 break;
         }
-        return farDeposit() ? 0.0 : extendPos + offsetExtendPosition;
+        return farDeposit() ? extendOutMax : extendPos + offsetExtendPosition;
     }
 
     /**
@@ -599,8 +620,12 @@ public class Deposit extends Module<Deposit.State> {
 
     private void holdingPosition() {
         double position = holdingPosition;
-        arm.setPosition(position);
         extension.setPosition(extendIn);
+        if (!extension.isTransitioning()) {
+            arm.setPosition(position);
+        } else {
+            arm.setPosition(0.5);
+        }
     }
 
     /**

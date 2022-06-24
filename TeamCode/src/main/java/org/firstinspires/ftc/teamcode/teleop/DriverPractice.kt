@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader
 import kotlin.Throws
 import org.firstinspires.ftc.teamcode.util.field.OpModeType
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone
 import org.firstinspires.ftc.teamcode.modules.carousel.Carousel
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.modules.intake.Intake
 
 @TeleOp
 @Config
+@Disabled
 class DriverPractice : LinearOpMode() {
     enum class Mode {
         DRIVING, ENDGAME

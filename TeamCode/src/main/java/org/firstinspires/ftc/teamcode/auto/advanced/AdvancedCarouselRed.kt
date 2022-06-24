@@ -137,7 +137,7 @@ class AdvancedCarouselRed : LinearOpMode() {
                 ), allianceHub.center
             )
             .setReversed(false)
-            .softDump(deposit)
+            .hardDump(deposit)
             .waitWhile(deposit::isDoingWork) // wait for platform to dumpPosition
             .splineTo(Vector2d(-35.0, carouselCoast).flip(blue), Math.PI)
             .increaseGains(carouselMovingSpeed)

@@ -49,17 +49,17 @@ class CyclingBlue : LinearOpMode() {
     private val blue = true
     companion object {
         @JvmField var coast = -54.5
-        @JvmField var stop = 49.0
+        @JvmField var stop = 48.0
         @JvmField var intakeDelay = 2.0
         @JvmField var powerDelay = 2.1
-        @JvmField var depositDelay = 16.0
+        @JvmField var depositDelay = 20.0
         @JvmField var cycles = 6
         @JvmField var conjoiningPoint = 20.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 20.0
-        @JvmField var depositDistance = 25.0
+        @JvmField var cyclingDistance = 19.5
+        @JvmField var depositDistance = 24.0
         @JvmField var divConstant = 4.0
         @JvmField var depositingAngle = -55.0
         @JvmField var cyclingAngle = -54.0

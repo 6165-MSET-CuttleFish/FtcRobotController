@@ -49,19 +49,19 @@ class CyclingRed : LinearOpMode() {
     private val blue = false
     companion object {
         @JvmField var coast = -54.5
-        @JvmField var stop = 49.0
+        @JvmField var stop = 48.0
         @JvmField var intakeDelay = 2.0
         @JvmField var powerDelay = 2.1
-        @JvmField var depositDelay = 2.0
+        @JvmField var depositDelay = 20.0
         @JvmField var cycles = 6
         @JvmField var conjoiningPoint = 20.0
         @JvmField var conjoiningDeposit = 30.0
         @JvmField var waitTime = 0.08
         @JvmField var gainsPoint = 36.0
-        @JvmField var cyclingDistance = 20.0
+        @JvmField var cyclingDistance = 19.5
         @JvmField var depositDistance = 24.0
         @JvmField var divConstant = 4.0
-        @JvmField var depositingAngle = -54.0
+        @JvmField var depositingAngle = -55.0
         @JvmField var cyclingAngle = -54.0
         @JvmField var depositingTimeout = 0.4
         @JvmField var intakeError = 8.0
@@ -116,7 +116,7 @@ class CyclingRed : LinearOpMode() {
                 if (robot.pathState == PathState.INTAKING) {
                     try {
                         robot.relocalizer.updatePoseEstimate(
-                            Relocalizer.Sensor.FRONT_RIGHT,
+                            Relocalizer.Sensor.FRONT_LEFT,
                             null
                         )
                     } catch (e: Exception) {
