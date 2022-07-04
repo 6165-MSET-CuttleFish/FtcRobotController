@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.modules.capstone.Capstone;
@@ -29,10 +30,12 @@ public class SingleDriverPractice extends LinearOpMode {
     KeyReader[] keyReaders;
     TriggerReader intakeButton, ninjaMode;
     ButtonReader levelIncrement, levelDecrement, dumpButton, liftButton, capRetract, capVerticalInc, capVerticalDec, capHorizontalInc, capHorizontalDec;
-    ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit, mediumDeposit;
+    ToggleButtonReader carouselButton, closeDeposit, farDeposit, crossDeposit, mediumDeposit, trollMode;
 
     DriverPractice.Mode mode = DriverPractice.Mode.DRIVING;
     boolean toggleMode;
+    boolean toggleZeroPower;
+    boolean setToggleZero;
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(this, OpModeType.TELE);
@@ -66,6 +69,21 @@ public class SingleDriverPractice extends LinearOpMode {
             robot.update();
             for (KeyReader reader : keyReaders) {
                 reader.readValue();
+            }
+            if (mode != DriverPractice.Mode.ENDGAME) {
+                if (gamepad1.left_trigger > 0.5 && !setToggleZero) {
+                    if (!toggleZeroPower) {
+                        robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                        gamepad1.rumble(1.0, 1.0, 500);
+                        toggleZeroPower = true;
+                    } else {
+                        robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                        toggleZeroPower = false;
+                    }
+                    setToggleZero = true;
+                } else if (gamepad1.left_trigger <= 0.5) {
+                    setToggleZero = false;
+                }
             }
             carousel.setPower(gamepad2.right_stick_y);
             Pose2d drivePower = new Pose2d(
@@ -165,7 +183,7 @@ public class SingleDriverPractice extends LinearOpMode {
     }
 
     void setIntake() {
-        intake.setPower(gamepad1.right_trigger + gamepad1.left_trigger);
+        intake.setPower(gamepad1.right_trigger);
     }
 
     void setDeposit() {

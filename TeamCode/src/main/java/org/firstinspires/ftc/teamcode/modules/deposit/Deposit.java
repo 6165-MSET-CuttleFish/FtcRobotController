@@ -41,7 +41,7 @@ public class Deposit extends Module<Deposit.State> {
             outPosition2 = 0.19,
             outPosition1 = 0.0,
             outPositionShared = 0.15,
-            outPositionSharedFar = 0.1;
+            outPositionSharedFar = 0.07;
     private double offsetOutPosition;
     public static double
             outOffsetPower,
@@ -51,10 +51,10 @@ public class Deposit extends Module<Deposit.State> {
             extendIn = 0.32,
             extendOut3 = 0.32,
             extendOutMax = 0.0,
-            extendOut2 = 0.1,
+            extendOut2 = 0.11,
             extendOut1 = 0.0,
             extendOutShared = 0.24,
-            extendOutSharedFar = 0.18;
+            extendOutSharedFar = 0.19;
     private double offsetExtendPosition;
     public static double
             linkageOffsetPower,
@@ -610,7 +610,7 @@ public class Deposit extends Module<Deposit.State> {
         // speed * time
         // arm.setPosition(lastOutPosition + (position - lastOutPosition) * getSecondsSpentInState() / flipOutTime);
         if (getLevel() == Level.LEVEL1) {
-            if (extension.getServos().getError() < 0.15) {
+            if (extension.getServos().getError() < 0.26) {
                 arm.setPosition(position);
             }
         } else {

@@ -48,7 +48,7 @@ class CyclingBlue : LinearOpMode() {
     lateinit var relocalizer: Relocalizer
     private val blue = true
     companion object {
-        @JvmField var coast = -54.5
+        @JvmField var coast = -54.0
         @JvmField var stop = 48.0
         @JvmField var intakeDelay = 2.0
         @JvmField var powerDelay = 2.1
