@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.drive.StaticConfig;
+import org.firstinspires.ftc.teamcode.roadrunnerext.drive.ImprovedDrive;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -17,22 +19,22 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        ImprovedDrive drive = StaticConfig.getDrive(hardwareMap);
 
         waitForStart();
 
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            Trajectory traj = robot.trajectoryBuilder(new Pose2d())
+            Trajectory traj = drive.trajectoryBuilder(new Pose2d())
                     .splineTo(new Vector2d(40, 15), Math.toRadians(0))
                     .build();
 
-            robot.followTrajectory(traj);
+            drive.followTrajectory(traj);
 
             sleep(500);
 
-            robot.followTrajectory(
-                    robot.trajectoryBuilder(traj.end(), true)
+            drive.followTrajectory(
+                    drive.trajectoryBuilder(traj.end(), true)
                             .splineTo(new Vector2d(0, 0), Math.toRadians(180))
                             .build()
             );

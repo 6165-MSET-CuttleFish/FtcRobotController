@@ -32,7 +32,7 @@ public class SampleModuleOpMode extends ModuleTest {
             }
 
             @Override
-            public boolean isDoingInternalWork() {
+            public boolean isBusyInternal() {
                 return false;
             }
         };

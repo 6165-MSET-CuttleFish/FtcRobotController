@@ -1,8 +1,20 @@
-package com.acmerobotics.roadrunner.drive
+package org.firstinspires.ftc.teamcode.roadrunnerext.drive
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.util.Angle
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.localizers.ImprovedLocalizer
+import org.firstinspires.ftc.teamcode.modules.Module
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequence
+import org.firstinspires.ftc.teamcode.trajectorysequenceimproved.TrajectorySequenceBuilder
+import java.util.ArrayList
 
 /**
  * Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
@@ -11,7 +23,13 @@ import org.firstinspires.ftc.teamcode.localizers.ImprovedLocalizer
  *
  * @author Ayush Raman
  */
-abstract class ImprovedDrive {
+abstract class ImprovedDrive<T>(hardwareMap: HardwareMap) : Module<ImprovedDrive.State>(hardwareMap,
+    State.IDLE
+) {
+    enum class State {
+        IDLE,
+        BUSY,
+    }
     /**
      * Localizer used to determine the evolution of [poseEstimate].
      */
@@ -49,7 +67,7 @@ abstract class ImprovedDrive {
         get() = localizer.poseVelocity
 
     /**
-     *  Current robot pose velocity (optional)
+     *  Current robot pose acceleration (optional)
      */
     val poseAcceleration: Pose2d?
         get() = localizer.poseAcceleration
@@ -76,4 +94,41 @@ abstract class ImprovedDrive {
      * The heading velocity used to determine pose velocity in some cases
      */
     open fun getExternalHeadingVelocity(): Double? = null
+
+    /**
+     * The state of the trajectory sequence
+     */
+    abstract val pathState: T
+
+    abstract fun waitForIdle();
+
+    abstract fun trajectoryBuilder(startPose: Pose2d): TrajectoryBuilder
+
+    abstract fun trajectoryBuilder(startPose: Pose2d, reversed: Boolean): TrajectoryBuilder
+
+    abstract fun trajectoryBuilder(startPose: Pose2d, startHeading: Double): TrajectoryBuilder
+
+    abstract fun trajectorySequenceBuilder(startPose: Pose2d?): TrajectorySequenceBuilder<*>
+
+    abstract fun turnAsync(angle: Double)
+
+    abstract fun turn(angle: Double)
+
+    abstract fun followTrajectoryAsync(trajectory: Trajectory)
+
+    abstract fun followTrajectory(trajectory: Trajectory)
+
+    abstract fun followTrajectorySequenceAsync(trajectorySequence: TrajectorySequence)
+
+    abstract fun followTrajectorySequence(trajectorySequence: TrajectorySequence)
+
+    abstract fun setPIDFCoefficients(runMode: DcMotor.RunMode, coefficients: PIDFCoefficients)
+
+    abstract fun setMode(runMode: DcMotor.RunMode)
+
+    abstract fun getWheelPositions(): List<Double>
+
+    abstract fun getWheelVelocities(): List<Double>
+
+    abstract fun setWeightedDrivePower(pose2d: Pose2d)
 }

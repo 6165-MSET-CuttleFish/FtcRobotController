@@ -5,7 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.drive.StaticConfig;
+import org.firstinspires.ftc.teamcode.roadrunnerext.drive.ImprovedDrive;
 
 /*
  * This is a simple routine to test turning capabilities.
@@ -18,13 +20,13 @@ public class TurnTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        ImprovedDrive drive = StaticConfig.getDrive(hardwareMap);
 
         waitForStart();
 
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            robot.turn(Math.toRadians(ANGLE));
+            drive.turn(Math.toRadians(ANGLE));
         }
     }
 }

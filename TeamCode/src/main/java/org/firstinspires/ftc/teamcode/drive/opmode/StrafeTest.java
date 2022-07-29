@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.drive.StaticConfig;
+import org.firstinspires.ftc.teamcode.roadrunnerext.drive.ImprovedDrive;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -20,9 +22,9 @@ public class StrafeTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this);
+        ImprovedDrive drive = StaticConfig.getDrive(hardwareMap);
 
-        Trajectory trajectory = robot.trajectoryBuilder(new Pose2d())
+        Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(DISTANCE)
                 .build();
 
@@ -30,9 +32,9 @@ public class StrafeTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        robot.followTrajectory(trajectory);
+        drive.followTrajectory(trajectory);
 
-        Pose2d poseEstimate = robot.getPoseEstimate();
+        Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("finalX", poseEstimate.getX());
         telemetry.addData("finalY", poseEstimate.getY());
         telemetry.addData("finalHeading", poseEstimate.getHeading());

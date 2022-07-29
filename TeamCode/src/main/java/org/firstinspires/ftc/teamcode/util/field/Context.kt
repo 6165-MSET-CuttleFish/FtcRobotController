@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toPose
 
@@ -31,15 +30,15 @@ object Context {
             .polarAdd(poseVelocity.y, robotPose.heading + Math.PI)
             .toPose(robotPose.heading)
     @JvmField
-    var balance = Balance.BALANCED
-    @JvmField
-    var location = TSEDetector.Location.LEFT
-    @JvmField
     var freight = Freight.NONE
     @JvmField
     var pitch = 0.0
     @JvmField
     var tilt = 0.0
+    @JvmField
+    var totalCurrent = 0.0
+    @JvmField
+    var totalCharge = 0.0
     @JvmStatic
     fun reset() {
         robotPose = Pose2d()
@@ -49,10 +48,10 @@ object Context {
         opModeType = OpModeType.NONE
         packet = TelemetryPacket()
         telemetry = null
-        balance = Balance.BALANCED
-        location = TSEDetector.Location.LEFT
         freight = Freight.NONE
         pitch = 0.0
         tilt = 0.0
+        totalCharge = 0.0
+        totalCurrent = 0.0
     }
 }

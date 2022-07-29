@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.roadrunnerext
+package org.firstinspires.ftc.teamcode.roadrunnerext.followers
 
+import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.roadrunnerext.RamseteConstants.*
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toInches
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toMeters
@@ -32,6 +32,8 @@ class ImprovedRamsete @JvmOverloads constructor(
 ) : ImprovedTrajectoryFollower(admissibleError, timeout, admissibleVelo, clock) {
     override var lastError: Pose2d = Pose2d()
     override var lastVelocityError: Pose2d? = Pose2d()
+    private val linearController = PIDFController(linearVeloPID)
+    private val headingController = PIDFController(angularVeloPID)
 
     private fun sinc(x: Double) =
         if (x epsilonEquals 0.0) {
@@ -53,12 +55,7 @@ class ImprovedRamsete @JvmOverloads constructor(
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        var error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
-        if (Robot.gainMode == Robot.GainMode.FORWARD && avoidConvergeForward) {
-            error = Pose2d(error.x, 0.0, error.heading)
-        } else if (Robot.gainMode == Robot.GainMode.BACKWARD && avoidConvergeBackward) {
-            error = Pose2d(error.x, 0.0, error.heading)
-        }
+        val error = Kinematics.calculateFieldPoseError(targetPose.toInches(), currentPose.toInches()).toMeters()
         val k1 = 2 * zeta * sqrt(targetOmega.pow(2) + b * targetV.pow(2))
         val k3 = k1
         val k2 = b
@@ -68,10 +65,11 @@ class ImprovedRamsete @JvmOverloads constructor(
         val omega = targetOmega + k2 * targetV * sinc(error.heading) *
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
+        linearController.targetPosition = v
+        headingController.targetPosition = omega
+        val outV = v + (currentRobotVel?.toMeters()?.let { linearController.update(it.x) } ?: 0.0)
 
-        val outV = v + (currentRobotVel?.toMeters()?.let { kLinear * (v - it.x) } ?: 0.0)
-
-        val outOmega = omega + (currentRobotVel?.toMeters()?.let { kHeading * (omega - it.heading) } ?: 0.0)
+        val outOmega = omega + (currentRobotVel?.toMeters()?.let { headingController.update(it.heading) } ?: 0.0)
 
         lastError = Kinematics.calculateRobotPoseError(targetPose.toInches(), currentPose.toInches())
         lastVelocityError = currentRobotVel?.toMeters()?.let { Kinematics.calculateRobotPoseError(Pose2d(v, 0.0, omega).toInches(), it.toInches()) }

@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.StaticConfig;
+import org.firstinspires.ftc.teamcode.roadrunnerext.drive.ImprovedDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -20,14 +23,14 @@ import org.firstinspires.ftc.teamcode.drive.Robot;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(this, new Pose2d(0, 0, Math.toRadians(0)));
-
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ImprovedDrive drive = StaticConfig.getDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d());
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Ready", "ready");
         telemetry.update();
         waitForStart();
         while (!isStopRequested()) {
-            robot.setWeightedDrivePower(
+            drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
                             0,
@@ -35,12 +38,12 @@ public class LocalizationTest extends LinearOpMode {
                     )
             );
 
-            robot.update();
+            drive.update();
             if (gamepad1.right_bumper) {
-                robot.setPoseEstimate(new Pose2d());
+                drive.setPoseEstimate(new Pose2d());
             }
-            telemetry.addData("Velo", robot.getPoseVelocity().getX());
-            telemetry.addData("Heading Velo", Math.toDegrees(robot.getPoseVelocity().getHeading()));
+            telemetry.addData("Velo", drive.getPoseVelocity().getX());
+            telemetry.addData("Heading Velo", Math.toDegrees(drive.getPoseVelocity().getHeading()));
             telemetry.update();
         }
     }

@@ -118,10 +118,10 @@ abstract class Module<T> @JvmOverloads constructor(
     /**
      * @return Whether the module or its nested modules are currently doing work
      */
-    val isDoingWork: Boolean
+    val isBusy: Boolean
         get() {
-            var isDoingWork = isDoingInternalWork()
-            nestedModules.forEach { if (it.isDoingWork) isDoingWork = true }
+            var isDoingWork = isBusyInternal()
+            nestedModules.forEach { if (it.isBusy) isDoingWork = true }
             return isDoingWork
         }
 
@@ -155,7 +155,7 @@ abstract class Module<T> @JvmOverloads constructor(
     /**
      * @return Whether the module is currently doing work for which the robot must remain stationary
      */
-    protected abstract fun isDoingInternalWork(): Boolean
+    protected abstract fun isBusyInternal(): Boolean
 
     /**
      * @return Whether the module is currently transitioning between states

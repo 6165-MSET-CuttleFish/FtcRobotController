@@ -1,30 +1,27 @@
-package org.firstinspires.ftc.teamcode.roadrunnerext
+package org.firstinspires.ftc.teamcode.roadrunnerext.drive
 
-import com.acmerobotics.roadrunner.drive.Drive
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
-import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
+import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.*
-import org.firstinspires.ftc.teamcode.drive.Robot
 import org.firstinspires.ftc.teamcode.localizers.ImprovedLocalizer
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.toPose
-import org.firstinspires.ftc.teamcode.util.field.Alliance
-import org.firstinspires.ftc.teamcode.util.field.Context
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param voltageSensor voltage sensor from hardware map
  */
-abstract class ImprovedTankDrive constructor(
+abstract class ImprovedTankDrive<T> constructor(
+    hardwareMap: HardwareMap,
     private val trackWidth: Double,
     private val voltageSensor: VoltageSensor,
-) : Drive() {
+) : ImprovedDrive<T>(hardwareMap) {
     /**
      * Default localizer for tank drives based on the drive encoders and (optionally) a heading sensor.
      *
@@ -32,7 +29,7 @@ abstract class ImprovedTankDrive constructor(
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
      */
     class TankLocalizer @JvmOverloads constructor(
-        private val drive: ImprovedTankDrive,
+        private val drive: ImprovedTankDrive<*>,
         private val useExternalHeading: Boolean = true
     ) : ImprovedLocalizer {
         private var _poseEstimate = Pose2d()
@@ -48,7 +45,6 @@ abstract class ImprovedTankDrive constructor(
             private set
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
-        private val timer = ElapsedTime()
         private var lastVel: Pose2d? = Pose2d()
         override var poseAcceleration: Pose2d? = Pose2d()
 
@@ -92,13 +88,12 @@ abstract class ImprovedTankDrive constructor(
             lastExtHeading = extHeading
             poseAcceleration = lastVel?.let { poseVelocity?.minus(it) }
             lastVel = poseVelocity
-            timer.reset()
         }
     }
 
     private var voltage = 12.0
     private val voltageTimer = ElapsedTime()
-    override var localizer: Localizer = TankLocalizer(this)
+    override var localizer: ImprovedLocalizer = TankLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
         if (voltageTimer.seconds() > 0.3) {
@@ -108,35 +103,14 @@ abstract class ImprovedTankDrive constructor(
         val velocities = TankKinematics.robotToWheelVelocities(driveSignal.vel, trackWidth)
         val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
 
-        val voltageMultiplier = 12 / voltage
-        var powers = Kinematics.calculateMotorFeedforward(
+        val voltageMultiplier = 12 / voltage // voltage scaled feedforward
+        val powers = Kinematics.calculateMotorFeedforward(
             velocities,
             accelerations,
             kV,
             kA,
             kStatic
         ).toMutableList()
-        val gainedPowers = Kinematics.calculateMotorFeedforward(
-            velocities,
-            accelerations,
-            kV * Robot.kvIncrease,
-            kA,
-            kStatic * Robot.kStaticIncrease,
-        ).toMutableList()
-        if (Robot.gainMode == Robot.GainMode.FORWARD) {
-            if (Robot.fullSend) powers = gainedPowers
-            if (Context.alliance == Alliance.BLUE) {
-                powers[1] = gainedPowers[1]
-            } else {
-                powers[0] = gainedPowers[0]
-            }
-        } else if (Robot.gainMode == Robot.GainMode.BACKWARD) {
-            if (Context.alliance == Alliance.BLUE) {
-                powers[1] = gainedPowers[1]
-            } else {
-                powers[0] = gainedPowers[0]
-            }
-        }
         setMotorPowers(powers[0] * voltageMultiplier, powers[1] * voltageMultiplier)
     }
 
@@ -149,22 +123,4 @@ abstract class ImprovedTankDrive constructor(
      * Sets the following motor powers (normalized voltages). All arguments are on the interval `[-1.0, 1.0]`.
      */
     abstract fun setMotorPowers(left: Double, right: Double)
-
-    /**
-     * Returns the positions of the wheels in linear distance units. Positions should exactly match the ordering in
-     * [setMotorPowers].
-     */
-    abstract fun getWheelPositions(): List<Double>
-
-    /**
-     * Returns the velocities of the wheels in linear distance units. Positions should exactly match the ordering in
-     * [setMotorPowers].
-     */
-    open fun getWheelVelocities(): List<Double>? = null
-
-    abstract fun getPitch(): Double
-
-    abstract fun getTilt(): Double
-
-    fun getPoseAcceleration(): Pose2d? = (localizer as? ImprovedLocalizer ?: TankLocalizer(this)).poseAcceleration
 }

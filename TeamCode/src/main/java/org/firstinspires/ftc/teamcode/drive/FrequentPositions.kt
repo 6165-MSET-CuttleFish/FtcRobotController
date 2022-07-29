@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.drive
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import org.firstinspires.ftc.teamcode.modules.vision.TSEDetector
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.flip
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.Circle
 import org.firstinspires.ftc.teamcode.util.field.Alliance
 import org.firstinspires.ftc.teamcode.util.field.Context.side
 import org.firstinspires.ftc.teamcode.util.field.Context.alliance
-import org.firstinspires.ftc.teamcode.util.field.Context.location
 import org.firstinspires.ftc.teamcode.util.field.Side
 import org.firstinspires.ftc.teamcode.roadrunnerext.geometry.polarAdd
 
@@ -53,24 +51,6 @@ object FrequentPositions {
         val regular =
             if (side == Side.CYCLING) Pose2d(6.0, -32.0, Math.toRadians(-30.0)) else Pose2d()
         return regular.flip(alliance == Alliance.BLUE)
-    }
-
-    fun duckLocation(): Pose2d {
-        val arr = duckLocations
-        return when (location) {
-            TSEDetector.Location.LEFT -> arr[0]
-            TSEDetector.Location.RIGHT -> arr[2]
-            TSEDetector.Location.MIDDLE -> arr[1]
-        }
-    }
-
-    fun duckLocation(location: TSEDetector.Location): Pose2d {
-        val arr = duckLocations
-        return when (location) {
-            TSEDetector.Location.LEFT -> arr[0]
-            TSEDetector.Location.RIGHT -> arr[2]
-            TSEDetector.Location.MIDDLE -> arr[1]
-        }
     }
 
     private val duckLocations: Array<Pose2d>

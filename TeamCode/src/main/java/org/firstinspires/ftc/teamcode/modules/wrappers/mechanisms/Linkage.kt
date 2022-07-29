@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.modules.wrappers
+package org.firstinspires.ftc.teamcode.modules.wrappers.mechanisms
 
 import org.firstinspires.ftc.teamcode.modules.wrappers.actuators.ControllableServos
 import kotlin.math.cos

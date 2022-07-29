@@ -10,14 +10,16 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.StaticConfig;
+import org.firstinspires.ftc.teamcode.roadrunnerext.drive.ImprovedDrive;
 
 import java.util.List;
 import java.util.Objects;
@@ -77,7 +79,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         //drive = new SampleMecanumDrive(hardwareMap);
-        Robot robot = new Robot(this);
+        ImprovedDrive drive = StaticConfig.getDrive(hardwareMap);
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         mode = Mode.TUNING_MODE;
 
@@ -123,10 +125,10 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     final double voltageMultiplier =  12 / voltageSensor.getVoltage();
                     double targetPower = voltageMultiplier * Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
                     // if (targetPower < 0) targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kVBackward * voltageMultiplier, kABackward * voltageMultiplier, kStaticBackward * voltageMultiplier);
-                    robot.setDrivePower(new Pose2d(targetPower, 0, 0));
-                    robot.updatePoseEstimate();
+                    drive.setDrivePower(new Pose2d(targetPower, 0, 0));
+                    drive.updatePoseEstimate();
 
-                    Pose2d poseVelo = Objects.requireNonNull(robot.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
+                    Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
                     double currentVelo = poseVelo.getX();
 
                     // internalUpdate telemetry
@@ -142,7 +144,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                         profileStart = clock.seconds();
                     }
 
-                    robot.setWeightedDrivePower(
+                    drive.setWeightedDrivePower(
                             new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -0,
